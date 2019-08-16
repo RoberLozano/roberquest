@@ -154,19 +154,6 @@
     <button onclick="act()"> Cambiar fecha y hora</button>
     <button onclick="saveStats()"> Guardar</button>
 
-
-    <script>
-      // EL POPOVER
-      $(document).ready(function () {
-        $('[data-toggle="popover"]').popover();
-        $('#tbHab').on('all.bs.table', function (e, name, args) {
-          $('[data-toggle="tooltip"]').tooltip();
-          $('[data-toggle="popover"]').popover();
-        });
-      });
-    </script>
-
-
     <script>
       // el select guay
       $('select').selectpicker();
@@ -247,17 +234,10 @@
           let hTipo = row.insertCell(2);
           let hValor = row.insertCell(3);
 
-          // tipo.innerHTML  = '<i data-toggle="tooltip"  id="lb' + CP[i] + '" title=' + CP[i] + '>' + CP[i] + '</i>';
-          // cell.innerHTML  = '<i data-toggle="tooltip" contenteditable="true"  id="' + CP[i] + '" title=' + pj[CP[i]] + '>' + pj.getCar(CP[i]) + '</i>';
-          // hTipo.innerHTML = '<i data-toggle="tooltip"  id="' + TipoHabilidades[i] + '" title=' + TipoHabilidades[i] + '>' + TipoHabilidades[i] + '</i>';
-          // hValor.innerHTML= '<i data-toggle="tooltip"  id="' + pj.getCar(TipoHabilidades[i]) + '" title=' + pj[TipoHabilidades[i]] + '>' + pj.getCar(TipoHabilidades[i]) + '</i>';
-
-          tipo.innerHTML = '<i data-toggle="popover"  id="lb' + CP[i] + '" title=' + CP[i] + '>' + CP[i] + '</i>';
-          cell.innerHTML = '<i data-toggle="popover" contenteditable="true"  id="' + CP[i] + '" title=' + pj[CP[i]] + '>' + pj.getCar(CP[i]) + '</i>';
-          hTipo.innerHTML = '<i data-toggle="popover"  id="' + TipoHabilidades[i] + '" title=' + TipoHabilidades[i] + '>' + TipoHabilidades[i] + '</i>';
-          // hValor.innerHTML= '<i data-toggle="popover"  id="' + pj.getCar(TipoHabilidades[i]) + '" title=' + pj[TipoHabilidades[i]] + '>' + pj.getCar(TipoHabilidades[i]) + '</i>';
-          hValor.innerHTML = '<a href="#" data-toggle="popover" title="Popover Header" data-content="Some content inside the popover">Toggle popover</a>';
-          // hValor.innerHTML = '<a href="#" data-toggle="tooltip" title="Hooray!">Hover over me</a>'
+          tipo.innerHTML  = '<i data-toggle="tooltip"  id="lb' + CP[i] + '" title=' + CP[i] + '>' + CP[i] + '</i>';
+          cell.innerHTML  = '<i data-toggle="tooltip" contenteditable="true"  id="' + CP[i] + '" title=' + pj[CP[i]] + '>' + pj.getCar(CP[i]) + '</i>';
+          hTipo.innerHTML = '<i data-toggle="tooltip"  id="' + TipoHabilidades[i] + '" title=' + TipoHabilidades[i] + '>' + TipoHabilidades[i] + '</i>';
+          hValor.innerHTML= '<i data-toggle="tooltip"  id="' + pj.getCar(TipoHabilidades[i]) + '" title=' + pj[TipoHabilidades[i]] + '>' + pj.getCar(TipoHabilidades[i]) + '</i>';
 
         }
       }
