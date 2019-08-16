@@ -10,38 +10,40 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
   <link rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.9/css/bootstrap-select.css" />
-    <style type = "text/css">
-      @font-face {
+  <style type="text/css">
+    @font-face {
       font-family: "Friedolin";
       src: url("Friedolin.ttf");
-      }
-      @font-face {
+    }
+
+    @font-face {
       font-family: "MediciText";
       src: url("MediciText.otf");
-      }
+    }
 
-      @font-face {
+    @font-face {
       font-family: "Old Europe";
       src: url("Old Europe.ttf");
-      }
-      @font-face {
+    }
+
+    @font-face {
       font-family: "HussarBoldWeb";
       src: url("HussarBoldWeb.svg");
-      }
-      
+    }
 
-      h5 {
+
+    h5 {
       font-family: Friedolin;
       font-size: 300%;
-      }
-      h2 {
-      font-family: MediciText;
-      }
+    }
 
-     </style>
+    h2 {
+      font-family: MediciText;
+    }
+  </style>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.15.0/popper.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.9/js/bootstrap-select.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
@@ -59,10 +61,14 @@
       <div class="collapse" id="navbarToggleExternalContent">
         <div class="bg-dark p-4">
           <ul class="nav nav-tabs">
-            <li class="col-sm h3"><a data-toggle="tab" style="color:white; font-family: Friedolin" href="#home"> Personaje </a></li>
-            <li class="col-sm h3"><a data-toggle="tab" style="color:white; font-family: Friedolin" href="#habilidades"> Habilidades </a></li>
-            <li class="col-sm h3"><a data-toggle="tab" style="color:white; font-family: Friedolin" href="#inventario"> Inventario </a></li>
-            <li class="col-sm h3"><a data-toggle="tab" style="color:white; font-family: Friedolin" href="#charts"> Charts </a></li>
+            <li class="col-sm h3"><a data-toggle="tab" style="color:white; font-family: Friedolin" href="#home">
+                Personaje </a></li>
+            <li class="col-sm h3"><a data-toggle="tab" style="color:white; font-family: Friedolin" href="#habilidades">
+                Habilidades </a></li>
+            <li class="col-sm h3"><a data-toggle="tab" style="color:white; font-family: Friedolin" href="#inventario">
+                Inventario </a></li>
+            <li class="col-sm h3"><a data-toggle="tab" style="color:white; font-family: Friedolin" href="#charts">
+                Charts </a></li>
           </ul>
         </div>
       </div>
@@ -132,6 +138,8 @@
       </div>
       <div id="charts" class="tab-pane fade">
         <div>
+          <a href="#" data-toggle="popover" title="Popover Header" data-content="Some content inside the popover">Toggle
+            popover</a>
           <canvas id="barChart"></canvas>
           <canvas id="radarChart"></canvas>
         </div>
@@ -148,9 +156,20 @@
 
 
     <script>
+      // EL POPOVER
+      $(document).ready(function () {
+        $('[data-toggle="popover"]').popover();
+        $('#tbHab').on('all.bs.table', function (e, name, args) {
+          $('[data-toggle="tooltip"]').tooltip();
+          $('[data-toggle="popover"]').popover();
+        });
+      });
+    </script>
+
+
+    <script>
       // el select guay
       $('select').selectpicker();
-
 
       // $('#columnas').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
       //   // do something...
@@ -232,12 +251,13 @@
           // cell.innerHTML  = '<i data-toggle="tooltip" contenteditable="true"  id="' + CP[i] + '" title=' + pj[CP[i]] + '>' + pj.getCar(CP[i]) + '</i>';
           // hTipo.innerHTML = '<i data-toggle="tooltip"  id="' + TipoHabilidades[i] + '" title=' + TipoHabilidades[i] + '>' + TipoHabilidades[i] + '</i>';
           // hValor.innerHTML= '<i data-toggle="tooltip"  id="' + pj.getCar(TipoHabilidades[i]) + '" title=' + pj[TipoHabilidades[i]] + '>' + pj.getCar(TipoHabilidades[i]) + '</i>';
-          
-          tipo.innerHTML  = '<i data-toggle="popover"  id="lb' + CP[i] + '" title=' + CP[i] + '>' + CP[i] + '</i>';
-          cell.innerHTML  = '<i data-toggle="popover" contenteditable="true"  id="' + CP[i] + '" title=' + pj[CP[i]] + '>' + pj.getCar(CP[i]) + '</i>';
+
+          tipo.innerHTML = '<i data-toggle="popover"  id="lb' + CP[i] + '" title=' + CP[i] + '>' + CP[i] + '</i>';
+          cell.innerHTML = '<i data-toggle="popover" contenteditable="true"  id="' + CP[i] + '" title=' + pj[CP[i]] + '>' + pj.getCar(CP[i]) + '</i>';
           hTipo.innerHTML = '<i data-toggle="popover"  id="' + TipoHabilidades[i] + '" title=' + TipoHabilidades[i] + '>' + TipoHabilidades[i] + '</i>';
-          hValor.innerHTML= '<i data-toggle="popover"  id="' + pj.getCar(TipoHabilidades[i]) + '" title=' + pj[TipoHabilidades[i]] + '>' + pj.getCar(TipoHabilidades[i]) + '</i>';
-        
+          // hValor.innerHTML= '<i data-toggle="popover"  id="' + pj.getCar(TipoHabilidades[i]) + '" title=' + pj[TipoHabilidades[i]] + '>' + pj.getCar(TipoHabilidades[i]) + '</i>';
+          hValor.innerHTML = '<a href="#" data-toggle="popover" title="Popover Header" data-content="Some content inside the popover">Toggle popover</a>';
+
         }
       }
 
@@ -302,7 +322,7 @@
       //   // return container.append(table);
       // }
 
-      function createHeader(visibles, header="header") {
+      function createHeader(visibles, header = "header") {
         var th = document.getElementById(header);
         th.innerHTML = ""; //clear header
         var row = th.insertRow(0);
@@ -525,17 +545,17 @@
             // editar(object);
           });
 
-          if(object instanceof Contenedor){
+          if (object instanceof Contenedor) {
             cell.addEventListener("click", function () {
               clear("tbInv");
               // alert(id+"|"+keys[i]+"|"+values[i]);
               console.log("Contenedor");
               console.log(object);
-            object.objetos.forEach(function (element) {
-          addObjet2Table(element, "tbInv")
-        });
-            // editar(object);
-          });
+              object.objetos.forEach(function (element) {
+                addObjet2Table(element, "tbInv")
+              });
+              // editar(object);
+            });
 
           }
           cell.innerHTML = '<i data-toggle="tooltip"  id="' + id + "|" + keys[i] + "|" + values[i] + '" title=' + keys[i] + '>' + values[i] + '</i>';
