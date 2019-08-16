@@ -89,7 +89,7 @@
       <div id="home" class="tab-pane fade in active">
         <!-- <input class="form-control" type="text" value="Personaje" id="nombre">
         <button onclick="cargarPersonaje()"> Cargar personaje</button> -->
-        <table class="table table-hover">
+        <table  id ="tbEstadisticas" class="table table-hover">
           <thead>
             <th>Característica</th>
             <th>Valor</th>
@@ -157,13 +157,13 @@
 
     <script>
       // EL POPOVER
-      $(document).ready(function () {
-        $('[data-toggle="popover"]').popover();
-        $('#tbHab').on('all.bs.table', function (e, name, args) {
-          $('[data-toggle="tooltip"]').tooltip();
-          $('[data-toggle="popover"]').popover();
-        });
-      });
+      // $(document).ready(function () {
+      //   $('[data-toggle="popover"]').popover();
+      //   $('#tbHab').on('all.bs.table', function (e, name, args) {
+      //     $('[data-toggle="tooltip"]').tooltip();
+      //     // $('[data-toggle="popover"]').popover();
+      //   });
+      // });
     </script>
 
 
@@ -256,7 +256,8 @@
           cell.innerHTML = '<i data-toggle="popover" contenteditable="true"  id="' + CP[i] + '" title=' + pj[CP[i]] + '>' + pj.getCar(CP[i]) + '</i>';
           hTipo.innerHTML = '<i data-toggle="popover"  id="' + TipoHabilidades[i] + '" title=' + TipoHabilidades[i] + '>' + TipoHabilidades[i] + '</i>';
           // hValor.innerHTML= '<i data-toggle="popover"  id="' + pj.getCar(TipoHabilidades[i]) + '" title=' + pj[TipoHabilidades[i]] + '>' + pj.getCar(TipoHabilidades[i]) + '</i>';
-          hValor.innerHTML = '<a href="#" data-toggle="popover" title="Popover Header" data-content="Some content inside the popover">Toggle popover</a>';
+          // hValor.innerHTML = '<a href="#" data-toggle="popover" title="Popover Header" data-content="Some content inside the popover">Toggle popover</a>';
+          hValor.innerHTML = '<a href="#" data-toggle="tooltip" title="Hooray!">Hover over me</a>'
 
         }
       }
