@@ -26,12 +26,6 @@
       src: url("Old Europe.ttf");
     }
 
-    @font-face {
-      font-family: "HussarBoldWeb";
-      src: url("HussarBoldWeb.svg");
-    }
-
-
     h5 {
       font-family: Friedolin;
       font-size: 300%;
@@ -89,7 +83,7 @@
       <div id="home" class="tab-pane fade in active">
         <!-- <input class="form-control" type="text" value="Personaje" id="nombre">
         <button onclick="cargarPersonaje()"> Cargar personaje</button> -->
-        <table  class="table table-hover">
+        <table class="table table-hover">
           <thead>
             <th>Característica</th>
             <th>Valor</th>
@@ -232,22 +226,46 @@
           let hTipo = row.insertCell(2);
           let hValor = row.insertCell(3);
 
-          tipo.innerHTML  = '<i data-toggle="tooltip"  id="lb' + CP[i] + '" title=' + CP[i] + '>' + CP[i] + '</i>';
-          cell.innerHTML  = '<i data-toggle="tooltip" contenteditable="true"  id="' + CP[i] + '" title=' + pj[CP[i]] + '>' + pj.getCar(CP[i]) + '</i>';
+          tipo.innerHTML = '<i data-toggle="tooltip"  id="lb' + CP[i] + '" title=' + CP[i] + '>' + CP[i] + '</i>';
+          cell.innerHTML = '<i data-toggle="tooltip" contenteditable="true"  id="' + CP[i] + '" title=' + pj[CP[i]] + '>' + pj.getCar(CP[i]) + '</i>';
           hTipo.innerHTML = '<i data-toggle="tooltip"  id="' + TipoHabilidades[i] + '" title=' + TipoHabilidades[i] + '>' + TipoHabilidades[i] + '</i>';
-          hValor.innerHTML= '<i data-toggle="tooltip"  id="' + pj.getCar(TipoHabilidades[i]) + '" title=' + pj[TipoHabilidades[i]] + '>' + pj.getCar(TipoHabilidades[i]) + '</i>';
+          hValor.innerHTML = '<i data-toggle="tooltip"  id="' + pj.getCar(TipoHabilidades[i]) + '" title=' + pj[TipoHabilidades[i]] + '>' + pj.getCar(TipoHabilidades[i]) + '</i>';
 
         }
       }
 
 
+      function tablaHabilidades() {
+        var visibles = $("#columnas").val();
+        // visibles.push(v);
+        clear("tbHab");
+        for (habilidad in pj.habilidades) {
+          let hab = pj.getHabilidad(habilidad);
+          objetoTabla(hab, "tbHab", visibles)
+        };
+        // var visibles = $("#columnas").val();
+        // //creo que las cabeceras de las columnas
+        // createHeader(visibles);
+        // var table = $("<table/>").addClass("table table-hover");
+        // table = $("#tbHab");
+        // clear("tbHab");
+        // for (habilidad in pj.habilidades) {
+        //   var habilidad = pj.getHabilidad(habilidad);
+
+        //   // for (key of visibles) {//Esto serían todas
+        //   //   row.append($("<td/>").text(habilidad[key]));
+        //   //   console.log(habilidad[key]);
+        //   // }
+        // }
+
+      }
+      //haccerlo de otra forma
       function makeTable(container, pj = pj) {
         // var visibles = [
         //   "nombre",
         //   "tipo",
         //   "valor"
         // ]
-
         var visibles = $("#columnas").val();
         //creo que las cabeceras de las columnas
         createHeader(visibles);
@@ -308,10 +326,43 @@
           var cell = row.insertCell(i);
           cell.innerHTML = '<b>' + visibles[i] + '</b>';
         }
-        //El total si sale siempre
+        // El total si sale siempre cambiar cuando se aplique tb a inventario
+        // a no ser que ponga el peso total
         cell = row.insertCell();
         cell.innerHTML = '<b>' + "TOTAL" + '</b>';
         th.appendChild(row);
+
+      }
+
+      function crearEventos(object, cell, key) {
+        if (object instanceof Contenedor) {
+          cell.addEventListener("click", function () {
+            clear("tbInv");
+            // alert(id+"|"+keys[i]+"|"+values[i]);
+            console.log("Contenedor");
+            console.log(object);
+            object.objetos.forEach(function (element) {
+              addObjet2Table(element, "tbInv")
+            });
+            // editar(object);
+          });
+        }
+        if (object instanceof Habilidad) {
+          if(key==="xp"){
+            cell.addEventListener("click", function () {
+            object.xp++;
+            //lo incremento y guardo en firebase
+            object.save();
+          });
+        }
+
+        }
+        else
+          cell.addEventListener("click", function () {
+            // alert(id+"|"+keys[i]+"|"+values[i]);
+            console.log(object);
+            // editar(object);
+          });
 
       }
 
@@ -427,9 +478,9 @@
       }
 
 
-      function cargarRuta() {
-        cargar($("#rutas").val());
-      }
+      // function cargarRuta() {
+      //   cargar($("#rutas").val());
+      // }
       function cargarHabilidad(personaje = pj) {
         cargar(`personajes/${personaje.nombre}/habilidades/`);
       }
@@ -465,7 +516,8 @@
           console.log("CARGA EL PUTO PERSONAJE");
           console.log(pj);
 
-          makeTable("", pj);
+          // makeTable("", pj);
+          tablaHabilidades();
           tablaStats();
 
           //Inventario nuevo
@@ -515,27 +567,8 @@
           // var k = keys[i];
           // var v = values[i];
           var cell = row.insertCell(i);
+          crearEventos(object, cell);
 
-
-          cell.addEventListener("click", function () {
-            // alert(id+"|"+keys[i]+"|"+values[i]);
-            console.log(object);
-            // editar(object);
-          });
-
-          if (object instanceof Contenedor) {
-            cell.addEventListener("click", function () {
-              clear("tbInv");
-              // alert(id+"|"+keys[i]+"|"+values[i]);
-              console.log("Contenedor");
-              console.log(object);
-              object.objetos.forEach(function (element) {
-                addObjet2Table(element, "tbInv")
-              });
-              // editar(object);
-            });
-
-          }
           cell.innerHTML = '<i data-toggle="tooltip"  id="' + id + "|" + keys[i] + "|" + values[i] + '" title=' + keys[i] + '>' + values[i] + '</i>';
           // cell.tooltip({title: "<h1><strong>HTML</strong> $keys[i] <code>the</code> <em>tooltip</em></h1>", html: true, placement: "bottom"});
           // console.log(keys[i] + ":" + values[i]); //check your console to see it!
@@ -543,10 +576,23 @@
 
       }
 
-      // pj.nombre = "Personaje";
-      // cargarHabilidad(pj);  
+      function objetoTabla(object, tabla, visibles) {
+        var table = document.getElementById(tabla);
+        var row = table.insertRow();
 
+        var i = 0
+        for (key of visibles) {//Esto serían todas
+          var cell = row.insertCell(i);
+          if (i == 0) id = object[key];
+          crearEventos(object, cell, key);
+            console.log(object[key]);
+            cell.innerHTML = '<i data-toggle="tooltip"  id="' + id + "|" + key + "|" + object[key] + '" title=' + key + '>' + object[key] + '</i>';
+            i++;
+          }
 
+          if(object instanceof Habilidad){ var cell = row.insertCell(i); cell.innerHTML = "<b>" + object.v + "</b>" }
+
+      }
 
 
 
