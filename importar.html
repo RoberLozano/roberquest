@@ -44,9 +44,9 @@
             if(linea.startsWith(separador)||linea.startsWith("_")) return; // si la linea no tiene nombre se vuelve o si empieza en ___
             var h = linea.split(separador, 3); //nombre,xp,valor
             let nombre=h[0]
-            console.log(nombre);
-            if(nombre.startsWith("HABILIDADES DE ")){       //si empieza por "HABILIDADES DE " 
-                nombre=nombre.replace("HABILIDADES DE ","");// guardo solo el tipo de habilidad
+            console.log("|"+nombre+"|");
+            if(nombre.toUpperCase().startsWith("HABILIDADES DE ")){       //si empieza por "HABILIDADES DE " sin que importen las mayúsculas
+                nombre=nombre.replace(/habilidades de /gi, "");// guardo solo el tipo de habilidad sin que importen las mayúsculas
                 tipo=capitalice(nombre);                    // 1 en mayusculas
             }
             else{
