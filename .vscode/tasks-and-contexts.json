@@ -1,11 +1,22 @@
 {
   "lock": false,
-  "active": null,
+  "active": "",
   "sets": {
     "default": {
       "source": "default",
       "name": "Default",
-      "tasks": {}
+      "tasks": {
+        "e7c3800e31ff2e7695b9f5bed95a6de6715dca44": {
+          "name": "Menus",
+          "data": [
+            "c:\\GitHub\\roberquest\\rol.js",
+            "c:\\GitHub\\roberquest\\popup.html",
+            "c:\\GitHub\\roberquest\\index.html",
+            "c:\\GitHub\\roberquest\\importar.html",
+            "c:\\GitHub\\roberquest\\menus.html"
+          ]
+        }
+      }
     }
   }
 }
