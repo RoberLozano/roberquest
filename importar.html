@@ -1,8 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
+        <meta charset='utf-8'>
+
 <title>Importar Datos</title>
+
+<script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script src='habilidades.js'></script>
+<script src='inventario.js'></script>
+<script src='rol.js'></script>
 </head>
 <body>
 
@@ -25,16 +32,19 @@
             var texto= datos.value;
             var lineas = texto.split("\n");
             lineas.forEach(linea => {
-               porLinea(linea)
+               porLinea(linea,"\t")
             });
-            console.log(listaHabilidades);
+            // console.log(listaHabilidades);
+            console.log(pj);
             
 
         }
 
-        function porLinea(linea){
-            var h = linea.split(";", 3); //nombre,xp,valor
+        function porLinea(linea, separador=";"){
+            if(linea.startsWith(separador)||linea.startsWith("_")) return; // si la linea no tiene nombre se vuelve o si empieza en ___
+            var h = linea.split(separador, 3); //nombre,xp,valor
             let nombre=h[0]
+            console.log(nombre);
             if(nombre.startsWith("HABILIDADES DE ")){       //si empieza por "HABILIDADES DE " 
                 nombre=nombre.replace("HABILIDADES DE ","");// guardo solo el tipo de habilidad
                 tipo=capitalice(nombre);                    // 1 en mayusculas
@@ -43,7 +53,9 @@
                 var habilidad = new Habilidad(h[0], tipo, parseInt(h[2]));
                 if(h[1]==="") h[1]=0;
                 habilidad.xp=parseInt(h[1]);
-                listaHabilidades.push(habilidad);
+                // listaHabilidades.push(habilidad);
+                pj.setHabilidad(habilidad);
+                habilidad.save();
             }
 
 

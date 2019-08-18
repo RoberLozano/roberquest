@@ -131,6 +131,7 @@ class Habilidad extends XP {
         super();
         this.nombre = nombre;
         this.tipo = tipo;
+        if(isNaN( valor )) valor=0;
         this.valor = valor;
         this.bvalor = 0;
         this.bcritico = 0;
@@ -174,7 +175,9 @@ class Habilidad extends XP {
     }
 
     save() {
+        console.log("personajes"+pj.nombre+("habilidades")+(this.nombre));
         database.ref("personajes").child(pj.nombre).child("habilidades").child(this.nombre).set(this);
+    
     }
 
     subir(subida) {
