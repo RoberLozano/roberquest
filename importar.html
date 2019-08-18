@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Importar Datos</title>
+<script src='habilidades.js'></script>
+</head>
+<body>
+
+<h1>Importar Habilidades</h1>
+<p>Introduzca los datos en la caja de texto</p>
+    <textarea  id = "datos" name="text" rows =30 id="text"  style="width:96%;padding:2%;font:15px sans-serif;">
+
+    </textarea>
+    <button onclick="scan()">Scan</button>
+    <textarea placeholder="Describe yourself here..."></textarea> 
+
+    <script>
+        var listaHabilidades=[];
+        var tipo="Agilidad";
+        function limpiar(){
+        }
+
+        function scan(params) {
+            var datos = document.getElementById("datos");
+            var texto= datos.value;
+            var lineas = texto.split("\n");
+            lineas.forEach(linea => {
+               porLinea(linea)
+            });
+            console.log(listaHabilidades);
+            
+
+        }
+
+        function porLinea(linea){
+            var h = linea.split(";", 3); //nombre,xp,valor
+            let nombre=h[0]
+            if(nombre.startsWith("HABILIDADES DE ")){       //si empieza por "HABILIDADES DE " 
+                nombre=nombre.replace("HABILIDADES DE ","");// guardo solo el tipo de habilidad
+                tipo=capitalice(nombre);                    // 1 en mayusculas
+            }
+            else{
+                var habilidad = new Habilidad(h[0], tipo, parseInt(h[2]));
+                if(h[1]==="") h[1]=0;
+                habilidad.xp=parseInt(h[1]);
+                listaHabilidades.push(habilidad);
+            }
+
+
+        }
+
+        
+function capitalice(string) 
+{
+    return string.charAt(0).toUpperCase() + string.toLowerCase().slice(1);
+}
+
+    </script>
+</body>
+</html> 

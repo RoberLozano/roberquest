@@ -197,21 +197,22 @@
 
 
       //cargar las habilidades
-      for (habilidad in pj.habilidades) {
-        console.log("Cargando las habilidades");
+      //TODO: quitar esto??
+      // for (habilidad in pj.habilidades) {
+      //   console.log("Cargando las habilidades");
 
-        var hh = new Habilidad();
-        hh.setAll(habilidad);
-        var row = $('#columnas');
-        let habilidad = pj.getHabilidad(habilidad);
+      //   var hh = new Habilidad();
+      //   hh.setAll(habilidad);
+      //   var row = $('#columnas');
+      //   let habilidad = pj.getHabilidad(habilidad);
 
-        for (key of habilidad) {//Esto serían todas
-          row.append($("<option/>").text(habilidad[key]));
-          console.log(habilidad[key]);
-        }
-        row.append($("<td/>").text(habilidad.v));
-        console.log((row));
-      }
+      //   for (key of habilidad) {//Esto serían todas
+      //     row.append($("<option/>").text(habilidad[key]));
+      //     console.log(habilidad[key]);
+      //   }
+      //   row.append($("<td/>").text(habilidad.v));
+      //   console.log((row));
+      // }
 
 
       //Poblar con datos
@@ -243,21 +244,6 @@
           let hab = pj.getHabilidad(habilidad);
           objetoTabla(hab, "tbHab", visibles)
         };
-        // var visibles = $("#columnas").val();
-        // //creo que las cabeceras de las columnas
-        // createHeader(visibles);
-        // var table = $("<table/>").addClass("table table-hover");
-        // table = $("#tbHab");
-        // clear("tbHab");
-        // for (habilidad in pj.habilidades) {
-        //   var habilidad = pj.getHabilidad(habilidad);
-
-        //   // for (key of visibles) {//Esto serían todas
-        //   //   row.append($("<td/>").text(habilidad[key]));
-        //   //   console.log(habilidad[key]);
-        //   // }
-        // }
-
       }
       //haccerlo de otra forma
       function makeTable(container, pj = pj) {
@@ -288,36 +274,6 @@
         // return container.append(table);
       }
 
-      // function makeTableInventario(container, pj = pj) {
-      //   // var visibles = [
-      //   //   "nombre",
-      //   //   "tipo",
-      //   //   "valor"
-      //   // ]
-
-      //   var visibles = $("#colInventario").val();
-      //   //creo que las cabeceras de las columnas
-      //   createHeader(visibles);
-      //   var table = $("<table/>").addClass("table table-hover");
-      //   table = $("#tbInv");
-      //   clear("tbInv");
-      //   for (o in pj.inventario.objetos) {
-      //     var ob = new Objeto();
-      //     ob.setAll(o);
-
-      //     var row = $("<tr/>");
-      //     var habilidad = pj.getHabilidad(habilidad);
-
-      //     for (key of visibles) {//Esto serían todas
-      //       row.append($("<td/>").text(habilidad[key]));
-      //       console.log(habilidad[key]);
-      //     }
-      //     row.append($("<td/>").html("<b>" + habilidad.v + "</b>"));
-      //     table.append(row);
-      //   }
-      //   // return container.append(table);
-      // }
-
       function createHeader(visibles, header = "header") {
         var th = document.getElementById(header);
         th.innerHTML = ""; //clear header
@@ -331,16 +287,13 @@
         cell = row.insertCell();
         cell.innerHTML = '<b>' + "TOTAL" + '</b>';
         th.appendChild(row);
-
       }
 
       function crearEventos(object, cell, key) {
+        //si e sun contenedor cargo lso elementos que contiene
         if (object instanceof Contenedor) {
           cell.addEventListener("click", function () {
-            clear("tbInv");
-            // alert(id+"|"+keys[i]+"|"+values[i]);
-            console.log("Contenedor");
-            console.log(object);
+            clear("tbInv"); //limpio la tabla
             object.objetos.forEach(function (element) {
               addObjet2Table(element, "tbInv")
             });
@@ -348,20 +301,17 @@
           });
         }
         if (object instanceof Habilidad) {
-          if(key==="xp"){
+          if (key === "xp") { //si doy un click en xp +1
             cell.addEventListener("click", function () {
-            object.xp++;
-            //lo incremento y guardo en firebase
-            object.save();
-          });
-        }
-
+              //lo incremento y guardo en firebase
+              object.xp++;
+              object.save();
+            });
+          }
         }
         else
           cell.addEventListener("click", function () {
-            // alert(id+"|"+keys[i]+"|"+values[i]);
             console.log(object);
-            // editar(object);
           });
 
       }
@@ -585,12 +535,12 @@
           var cell = row.insertCell(i);
           if (i == 0) id = object[key];
           crearEventos(object, cell, key);
-            console.log(object[key]);
-            cell.innerHTML = '<i data-toggle="tooltip"  id="' + id + "|" + key + "|" + object[key] + '" title=' + key + '>' + object[key] + '</i>';
-            i++;
-          }
+          console.log(object[key]);
+          cell.innerHTML = '<i data-toggle="tooltip"  id="' + id + "|" + key + "|" + object[key] + '" title=' + key + '>' + object[key] + '</i>';
+          i++;
+        }
 
-          if(object instanceof Habilidad){ var cell = row.insertCell(i); cell.innerHTML = "<b>" + object.v + "</b>" }
+        if (object instanceof Habilidad) { var cell = row.insertCell(i); cell.innerHTML = "<b>" + object.v + "</b>" }
 
       }
 
