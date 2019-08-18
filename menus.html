@@ -1,0 +1,139 @@
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <title>Menu Contextual</title>
+ <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+ <script>
+    /*
+     * Autor: Anthony Medina
+     * Email: anthonyjmedinaf@gmail.com
+     * Blog: http://frikibloggeo.blogspot.com
+  */
+
+//#region js del menu
+  function mostrarMenu(event, id, menu_id) {
+   var posX, posY, span; // Declaracion de variables
+
+   posX = event.pageX; // Obtenemos pocision X del cursor
+   posY = event.pageY; // Obtenemos pocision Y del cursor
+
+   // Hacemos aparecer el menu contextual
+   $('#' + menu_id).fadeIn('fast');
+
+   // Flecha que indica submenues
+   span = $('#' + menu_id + " span");
+   span.html("»");
+
+   // Editando el codigo CSS para ciertos elementos
+   span.css({float: 'right',marginRight: '12px'});
+   $('#' + menu_id).css({position: 'absolute',display: 'block',top: posY,left: posX,cursor: 'default',width: '200px',height: 'auto',padding: '2px 9px 2px 2px',listStyle: 'none',listStyleType: 'none'});
+   $('#' + menu_id + " li").css({width:'100%',height:'auto',margin:'0 auto',padding:'3px 0px 3px 7px',wordWrap:'break-word'});
+   $('#' + menu_id + " li ul").css({listStyle:'none',listStyleType:'none',cursor:'default',position:'absolute',left:'212px',marginTop:'-20px',width:'200px',height:'auto',padding:'2px 9px 2px 2px'});
+  }
+
+  function ocultarMenu(menu_id) {
+   $('#' + menu_id).fadeOut('fast');
+  }
+//#endregion
+ 
+//MIS movidas
+
+
+ </script>
+ 
+ <style type="text/css">
+  * {
+   margin:0 auto;
+   padding:0 auto;
+  }
+  #outer-wrapper {
+   background:transparent;
+   position:absolute;
+   width:100%;
+   height:100%;
+  }
+
+  ul#menu-contextual {
+   display:none;
+   background:white;
+   font-family:Verdana, Arial, "Times New Roman", sans-serif;
+   font-size:12px;
+   color:black;
+   border:1px solid #CCC;
+   box-shadow:5px 5px 0px rgba(0,0,0,.1);
+   -ms-box-shadow:5px 5px 0px rgba(0,0,0,.1);
+   -webkit-box-shadow:5px 5px 0px rgba(0,0,0,.1);
+   -o-box-shadow:5px 5px 0px rgba(0,0,0,.1);
+   -moz-box-shadow:5px 5px 0px rgba(0,0,0,.1);
+   -khtml-box-shadow:5px 5px 0px rgba(0,0,0,.1);
+  }
+
+  ul#menu-contextual ul {
+   display:none;
+   background:white;
+   font-family:Verdana, Arial, "Times New Roman", sans-serif;
+   font-size:12px;
+   color:black;
+   border:1px solid #CCC;
+   padding:2px 9px 2px 2px;
+   box-shadow:5px 5px 0px rgba(0,0,0,.1);
+   -ms-box-shadow:5px 5px 0px rgba(0,0,0,.1);
+   -webkit-box-shadow:5px 5px 0px rgba(0,0,0,.1);
+   -o-box-shadow:5px 5px 0px rgba(0,0,0,.1);
+   -moz-box-shadow:5px 5px 0px rgba(0,0,0,.1);
+   -khtml-box-shadow:5px 5px 0px rgba(0,0,0,.1);
+  }
+
+  ul#menu-contextual li:hover {
+   background:#CCC;
+   word-wrap:break-word;
+
+  }
+
+  ul#menu-contextual li:hover > ul {
+   display:block;
+
+  }
+  .separador {
+   border-bottom:1px solid #ccc;
+  }
+
+
+ </style>
+</head>
+<body>
+
+ <div id="outer-wrapper" onclick="ocultarMenu('menu-contextual');" oncontextmenu="mostrarMenu(event, this.id, 'menu-contextual');return false;">
+ </div>
+
+ <ul id="menu-contextual" oncontextmenu="return false;">
+  <li>Enviar a...<span></span>
+   <ul>
+    <li onclick="location.href='http://google.com'">Google</li>
+    <li onclick="location.href='http://yahoo.com'">Yahoo!</li>
+    <li onclick="location.href='http://bing.com'">Bing</li>
+   </ul>
+  </li>
+  <li class="separador">Redes Sociales<span></span>
+   <ul>
+    <li onclick="location.href='http://facebook.com'">Facebook</li>
+    <li onclick="location.href='http://twitter.com'">Twitter</li>
+    <li onclick="location.href='http://googleplus.com'">Google Plus</li>
+   </ul>
+  </li>
+  <li onclick="window.history.forward()">Adelante</li>
+  <li onclick="window.history.back()">Atras</li>
+  <li>Favoritos<span></span>
+   <ul>
+    <li onclick="location.href='http://frikiblogeeo.blogspot.com'">Friki Bloggeo</li>
+    <li onclick="location.href='http://blogger.com'">Blogger</li>
+    <li onclick="location.href='http://gmail.com'">Gmail</li>
+   </ul>
+  </li>
+  
+
+ </ul>
+
+ 
+</body>
+</html>

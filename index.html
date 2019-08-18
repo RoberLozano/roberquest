@@ -300,6 +300,12 @@
             // editar(object);
           });
         }
+        if (object instanceof Objeto) {
+          cell.addEventListener("dblclick", function () {
+            alert("mover objeto")+object.nombre;
+            });
+            // editar(object);
+        }
         if (object instanceof Habilidad) {
           if (key === "xp") { //si doy un click en xp +1
             cell.addEventListener("click", function () {
@@ -309,10 +315,10 @@
             });
           }
         }
-        else
-          cell.addEventListener("click", function () {
-            console.log(object);
-          });
+        // else
+        //   cell.addEventListener("click", function () {
+        //     console.log(object);
+        //   });
 
       }
 
