@@ -327,6 +327,37 @@ class Animal {
     this.act();
   }
 
+  setMaxPuntos(){
+    this.PF = (this.getCar(FUE) + this.getCar(CON))
+    this.PG = Math.round((this.getCar(TAM) + this.getCar(CON)) / 2)
+    this.PM = Math.round((this.getCar(INT) + this.getCar(POD)) / 2)
+  }
+/**
+ * 
+ * @param {string} tipo PF,PG,PM
+ * @param {*} valor el valor a subir o bajar, "max", por defecto, para dejarlo en el máximo de puntos, vale cualquier string
+ */
+  modificarPuntos(tipo, valor="max"){
+    //si es un numero se le añade (positivo o negativo)
+    if(typeof valor === 'number' ){
+      this[tipo]+=valor;
+      return;
+    }
+    this[tipo]=this.getMaxPuntos(tipo);
+
+  }
+
+  getMaxPuntos(puntos){
+    switch (puntos) {
+      case PF: return (this.getCar(FUE) + this.getCar(CON));
+      case PG: return  Math.round((this.getCar(TAM) + this.getCar(CON)) / 2);
+      case PM: return  Math.round((this.getCar(INT) + this.getCar(POD)) / 2);
+      default:
+        console.log('No hay puntos ' + puntos+ '.');
+    }
+
+  }
+
 
   set(car, valor) {
     this[car] = valor;
@@ -335,13 +366,30 @@ class Animal {
 
   setHabilidad(h) {
     if (h instanceof Habilidad) {
-      // console.log(h);
+      //Machaca lo que haya
       this.habilidades[h.nombre] = h;
       //no guardar por ahora, sino con el personaje entero
       // h.save();
     }
+  }
+/**
+ * 
+ * @param {*} h La Habilidad h, o el nombre de la habilidad
+ */
+  saveHabilidad(h){
+    if (h instanceof Habilidad) {
+      // console.log(h);
+      this.habilidades[h.nombre] = h;
+      console.log("guardando: personajes"+this.nombre+("habilidades")+(h.nombre));
+      database.ref("personajes").child(this.nombre).child("habilidades").child(h.nombre).set(h);
+    }
+    else
+    if (typeof h === 'string'){
+      h=this.habilidades[h.nombre];
+      console.log("guardando por nombre: personajes"+this.nombre+("habilidades")+(h.nombre));
+      database.ref("personajes").child(this.nombre).child("habilidades").child(h.nombre).set(h);
+    }
 
-    //Machaca lo que haya
   }
 
 
@@ -407,7 +455,7 @@ class Animal {
   P(car) { return this.getCar(car) - 10 }
   N(car) { return 10 - this.getCar(car) }
   S(car) { return Math.round((this.getCar(car) - 10) / 2) }
-  SN(car) { return Math.round((10 - this.getCar(car)) / 2) }
+  SN(car){ return Math.round((10 - this.getCar(car)) / 2) }
 
   act() {
     this.Agilidad = this.P("DES") + this.S("FUE") + this.SN("TAM")
@@ -417,12 +465,9 @@ class Animal {
     this.Manipulación = this.P("DES") + this.S("FUE") + this.P("INT")
     this.Percepción = this.P("CON")
     this.Sigilo = this.P("DES") + this.S("FUE") + this.N("TAM")
-    this.PF = (this.getCar(FUE) + this.getCar(CON))
-    this.PG = Math.round((this.getCar(TAM) + this.getCar(CON)) / 2)
-    this.PM = Math.round((this.getCar(INT) + this.getCar(POD)) / 2)
-
 
   }
+
 
   pesoTotal() {
     return this.peso + this.inventario.pesoTotal();

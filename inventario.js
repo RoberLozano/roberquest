@@ -136,10 +136,24 @@ class Contenedor extends Objeto {
     	this.sacar(objeto);
     	otroContenedor.add(objeto);
     }
-    //Guarda el contenedor entero en el firebase
-    guardarFirebase(fbInventario){
-        fbInventario.child(this.nombre).set(this);
+
+    darContenedores(lista=null){
+        if(lista===null) var lista=[];
+        if (this instanceof Contenedor) lista.push(this);
+        this.objetos.forEach(element => {
+            if(element instanceof Contenedor){
+                console.log(element.nombre + " es contenedor");
+                element.darContenedores(lista);
+            }
+        });
+
+        return lista;
     }
+    
+    //Guarda el contenedor entero en el firebase
+    // guardarFirebase(fbInventario){
+    //     fbInventario.child(this.nombre).set(this);
+    // }
 }
 
 function creaInventario(nombre="mochila"){
@@ -163,9 +177,11 @@ bolsita.add(new Objeto("cadena", 1, 20));
 
 bolsa.add(bolsita);
 
-
+bolsita.mover(bolsita.sacarIndex(0), bolsa);
 
 contenedor.add(new Arma("espada",1.2,200));
+
+
 
 return contenedor;
 }

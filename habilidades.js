@@ -175,6 +175,7 @@ class Habilidad extends XP {
     }
 
     save() {
+        //TODO: utiliza la variable global pj, tal vez deberia hacerlo desde Animal
         console.log("personajes"+pj.nombre+("habilidades")+(this.nombre));
         database.ref("personajes").child(pj.nombre).child("habilidades").child(this.nombre).set(this);
     
@@ -194,6 +195,8 @@ class Habilidad extends XP {
 
     /**
      * da el valor con las bonificaciones sumada
+     * TODO: utiliza la variable global pj, tal vez deberia hacerlo desde Animal
+     * o incluso un map golbal de Animales que se acceda por nombre
      */
     get v(){return this.valor+this.bvalor+ pj.getCar(this.tipo)}
 
