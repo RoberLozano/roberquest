@@ -22,6 +22,8 @@ class Objeto {
         // this.peso =   o.peso ;
         // this.valor =  o.valor ;
     }
+
+    pesa(){return this.peso};
     
 }
 
@@ -45,6 +47,8 @@ class Objetos extends Objeto{
     precioTotal(){
         return this.ctd*this.valor;
     }
+
+    pesa(){return this.ctd*this.peso;}
     
 
     act(){
@@ -108,7 +112,7 @@ class Contenedor extends Objeto {
         
       }
 
-    pesoTotal(){
+    pesa(){
         return this.carga+this.peso;
     }
 
@@ -131,9 +135,22 @@ class Contenedor extends Objeto {
     sacarTodo(){
         this.objetos=new Array();
     }
+
     //ok
+    /**
+     * 
+     * @param {*} objeto el objeto a mover, si es un numero es el índice que ocupa en el contenedor
+     * @param {*} otroContenedor el contenedor al que se va a mover
+     */
     mover(objeto, otroContenedor){
-    	this.sacar(objeto);
+        if(typeof objeto ==="number" ){
+            if(objeto<0||objeto>= this.objetos.length) return; //si está fuera de indices no hace nada
+            objeto=this.sacarIndex(objeto)
+        }
+
+        else
+            this.sacar(objeto);
+        
     	otroContenedor.add(objeto);
     }
 
@@ -146,8 +163,11 @@ class Contenedor extends Objeto {
                 element.darContenedores(lista);
             }
         });
-
         return lista;
+    }
+
+    darClase(clase){
+        return this.objetos.filter( obj => obj instanceof clase) ;
     }
     
     //Guarda el contenedor entero en el firebase
@@ -177,8 +197,7 @@ bolsita.add(new Objeto("cadena", 1, 20));
 
 bolsa.add(bolsita);
 
-bolsita.mover(bolsita.sacarIndex(0), bolsa);
-
+// bolsita.mover(bolsita.sacarIndex(0), bolsa);
 contenedor.add(new Arma("espada",1.2,200));
 
 

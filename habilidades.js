@@ -98,7 +98,7 @@ class XP {
 
 class TipoTirada {
 
-    static tirada = ["PIFIA", "FALLO", "EXITO", "ESPECIAL", "CRITICO", "SUPERCRITICO"];
+     tirada = ["PIFIA", "FALLO", "EXITO", "ESPECIAL", "CRITICO", "SUPERCRITICO"];
     static get PIFIA() {
         return -1;
     }

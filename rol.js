@@ -562,7 +562,7 @@ Date.prototype.add = function (interval, units) {
 }
 
 
-let a = new Animal({ nombre: "Personaje X" });
+let a = new Animal({ nombre: "Animal A" });
 // for(i of CP){
 //   a[i]=7;
 // }

@@ -466,22 +466,27 @@
         // porque siempre que haya un cambio
         // donde sea me, va a cargar el personaje entero
         fbActual.on('value', function (item) {
+          console.log("onvalue personaje"+item.val().nombre);
           pj = new Animal({});
           pj.setAll(item.val());
 
-          console.log("CARGA EL PUTO PERSONAJE");
+          console.log("CARGA EL PUTO PERSONAJE:"+ pj.nombre);
           console.log(pj);
+          document.title = pj.nombre;
 
           // makeTable("", pj);
           tablaHabilidades();
           tablaStats();
 
-          //Inventario nuevo
+          //Inventario nuevo TODO: quitar
           pj.inventario = creaInventario();
-          console.log(pj.inventario.darContenedores());
-          
-
-          cargaInventario(pj)
+          // console.log(pj.inventario.darContenedores());
+          // console.log("ARMAS");
+          // console.log(pj.inventario.darClase(Arma));
+          // console.log("Objetos");
+          // console.log(pj.inventario.darClase(Objetos));
+          cargaInventario(pj);
+          // console.log("Objetos");
         });
 
         //  podría hacerlo con once y luego responder a cambios en habilidades,
@@ -498,6 +503,12 @@
         //   console.log("The updated post title is " + changedPost.title);
         // });
 
+        // Mover un objeto
+          //  pj.inventario.mover(1, a.inventario);
+          //  console.log(pj);
+          //  console.log(a);
+          //  pj.save();
+          //  a.save();
 
       }
 
