@@ -343,8 +343,13 @@
           }
 
           if (key === "nombre") {
-            editar(object);
-            $("#editModal").modal();
+            cell.addEventListener("click", function () {
+              //modifico el editor modal
+              editar(object);
+              //y lo muestro
+              $("#editModal").modal(); 
+            });
+
           }
         }
         // else
