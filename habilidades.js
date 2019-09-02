@@ -97,8 +97,8 @@ class XP {
 
 
 class TipoTirada {
-
-     tirada = ["PIFIA", "FALLO", "EXITO", "ESPECIAL", "CRITICO", "SUPERCRITICO"];
+    //TODO: quitar static para que vaya en firefox
+    static tirada = ["PIFIA", "FALLO", "EXITO", "ESPECIAL", "CRITICO", "SUPERCRITICO"];
     static get PIFIA() {
         return -1;
     }
@@ -133,7 +133,8 @@ class Habilidad extends XP {
         this.tipo = tipo;
         if(isNaN( valor )) valor=0;
         this.valor = valor;
-        this.bvalor = 0;
+        //bonificaciones
+        this.bvalor = 0;    
         this.bcritico = 0;
         this.bespecial = 0;
     }
@@ -158,9 +159,9 @@ class Habilidad extends XP {
         //     if(key!="activado)")
         //     this["b"+key] += b[key];
         //   }  
-        this.bvalor += b.valor;
-        this.bespecial += b.especial;
-        this.bcritico += b.critico;
+        this.bvalor     += b.valor;
+        this.bespecial  += b.especial;
+        this.bcritico   += b.critico;
 
         b.activado = !b.activado;
     }
@@ -285,7 +286,9 @@ function habilidadesBasicas() {
 
 }
 
-var h1 = new Habilidad("Correr", "Agilidad", 100);
+// export {Habilidad, BonHabilidad}; 
+
+// var h1 = new Habilidad("Correr", "Agilidad", 100);
 // var b1 = new BonHabilidad("Correr",0,10,10);
 // h1.activarBon(b1);
 // h1.desactivarBon(b1);

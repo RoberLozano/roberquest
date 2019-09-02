@@ -78,6 +78,33 @@
 
     <h2 id="titulo">Roberquest</h2>
 
+    <!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalLong">
+  Launch demo modal
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editModalTitle">Editar</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="editor">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-primary">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
     <!-- #region tabs -->
     <div class="tab-content">
       <div id="home" class="tab-pane fade in active">
@@ -310,8 +337,10 @@
           if (key === "xp") { //si doy un click en xp +1
             cell.addEventListener("click", function () {
               //lo incremento y guardo en firebase
-              object.xp++;
-              object.save();
+              editar(object);
+              $("#editModal").modal();
+              // object.xp++;
+              // object.save();
             });
           }
         }
@@ -321,6 +350,59 @@
         //   });
 
       }
+
+      //TODO: editar los objetos con el modal
+
+      function editar(objeto){
+      // console.log("Editar:"+objeto );
+      const keys = Object.keys(objeto);
+      const values = Object.values(objeto);
+
+      var editor = document.getElementById("editor");
+      editor.innerHTML = ""; //clear editor
+      var id=-1;
+      var k=-1
+      var v=-1;
+      for(i = 0; i < keys.length; i++)
+        {
+          if(i==0) id=values[i];
+          k= keys[i];
+          v=values[i];
+         
+          editor.innerHTML = editor.innerHTML +' <b>'+k.toUpperCase()+':</b>'+
+          '<input data-toggle="tooltip"  id="edit'+keys[i]+'" value='+values[i]+' title='+keys[i]+' >';
+          // cell.tooltip({title: "<h1><strong>HTML</strong> $keys[i] <code>the</code> <em>tooltip</em></h1>", html: true, placement: "bottom"});
+          // console.log(keys[i]+":"+values[i]); //check your console to see it!
+        }
+        editor.innerHTML = editor.innerHTML+`<button onclick="alarm('Hola')">Guardar</button>`
+         
+    }
+
+
+    function editarObjeto() {
+
+      const keys = Object.keys(objetoActual);
+      var values = Object.values(objetoActual);
+
+      console.log("Editar objeto:");
+      //guardo los valores editados en el objeto
+      for(i = 0; i < keys.length; i++){
+        var valor=$('#edit'+keys[i]).val();
+        if(isNumber(valor)) values[i]=+valor;
+        else                values[i]=valor;
+        objetoActual[keys[i]] =values[i];
+        }
+
+        console.log(objetoActual);
+        var id= values[0]; //Imaginamos que el id es el 1er campo
+
+        if($("#rutas").val()=="/personajes/")
+          fbActual.child("caracteristicas").set(objetoActual);
+        else
+          fbActual.child(id).set(objetoActual);
+      }
+
+
 
       function saveStats() {
         for (let i in CP) {
@@ -562,8 +644,6 @@
         if (object instanceof Habilidad) { var cell = row.insertCell(i); cell.innerHTML = "<b>" + object.v + "</b>" }
 
       }
-
-
 
     </script>
 

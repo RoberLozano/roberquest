@@ -2,6 +2,8 @@
 
 // import { D } from '/D.js';
 
+
+
 class Objeto {
     constructor(nombre, peso=0, valor=0) {
         this.nombre = nombre || "";
@@ -221,6 +223,8 @@ class Arma extends Objeto{
 
 }
 
+
+// export {Objeto, Objetos, Arma, Contenedor};
 
 
 

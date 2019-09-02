@@ -1,3 +1,7 @@
+//import
+// import {Habilidad, BonHabilidad} from './habilidades';
+// import {Objeto, Objetos, Arma, Contenedor} from './inventario';
+
 var fechaMundo = new Date(778, 0, 1, 0, 0, 0, 0);
 
 const FUE = "FUE"
@@ -318,9 +322,14 @@ class Animal {
     return this[car] + this.bonificacion[car];
   }
 
-  //set bonificación
+  /**
+   * Pone una bonificacion, acumulativa si es un string con + o -
+   * o total si es un número
+   * @param {string} car Nombre de la característica
+   * @param {*} valor "+5"/"-2" o un número si es el valor final
+   */
   sb(car, valor) {
-    if (typeof valor === 'string' && (valor.startsWith("+") || valor.startsWith("+")))
+    if (typeof valor === 'string' && (valor.startsWith("+") || valor.startsWith("-")))
       this.bonificacion[car] += parseInt(valor);
     else
       this.bonificacion[car] = valor;
@@ -347,6 +356,10 @@ class Animal {
 
   }
 
+  /**
+   * Devueleve el valor máximo del tipo de punto pasado
+   * @param {string} puntos PF,PG,PM
+   */
   getMaxPuntos(puntos){
     switch (puntos) {
       case PF: return (this.getCar(FUE) + this.getCar(CON));
@@ -358,12 +371,20 @@ class Animal {
 
   }
 
-
+/**
+ * Modifica una característica base y actualiza
+ * @param {string} car La caracteristica: FUE,PM, etc...
+ * @param {number} valor El nuevo valor
+ */
   set(car, valor) {
     this[car] = valor;
     this.act();
   }
 
+/**
+ * 
+ * @param {Habilidad} h la habilidad que se añadirá/sobrescribirá
+ */
   setHabilidad(h) {
     if (h instanceof Habilidad) {
       //Machaca lo que haya
@@ -374,7 +395,7 @@ class Animal {
   }
 /**
  * 
- * @param {*} h La Habilidad h, o el nombre de la habilidad
+ * @param {*} h La Habilidad h, o el nombre (string) de la habilidad
  */
   saveHabilidad(h){
     if (h instanceof Habilidad) {
@@ -400,7 +421,11 @@ class Animal {
   cambiaformas(forma2) {
     this.forma2 = forma2;
   }
-
+/**
+ * Copia toda la información de un objeto, sea de la misma clase
+ * o no, si tiene las mismas propiedades
+ * @param {*} o El objeto del cual se copia todo
+ */
   setAll(o) {
     for (let key in o) {
       this[key] = o[key];
@@ -457,6 +482,9 @@ class Animal {
   S(car) { return Math.round((this.getCar(car) - 10) / 2) }
   SN(car){ return Math.round((10 - this.getCar(car)) / 2) }
 
+  /**
+   * actualiza el valor de los tipo de habilidades
+   */
   act() {
     this.Agilidad = this.P("DES") + this.S("FUE") + this.SN("TAM")
     this.Comunicación = this.P("INT") + this.P("ASP")
@@ -473,6 +501,9 @@ class Animal {
     return this.peso + this.inventario.pesoTotal();
   }
 
+  /**
+   * guarda en firebase
+   */
   save() { //creo que da referencias cíclicas
     database.ref("personajes").child(this.nombre).set(this);
     console.log("GUARDADO:"+this.nombre);
@@ -486,7 +517,7 @@ class Animal {
     if (efecto.ok(fechaMundo)) 
       eval(efecto.efecto);
   }
-
+//TODO: mirar si quitar lo del backup
   aplicarEfectos() {
     let log = ""
     if (this.backup == null) {
@@ -537,15 +568,12 @@ class Animal {
 
 
 /**
- * Adds time to a date. Modelled after MySQL DATE_ADD function.
- * Example: dateAdd(new Date(), 'minute', 30)  //returns 30 minutes from now.
- * https://stackoverflow.com/a/1214753/18511
+ * Modifica una fecha.
  * 
- * @param interval  One of: año, mes...
- * @param units  Number of units of the given interval to add.
+ * @param interval  One of: año, mes, dia, segundo,...
+ * @param units  Numero de unidades a añadir o restar, si negativas.
  */
-
-Date.prototype.add = function (interval, units) {
+Date.prototype.mod = function (interval, units) {
   var ret = new Date(this.valueOf()); //don't change original date
 
   switch (interval.toLowerCase()) {
@@ -556,11 +584,24 @@ Date.prototype.add = function (interval, units) {
     case 'hora': ret.setTime(ret.getTime() + units * 3600000); break;
     case 'minuto': ret.setTime(ret.getTime() + units * 60000); break;
     case 'segundo': ret.setTime(ret.getTime() + units * 1000); break;
-    default: ret = undefined; break;
+    default: ret = undefined; break;//en default undefined o pasar la original?
   }
   return ret;
 }
 
+
+/**
+ * variable global con el personaje sobre
+ * el que se harán todas las acciones en la página
+ */
+var pj = new Animal({});
+
+/**
+ * variable global con el personaje sobre
+ * el que recaerán las acciones del pj,
+ * como un ataque, pasar un objeto, sanar, etc
+ */
+var pnj;
 
 let a = new Animal({ nombre: "Animal A" });
 // for(i of CP){
@@ -588,7 +629,7 @@ let v = new Animal({ FUE: 13, DES: 7 });
 
 // });
 
-let pj = new Animal({});
+
 // pj.setAll(recuperado);
 // pj.act();
 // pj.save();
@@ -615,10 +656,6 @@ fechaMundo = añoMas;
 // efReflex = new Efecto("Reflejos felinos", `this.DES+=5; this.sb(Agilidad,'+5') `,   fechaMundo.add("dia", 4));
 // efPermanente = new Efecto("Permanente", `this.ASP+=5; this.sb(Comunicación,'+5') `);
 
-// var hechizo = new Hechizo("Subir FUE", 3, 70, efFuerza);
-// hechizo.hacerHechizo(1, 10, pj);
-
-
 // // pj.addEfecto(efNombre)
 
 // pj.addEfecto(efFuerza)
@@ -631,8 +668,7 @@ fechaMundo = añoMas;
 // pj.aplicarEfectos()
 
 // console.log("4 años despues");
-// fechaMundo = fechaMundo.add("año", 4);
-// console.log(fechaMundo);
+// let fechas=fechaMundo.mod("año", 1);
 // pj.aplicarEfectos()
 
 // //salvar personaje
@@ -641,6 +677,7 @@ fechaMundo = añoMas;
 // console.log(pj);
 
 // console.log(pj.backup);
+
 
 
 
