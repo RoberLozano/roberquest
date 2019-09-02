@@ -336,12 +336,15 @@
         if (object instanceof Habilidad) {
           if (key === "xp") { //si doy un click en xp +1
             cell.addEventListener("click", function () {
-              //lo incremento y guardo en firebase
-              editar(object);
-              $("#editModal").modal();
-              // object.xp++;
-              // object.save();
+              //lo incremento y guardo en firebase 
+              object.xp++;
+              object.save();
             });
+          }
+
+          if (key === "nombre") {
+            editar(object);
+            $("#editModal").modal();
           }
         }
         // else
