@@ -78,31 +78,27 @@
 
     <h2 id="titulo">Roberquest</h2>
 
-    <!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalLong">
-  Launch demo modal
-</button>
-
-<!-- Modal -->
-<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="editModalTitle">Editar</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body" id="editor">
-        ...
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-        <button type="button" class="btn btn-primary">Guardar</button>
+    <!-- Modal -->
+    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalTitle"
+      aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editModalTitle">Editar</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" id="editor">
+            ...
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            <button type="button" class="btn btn-primary">Guardar</button>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
 
 
     <!-- #region tabs -->
@@ -329,9 +325,9 @@
         }
         if (object instanceof Objeto) {
           cell.addEventListener("dblclick", function () {
-            alert("mover objeto")+object.nombre;
-            });
-            // editar(object);
+            alert("mover objeto") + object.nombre;
+          });
+          // editar(object);
         }
         if (object instanceof Habilidad) {
           if (key === "xp") { //si doy un click en xp +1
@@ -347,7 +343,7 @@
               //modifico el editor modal
               editar(object);
               //y lo muestro
-              $("#editModal").modal(); 
+              $("#editModal").modal();
             });
 
           }
@@ -361,53 +357,61 @@
 
       //TODO: editar los objetos con el modal
 
-      function editar(objeto){
-      // console.log("Editar:"+objeto );
-      const keys = Object.keys(objeto);
-      const values = Object.values(objeto);
+      function editar(objeto) {
+        // console.log("Editar:"+objeto );
+        objetoActual = objeto;
+        const keys = Object.keys(objeto);
+        const values = Object.values(objeto);
 
-      var editor = document.getElementById("editor");
-      editor.innerHTML = ""; //clear editor
-      var id=-1;
-      var k=-1
-      var v=-1;
-      for(i = 0; i < keys.length; i++)
-        {
-          if(i==0) id=values[i];
-          k= keys[i];
-          v=values[i];
-         
-          editor.innerHTML = editor.innerHTML +' <b>'+k.toUpperCase()+':</b>'+
-          '<input data-toggle="tooltip"  id="edit'+keys[i]+'" value='+values[i]+' title='+keys[i]+' ><br>';
-          // cell.tooltip({title: "<h1><strong>HTML</strong> $keys[i] <code>the</code> <em>tooltip</em></h1>", html: true, placement: "bottom"});
-          // console.log(keys[i]+":"+values[i]); //check your console to see it!
+        var editor = document.getElementById("editor");
+        editor.innerHTML = ""; //clear editor
+        var id = -1;
+        var k = -1
+        var v = -1;
+        for (i = 0; i < keys.length; i++) {
+          if (i == 0) id = values[i];
+          k = keys[i];
+          v = values[i];
+
+          editor.innerHTML = editor.innerHTML + ' <b>' + k.toUpperCase() + ':</b>' +
+            '<input data-toggle="tooltip"  id="edit' + keys[i] + '" value=' + values[i] + ' title=' + keys[i] + ' ><br>';
+          //Probar con forms
+
         }
-        editor.innerHTML = editor.innerHTML+`<button onclick="alarm('Hola')">Guardar</button>`
-         
-    }
+        editor.innerHTML = editor.innerHTML + `<button onclick="guardarObjeto()">Guardar</button>`
+
+      }
 
 
-    function editarObjeto() {
+      function guardarObjeto() {
 
-      const keys = Object.keys(objetoActual);
-      var values = Object.values(objetoActual);
+        const keys = Object.keys(objetoActual);
+        var values = Object.values(objetoActual);
 
-      console.log("Editar objeto:");
-      //guardo los valores editados en el objeto
-      for(i = 0; i < keys.length; i++){
-        var valor=$('#edit'+keys[i]).val();
-        if(isNumber(valor)) values[i]=+valor;
-        else                values[i]=valor;
-        objetoActual[keys[i]] =values[i];
+        console.log("Editar objeto:");
+        //guardo los valores editados en el objeto
+        for (i = 0; i < keys.length; i++) {
+          var valor = $('#edit' + keys[i]).val();
+          if (isNumber(valor)) values[i] = +valor;
+          else values[i] = valor;
+          objetoActual[keys[i]] = values[i];
         }
 
         console.log(objetoActual);
-        var id= values[0]; //Imaginamos que el id es el 1er campo
+        var id = values[0]; //Imaginamos que el id es el 1er campo
+        try {
+          objetoActual.save();
+        } catch (error) {
+          console.log(`El objeto ${objetoActual.nombre} no se puede guardar`);
+          // alert();
+        }
+      }
 
-        if($("#rutas").val()=="/personajes/")
-          fbActual.child("caracteristicas").set(objetoActual);
+      function isNumber(value) {
+        if (value instanceof Number)
+          return true
         else
-          fbActual.child(id).set(objetoActual);
+          return !isNaN(value);
       }
 
 
@@ -556,11 +560,11 @@
         // porque siempre que haya un cambio
         // donde sea me, va a cargar el personaje entero
         fbActual.on('value', function (item) {
-          console.log("onvalue personaje"+item.val().nombre);
+          console.log("onvalue personaje" + item.val().nombre);
           pj = new Animal({});
           pj.setAll(item.val());
 
-          console.log("CARGA EL PUTO PERSONAJE:"+ pj.nombre);
+          console.log("CARGA EL PUTO PERSONAJE:" + pj.nombre);
           console.log(pj);
           document.title = pj.nombre;
 
@@ -594,11 +598,11 @@
         // });
 
         // Mover un objeto
-          //  pj.inventario.mover(1, a.inventario);
-          //  console.log(pj);
-          //  console.log(a);
-          //  pj.save();
-          //  a.save();
+        //  pj.inventario.mover(1, a.inventario);
+        //  console.log(pj);
+        //  console.log(a);
+        //  pj.save();
+        //  a.save();
 
       }
 

@@ -596,12 +596,19 @@ Date.prototype.mod = function (interval, units) {
  */
 var pj = new Animal({});
 
+
 /**
  * variable global con el personaje sobre
  * el que recaerán las acciones del pj,
  * como un ataque, pasar un objeto, sanar, etc
  */
 var pnj;
+
+/**
+ * Objeto sobre el que se realizarán las acciones
+ * por ejemplo click, edición, etc..
+ */
+var objetoActual;
 
 let a = new Animal({ nombre: "Animal A" });
 // for(i of CP){
