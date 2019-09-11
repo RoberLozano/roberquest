@@ -311,7 +311,10 @@ class Animal {
     this.ASP = ASP
 
     this.bonificacion = new Bon({});
+
     this.inventario = creaInventario("Cuerpo");
+    // this.inventario = {}
+
     this.habilidades = {}
     this.efectos = [];
     // this.backup = null
@@ -382,7 +385,7 @@ class Animal {
   }
 
 /**
- * 
+ * añade o modifica la habilidad en el objeto
  * @param {Habilidad} h la habilidad que se añadirá/sobrescribirá
  */
   setHabilidad(h) {
@@ -394,7 +397,7 @@ class Animal {
     }
   }
 /**
- * 
+ * añade o modifica la habilidad en el firebase
  * @param {*} h La Habilidad h, o el nombre (string) de la habilidad
  */
   saveHabilidad(h){
@@ -412,7 +415,6 @@ class Animal {
     }
 
   }
-
 
   getHabilidad(nombre) {
     return this.habilidades[nombre];
@@ -609,6 +611,12 @@ var pnj;
  * por ejemplo click, edición, etc..
  */
 var objetoActual;
+
+/**
+ * Contenedor sobre el que se añadirán
+ * nuevos objetos
+ */
+var contenedorActual;
 
 let a = new Animal({ nombre: "Animal A" });
 // for(i of CP){

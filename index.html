@@ -72,7 +72,7 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         <input type="text" class="text-light bg-dark h3 " style="font-family: Old Europe" value="Personaje" id="nombre">
-        <button class="btn btn-danger" onclick="cargarPersonaje()">Cargar</button>
+        <button class="btn btn-danger" onclick="cargarPersonaje(true)">Cargar</button>
       </nav>
     </div>
 
@@ -94,7 +94,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-            <button type="button" class="btn btn-primary">Guardar</button>
+            <button type="button" class="btn btn-primary" onclick="nuevoObjeto()">Guardar</button>
           </div>
         </div>
       </div>
@@ -139,7 +139,7 @@
         <h3>Inventario</h3>
         <select class="selectpicker" id="colInventario" multiple data-live-search="true" data-width="fit" multiple
           title="Seleccione columnas a mostrar">
-          <option>nombre</option>
+          <option selected>nombre</option>
           <option>ctd</option>
           <option>peso</option>
           <option>precio</option>
@@ -269,33 +269,33 @@
         };
       }
       //haccerlo de otra forma
-      function makeTable(container, pj = pj) {
-        // var visibles = [
-        //   "nombre",
-        //   "tipo",
-        //   "valor"
-        // ]
-        var visibles = $("#columnas").val();
-        //creo que las cabeceras de las columnas
-        createHeader(visibles);
-        var table = $("<table/>").addClass("table table-hover");
-        table = $("#tbHab");
-        clear("tbHab");
-        for (habilidad in pj.habilidades) {
-          var hh = new Habilidad();
-          hh.setAll(habilidad);
-          var row = $("<tr/>");
-          var habilidad = pj.getHabilidad(habilidad);
+      // function makeTable(container, pj = pj) {
+      //   // var visibles = [
+      //   //   "nombre",
+      //   //   "tipo",
+      //   //   "valor"
+      //   // ]
+      //   var visibles = $("#columnas").val();
+      //   //creo que las cabeceras de las columnas
+      //   createHeader(visibles);
+      //   var table = $("<table/>").addClass("table table-hover");
+      //   table = $("#tbHab");
+      //   clear("tbHab");
+      //   for (habilidad in pj.habilidades) {
+      //     var hh = new Habilidad();
+      //     hh.setAll(habilidad);
+      //     var row = $("<tr/>");
+      //     var habilidad = pj.getHabilidad(habilidad);
 
-          for (key of visibles) {//Esto serían todas
-            row.append($("<td/>").text(habilidad[key]));
-            console.log(habilidad[key]);
-          }
-          row.append($("<td/>").html("<b>" + habilidad.v + "</b>"));
-          table.append(row);
-        }
-        // return container.append(table);
-      }
+      //     for (key of visibles) {//Esto serían todas
+      //       row.append($("<td/>").text(habilidad[key]));
+      //       console.log(habilidad[key]);
+      //     }
+      //     row.append($("<td/>").html("<b>" + habilidad.v + "</b>"));
+      //     table.append(row);
+      //   }
+      //   // return container.append(table);
+      // }
 
       function createHeader(visibles, header = "header") {
         var th = document.getElementById(header);
@@ -312,22 +312,26 @@
         th.appendChild(row);
       }
 
+
+
       function crearEventos(object, cell, key) {
         //si e sun contenedor cargo lso elementos que contiene
         if (object instanceof Contenedor) {
           cell.addEventListener("click", function () {
-            clear("tbInv"); //limpio la tabla
-            object.objetos.forEach(function (element) {
-              addObjet2Table(element, "tbInv")
-            });
+            cargarContenedor(object);
             // editar(object);
           });
         }
         if (object instanceof Objeto) {
           cell.addEventListener("dblclick", function () {
-            alert("mover objeto") + object.nombre;
+            // alert("mover objeto") + object.nombre;
+
+            //modifico el editor modal
+            editar(object);
+            //y lo muestro
+            $("#editModal").modal();
           });
-          // editar(object);
+
         }
         if (object instanceof Habilidad) {
           if (key === "xp") { //si doy un click en xp +1
@@ -382,6 +386,33 @@
 
       }
 
+      function nuevoObjeto() {
+        const keys = Object.keys(objetoActual);
+        var values = Object.values(objetoActual);
+        let nuevoObjeto = new objetoActual.constructor();
+
+        console.log("Nuevo objeto:" + nuevoObjeto.constructor.name);
+        //guardo los valores editados en el objeto
+        for (i = 0; i < keys.length; i++) {
+          var valor = $('#edit' + keys[i]).val();
+          if (isNumber(valor)) values[i] = +valor;
+          else values[i] = valor;
+          nuevoObjeto[keys[i]] = values[i];
+        }
+        contenedorActual.add(nuevoObjeto);
+        console.log(nuevoObjeto);
+        console.log("en contenedor");
+        console.log(contenedorActual);
+        try {
+          nuevoObjeto.save();
+        } catch (error) {
+          console.log(`El objeto ${nuevoObjeto.nombre} no se puede guardar`);
+          console.log(pj);
+          pj.save();//guardo
+          // alert();
+        }
+
+      }
 
       function guardarObjeto() {
 
@@ -396,15 +427,27 @@
           else values[i] = valor;
           objetoActual[keys[i]] = values[i];
         }
-
         console.log(objetoActual);
         var id = values[0]; //Imaginamos que el id es el 1er campo
         try {
           objetoActual.save();
         } catch (error) {
           console.log(`El objeto ${objetoActual.nombre} no se puede guardar`);
+          console.log(pj);
+          pj.save();
+
+          if (contenedorActual) {
+            console.log(contenedorActual);
+            cargarContenedor(contenedorActual);
+          }
+          else
+            cargaInventario(pj);
+         
+
+
           // alert();
         }
+
       }
 
       function isNumber(value) {
@@ -413,7 +456,6 @@
         else
           return !isNaN(value);
       }
-
 
 
       function saveStats() {
@@ -468,7 +510,6 @@
         // pj.save();
 
       }
-
 
       function clear(id = "statsTable") {
         var tb = document.getElementById(id);
@@ -536,24 +577,31 @@
       }
 
       function cargaInventario(pj) {
-        clear("tbInv");
-        pj.inventario.objetos.forEach(function (element) {
-          // let ob = new Objeto();
-          // ob.setAll(element)
-          // console.log(ob);
+        console.log("Carga Inventario");
+        cargarContenedor(pj.inventario);
+      }
+
+      function cargarContenedor(object) {
+        if (!(object instanceof Contenedor)) return; //si no es contenedor
+        //hago éste el contenedor actual
+        contenedorActual = object;
+        console.log("Contenedor Act:");
+        console.log(contenedorActual);
+        clear("tbInv"); //limpio la tabla
+        object.objetos.forEach(function (element) {
           addObjet2Table(element, "tbInv")
         });
-
-
-        addObjet2Table(["peso Total", pj.inventario.carga], "tbInv")
-
+        addObjet2Table(["peso Total", object.carga], "tbInv")
       }
 
       function cargarPersonaje(nombre) {
+        if(nombre==true){
+          contenedorActual=null; //Llamo desde el boton y voy al inventario general
+        } 
 
         nombre = $("#nombre").val();
         let ruta = `personajes/${nombre}/`;
-        console.log("CARGAR RUTA:" + ruta);
+        // console.log("CARGAR RUTA:" + ruta);
         fbActual = database.ref(ruta);
 
         // si lo hago así es menos eficiente,
@@ -565,7 +613,7 @@
           pj.setAll(item.val());
 
           console.log("CARGA EL PUTO PERSONAJE:" + pj.nombre);
-          console.log(pj);
+          // console.log(pj);
           document.title = pj.nombre;
 
           // makeTable("", pj);
@@ -573,14 +621,23 @@
           tablaStats();
 
           //Inventario nuevo TODO: quitar
-          pj.inventario = creaInventario();
+          // pj.inventario = creaInventario();
           // console.log(pj.inventario.darContenedores());
           // console.log("ARMAS");
           // console.log(pj.inventario.darClase(Arma));
           // console.log("Objetos");
           // console.log(pj.inventario.darClase(Objetos));
-          cargaInventario(pj);
-          // console.log("Objetos");
+
+
+          //TODO: hacer que funcione
+          if (contenedorActual) {
+            console.log("Contenedor Act:");
+            console.log(contenedorActual);
+            cargarContenedor(contenedorActual);
+          }
+          else
+            cargaInventario(pj);
+          // console.log("No ContenedorAct: CargaInventario");
         });
 
         //  podría hacerlo con once y luego responder a cambios en habilidades,
@@ -648,7 +705,7 @@
           var cell = row.insertCell(i);
           if (i == 0) id = object[key];
           crearEventos(object, cell, key);
-          console.log(object[key]);
+          // console.log(object[key]);
           cell.innerHTML = '<i data-toggle="tooltip"  id="' + id + "|" + key + "|" + object[key] + '" title=' + key + '>' + object[key] + '</i>';
           i++;
         }

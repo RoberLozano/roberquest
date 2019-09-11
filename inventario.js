@@ -3,7 +3,6 @@
 // import { D } from '/D.js';
 
 
-
 class Objeto {
     constructor(nombre, peso=0, valor=0) {
         this.nombre = nombre || "";
@@ -33,7 +32,6 @@ class Objetos extends Objeto{
     constructor(nombre, peso, valor, ctd=1) {
         super(nombre, peso, valor);
         this.ctd=ctd;
-        this.pesoTotal=this.ctd*this.peso;
     }
 
     setAll(o){
@@ -42,7 +40,6 @@ class Objetos extends Objeto{
         // this.peso =   o.peso ;
         // this.valor =  o.valor ;
         this.ctd=     o.ctd||1;
-        this.act();
     }
 
     // devuelve el precio de la cantidad total
@@ -53,14 +50,9 @@ class Objetos extends Objeto{
     pesa(){return this.ctd*this.peso;}
     
 
-    act(){
-        this.pesoTotal=this.ctd*this.peso;
-    }
-
     //incrementar la cantidad, negativos para decrementar
     inc(valor=1){
         this.ctd+=valor;
-        this.act();
     }
 
 }
