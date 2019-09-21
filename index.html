@@ -94,7 +94,8 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-            <button type="button" class="btn btn-primary" onclick="nuevoObjeto()">Guardar</button>
+            <button type="button" class="btn btn-danger"  onclick="quitarObjeto()" data-dismiss="modal">Eliminar</button>
+            <button type="button" class="btn btn-primary" onclick="nuevoObjeto()">Nuevo</button>
           </div>
         </div>
       </div>
@@ -412,6 +413,17 @@
           // alert();
         }
 
+      }
+
+      function quitarObjeto() {
+        contenedorActual.sacar(objetoActual);
+        try {
+          console.log(`Quito ${objetoActual.nombre} de ${contenedorActual.nombre}`);
+          pj.save();//guardo
+        } catch (error) {
+          console.log(`Error al quitar ${objetoActual.nombre} de ${contenedorActual.nombre}`);
+          // alert();
+        }
       }
 
       function guardarObjeto() {
