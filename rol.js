@@ -396,7 +396,7 @@ class Animal {
   }
 
   /**
-   * Devueleve el valor máximo del tipo de punto pasado
+   * Devuelve el valor máximo del tipo de punto pasado
    * @param {string} puntos PF,PG,PM
    */
   getMaxPuntos(puntos){
