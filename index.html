@@ -379,8 +379,6 @@
             // cell.innerHTML += `   <button type="button" class="btn btn-secondary btn-sm" onclick="editar();" >Abrir</button>`
             cell.innerHTML += ` <span class="badge badge-dark">${object.objetos.length}</span>`
 
-          }
-          if (key === "peso") {
             cell.addEventListener("click", function () {
               let nc = object.nombre;
               let index = contenedorActual.objetos.indexOf(object);

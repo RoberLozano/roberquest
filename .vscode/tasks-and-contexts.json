@@ -1,6 +1,6 @@
 {
   "lock": false,
-  "active": "",
+  "active": "b8e88637f23fbe26fa18a139cf76af353b60e507",
   "sets": {
     "default": {
       "source": "default",
@@ -20,7 +20,10 @@
         "b8e88637f23fbe26fa18a139cf76af353b60e507": {
           "name": "Inventario",
           "data": [
-            "c:\\GitHub\\roberquest\\inventario.js"
+            "c:\\GitHub\\roberquest\\inventario.js",
+            "c:\\GitHub\\roberquest\\index.html",
+            "c:\\GitHub\\roberquest\\habilidades.js",
+            "c:\\GitHub\\roberquest\\rol.js"
           ]
         },
         "a73f1345df69647021f401499146a518864ef87a": {
