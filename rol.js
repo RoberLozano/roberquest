@@ -324,6 +324,42 @@ class Animal {
   getCar(car) {
     return this[car] + this.bonificacion[car];
   }
+  /**
+   * Hace una lista de los bonificadores de daño
+   */
+  listarBD(){
+    // return ((this.getCar(FUE)+this.getCar(CON))-20)/5
+    for(let i=7; i<30; i++){
+      // console.log(`FUE y CON: ${i}  (${i*2} ), BON: ${this.bdR(i,i)}`);
+      console.log(`FUE: ${i}  (${i} ), BON: ${this.bd(i)}`);
+    }
+  }
+
+  /**
+   * Devuelve Bonificación de daño del personaje
+   */
+  getPD(){
+    return this.bd(this.getCar(FUE),this.getCar(CON))
+  }
+
+  /**
+   * Bonificación de daño según Runequest
+   * @param {number} fue 
+   * @param {number} con 
+   */
+  bdR(fue,con){
+    //runequest
+    return ((fue+con)-20)/5;
+  }
+
+  /**
+   * Bonificación de daño según mis reglas, sólo teniendo en cuenta la FUE
+   * @param {number} fue 
+   */
+  bd(fue){
+    return (fue-10)/5;
+  }
+
 
   /**
    * Pone una bonificacion, acumulativa si es un string con + o -
@@ -415,6 +451,7 @@ class Animal {
     }
 
   }
+  
 
   getHabilidad(nombre) {
     return this.habilidades[nombre];
@@ -488,13 +525,22 @@ class Animal {
    * actualiza el valor de los tipo de habilidades
    */
   act() {
+    // this.Agilidad = this.P("DES") + this.S("FUE") + this.SN("TAM")
+    // this.Comunicación = this.P("INT") + this.P("ASP")
+    // this.Conocimiento = this.P("INT")
+    // this.Magia = this.P("INT") + this.P("POD")
+    // this.Manipulación = this.P("DES") + this.S("FUE") + this.P("INT")
+    // this.Percepción = this.P("CON")
+    // this.Sigilo = this.P("DES") + this.S("FUE") + this.N("TAM")
+
+    //Roberquest (como en Excel)
     this.Agilidad = this.P("DES") + this.S("FUE") + this.SN("TAM")
     this.Comunicación = this.P("INT") + this.P("ASP")
     this.Conocimiento = this.P("INT")
-    this.Magia = this.P("INT") + this.P("POD")
+    this.Magia = this.P("INT") + this.P("POD")+ this.S("DES")
     this.Manipulación = this.P("DES") + this.S("FUE") + this.P("INT")
-    this.Percepción = this.P("CON")
-    this.Sigilo = this.P("DES") + this.S("FUE") + this.N("TAM")
+    this.Percepción = this.P("CON") + this.S("INT")
+    this.Sigilo = this.P("DES") + this.S("INT") + this.SN("TAM")
 
   }
 

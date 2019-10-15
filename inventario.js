@@ -62,7 +62,7 @@ class Contenedor extends Objeto {
         super(nombre, peso, valor);
         this.multiplicador =multiplicador;
         this.max= max;
-        this.objetos=new Array();
+        this.objetos=[];
 
     }
 
@@ -95,15 +95,14 @@ class Contenedor extends Objeto {
         let c=0;
         for( var o of this.objetos)
         // c+=o.pesoTotal(); //da problemas con los datos de firebase database, terndria que convertir el array en objetos
-         c+=o.peso;
+         c+=o.pesa();
         return c*this.multiplicador;
     }
 
     add(objeto) {
         // if(this.pesoLibre()>=objeto.pesoTotal)
             this.objetos.push(objeto);
-        // else (console.log("Demasiado peso"));
-        
+        // else (console.log("Demasiado peso")); 
       }
 
     pesa(){
@@ -127,12 +126,26 @@ class Contenedor extends Objeto {
     }
 
     sacarTodo(){
-        this.objetos=new Array();
+        this.objetos=[];
+    }
+
+    navegar(indices){
+        
+        if (indices.length==0){
+            console.log("devuelvo" +this.nombre + " queda: "+indices);
+            console.log(this);
+            return this;
+        }
+        
+        if (this.objetos[indices[0]] instanceof Contenedor ){
+            let resto=indices.slice(1); 
+            console.log(resto);
+             return this.objetos[indices[0]].navegar(resto)
+        }
     }
 
     //ok
     /**
-     * 
      * @param {*} objeto el objeto a mover, si es un numero es el índice que ocupa en el contenedor
      * @param {*} otroContenedor el contenedor al que se va a mover
      */

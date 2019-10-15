@@ -88,10 +88,12 @@ class XP {
 
     addXP(xp) {
         this.xp += xp;
+        // console.log("fechaMundo:"+fechaMundo.toISOString());
+        //por si no estuviera definida la variabel global
+        if(fechaMundo) this.fechaXp=fechaMundo.toISOString();
     }
 
     clearXP() { this.xp = 0 }
-
 
 }
 
@@ -185,7 +187,7 @@ class Habilidad extends XP {
     subir(subida) {
         this.valor += subida;
         this.clearXP();
-        this.fecha = fechaMundo;
+        if(fechaMundo) this.fecha = fechaMundo;
     }
     /**
      * da el bonificador por tipo de habilidad

@@ -71,7 +71,14 @@
           aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
-        <input type="text" class="text-light bg-dark h3 " style="font-family: Old Europe" value="Personaje" id="nombre">
+        <input type="text" list="listaPJ" class="text-light bg-dark h3 " style="font-family: Old Europe"
+          value="Personaje" id="nombre">
+        <datalist id="listaPJ">
+          <option value="Personaje">
+          <option value="Wolf">
+          <option value="Rosssel">
+          <option value="Blanc">
+        </datalist>
         <button class="btn btn-danger" onclick="cargarPersonaje(true)">Cargar</button>
       </nav>
     </div>
@@ -94,7 +101,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-            <button type="button" class="btn btn-danger"  onclick="quitarObjeto()" data-dismiss="modal">Eliminar</button>
+            <button type="button" class="btn btn-danger" onclick="quitarObjeto()" data-dismiss="modal">Eliminar</button>
             <button type="button" class="btn btn-primary" onclick="nuevoObjeto()">Nuevo</button>
           </div>
         </div>
@@ -138,13 +145,24 @@
       </div>
       <div id="inventario" class="tab-pane fade">
         <h3>Inventario</h3>
+        <button type="button" class="btn btn-primary" onclick="atras()">Atras</button>
+        <p>Busca en cualquier campo:</p>
+        <input class="form-control" id="buscarObjeto" type="text" placeholder="Buscar..">
+        <br>
         <select class="selectpicker" id="colInventario" multiple data-live-search="true" data-width="fit" multiple
           title="Seleccione columnas a mostrar">
           <option selected>nombre</option>
+          <option selected>peso</option>
           <option>ctd</option>
-          <option>peso</option>
-          <option>precio</option>
+          <option>valor</option>
+          <option>daño</option>
+          <option>pesa()</option>
         </select>
+        <!-- <button type="button" class="btn btn-danger" onclick="editar(new Objeto()) ;$('#editModal').modal();">Nuevo Objeto</button>
+        <button type="button" class="btn btn-primary" onclick="editar(new Contenedor()); $('#editModal').modal();">Nuevo Contenedor</button> -->
+        <button type="button" class="btn btn-primary" onclick="copiar()">Copiar</button>
+        <button type="button" class="btn btn-primary" onclick="cortar()">Cortar</button>
+        <button type="button" class="btn btn-primary" onclick="pegar()">Pegar</button>
         <table class="table table-hover">
           <thead id="hdInv">
             <!-- <th>Habilidad</th>
@@ -174,6 +192,9 @@
       // el select guay
       $('select').selectpicker();
 
+      var copiado = [];
+      var nav = [];
+
       // $('#columnas').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
       //   // do something...
       //   // console.log($('#columnas').val());
@@ -184,6 +205,7 @@
       $("#buscar").on("keyup", function () {
 
         var value = $(this).val().toLowerCase();
+        //si empieza con > o <
         if (value.startsWith(">") || value.startsWith("<")) {
           var limit = parseInt(value.substring(1));
           var signo = value[0];
@@ -211,6 +233,36 @@
         else //si no empieza con comparacion
           $("#tbHab tr").filter(function () {
             $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+          });
+      });
+
+      //buscar en el inventario
+      $("#buscarObjeto").on("keyup", function () {
+
+        var value = $(this).val().toLowerCase();
+        //si empieza con > o <
+        if (value.startsWith(">") || value.startsWith("<")) {
+          var limit = parseInt(value.substring(1));
+          var signo = value[0];
+          console.log("SIGNO;" + signo);
+
+          $("#tbInv tr").filter(function () {
+            var bool = false
+            console.log($(this).html());
+            var regex = /[0-9]+/g; //la expresion regular para encontrar números en el html de la fila
+            var found = $(this).html().match(regex);
+            for (let i of found) { //por cada numero encontrado si cumple la condición, bool = true
+              if (eval('parseInt(i)' + signo + 'limit')) {
+                bool = true;
+                break;
+              }
+            }
+            $(this).toggle(bool)
+          });
+        }
+        else //si no empieza con comparacion
+          $("#tbInv tr").filter(function () {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)//que contenga la cadena
           });
       });
 
@@ -306,11 +358,14 @@
           var cell = row.insertCell(i);
           cell.innerHTML = '<b>' + visibles[i] + '</b>';
         }
-        // El total si sale siempre cambiar cuando se aplique tb a inventario
-        // a no ser que ponga el peso total
-        cell = row.insertCell();
-        cell.innerHTML = '<b>' + "TOTAL" + '</b>';
-        th.appendChild(row);
+        if (header === "header") {//si es habilidades
+          // El total si sale siempre cambiar cuando se aplique tb a inventario
+          // a no ser que ponga el peso total
+          cell = row.insertCell();
+          cell.innerHTML = '<b>' + "TOTAL" + '</b>';
+          th.appendChild(row);
+        }
+
       }
 
 
@@ -318,15 +373,28 @@
       function crearEventos(object, cell, key) {
         //si e sun contenedor cargo lso elementos que contiene
         if (object instanceof Contenedor) {
-          cell.addEventListener("click", function () {
-            cargarContenedor(object);
-            // editar(object);
-          });
+
+          if (key === "nombre") {
+            // cell.style.color = "red";
+            // cell.innerHTML += `   <button type="button" class="btn btn-secondary btn-sm" onclick="editar();" >Abrir</button>`
+            cell.innerHTML += ` <span class="badge badge-dark">${object.objetos.length}</span>`
+
+          }
+          if (key === "peso") {
+            cell.addEventListener("click", function () {
+              let nc = object.nombre;
+              let index = contenedorActual.objetos.indexOf(object);
+              nav.push(index);
+              console.log(nav);
+              cargarContenedor(object);
+              // editar(object);
+
+            });
+          }
         }
         if (object instanceof Objeto) {
           cell.addEventListener("dblclick", function () {
             // alert("mover objeto") + object.nombre;
-
             //modifico el editor modal
             editar(object);
             //y lo muestro
@@ -338,7 +406,8 @@
           if (key === "xp") { //si doy un click en xp +1
             cell.addEventListener("click", function () {
               //lo incremento y guardo en firebase 
-              object.xp++;
+              // object.xp++;
+              object.addXP(1);
               object.save();
             });
           }
@@ -383,7 +452,7 @@
           //Probar con forms
 
         }
-        editor.innerHTML = editor.innerHTML + `<button onclick="guardarObjeto()">Guardar</button>`
+        editor.innerHTML = editor.innerHTML + `<button type="button" class="btn btn-success" onclick="guardarObjeto()">Guardar</button>`
 
       }
 
@@ -409,21 +478,27 @@
         } catch (error) {
           console.log(`El objeto ${nuevoObjeto.nombre} no se puede guardar`);
           console.log(pj);
-          pj.save();//guardo
+          console.log(contenedorActual);
+          pj.save();//guardo el personaje entero
+          cargarPersonaje();
           // alert();
         }
 
       }
 
       function quitarObjeto() {
-        contenedorActual.sacar(objetoActual);
-        try {
-          console.log(`Quito ${objetoActual.nombre} de ${contenedorActual.nombre}`);
-          pj.save();//guardo
-        } catch (error) {
-          console.log(`Error al quitar ${objetoActual.nombre} de ${contenedorActual.nombre}`);
-          // alert();
+        if (objetoActual instanceof Objeto) {
+          contenedorActual.sacar(objetoActual);
+          try {
+            console.log(`Quito ${objetoActual.nombre} de ${contenedorActual.nombre}`);
+            pj.save();//guardo
+            cargarPersonaje();
+          } catch (error) {
+            console.log(`Error al quitar ${objetoActual.nombre} de ${contenedorActual.nombre}`);
+            // alert();
+          }
         }
+
       }
 
       function guardarObjeto() {
@@ -454,7 +529,7 @@
           }
           else
             cargaInventario(pj);
-         
+
 
 
           // alert();
@@ -480,27 +555,27 @@
         pj.nombre = $("#nombre").val();
         pj.act();
         tablaStats();
-        // pj.backup =null; //para que no se vuelva a cargar con los efectos.
+        pj.backup = null; //para que no se vuelva a cargar con los efectos.
 
-        // pj.save();
+        pj.save();
 
-        var h1 = new Habilidad("AAAA", "Agilidad", 7);
-        console.log(h1);
-        // h1.save();
-        pj.setHabilidad(h1);
+        // var h1 = new Habilidad("AAAA", "Agilidad", 7);
+        // console.log(h1);
+        // // h1.save();
+        // pj.setHabilidad(h1);
 
-        var h1 = new Habilidad("Correr", "Agilidad", 100);
-        var b1 = new BonHabilidad("Correr", 0, 10, 10);
-        h1.activarBon(b1);
+        // var h1 = new Habilidad("Correr", "Agilidad", 100);
+        // var b1 = new BonHabilidad("Correr", 0, 10, 10);
+        // h1.activarBon(b1);
 
-        pj.setHabilidad(h1);
-        pj.setHabilidad(new Habilidad("Trepar", "Agilidad", 15));
-        pj.setHabilidad(new Habilidad("Saltar", "Agilidad", 30));
-        pj.setHabilidad(new Habilidad("Esquivar", "Agilidad", 25));
+        // pj.setHabilidad(h1);
+        // pj.setHabilidad(new Habilidad("Trepar", "Agilidad", 15));
+        // pj.setHabilidad(new Habilidad("Saltar", "Agilidad", 30));
+        // pj.setHabilidad(new Habilidad("Esquivar", "Agilidad", 25));
 
         console.log(pj);
 
-        makeTable($("#habilidades"), pj);
+        // makeTable($("#habilidades"), pj);
 
         // efFuerza = new Efecto("fuerza", `this.sb(FUE,"+5")`, fechaMundo.add("dia", 4));
         // efDes = new Efecto("des", `this.DES+=5`, fechaMundo.add("dia", 4));
@@ -531,12 +606,51 @@
       function act() {
         var x = document.getElementById("fecha").value;
         document.getElementById("texto").innerHTML = x;
-        fechaMundo = new Date(x);
+        // console.log("fechaMundo x :"+x);
+        fechaMundo = new Date(x + ".000Z");
+        // console.log("fechaMundo:"+fechaMundo.toISOString());
         document.getElementById("texto").innerHTML = pj.aplicarEfectos()
         pj.act();
         tablaStats();
 
       }
+
+      function atras() {
+        nav.pop();
+        ir();
+      }
+      function ir() {
+
+        console.log("CARGA CONTENEDOR");
+        console.log(pj.inventario.navegar(nav).nombre);
+        cargarContenedor(pj.inventario.navegar(nav));
+
+      }
+      function copiar() {
+        copiado.push(objetoActual);
+        console.log(copiado);
+      }
+
+      function cortar() {
+        copiado.push(objetoActual);
+        contenedorActual.sacar(objetoActual);
+        pj.save();
+        // cargarPersonaje(true);
+
+      }
+
+      function pegar() {
+        copiado.forEach(element => {
+          if (element instanceof Objeto) {
+            contenedorActual.add(element);
+          }
+        });
+        copiado = [];
+        pj.save()
+        // cargarPersonaje(true);
+
+      }
+
 
       //las funciones de rol.js
 
@@ -560,7 +674,7 @@
             // addObjet2Table(nh,"tbHab");
           });
           //TODO: poner aquí el header??
-          makeTable("", pj);
+          // makeTable("", pj);
         });
 
         // Get the hab that has changed
@@ -590,6 +704,7 @@
 
       function cargaInventario(pj) {
         console.log("Carga Inventario");
+        nav = [];
         cargarContenedor(pj.inventario);
       }
 
@@ -600,16 +715,25 @@
         console.log("Contenedor Act:");
         console.log(contenedorActual);
         clear("tbInv"); //limpio la tabla
+        let visibles = $("#colInventario").val();
+        createHeader(visibles, "hdInv");
         object.objetos.forEach(function (element) {
-          addObjet2Table(element, "tbInv")
+          // addObjet2Table(element, "tbInv")
+          objetoTabla(element, "tbInv", visibles);
         });
-        addObjet2Table(["peso Total", object.carga], "tbInv")
+        addObjet2Table(["peso Total", roundTo3(object.pesa())], "tbInv")
+      }
+
+      function roundTo3(num) {
+        //TODO: dejar la buena
+        return num; //redondeamos a gramos  
+        return +(Math.round(num + "e+3") + "e-3");
       }
 
       function cargarPersonaje(nombre) {
-        if(nombre==true){
-          contenedorActual=null; //Llamo desde el boton y voy al inventario general
-        } 
+        if (nombre == true) {
+          contenedorActual = null; //Llamo desde el boton y voy al inventario general
+        }
 
         nombre = $("#nombre").val();
         let ruta = `personajes/${nombre}/`;
@@ -649,6 +773,7 @@
           }
           else
             cargaInventario(pj);
+          nav = [];
           // console.log("No ContenedorAct: CargaInventario");
         });
 
@@ -715,10 +840,20 @@
         var i = 0
         for (key of visibles) {//Esto serían todas
           var cell = row.insertCell(i);
-          if (i == 0) id = object[key];
+          let valor;
+          if (key.includes("()")) {//si es un método
+            valor = eval("object." + key);
+          }
+          else {
+            if (i == 0) id = object[key];
+            // crearEventos(object, cell, key);
+            // console.log(object[key]);
+            valor = object[key];
+          }
+
+          if (valor === undefined) valor = "";
+          cell.innerHTML = '<i data-toggle="tooltip"  id="' + id + "|" + key + "|" + valor + '" title=' + key + '>' + valor + '</i>';
           crearEventos(object, cell, key);
-          // console.log(object[key]);
-          cell.innerHTML = '<i data-toggle="tooltip"  id="' + id + "|" + key + "|" + object[key] + '" title=' + key + '>' + object[key] + '</i>';
           i++;
         }
 

@@ -14,6 +14,7 @@
 <body>
 
 <h1>Importar Habilidades</h1>
+<input type="text" class="text-light bg-dark h3 " id="nombre">
 <p>Introduzca los datos en la caja de texto</p>
     <textarea  id = "datos" name="text" rows =30 id="text"  style="width:96%;padding:2%;font:15px sans-serif;">
 
@@ -24,6 +25,9 @@
     <script>
         var listaHabilidades=[];
         var tipo="Agilidad";
+        let nombre = document.getElementById("nombre");
+        nombre.value=pj.nombre;
+
         function limpiar(){
         }
 
@@ -35,6 +39,7 @@
                porLinea(linea,"\t")
             });
             // console.log(listaHabilidades);
+            pj.nombre=nombre = $("#nombre").val();
             console.log(pj);
             
 
