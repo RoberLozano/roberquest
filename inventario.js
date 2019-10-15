@@ -56,6 +56,42 @@ class Objetos extends Objeto{
     }
 
 }
+class Usable extends Objeto {
+    constructor(nombre, peso, valor) {
+        super(nombre, peso, valor);
+    }
+    usar(){
+        console.log(`${this.nombre} usado`);
+    }
+}
+
+class Gema extends Usable {
+    constructor(nombre, peso, valor, capacidad,pm=0) {
+        super(nombre, peso, valor);
+        this.capacidad = capacidad;
+        this.pm= pm;
+    }
+    /**
+     * Rellena cierta cantidad de PM
+     * @param {number} ctd PM a rellenar
+     * @returns los puntos de magia por llenar todavía
+     */
+    rellenar(ctd){
+        this.pm+=ctd;
+        return this.capacidad - this.pm;
+        
+    }
+    /**
+     * Gasta cierta cantidad de PM
+     * @param {number} ctd PM a gastar
+     * @returns los puntos de magia que quedan en la gema
+     */
+    gastar(ctd) {
+        this.pm-=ctd;
+        return this.pm;
+    }
+
+}
 
 class Contenedor extends Objeto {
     constructor(nombre, peso, valor, max, multiplicador=1) {

@@ -5,11 +5,12 @@
   <meta charset='utf-8'>
   <meta http-equiv='X-UA-Compatible' content='IE=edge'>
 
-  <title>Pruebas de JavaScript</title>
+  <title>Pruebas de RoberQuest</title>
   <meta name='viewport' content='width=device-width, initial-scale=1'>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
   <link rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.9/css/bootstrap-select.css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
   <style type="text/css">
     @font-face {
       font-family: "Friedolin";
@@ -145,7 +146,7 @@
       </div>
       <div id="inventario" class="tab-pane fade">
         <h3>Inventario</h3>
-        <button type="button" class="btn btn-primary" onclick="atras()">Atras</button>
+        <button type="button" class="btn btn-primary" onclick="atras()"> <i class="fas fa-arrow-left"></i>	Atras</button>
         <p>Busca en cualquier campo:</p>
         <input class="form-control" id="buscarObjeto" type="text" placeholder="Buscar..">
         <br>
@@ -158,11 +159,11 @@
           <option>daño</option>
           <option>pesa()</option>
         </select>
-        <!-- <button type="button" class="btn btn-danger" onclick="editar(new Objeto()) ;$('#editModal').modal();">Nuevo Objeto</button>
-        <button type="button" class="btn btn-primary" onclick="editar(new Contenedor()); $('#editModal').modal();">Nuevo Contenedor</button> -->
-        <button type="button" class="btn btn-primary" onclick="copiar()">Copiar</button>
-        <button type="button" class="btn btn-primary" onclick="cortar()">Cortar</button>
-        <button type="button" class="btn btn-primary" onclick="pegar()">Pegar</button>
+        <button type="button" class="btn btn-danger" onclick="editar(new Objeto()) ;$('#editModal').modal();">Nuevo Objeto</button>
+        <button type="button" class="btn btn-primary" onclick="editar(new Contenedor()); $('#editModal').modal();"> <i class="fas fa-box-open"></i>Nuevo Contenedor</button>
+        <button type="button" class="btn btn-dark" onclick="copiar()"> <i class="fas fa-copy"></i> </button>
+        <button type="button" class="btn btn-danger" onclick="cortar()"> <i class="fas fa-cut"></i></button>
+        <button type="button" class="btn btn-primary" onclick="pegar()"><i class="fas fa-paste"></i></button>
         <table class="table table-hover">
           <thead id="hdInv">
             <!-- <th>Habilidad</th>
@@ -723,8 +724,7 @@
       }
 
       function roundTo3(num) {
-        //TODO: dejar la buena
-        return num; //redondeamos a gramos  
+        //redondeamos a gramos  
         return +(Math.round(num + "e+3") + "e-3");
       }
 
