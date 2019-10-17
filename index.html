@@ -739,24 +739,54 @@
               intensidadReal = ipm.value + 5;
               pmIntensidad = 1;
               penalizacion = 0;
+              dIntensidad.style.color = "red";
               break;
             case ( CRITICO):
               intensidadReal = ipm.value + 3;
               pmIntensidad = 1;
               penalizacion = 0;
+              dIntensidad.style.color = "red";
               break;
             case ( ESPECIAL):
               intensidadReal = ipm.value + 1;
               pmIntensidad = pm;
               penalizacion = 0;
+              dIntensidad.style.color = "blue";
             break;
             case ( EXITO):
               intensidadReal= pm;
             pmIntensidad = pm;
+            dIntensidad.style.color = "black";
               break;
             case (FALLO):
             intensidadReal= 0;
             pmIntensidad = 1;
+              break;
+            default:
+              ;
+          }
+
+
+          switch (tHechizo) {
+            case ( SUPERCRITICO):
+              pmHechizo = 1;
+              dHechizo.style.color = "red";
+              break;
+            case ( CRITICO):
+              pmHechizo = 1;
+              dHechizo.style.color = "red";
+              break;
+            case ( ESPECIAL):
+              pmHechizo = h.pm;
+              dHechizo.style.color = "blue";
+            break;
+            case ( EXITO):
+    
+            pmHechizo = h.pm;
+            dHechizo.style.color = "black";
+              break;
+            case (FALLO):
+            pmHechizo = 1;
               break;
             default:
               ;
@@ -807,20 +837,20 @@
           //   }
 
 
-          if (tHechizo > ESPECIAL) {
-            pmHechizo = 1;
-            penalizacion = 0;
+          // if (tHechizo > ESPECIAL) {
+          //   pmHechizo = 1;
+          //   penalizacion = 0;
 
-          } else
-          if (tHechizo == EXITO) {
-              pmHechizo = h.pm;
-            } else
+          // } else
+          // if (tHechizo == EXITO) {
+          //     pmHechizo = h.pm;
+          //   } else
 
-            if (tHechizo > EXITO) {
-              pmHechizo = h.pm;
-            } else {
-              pmHechizo = 1; //FALLO
-            }
+          //   if (tHechizo > EXITO) {
+          //     pmHechizo = h.pm;
+          //   } else {
+          //     pmHechizo = 1; //FALLO
+          //   }
 
 
 
