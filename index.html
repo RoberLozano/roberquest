@@ -129,10 +129,18 @@
           <div class="modal-body" id="editor">
             <form>
               <div class="input-group mb-3">
+                  <div class="input-group-prepend">
+                      <span id="lbDuración" class="input-group-text">Duración: 130%</span>
+                      <input id="iPMDuración" type="number" value="0" class="form-control number-input">
+                      <span class="input-group-text"><i class="fas fa-dice-six"></i></span>
+                      <input id="iDadosDuración" type="number" class="form-control number-input">
+                      <button id="btDuraciónOK" class="btn btn-primary" type="button">OK</button>
+                    </div>
+
+
                 <div class="input-group-prepend">
                   <span id="lbIntensidad" class="input-group-text">Intensidad: 130%</span>
                   <input id="iPMIntensidad" type="number" value="0" class="form-control number-input">
-
                   <span class="input-group-text"><i class="fas fa-dice-six"></i></span>
                   <input id="iDadosIntensidad" type="number" class="form-control number-input">
                   <button id="btIntensidadOK" class="btn btn-primary" type="button">OK</button>
@@ -735,32 +743,32 @@
         function act() {
           //% de habilidad
           switch (tIntensidad) {
-            case ( SUPERCRITICO):
+            case (SUPERCRITICO):
               intensidadReal = ipm.value + 5;
               pmIntensidad = 1;
               penalizacion = 0;
               dIntensidad.style.color = "red";
               break;
-            case ( CRITICO):
+            case (CRITICO):
               intensidadReal = ipm.value + 3;
               pmIntensidad = 1;
               penalizacion = 0;
               dIntensidad.style.color = "red";
               break;
-            case ( ESPECIAL):
+            case (ESPECIAL):
               intensidadReal = ipm.value + 1;
               pmIntensidad = pm;
               penalizacion = 0;
               dIntensidad.style.color = "blue";
-            break;
-            case ( EXITO):
-              intensidadReal= pm;
-            pmIntensidad = pm;
-            dIntensidad.style.color = "black";
+              break;
+            case (EXITO):
+              intensidadReal = pm;
+              pmIntensidad = pm;
+              dIntensidad.style.color = "black";
               break;
             case (FALLO):
-            intensidadReal= 0;
-            pmIntensidad = 1;
+              intensidadReal = 0;
+              pmIntensidad = 1;
               break;
             default:
               ;
@@ -768,25 +776,25 @@
 
 
           switch (tHechizo) {
-            case ( SUPERCRITICO):
+            case (SUPERCRITICO):
               pmHechizo = 1;
               dHechizo.style.color = "red";
               break;
-            case ( CRITICO):
+            case (CRITICO):
               pmHechizo = 1;
               dHechizo.style.color = "red";
               break;
-            case ( ESPECIAL):
+            case (ESPECIAL):
               pmHechizo = h.pm;
               dHechizo.style.color = "blue";
-            break;
-            case ( EXITO):
-    
-            pmHechizo = h.pm;
-            dHechizo.style.color = "black";
+              break;
+            case (EXITO):
+
+              pmHechizo = h.pm;
+              dHechizo.style.color = "black";
               break;
             case (FALLO):
-            pmHechizo = 1;
+              pmHechizo = 1;
               break;
             default:
               ;
