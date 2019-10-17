@@ -153,7 +153,6 @@
 
                   <span class="input-group-text">Dado</span>
                   <input id="iDadosIntensidad" type="number" class="form-control number-input">
-                  <span id="lbPen" class="input-group-text">-15%</span>
                   <button id="btIntensidadOK" class="btn btn-primary" type="button">OK</button>
                 </div>
                 <div class="number-input"></div>
@@ -161,7 +160,7 @@
                   <span id="lbHechizo" class="input-group-text">Hechizo: 130%</span>
                   <span class="input-group-text">Dado</span>
                   <input id="iDadosHechizo" type="number" class="form-control number-input">
-                  <span class="input-group-text">PM gastados</span>
+                  <span class="input-group-text">PM:</span>
                   <input id="iGastados" type="number" class="form-control number-input">
                 </div>
               </div>
@@ -753,8 +752,6 @@
 
         function act() {
           //% de habilidad
-
-
           switch (tIntensidad) {
             case ( SUPERCRITICO):
               intensidadReal = ipm.value + 5;
