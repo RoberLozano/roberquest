@@ -114,6 +114,71 @@
       </div>
     </div>
 
+    <!-- Modal Hechizo -->
+    <div class="modal fade" id="modalHechizo" tabindex="-1" role="dialog" aria-labelledby="modalHechizoTitle"
+      aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 class="modal-title" id="modalHechizoTitle">Bola de fuego <span class="badge badge-pill badge-dark"> 7
+              </span></h3>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" id="editor">
+            <form class="form-inline">
+              <label class="sr-only" for="inlineFormInputGroupUsername2">Intensidad</label>
+              <div class="input-group mb-2 mr-sm-2">
+                <div class="input-group-prepend">
+                  <div class="input-group-text">Intensidad 130%</div>
+                </div>
+                <input type="number" class="form-control" id="inlineFormInputGroupUsername2" placeholder="Username">
+              </div>
+
+              <label class="sr-only" for="inlineFormInputGroupUsername2">Dados</label>
+              <div class="input-group mb-2 mr-sm-2">
+                <div class="input-group-prepend">
+                  <div class="input-group-text">Dados</div>
+                </div>
+                <input type="text" class="form-control" id="inlineFormInputGroupUsername2" placeholder="Username">
+              </div>
+              <button class="btn btn-primary mb-2">Submit</button>
+            </form>
+            <form>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span id="lbIntensidad" class="input-group-text">Intensidad: 130%</span>
+                  <input id="iPMIntensidad" type="number" value="0" class="form-control number-input">
+
+                  <span class="input-group-text">Dado</span>
+                  <input id="iDadosIntensidad" type="number" class="form-control number-input">
+                  <span id="lbPen" class="input-group-text">-15%</span>
+                  <button id="btIntensidadOK" class="btn btn-primary" type="button">OK</button>
+                </div>
+                <div class="number-input"></div>
+                <div class="input-group-prepend">
+                  <span id="lbHechizo" class="input-group-text">Hechizo: 130%</span>
+                  <span class="input-group-text">Dado</span>
+                  <input id="iDadosHechizo" type="number" class="form-control number-input">
+                  <span class="input-group-text">PM gastados</span>
+                  <input id="iGastados" type="number" class="form-control number-input">
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-primary" onclick="nuevoObjeto()">Lanzar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+
+
 
     <!-- #region tabs -->
     <div class="tab-content">
@@ -150,8 +215,6 @@
             </div>
           </div>
         </form>
-
-
 
       </div>
       <div id="habilidades" class="tab-pane fade">
@@ -208,8 +271,10 @@
       </div>
       <div id="charts" class="tab-pane fade">
         <div>
-          <canvas id="barChart"></canvas>
-          <canvas id="radarChart"></canvas>
+          <!-- <canvas id="barChart"></canvas>
+          <canvas id="radarChart"></canvas> -->
+          <button class="btn btn-danger" onclick="lanzarHechizo()">Hechizo</button>
+
         </div>
       </div>
     </div>
@@ -327,13 +392,13 @@
       // BOTONES DE PUNTOS
 
       function actPuntos() {
-      $("#btPG").text("/  "+ pj.getMaxPuntos(PG));
-      $("#btPF").text("/  "+pj.getMaxPuntos(PF));
-      $("#btPM").text("/  "+pj.getMaxPuntos(PM));
+        $("#btPG").text("/  " + pj.getMaxPuntos(PG));
+        $("#btPF").text("/  " + pj.getMaxPuntos(PF));
+        $("#btPM").text("/  " + pj.getMaxPuntos(PM));
 
-      $("#iPG").val(pj.getCar(PG));
-      $("#iPF").val(pj.getCar(PF));
-      $("#iPM").val(pj.getCar(PM));
+        $("#iPG").val(pj.getCar(PG));
+        $("#iPF").val(pj.getCar(PF));
+        $("#iPM").val(pj.getCar(PM));
 
       }
 
@@ -664,6 +729,168 @@
         pj.act();
         tablaStats();
 
+      }
+      function lanzarHechizo(hechizo) {
+
+        let h = new Hechizo("Hechizo", 7, 100, null);
+        const porcentajeInicial = h.valor;
+        $("#modalHechizo").modal();
+        intensidad = pj.getHabilidad("Intensidad");
+        pIntensidad = intensidad.v;
+        let pm = $("#iPMIntensidad").val();
+        let penalizacion = 0;
+        let ipm;
+        let tHechizo, tIntensidad, tDuración = TipoTirada.EXITO;
+        let pmIntensidad, pmDuración = 0;
+        let intensidadReal;
+
+        ipm = //$("#iPMIntensidad");
+          document.getElementById("iPMIntensidad");
+
+        dIntensidad = document.getElementById("iDadosIntensidad");
+        dHechizo = document.getElementById("iDadosHechizo");
+
+
+        function act() {
+          //% de habilidad
+
+
+          switch (tIntensidad) {
+            case ( SUPERCRITICO):
+              intensidadReal = ipm.value + 5;
+              pmIntensidad = 1;
+              penalizacion = 0;
+              break;
+            case ( CRITICO):
+              intensidadReal = ipm.value + 3;
+              pmIntensidad = 1;
+              penalizacion = 0;
+              break;
+            case ( ESPECIAL):
+              intensidadReal = ipm.value + 1;
+              pmIntensidad = pm;
+              penalizacion = 0;
+            break;
+            case ( EXITO):
+              intensidadReal= pm;
+            pmIntensidad = pm;
+              break;
+            case (FALLO):
+            intensidadReal= 0;
+            pmIntensidad = 1;
+              break;
+            default:
+              ;
+          }
+
+
+          //TODO: soporte para -1,etc en tiradas?
+          // switch (true) {
+          //   case (tIntensidad == SUPERCRITICO):
+          //     intensidadReal = ipm.value + 5;
+          //     pmIntensidad = 1;
+          //     penalizacion = 0;
+          //     break;
+          //   case (tIntensidad == CRITICO):
+          //     intensidadReal = ipm.value + 3;
+          //     pmIntensidad = 1;
+          //     penalizacion = 0;
+          //     break;
+          //   case (tIntensidad  ==ESPECIAL):
+          //     intensidadReal = ipm.value + 1;
+          //     pmIntensidad = pm;
+          //     penalizacion = 0;
+          //   break;
+          //   case (tIntensidad == EXITO):
+          //     intensidadReal= pm;
+          //   pmIntensidad = pm;
+          //     break;
+          //   case (tIntensidad > this.v):
+          //     return TipoTirada.FALLO;
+          //   default:
+          //     ;
+          // }
+
+
+          // if (tIntensidad > ESPECIAL) {
+          //   pmIntensidad = 1;
+          //   penalizacion = 0;
+
+          // } else
+          // if (tIntensidad == ESPECIAL) {
+          //     pmIntensidad = pm;
+          //     penalizacion = 0;
+          //   } else
+          //   if (tIntensidad == EXITO) {
+          //     pmIntensidad = pm;
+          //   } else {
+          //     pmIntensidad = 1; //FALLO
+          //   }
+
+
+          if (tHechizo > ESPECIAL) {
+            pmHechizo = 1;
+            penalizacion = 0;
+
+          } else
+          if (tHechizo == EXITO) {
+              pmHechizo = h.pm;
+            } else
+
+            if (tHechizo > EXITO) {
+              pmHechizo = h.pm;
+            } else {
+              pmHechizo = 1; //FALLO
+            }
+
+
+
+          h.valor = porcentajeInicial - penalizacion;
+
+          console.log(`Intensidad: ${tIntensidad}, Hechizo: ${tHechizo}`);
+
+          $("#lbHechizo").text(`Hechizo: ${h.v}%`);
+          $("#iGastados").val(parseInt(pmIntensidad) + pmHechizo);
+
+        }
+
+
+
+        function cambiaIntensidad() {
+
+          pm = $("#iPMIntensidad").val();
+          //TODO: hacerlo con bonificación de verdad BonHabilidad
+          penalizacion = pm * 5;
+          act();
+        }
+
+        ipm.addEventListener("change", cambiaIntensidad);
+
+        dIntensidad.addEventListener("change", function () {
+          tIntensidad = intensidad.tirada(dIntensidad.value);
+          console.log("Intensidad" + (tIntensidad));
+          //TODO: hacerlo con bonificación de verdad BonHabilidad
+          penalizacion = pm * 5;
+          act();
+        });
+
+        dHechizo.addEventListener("change", function () {
+          tHechizo = h.tirada(dHechizo.value);
+          console.log("Hechizo" + (tHechizo));
+          //TODO: hacerlo con bonificación de verdad BonHabilidad
+          act();
+        });
+
+
+
+
+        $("#lbIntensidad").text(`Intensidad: ${pIntensidad}%`);
+
+        // $("#btPM").text("/  " + pj.getMaxPuntos(PM));
+
+        // $("#iPG").val(pj.getCar(PG));
+        // $("#iPF").val(pj.getCar(PF));
+        // $("#iPM").val(pj.getCar(PM));
       }
 
       function atras() {

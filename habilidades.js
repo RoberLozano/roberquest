@@ -35,6 +35,16 @@
 /**
  * 
  */
+
+ //Variables globales
+const PIFIA=-1;
+const FALLO=0;
+const EXITO=1;
+const ESPECIAL=2;
+const CRITICO=3;
+const SUPERCRITICO=4;
+
+
 class XP {
     /**
      * 
@@ -119,6 +129,7 @@ class TipoTirada {
     static get SUPERCRITICO() {
         return 4;
     }
+
 }
 
 
@@ -208,6 +219,7 @@ class Habilidad extends XP {
     get c() { return Math.round(this.v * 0.05) + this.bcritico }
     get p() { return Math.round(this.v * 0.05) + this.bcritico }
 
+
 /**
  * Te devuelve que tipo de tirada se obtiene con t
  * @param {number} t la tirada del dado
@@ -225,12 +237,14 @@ class Habilidad extends XP {
                 return TipoTirada.ESPECIAL;
             case (t <= this.v):
                 return TipoTirada.EXITO;
-            case (t > this.act()):
+            case (t > this.v):
                 return TipoTirada.FALLO;
             default:
                 ;
         }
     }
+
+
 }
 
 class Hechizo extends Habilidad{
