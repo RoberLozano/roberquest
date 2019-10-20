@@ -197,6 +197,18 @@ class Contenedor extends Objeto {
     	otroContenedor.add(objeto);
     }
 
+//  /**
+//   * Se da el contenedor que hay en la ruta especificada
+//   * @param {number[]} ruta el array ordenado de la ruta a seguir
+//   */
+//     darContenedorRuta(ruta){
+//         //TODO: hacer comprobaciones d eque la ruta sea de contenedores
+//         if(ruta.length==0) return this;
+
+
+
+//     }
+
     darContenedores(lista=null){
         if(lista===null) var lista=[];
         if (this instanceof Contenedor) lista.push(this);
