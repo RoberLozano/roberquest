@@ -77,8 +77,8 @@
           aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
-        <input type="text" list="listaPJ" class="text-light bg-dark h3 " style="font-family: Old Europe"
-          value="Personaje" id="nombre">
+        <input type="text" list="listaPJ" class="text-light bg-dark h3 " style="font-family: Old Europe" value="Blanc"
+          id="nombre">
         <datalist id="listaPJ">
           <option value="Personaje">
           <option value="Wolf">
@@ -132,11 +132,10 @@
                 <div class="input-group-prepend">
                   <span id="lbDuración" class="input-group-text">Duración: 130%</span>
                   <input id="iPMDuración" type="number" value="0" class="form-control number-input">
-                  <span class="input-group-text"><i class="fas fa-dice-six"></i></span>
+                  <span class="input-group-text"><i class="fas fa-dice-six"></i>🎲</span>
                   <input id="iDadosDuración" type="number" class="form-control number-input">
                   <button id="btDuraciónOK" class="btn btn-primary" type="button">OK</button>
                 </div>
-
 
                 <div class="input-group-prepend">
                   <span id="lbIntensidad" class="input-group-text">Intensidad: 130%</span>
@@ -155,10 +154,13 @@
                 </div>
               </div>
             </form>
+            <div>
+              PM disponibles: <span id="pmTotales" class="input-group-text"></span>
+            </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-            <button type="button" class="btn btn-primary" onclick="nuevoObjeto()">Lanzar</button>
+            <button id="bLanzar" type="button" class="btn btn-primary" data-dismiss="modal">Lanzar</button>
           </div>
         </div>
       </div>
@@ -242,13 +244,30 @@
           <option>daño</option>
           <option>pesa()</option>
         </select>
-        <button type="button" class="btn btn-danger" onclick="editar(new Objeto()) ;$('#editModal').modal();">Nuevo
-          Objeto</button>
+
+        <div class="btn-group">
+          <div class="dropdown">
+            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+              Nuevo Objeto
+              <div class="dropdown-menu">
+                <a class="dropdown-item" onclick="editar(new Objeto()) ;$('#editModal').modal();">Objeto</a>
+                <a class="dropdown-item" onclick="editar(new Contenedor()); $('#editModal').modal();"> <i
+                    class="fas fa-box-open"></i> Contenedor</a>
+                <a class="dropdown-item" onclick="editar(new Pociones()); $('#editModal').modal();"> <i
+                    class="fas fa-flask"></i> Pociones</a>
+                <a class="dropdown-item" onclick="editar(new Gema()); $('#editModal').modal();"><i
+                    class="fas fa-gem"></i> Gema</a>
+              </div>
+          </div>
+        </div>
+
+        <!-- <button type="button" class="btn btn-danger" onclick="editar(new Objeto()) ;$('#editModal').modal();">Nuevo Objeto</button>
         <button type="button" class="btn btn-primary" onclick="editar(new Contenedor()); $('#editModal').modal();"> <i
-            class="fas fa-box-open"></i>Nuevo Contenedor</button>
+            class="fas fa-box-open"></i>Nuevo Contenedor</button> -->
         <button type="button" class="btn btn-dark" onclick="copiar()"> <i class="fas fa-copy"></i> </button>
         <button type="button" class="btn btn-danger" onclick="cortar()"> <i class="fas fa-cut"></i></button>
         <button type="button" class="btn btn-primary" onclick="pegar()"><i class="fas fa-paste"></i></button>
+
         <table class="table table-hover">
           <thead id="hdInv">
             <!-- <th>Habilidad</th>
@@ -279,6 +298,30 @@
     <script>
       // el select guay
       $('select').selectpicker();
+
+      //actualizar los puntos al cambiarlos en el editor
+
+      PUNTOS.forEach(pt => {
+        $('#i' + pt).change(function () {
+          pj[pt] = parseInt($(this).val());
+          pj.save();
+        });
+      });
+
+      // $('#iPG').change(function () {
+      //   pj[PG] = parseInt($(this).val());
+      //   pj.save();
+      // });
+
+      // $('#iPF').change(function () {
+      //   pj[PF] = parseInt($(this).val());
+      //   pj.save();
+      // });
+
+      // $('#iPM').change(function () {
+      //   pj[PM] = parseInt($(this).val());
+      //   pj.save();
+      // });
 
       var copiado = [];
       var nav = [];
@@ -488,7 +531,7 @@
 
             cell.addEventListener("click", function () {
               let nc = object.nombre;
-              let index = contenedorActual.objetos.indexOf(object);
+              let index = pj.inventario.navegar(nav).objetos.indexOf(object);
               nav.push(index);
               console.log(nav);
               cargarContenedor(object);
@@ -497,6 +540,7 @@
             });
           }
         }
+
         if (object instanceof Objeto) {
           cell.addEventListener("dblclick", function () {
             // alert("mover objeto") + object.nombre;
@@ -504,6 +548,16 @@
             editar(object);
             //y lo muestro
             $("#editModal").modal();
+          });
+
+        }
+
+        if (object instanceof Pociones) {
+          objetoActual = object;
+          console.log("me meto en pociones");
+          cell.addEventListener("click", function () {
+            console.log("Voy a tomar");
+            object.tomar();
           });
 
         }
@@ -574,16 +628,16 @@
           else values[i] = valor;
           nuevoObjeto[keys[i]] = values[i];
         }
-        contenedorActual.add(nuevoObjeto);
+        pj.inventario.navegar(nav).add(nuevoObjeto);
         console.log(nuevoObjeto);
         console.log("en contenedor");
-        console.log(contenedorActual);
+        console.log(pj.inventario.navegar(nav));
         try {
           nuevoObjeto.save();
         } catch (error) {
           console.log(`El objeto ${nuevoObjeto.nombre} no se puede guardar`);
           console.log(pj);
-          console.log(contenedorActual);
+          console.log(pj.inventario.navegar(nav));
           pj.save();//guardo el personaje entero
           cargarPersonaje();
           // alert();
@@ -632,12 +686,12 @@
           console.log(pj);
           pj.save();
 
-          if (contenedorActual) {
-            console.log(contenedorActual);
-            cargarContenedor(contenedorActual);
-          }
-          else
-            cargaInventario(pj);
+          // if (contenedorActual) {
+          //   console.log(contenedorActual);
+          //   cargarContenedor(contenedorActual);
+          // }
+          // else
+          cargaInventario(pj);
 
 
 
@@ -682,6 +736,7 @@
         // pj.setHabilidad(new Habilidad("Saltar", "Agilidad", 30));
         // pj.setHabilidad(new Habilidad("Esquivar", "Agilidad", 25));
 
+        console.log("PERSONAJE GUARDADO:");
         console.log(pj);
 
         // makeTable($("#habilidades"), pj);
@@ -728,17 +783,20 @@
         let h = new Hechizo("Hechizo", 7, 100, null);
         const porcentajeInicial = h.valor;
         $("#modalHechizo").modal();
+        $("#pmTotales").text(pj.getCar(PM) + "+" + pj.pmGemas() + "=" + (pj.getCar(PM) + pj.pmGemas()));
         intensidad = pj.getHabilidad("Intensidad");
         duración = pj.getHabilidad("Duración");
         pIntensidad = intensidad.v;
         pDuración = duración.v;
-        var valorIntensidad = $("#iPMIntensidad").val();
-        var valorDuración = $("#iPMDuración").val();
-        var penalizacion = 0;
-        var ipm, dpm;
-        var tHechizo, tIntensidad, tDuración = TipoTirada.EXITO;
-        var pmIntensidad, pmDuración, pmHechizo = 0;
-        var intensidadReal, duraciónReal=0;
+        let pmGastados = 0;
+        let valorIntensidad = $("#iPMIntensidad").val();
+        let valorDuración = $("#iPMDuración").val();
+        let penalizacion = 0;
+        let ipm, dpm;
+        let tHechizo, tIntensidad, tDuración = TipoTirada.EXITO;
+        // var xpHechizo, xpIntensidad, xpDuración = 0;
+        let pmIntensidad, pmDuración, pmHechizo = 0;
+        let intensidadReal, duraciónReal = 0;
 
         ipm = //$("#iPMIntensidad");
           document.getElementById("iPMIntensidad");
@@ -756,7 +814,7 @@
 
 
         function swDuración() {
-          if(dpm.value==0) {pmDuración =0 ;return;}
+          if (dpm.value == 0) { pmDuración = 0; return; }
           switch (tDuración) {
             case (SUPERCRITICO):
               duraciónReal = dpm.value + 5;
@@ -788,7 +846,7 @@
           }
         }
         function swIntensidad() {
-          if(ipm.value==0) {pmIntensidad =0 ;return;}
+          if (ipm.value == 0) { pmIntensidad = 0; return; }
           switch (tIntensidad) {
             case (SUPERCRITICO):
               intensidadReal = ipm.value + 5;
@@ -860,22 +918,25 @@
 
           $("#lbHechizo").text(`Hechizo: ${h.v}%`);
 
-          let suma= pmIntensidad+pmDuración+pmHechizo;
-          console.log("SUMA:"+parseInt(pmIntensidad) +
+          let suma = pmIntensidad + pmDuración + pmHechizo;
+          console.log("SUMA:" + parseInt(pmIntensidad) +
             parseInt(pmHechizo) +
             parseInt(pmDuración));
 
-
-          $("#iGastados").val(parseInt(pmIntensidad) +
+          pmGastados = parseInt(pmIntensidad) +
             parseInt(pmHechizo) +
-            parseInt(pmDuración));
+            parseInt(pmDuración);
+          // console.log("Gastados");
+          // console.log(pmGastados);
+          $("#iGastados").val(pmGastados);
+
+          // $("#iGastados").val(parseInt(pmIntensidad) +
+          //   parseInt(pmHechizo) +
+          //   parseInt(pmDuración));
 
         }
 
-
-
         function cambiaIntensidad() {
-
           valorIntensidad = $("#iPMIntensidad").val();
           //TODO: hacerlo con bonificación de verdad BonHabilidad
           penalizacion = valorIntensidad * 5;
@@ -886,20 +947,19 @@
 
         dpm.addEventListener("change", function () {
           valorDuración = $("#iPMDuración").val();
-          console.log("#iPMDuración"+pmDuración);
+          console.log("#iPMDuración" + pmDuración);
           act();
         });
 
-
         dDuración.addEventListener("change", function () {
           tDuración = duración.tirada(dDuración.value);
-          console.log("Duración" + (tDuración));
+          // console.log("Duración" + (tDuración));
           act();
         });
 
         dIntensidad.addEventListener("change", function () {
           tIntensidad = intensidad.tirada(dIntensidad.value);
-          console.log("Intensidad" + (tIntensidad));
+          // console.log("Intensidad" + (tIntensidad));
           //TODO: hacerlo con bonificación de verdad BonHabilidad
           penalizacion = valorIntensidad * 5;
           act();
@@ -907,17 +967,26 @@
 
         dHechizo.addEventListener("change", function () {
           tHechizo = h.tirada(dHechizo.value);
-          console.log("Hechizo" + (tHechizo));
+          // console.log("Hechizo" + (tHechizo));
           //TODO: hacerlo con bonificación de verdad BonHabilidad
           act();
         });
 
-
         $("#lbIntensidad").text(`Intensidad: ${pIntensidad}%`);
 
+        $("#bLanzar").one("click", function () { //one para que no lo lance cada vez que ejecuto lanzar hechizo
+          pj.gastarPM(pmGastados,true);
+          // pj.modificarPuntos(PM, pmGastados * -1);
+          console.log(pmGastados * -1);
+          intensidad.xpTirada(dIntensidad.value);
+          duración.xpTirada(dDuración.value);
+          //El hechizo deberia ser la tirada con penalización
+          console.log(`dur:${pmDuración} , int:${pmIntensidad}, hechi:${pmHechizo} = ${pmGastados * -1}`);
+          pj.save();
+          console.log("***********SE HA PULSADO LANZAR");
+        });
+
       }
-
-
 
       function atras() {
         nav.pop();
@@ -937,7 +1006,7 @@
 
       function cortar() {
         copiado.push(objetoActual);
-        contenedorActual.sacar(objetoActual);
+        pj.inventario.navegar(nav).sacar(objetoActual);
         pj.save();
         // cargarPersonaje(true);
 
@@ -946,7 +1015,7 @@
       function pegar() {
         copiado.forEach(element => {
           if (element instanceof Objeto) {
-            contenedorActual.add(element);
+            pj.inventario.navegar(nav).add(element);
           }
         });
         copiado = [];
@@ -1009,15 +1078,18 @@
       function cargaInventario(pj) {
         console.log("Carga Inventario");
         nav = [];
-        cargarContenedor(pj.inventario);
+        cargarContenedor(pj.inventario.navegar(nav));
       }
 
       function cargarContenedor(object) {
+        object = pj.inventario.navegar(nav);
         if (!(object instanceof Contenedor)) return; //si no es contenedor
         //hago éste el contenedor actual
-        contenedorActual = object;
-        console.log("Contenedor Act:");
-        console.log(contenedorActual);
+        // contenedorActual = object;
+        // console.log("Contenedor Act:");
+        console.log("Objeto Act:");
+        // console.log(pj.inventario.navegar(nav));
+        console.log(object);
         clear("tbInv"); //limpio la tabla
         let visibles = $("#colInventario").val();
         createHeader(visibles, "hdInv");
@@ -1025,17 +1097,18 @@
           // addObjet2Table(element, "tbInv")
           objetoTabla(element, "tbInv", visibles);
         });
-        addObjet2Table(["peso Total", roundTo3(object.pesa())], "tbInv")
+        addObjet2Table(["peso Total", roundTo(3, object.pesa())], "tbInv")
       }
 
-      function roundTo3(num) {
+      function roundTo(precision, num) {
         //redondeamos a gramos  
-        return +(Math.round(num + "e+3") + "e-3");
+        return +(Math.round(num + "e+" + precision) + "e-" + precision);
       }
 
       function cargarPersonaje(nombre) {
         if (nombre == true) {
-          contenedorActual = null; //Llamo desde el boton y voy al inventario general
+          // contenedorActual = null;
+          nav = [] //Llamo desde el boton y voy al inventario general
         }
 
         nombre = $("#nombre").val();
@@ -1052,6 +1125,7 @@
           pj.setAll(item.val());
 
           console.log("CARGA EL PUTO PERSONAJE:" + pj.nombre);
+          console.log(nav);
           // console.log(pj);
           document.title = pj.nombre;
 
@@ -1070,14 +1144,14 @@
 
 
           //TODO: hacer que funcione
-          if (contenedorActual) {
-            console.log("Contenedor Act:");
-            console.log(contenedorActual);
-            cargarContenedor(contenedorActual);
-          }
-          else
-            cargaInventario(pj);
-          nav = [];
+          // if (contenedorActual) {
+          //   console.log("Contenedor Act:");
+          //   console.log(contenedorActual);
+          //   cargarContenedor(contenedorActual);
+          // }
+          // else
+          cargarContenedor();
+
           // console.log("No ContenedorAct: CargaInventario");
         });
 

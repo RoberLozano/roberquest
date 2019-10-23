@@ -1,6 +1,6 @@
 {
   "lock": false,
-  "active": "b8e88637f23fbe26fa18a139cf76af353b60e507",
+  "active": "a73f1345df69647021f401499146a518864ef87a",
   "sets": {
     "default": {
       "source": "default",
@@ -20,25 +20,26 @@
         "b8e88637f23fbe26fa18a139cf76af353b60e507": {
           "name": "Inventario",
           "data": [
-            "c:\\GitHub\\roberquest\\rol.js",
-            "c:\\GitHub\\roberquest\\inventario.js",
             "c:\\GitHub\\roberquest\\index.html",
-            "c:\\GitHub\\roberquest\\habilidades.js"
+            "c:\\GitHub\\roberquest\\habilidades.js",
+            "c:\\GitHub\\roberquest\\rol.js",
+            "c:\\GitHub\\roberquest\\inventario.js"
           ]
         },
         "a73f1345df69647021f401499146a518864ef87a": {
           "name": "Rol",
           "data": [
-            "c:\\GitHub\\roberquest\\rol.js",
+            "c:\\GitHub\\roberquest\\inventario.js",
             "c:\\GitHub\\roberquest\\habilidades.js",
-            "c:\\GitHub\\roberquest\\index.html"
+            "c:\\GitHub\\roberquest\\index.html",
+            "c:\\GitHub\\roberquest\\rol.js"
           ]
         },
         "859fc84a73bdb78bd1612362f1aa93440e66a510": {
           "name": "Personaje",
           "data": [
-            "c:\\GitHub\\roberquest\\index.html",
-            "c:\\GitHub\\roberquest\\habilidades.js"
+            "c:\\GitHub\\roberquest\\habilidades.js",
+            "c:\\GitHub\\roberquest\\index.html"
           ]
         },
         "eca3401e43534dc60020f475f418db8ac69813a4": {
@@ -46,6 +47,14 @@
           "data": [
             "c:\\GitHub\\roberquest\\index.html",
             "c:\\GitHub\\roberquest\\habilidades.js"
+          ]
+        },
+        "5e2ac727210fd43cd0a99f55042834460e12c144": {
+          "name": "Pociones",
+          "data": [
+            "c:\\GitHub\\roberquest\\inventario.js",
+            "c:\\GitHub\\roberquest\\rol.js",
+            "c:\\GitHub\\roberquest\\index.html"
           ]
         }
       }

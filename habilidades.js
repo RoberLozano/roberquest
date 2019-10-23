@@ -36,13 +36,13 @@
  * 
  */
 
- //Variables globales
-const PIFIA=-1;
-const FALLO=0;
-const EXITO=1;
-const ESPECIAL=2;
-const CRITICO=3;
-const SUPERCRITICO=4;
+//Variables globales
+const PIFIA = -1;
+const FALLO = 0;
+const EXITO = 1;
+const ESPECIAL = 2;
+const CRITICO = 3;
+const SUPERCRITICO = 4;
 
 
 class XP {
@@ -100,7 +100,7 @@ class XP {
         this.xp += xp;
         // console.log("fechaMundo:"+fechaMundo.toISOString());
         //por si no estuviera definida la variabel global
-        if(fechaMundo) this.fechaXp=fechaMundo.toISOString();
+        if (fechaMundo) this.fechaXp = fechaMundo.toISOString();
     }
 
     clearXP() { this.xp = 0 }
@@ -144,10 +144,10 @@ class Habilidad extends XP {
         super();
         this.nombre = nombre;
         this.tipo = tipo;
-        if(isNaN( valor )) valor=0;
+        if (isNaN(valor)) valor = 0;
         this.valor = valor;
         //bonificaciones
-        this.bvalor = 0;    
+        this.bvalor = 0;
         this.bcritico = 0;
         this.bespecial = 0;
     }
@@ -156,7 +156,7 @@ class Habilidad extends XP {
         for (let key in o) {
             this[key] = o[key];
             // console.log( this[key] + o[key]);
-            
+
         }
     }
     /* devuelve el valor actual con todos los modificadores*/
@@ -172,9 +172,9 @@ class Habilidad extends XP {
         //     if(key!="activado)")
         //     this["b"+key] += b[key];
         //   }  
-        this.bvalor     += b.valor;
-        this.bespecial  += b.especial;
-        this.bcritico   += b.critico;
+        this.bvalor += b.valor;
+        this.bespecial += b.especial;
+        this.bcritico += b.critico;
 
         b.activado = !b.activado;
     }
@@ -190,15 +190,15 @@ class Habilidad extends XP {
 
     save() {
         //TODO: utiliza la variable global pj, tal vez deberia hacerlo desde Animal
-        console.log("personajes"+pj.nombre+("habilidades")+(this.nombre));
+        console.log("personajes" + pj.nombre + ("habilidades") + (this.nombre));
         database.ref("personajes").child(pj.nombre).child("habilidades").child(this.nombre).set(this);
-    
+
     }
 
     subir(subida) {
         this.valor += subida;
         this.clearXP();
-        if(fechaMundo) this.fecha = fechaMundo;
+        if (fechaMundo) this.fecha = fechaMundo;
     }
     /**
      * da el bonificador por tipo de habilidad
@@ -212,7 +212,7 @@ class Habilidad extends XP {
      * TODO: utiliza la variable global pj, tal vez deberia hacerlo desde Animal
      * o incluso un map golbal de Animales que se acceda por nombre
      */
-    get v(){return this.valor+this.bvalor+ pj.getCar(this.tipo)}
+    get v() { return this.valor + this.bvalor + pj.getCar(this.tipo) }
 
     //poner posibles bonificaciones en especialñ y crítico
     get e() { return Math.round(this.v * 0.2) + this.bespecial }
@@ -220,10 +220,10 @@ class Habilidad extends XP {
     get p() { return Math.round(this.v * 0.05) + this.bcritico }
 
 
-/**
- * Te devuelve que tipo de tirada se obtiene con t
- * @param {number} t la tirada del dado
- */
+    /**
+     * Te devuelve que tipo de tirada se obtiene con t
+     * @param {number} t la tirada del dado
+     */
     tirada(t) {
         //TODO: soporte para -1,etc en tiradas?
         switch (true) {
@@ -244,22 +244,38 @@ class Habilidad extends XP {
         }
     }
 
+    xpTirada(t) {
+        switch (this.tirada(t)) {
+            case TipoTirada.SUPERCRITICO:
+                this.xp+=4;
+                break;
+            case TipoTirada.CRITICO:
+                this.xp+=3;
+                break;
+            case TipoTirada.ESPECIAL:
+                this.xp+=1;
+                break;
+            default:
+                break;
+        }
+    }
+
 
 }
 
-class Hechizo extends Habilidad{
-/**
- * 
- * @param {string} nombre   Nombre del hechizo
- * @param {number} pm       Los puntos de magia que gasta el hechizo
- * @param {number} valor    El %
- * @typedef Efecto          
- * @param {Efecto} efecto   El efecto
- */
-    constructor(nombre,pm, valor, efecto) {
+class Hechizo extends Habilidad {
+    /**
+     * 
+     * @param {string} nombre   Nombre del hechizo
+     * @param {number} pm       Los puntos de magia que gasta el hechizo
+     * @param {number} valor    El %
+     * @typedef Efecto          
+     * @param {Efecto} efecto   El efecto
+     */
+    constructor(nombre, pm, valor, efecto) {
         super(nombre, "Magia", valor)
-        this.pm=pm;
-        this.efecto = efecto;    
+        this.pm = pm;
+        this.efecto = efecto;
     }
 
 
@@ -269,12 +285,12 @@ class Hechizo extends Habilidad{
      * @param {number} duracion     el nº de minutos de duración, 0 si es instantáneo
      * @param {Animal} objetivo     el objetivo del hechizo -en caso de encantar pordría ser objeto
      */
-     hacerHechizo(intensidad,duracion, objetivo){
-         this.efecto.fecha= fechaMundo.add("minuto",duracion);
-         this.efecto.obj= objetivo;
-         objetivo.addEfecto(this.efecto);
+    hacerHechizo(intensidad, duracion, objetivo) {
+        this.efecto.fecha = fechaMundo.add("minuto", duracion);
+        this.efecto.obj = objetivo;
+        objetivo.addEfecto(this.efecto);
 
-     }
+    }
 
 }
 

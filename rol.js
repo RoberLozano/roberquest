@@ -24,6 +24,8 @@ const PF = "PF"
 const PG = "PG"
 const PM = "PM"
 
+const PUNTOS= ["PF","PG","PM"]
+
 const CP = ["FUE", "CON", "TAM", "INT", "POD", "DES", "ASP"];
 
 const TipoHabilidades =
@@ -71,10 +73,10 @@ class Efecto {
 
   setAll(o) {
     for (let key in o) {
-        this[key] = o[key];
-        // console.log( this[key] + o[key]);    
+      this[key] = o[key];
+      // console.log( this[key] + o[key]);    
     }
-}
+  }
 
   ok() {
     // let diferencia=0
@@ -327,9 +329,9 @@ class Animal {
   /**
    * Hace una lista de los bonificadores de daño
    */
-  listarBD(){
+  listarBD() {
     // return ((this.getCar(FUE)+this.getCar(CON))-20)/5
-    for(let i=7; i<30; i++){
+    for (let i = 7; i < 30; i++) {
       // console.log(`FUE y CON: ${i}  (${i*2} ), BON: ${this.bdR(i,i)}`);
       console.log(`FUE: ${i}  (${i} ), BON: ${this.bd(i)}`);
     }
@@ -338,8 +340,8 @@ class Animal {
   /**
    * Devuelve Bonificación de daño del personaje
    */
-  getPD(){
-    return this.bd(this.getCar(FUE),this.getCar(CON))
+  getPD() {
+    return this.bd(this.getCar(FUE), this.getCar(CON))
   }
 
   /**
@@ -347,17 +349,17 @@ class Animal {
    * @param {number} fue 
    * @param {number} con 
    */
-  bdR(fue,con){
+  bdR(fue, con) {
     //runequest
-    return ((fue+con)-20)/5;
+    return ((fue + con) - 20) / 5;
   }
 
   /**
    * Bonificación de daño según mis reglas, sólo teniendo en cuenta la FUE
    * @param {number} fue 
    */
-  bd(fue){
-    return (fue-10)/5;
+  bd(fue) {
+    return (fue - 10) / 5;
   }
 
 
@@ -375,55 +377,93 @@ class Animal {
     this.act();
   }
 
-  setMaxPuntos(){
+  setMaxPuntos() {
     this.PF = (this.getCar(FUE) + this.getCar(CON))
     this.PG = Math.round((this.getCar(TAM) + this.getCar(CON)) / 2)
     this.PM = Math.round((this.getCar(INT) + this.getCar(POD)) / 2)
   }
-/**
- * 
- * @param {string} tipo PF,PG,PM
- * @param {*} valor el valor a subir o bajar, "max", por defecto, para dejarlo en el máximo de puntos, vale cualquier string
- */
-  modificarPuntos(tipo, valor="max"){
+  /**
+   * 
+   * @param {string} tipo PF,PG,PM
+   * @param {*} valor el valor a subir o bajar, "max", por defecto, para dejarlo en el máximo de puntos, vale cualquier string
+   */
+  modificarPuntos(tipo, valor = "max") {
     //si es un numero se le añade (positivo o negativo)
-    if(typeof valor === 'number' ){
-      this[tipo]+=valor;
+    if (typeof valor === 'number') {
+      console.log(`valor inicial: ${this[tipo]} `);
+      this[tipo] += valor;
+      let max = this.getMaxPuntos(tipo);//busco el máximo
+      if (this[tipo] > max) this[tipo] = max;//si es mayor lo dejo en el límite
+      console.log(`valor: ${valor} puntos finales:${this[tipo]} `);
       return;
     }
-    this[tipo]=this.getMaxPuntos(tipo);
-
+    this[tipo] = this.getMaxPuntos(tipo);
+  }
+/**
+ * Gasta n puntos de magia
+ * 
+ * @param {*} n numero de PM a gastar
+ * @param {boolean} gemas si se quiere gastar los pm de las gemas 
+ * @returns un boolean que indica si se pueden gastar esos puntos
+ */
+  gastarPM(n,gemas=false){
+    let pm=this[PM];
+    if(pm>=n){
+      this[PM]-=n; return true;
+    }
+    if(gemas==false) return false;
+    //Con gemas
+    let extra=this.pmGemas();
+    if(pm+extra<n) return false; //si no llega con gemas
+    n=n-pm; this[PM]=0 ;//gasto los míos
+    this.gastarPMGemas(n);  //gasto las gemas
+    
+  }
+/**
+ * Gasta n puntos de magia de las gemas
+ * @param {number} n 
+ */
+  gastarPMGemas(n){
+    var quedan=n // los pm que quedan por gastar
+    console.log("n:"+n);
+    (this.inventario.darClaseRecursiva(Gema)).forEach(gema => {
+     quedan=gema.gastar(n);
+     console.log(`${gema.nombre} : y quedan ${quedan}`);
+     if(quedan<=0) return;
+     n=quedan;
+     
+    });
   }
 
   /**
    * Devuelve el valor máximo del tipo de punto pasado
    * @param {string} puntos PF,PG,PM
    */
-  getMaxPuntos(puntos){
+  getMaxPuntos(puntos) {
     switch (puntos) {
       case PF: return (this.getCar(FUE) + this.getCar(CON));
-      case PG: return  Math.round((this.getCar(TAM) + this.getCar(CON)) / 2);
-      case PM: return  Math.round((this.getCar(INT) + this.getCar(POD)) / 2);
+      case PG: return Math.round((this.getCar(TAM) + this.getCar(CON)) / 2);
+      case PM: return Math.round((this.getCar(INT) + this.getCar(POD)) / 2);
       default:
-        console.log('No hay puntos ' + puntos+ '.');
+        console.log('No hay puntos ' + puntos + '.');
     }
 
   }
 
-/**
- * Modifica una característica base y actualiza
- * @param {string} car La caracteristica: FUE,PM, etc...
- * @param {number} valor El nuevo valor
- */
+  /**
+   * Modifica una característica base y actualiza
+   * @param {string} car La caracteristica: FUE,PM, etc...
+   * @param {number} valor El nuevo valor
+   */
   set(car, valor) {
     this[car] = valor;
     this.act();
   }
 
-/**
- * añade o modifica la habilidad en el objeto
- * @param {Habilidad} h la habilidad que se añadirá/sobrescribirá
- */
+  /**
+   * añade o modifica la habilidad en el objeto
+   * @param {Habilidad} h la habilidad que se añadirá/sobrescribirá
+   */
   setHabilidad(h) {
     if (h instanceof Habilidad) {
       //Machaca lo que haya
@@ -432,26 +472,26 @@ class Animal {
       // h.save();
     }
   }
-/**
- * añade o modifica la habilidad en el firebase
- * @param {*} h La Habilidad h, o el nombre (string) de la habilidad
- */
-  saveHabilidad(h){
+  /**
+   * añade o modifica la habilidad en el firebase
+   * @param {*} h La Habilidad h, o el nombre (string) de la habilidad
+   */
+  saveHabilidad(h) {
     if (h instanceof Habilidad) {
       // console.log(h);
       this.habilidades[h.nombre] = h;
-      console.log("guardando: personajes"+this.nombre+("habilidades")+(h.nombre));
+      console.log("guardando: personajes" + this.nombre + ("habilidades") + (h.nombre));
       database.ref("personajes").child(this.nombre).child("habilidades").child(h.nombre).set(h);
     }
     else
-    if (typeof h === 'string'){
-      h=this.habilidades[h.nombre];
-      console.log("guardando por nombre: personajes"+this.nombre+("habilidades")+(h.nombre));
-      database.ref("personajes").child(this.nombre).child("habilidades").child(h.nombre).set(h);
-    }
+      if (typeof h === 'string') {
+        h = this.habilidades[h.nombre];
+        console.log("guardando por nombre: personajes" + this.nombre + ("habilidades") + (h.nombre));
+        database.ref("personajes").child(this.nombre).child("habilidades").child(h.nombre).set(h);
+      }
 
   }
-  
+
 
   getHabilidad(nombre) {
     return this.habilidades[nombre];
@@ -460,11 +500,11 @@ class Animal {
   cambiaformas(forma2) {
     this.forma2 = forma2;
   }
-/**
- * Copia toda la información de un objeto, sea de la misma clase
- * o no, si tiene las mismas propiedades
- * @param {*} o El objeto del cual se copia todo
- */
+  /**
+   * Copia toda la información de un objeto, sea de la misma clase
+   * o no, si tiene las mismas propiedades
+   * @param {*} o El objeto del cual se copia todo
+   */
   setAll(o) {
     for (let key in o) {
       this[key] = o[key];
@@ -477,9 +517,9 @@ class Animal {
 
       //TODO: Parece que va
       if (key == "efectos") {
-        this.efectos=[];
+        this.efectos = [];
         o["efectos"].forEach(element => {
-          let e= new Efecto()
+          let e = new Efecto()
           e.setAll(element);
           this.addEfecto(e);
         });
@@ -519,7 +559,7 @@ class Animal {
   P(car) { return this.getCar(car) - 10 }
   N(car) { return 10 - this.getCar(car) }
   S(car) { return Math.round((this.getCar(car) - 10) / 2) }
-  SN(car){ return Math.round((10 - this.getCar(car)) / 2) }
+  SN(car) { return Math.round((10 - this.getCar(car)) / 2) }
 
   /**
    * actualiza el valor de los tipo de habilidades
@@ -537,13 +577,22 @@ class Animal {
     this.Agilidad = this.P("DES") + this.S("FUE") + this.SN("TAM")
     this.Comunicación = this.P("INT") + this.P("ASP")
     this.Conocimiento = this.P("INT")
-    this.Magia = this.P("INT") + this.P("POD")+ this.S("DES")
+    this.Magia = this.P("INT") + this.P("POD") + this.S("DES")
     this.Manipulación = this.P("DES") + this.S("FUE") + this.P("INT")
     this.Percepción = this.P("CON") + this.S("INT")
     this.Sigilo = this.P("DES") + this.S("INT") + this.SN("TAM")
 
   }
 
+  pmGemas() {
+    //TODO:
+    let p = 0;
+    (this.inventario.darClaseRecursiva(Gema)).forEach(element => {
+      p += element.pm;
+    });
+    return p;
+    // console.log(this.inventario.darContenedores());
+  }
 
   pesoTotal() {
     return this.peso + this.inventario.pesoTotal();
@@ -554,18 +603,18 @@ class Animal {
    */
   save() { //creo que da referencias cíclicas
     database.ref("personajes").child(this.nombre).set(this);
-    console.log("GUARDADO:"+this.nombre);
-    
+    console.log("GUARDADO:" + this.nombre);
+
   }
 
   aplicar(efecto) {
     // el efecto sólo se debería aplicar en las bonificaciones
     // a no ser que sea permanente (algo muy raro)
     // var obj = efecto.obj
-    if (efecto.ok(fechaMundo)) 
+    if (efecto.ok(fechaMundo))
       eval(efecto.efecto);
   }
-//TODO: mirar si quitar lo del backup
+  //TODO: mirar si quitar lo del backup
   aplicarEfectos() {
     let log = ""
     if (this.backup == null) {
@@ -591,7 +640,7 @@ class Animal {
     for (let e of this.efectos) {
 
       if (e.ok()) {
-        console.log("*******" + e.nombre + " aplicado " + e.fecha+" en " +this.nombre );
+        console.log("*******" + e.nombre + " aplicado " + e.fecha + " en " + this.nombre);
         log += e.nombre + " aplicado " + e.fecha.toLocaleString() + "<br>";
         this.aplicar(e);
         // this.printCar();
