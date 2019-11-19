@@ -1,6 +1,6 @@
 {
   "lock": false,
-  "active": "a73f1345df69647021f401499146a518864ef87a",
+  "active": "3babbd03dec44b75f938171a4ddae6f5432a43db",
   "sets": {
     "default": {
       "source": "default",
@@ -9,12 +9,12 @@
         "e7c3800e31ff2e7695b9f5bed95a6de6715dca44": {
           "name": "Menus",
           "data": [
+            "c:\\GitHub\\roberquest\\importar.html",
             "c:\\GitHub\\roberquest\\menus.html",
             "c:\\GitHub\\roberquest\\rol.js",
             "c:\\GitHub\\roberquest\\habilidades.js",
             "c:\\GitHub\\roberquest\\popup.html",
-            "c:\\GitHub\\roberquest\\index.html",
-            "c:\\GitHub\\roberquest\\importar.html"
+            "c:\\GitHub\\roberquest\\index.html"
           ]
         },
         "b8e88637f23fbe26fa18a139cf76af353b60e507": {
@@ -55,6 +55,12 @@
             "c:\\GitHub\\roberquest\\inventario.js",
             "c:\\GitHub\\roberquest\\rol.js",
             "c:\\GitHub\\roberquest\\index.html"
+          ]
+        },
+        "3babbd03dec44b75f938171a4ddae6f5432a43db": {
+          "name": "Toast",
+          "data": [
+            "c:\\GitHub\\roberquest\\hammer.min.js"
           ]
         }
       }

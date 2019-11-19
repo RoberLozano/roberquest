@@ -47,6 +47,7 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.9/js/bootstrap-select.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
+  <script src="hammer.min.js"></script>
 
 
   <script src='habilidades.js'></script>
@@ -287,6 +288,18 @@
       </div>
     </div>
     <!-- #endregion -->
+
+    <!-- #region toast -->
+    <div class="toast" style="position: absolute; top: 0; right: 0;">
+      <!-- <div class="toast-header" style="background-color:black; color:white" >
+    Toast Header
+  </div> -->
+      <div class="toast-body" style="background-color:black; color:white">
+        Some text inside the toast body
+      </div>
+    </div>
+    <!-- #endregion -->
+
 
     <p>Elige la fecha del Mundo</p>
     <input class="form-control" type="datetime-local" value="0177-07-07T00:00:01.0" id="fecha">
@@ -542,6 +555,36 @@
         }
 
         if (object instanceof Objeto) {
+
+          var hammertime = new Hammer(cell);
+          hammertime.on('swipe', function (ev) {
+            console.log(ev);
+            if(ev.direction== 2) //a izq
+            cell.parentElement.style.background = "white";
+            else    //a derechas selecciona
+           cell.parentElement.style.background = "green";
+          });
+
+
+          // var mc = new Hammer.Manager(cell);
+
+
+          // // Tap recognizer with minimal 2 taps
+          // mc.add(new Hammer.Tap({ event: 'doubletap', taps: 2 }));
+          // // Single tap recognizer
+          // mc.add(new Hammer.Tap({ event: 'singletap' }));
+
+
+          // // we want to recognize this simulatenous, so a quadrupletap will be detected even while a tap has been recognized.
+          // mc.get('doubletap').recognizeWith('singletap');
+          // // we only want to trigger a tap, when we don't have detected a doubletap
+          // mc.get('singletap').requireFailure('doubletap');
+
+
+          // mc.on("singletap doubletap swipe", function (ev) {
+          //   console.log( "Toque " +ev.type + " ");
+          // });
+
           cell.addEventListener("dblclick", function () {
             // alert("mover objeto") + object.nombre;
             //modifico el editor modal
@@ -975,7 +1018,7 @@
         $("#lbIntensidad").text(`Intensidad: ${pIntensidad}%`);
 
         $("#bLanzar").one("click", function () { //one para que no lo lance cada vez que ejecuto lanzar hechizo
-          pj.gastarPM(pmGastados,true);
+          pj.gastarPM(pmGastados, true);
           // pj.modificarPuntos(PM, pmGastados * -1);
           console.log(pmGastados * -1);
           intensidad.xpTirada(dIntensidad.value);
@@ -1002,6 +1045,10 @@
       function copiar() {
         copiado.push(objetoActual);
         console.log(copiado);
+        $('.toast-body').text(`Objeto "${objetoActual.nombre}"" copiado`)
+
+        $('.toast').toast({ delay: 4000 });
+        $('.toast').toast('show');
       }
 
       function cortar() {
