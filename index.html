@@ -40,6 +40,25 @@
     .number-input {
       width: 60px;
     }
+
+    .gold{
+      background: radial-gradient(ellipse farthest-corner at right bottom, #FEDB37 0%, #FDB931 8%, #9f7928 30%, #8A6E2F 40%, transparent 80%),
+                radial-gradient(ellipse farthest-corner at left top, #FFFFFF 0%, #FFFFAC 8%, #D1B464 25%, #5d4a1f 62.5%, #5d4a1f 100%);
+    }
+
+    .selec{
+      background: linear-gradient(315deg, #b8d0e0 0%, #a6afb9 54%,  #b8d0e0 80% );
+    }
+
+    .metal{
+      background: linear-gradient(180deg, hsl(0,0%,78%)  0%, 
+    hsl(0,0%,90%) 47%, 
+    hsl(0,0%,78%) 53%,
+    hsl(0,0%,70%)100%);
+    }
+
+
+
   </style>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
@@ -248,9 +267,11 @@
 
         <div class="btn-group">
           <div class="dropdown">
-            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+            <button type="button" class="btn btn-dark dropdown-toggle" data-toggle="dropdown">
               Nuevo Objeto
-              <div class="dropdown-menu">
+              <div class="dropdown-menu" onmouseover="this.style.color='red';" onmouseout="this.style.color='white';" style=" color: #fff;
+              background-color: #000;
+              border-color: #fff;">
                 <a class="dropdown-item" onclick="editar(new Objeto()) ;$('#editModal').modal();">Objeto</a>
                 <a class="dropdown-item" onclick="editar(new Contenedor()); $('#editModal').modal();"> <i
                     class="fas fa-box-open"></i> Contenedor</a>
@@ -265,9 +286,11 @@
         <!-- <button type="button" class="btn btn-danger" onclick="editar(new Objeto()) ;$('#editModal').modal();">Nuevo Objeto</button>
         <button type="button" class="btn btn-primary" onclick="editar(new Contenedor()); $('#editModal').modal();"> <i
             class="fas fa-box-open"></i>Nuevo Contenedor</button> -->
-        <button type="button" class="btn btn-dark" onclick="copiar()"> <i class="fas fa-copy"></i> </button>
-        <button type="button" class="btn btn-danger" onclick="cortar()"> <i class="fas fa-cut"></i></button>
-        <button type="button" class="btn btn-primary" onclick="pegar()"><i class="fas fa-paste"></i></button>
+        <button type="button" class="btn btn-primary" onclick="copiar()"> <i class="fas fa-copy"></i> </button>
+        <button type="button" class="btn btn-dark" onclick="cortar()"> <i class="fas fa-cut"></i></button>
+        <button type="button" class="btn btn-success" onclick="pegar()"><i class="fas fa-paste"></i></button>
+        <button type="button" class="btn btn-danger" onclick="eliminar()"><i class="fas fa-trash"></i></button>
+
 
         <table class="table table-hover">
           <thead id="hdInv">
@@ -337,6 +360,7 @@
       // });
 
       var copiado = [];
+      var selected = [];
       var nav = [];
 
       // $('#columnas').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
@@ -531,6 +555,22 @@
 
       }
 
+      function seleccionar(objeto) {
+        console.log(selected);
+        var pos = selected.indexOf(objeto);
+        console.log("pos:"+pos);
+        if(pos>-1) return; //ya está seleccionado
+        selected.push(objeto);
+        console.log(selected);
+      }
+
+      function deseleccionar(objeto) {
+        var pos = selected.indexOf(objeto);
+        console.log("Encontrado en pos:" + pos);
+        if (pos > -1) selected.splice(pos, 1);
+        console.log(selected);
+
+      }
 
 
       function crearEventos(object, cell, key) {
@@ -540,7 +580,7 @@
           if (key === "nombre") {
             // cell.style.color = "red";
             // cell.innerHTML += `   <button type="button" class="btn btn-secondary btn-sm" onclick="editar();" >Abrir</button>`
-            cell.innerHTML += ` <span class="badge badge-dark">${object.objetos.length}</span>`
+            cell.innerHTML +=  ` <i class="fas fa-box-open"></i> <span class="badge badge-dark">${object.objetos.length}</span>`
 
             cell.addEventListener("click", function () {
               let nc = object.nombre;
@@ -554,15 +594,31 @@
           }
         }
 
+        if (object instanceof Objetos && key === "nombre") {
+          if(object[key] =="mo") cell.innerHTML += ` <span class="badge badge-dark gold" >${object.ctd}</span>`;
+          if(object[key] =="mm") cell.innerHTML += ` <span class="badge metal" >${object.ctd}</span>`;
+          // cell.innerHTML += ` <span class="badge badge-dark" style="background: linear-gradient(315deg, #b8d0e0 0%, #a6afb9 54%,  #b8d0e0 80% );">${object.ctd}</span>`
+
+        }
+
+
         if (object instanceof Objeto) {
 
           var hammertime = new Hammer(cell);
           hammertime.on('swipe', function (ev) {
             console.log(ev);
-            if(ev.direction== 2) //a izq
-            cell.parentElement.style.background = "white";
-            else    //a derechas selecciona
-           cell.parentElement.style.background = "green";
+            if(ev.direction== 2){
+              // cell.parentElement.style.background = "white";
+              cell.parentElement.classList.remove("selec");
+              deseleccionar(object);
+         
+
+            } //a izq
+            else  {
+              // cell.parentElement.style.background = "green";
+              cell.parentElement.classList.add("selec");
+              seleccionar(object);
+            } //a derechas selecciona
           });
 
 
@@ -1043,20 +1099,30 @@
 
       }
       function copiar() {
-        copiado.push(objetoActual);
-        console.log(copiado);
-        $('.toast-body').text(`Objeto "${objetoActual.nombre}"" copiado`)
+        copiado= selected;
+        // copiado.push(objetoActual);
+        // console.log(copiado);
+        // $('.toast-body').text(`Objeto "${objetoActual.nombre}"" copiado`)
 
-        $('.toast').toast({ delay: 4000 });
-        $('.toast').toast('show');
+        // $('.toast').toast({ delay: 4000 });
+        // $('.toast').toast('show');
       }
 
       function cortar() {
-        copiado.push(objetoActual);
-        pj.inventario.navegar(nav).sacar(objetoActual);
-        pj.save();
+        // copiado.push(objetoActual);
+        copiar();
+        eliminar();
+        // pj.inventario.navegar(nav).sacar(objetoActual);
+        // pj.save();
         // cargarPersonaje(true);
+      }
 
+      function eliminar() {
+        selected.forEach(element => {
+          pj.inventario.navegar(nav).sacar(element);
+        });
+        pj.save();
+        
       }
 
       function pegar() {
@@ -1066,6 +1132,7 @@
           }
         });
         copiado = [];
+        selected = [];
         pj.save()
         // cargarPersonaje(true);
 
