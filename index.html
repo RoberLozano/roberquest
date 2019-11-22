@@ -12,6 +12,8 @@
     href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.9/css/bootstrap-select.css" />
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
     integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+  <link rel="stylesheet" href="fab.css">
+  <!-- ESTILOS PROPIOS -->
   <style type="text/css">
     @font-face {
       font-family: "Friedolin";
@@ -41,25 +43,24 @@
       width: 60px;
     }
 
-    .gold{
+    .gold {
       background: radial-gradient(ellipse farthest-corner at right bottom, #FEDB37 0%, #FDB931 8%, #9f7928 30%, #8A6E2F 40%, transparent 80%),
-                radial-gradient(ellipse farthest-corner at left top, #FFFFFF 0%, #FFFFAC 8%, #D1B464 25%, #5d4a1f 62.5%, #5d4a1f 100%);
+        radial-gradient(ellipse farthest-corner at left top, #FFFFFF 0%, #FFFFAC 8%, #D1B464 25%, #5d4a1f 62.5%, #5d4a1f 100%);
     }
 
-    .selec{
-      background: linear-gradient(315deg, #b8d0e0 0%, #a6afb9 54%,  #b8d0e0 80% );
+    .selec {
+      background: linear-gradient(315deg, #b8d0e0 0%, #a6afb9 54%, #b8d0e0 80%);
     }
 
-    .metal{
-      background: linear-gradient(180deg, hsl(0,0%,78%)  0%, 
-    hsl(0,0%,90%) 47%, 
-    hsl(0,0%,78%) 53%,
-    hsl(0,0%,70%)100%);
+    .metal {
+      background: linear-gradient(180deg, hsl(0, 0%, 78%) 0%,
+          hsl(0, 0%, 90%) 47%,
+          hsl(0, 0%, 78%) 53%,
+          hsl(0, 0%, 70%)100%);
     }
-
-
-
   </style>
+
+
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
@@ -67,7 +68,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.9/js/bootstrap-select.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
   <script src="hammer.min.js"></script>
-
+  <script src="fab.js"></script>
 
   <script src='habilidades.js'></script>
   <script src='inventario.js'></script>
@@ -269,7 +270,8 @@
           <div class="dropdown">
             <button type="button" class="btn btn-dark dropdown-toggle" data-toggle="dropdown">
               Nuevo Objeto
-              <div class="dropdown-menu" onmouseover="this.style.color='red';" onmouseout="this.style.color='white';" style=" color: #fff;
+              <div class="dropdown-menu" onmouseover="this.style.color='red';" onmouseout="this.style.color='white';"
+                style=" color: #fff;
               background-color: #000;
               border-color: #fff;">
                 <a class="dropdown-item" onclick="editar(new Objeto()) ;$('#editModal').modal();">Objeto</a>
@@ -328,6 +330,8 @@
     <input class="form-control" type="datetime-local" value="0177-07-07T00:00:01.0" id="fecha">
     <p id="texto"></p>
 
+    <div id="cont"></div>
+
     <button onclick="act()"> Cambiar fecha y hora</button>
     <button onclick="saveStats()"> Guardar</button>
 
@@ -363,6 +367,84 @@
       var selected = [];
       var nav = [];
 
+      //fab
+
+      var fab = new Fab({
+        selector: "#cont",
+        button: {
+          style: "large teal",
+          html: "<i class='fas fa-plus'>"
+        },
+        icon: {
+          style: "amazon icon",
+          html: ""
+        },
+        // "top-left" || "top-right" || "bottom-left" || "bottom-right"
+        position: "bottom-right",
+        // "horizontal" || "vertical"
+        direction: "vertical",
+        buttons: [
+          {
+            button: {
+              style: "medium metal",
+              html: ""
+            },
+            icon: {
+              style: "",  
+              html: "<i class='fas fa-copy'>"
+            },
+            onClick: function () {
+              copiar();
+            }
+          },
+          {
+            button: {
+              style: "small gold",
+              html: ""
+            },
+            icon: {
+              style: "book icon",
+              html: "<i class='fas fa-cut'>"
+            },
+            onClick: function () {
+              cortar();
+            }
+          },
+          {
+            button: {
+              style: "small green",
+              html: ""
+            },
+            icon: {
+              style: "bullhorn icon",
+              html: "<i class='fas fa-paste'>"
+            },
+            onClick: function () {
+              pegar();
+            }
+          },
+          {
+            button: {
+              style: "small red",
+              html: ""
+            },
+            icon: {
+              style: "chart pie icon",
+              html: "<i class='fas fa-trash'>"
+            },
+            onClick: function () {
+              console.log("ice");
+            }
+          }
+        ],
+        onOpen: function () {
+
+        },
+        onClose: function () {
+
+        }
+      });
+
       // $('#columnas').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
       //   // do something...
       //   // console.log($('#columnas').val());
@@ -387,7 +469,7 @@
             for (let i of found) { //por cada numero encontrado si cumple bool = true
               // console.log(parseInt(i)+":" +value.substring(1)); 
               // if(parseInt(i)>limit){
-                
+
               if (eval('parseInt(i)' + signo + 'limit')) {
                 bool = true;
                 break;
@@ -422,8 +504,8 @@
             var found = $(this).html().match(regex);
             console.log(found);
             for (let i of found) { //por cada numero encontrado si cumple la condición, bool = true
-            i=i.replace("<","").replace(">","");
-            console.log("i:"+i);
+              i = i.replace("<", "").replace(">", "");
+              console.log("i:" + i);
               if (eval('parseFloat(i)' + signo + 'limit')) {
                 bool = true;
                 break;
@@ -439,7 +521,7 @@
       });
 
 
-//TODO: MIRAR POR QUÉ NO FUNCIONA LO DE ABAJO
+      //TODO: MIRAR POR QUÉ NO FUNCIONA LO DE ABAJO
 
       // $("#buscar").on("keyup", buscar("#buscar", "tbHab"));
       // $("#buscarObjeto").on("keyup", buscar("#buscarObjeto", "tbInv"));
@@ -599,8 +681,8 @@
       function seleccionar(objeto) {
         console.log(selected);
         var pos = selected.indexOf(objeto);
-        console.log("pos:"+pos);
-        if(pos>-1) return; //ya está seleccionado
+        console.log("pos:" + pos);
+        if (pos > -1) return; //ya está seleccionado
         selected.push(objeto);
         console.log(selected);
       }
@@ -621,7 +703,7 @@
           if (key === "nombre") {
             // cell.style.color = "red";
             // cell.innerHTML += `   <button type="button" class="btn btn-secondary btn-sm" onclick="editar();" >Abrir</button>`
-            cell.innerHTML +=  ` <i class="fas fa-box-open"></i> <span class="badge badge-dark">${object.objetos.length}</span>`
+            cell.innerHTML += ` <i class="fas fa-box-open"></i> <span class="badge badge-dark">${object.objetos.length}</span>`
 
             cell.addEventListener("click", function () {
               let nc = object.nombre;
@@ -636,8 +718,8 @@
         }
 
         if (object instanceof Objetos && key === "nombre") {
-          if(object[key] =="mo") cell.innerHTML += ` <span class="badge badge-dark gold" >${object.ctd}</span>`;
-          if(object[key] =="mm") cell.innerHTML += ` <span class="badge metal" >${object.ctd}</span>`;
+          if (object[key] == "mo") cell.innerHTML += ` <span class="badge badge-dark gold" >${object.ctd}</span>`;
+          if (object[key] == "mm") cell.innerHTML += ` <span class="badge metal" >${object.ctd}</span>`;
           // cell.innerHTML += ` <span class="badge badge-dark" style="background: linear-gradient(315deg, #b8d0e0 0%, #a6afb9 54%,  #b8d0e0 80% );">${object.ctd}</span>`
 
         }
@@ -648,14 +730,14 @@
           var hammertime = new Hammer(cell);
           hammertime.on('swipe', function (ev) {
             console.log(ev);
-            if(ev.direction== 2){
+            if (ev.direction == 2) {
               // cell.parentElement.style.background = "white";
               cell.parentElement.classList.remove("selec");
               deseleccionar(object);
-         
+
 
             } //a izq
-            else  {
+            else {
               // cell.parentElement.style.background = "green";
               cell.parentElement.classList.add("selec");
               seleccionar(object);
@@ -1140,7 +1222,7 @@
 
       }
       function copiar() {
-        copiado= selected;
+        copiado = selected;
         // copiado.push(objetoActual);
         // console.log(copiado);
         // $('.toast-body').text(`Objeto "${objetoActual.nombre}"" copiado`)
@@ -1163,7 +1245,7 @@
           pj.inventario.navegar(nav).sacar(element);
         });
         pj.save();
-        
+
       }
 
       function pegar() {
