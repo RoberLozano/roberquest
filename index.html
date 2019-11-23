@@ -12,7 +12,7 @@
     href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.9/css/bootstrap-select.css" />
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
     integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
-  <link rel="stylesheet" href="fab.css">
+  <link rel="stylesheet" href="bubbler.css">
   <!-- ESTILOS PROPIOS -->
   <style type="text/css">
     @font-face {
@@ -68,7 +68,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.9/js/bootstrap-select.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
   <script src="hammer.min.js"></script>
-  <script src="fab.js"></script>
+  <script src="bubbler.js"></script>
+
+
 
   <script src='habilidades.js'></script>
   <script src='inventario.js'></script>
@@ -330,10 +332,64 @@
     <input class="form-control" type="datetime-local" value="0177-07-07T00:00:01.0" id="fecha">
     <p id="texto"></p>
 
-    <div id="cont"></div>
-
     <button onclick="act()"> Cambiar fecha y hora</button>
     <button onclick="saveStats()"> Guardar</button>
+
+    <!-- script de Bubble -->
+    <script>
+      // BUBBLE
+      var options =
+        [
+          {
+            icon: '<i class="fas fa-copy"></i>',
+            label: 'Copiar',
+            display: {
+              color: 'white',
+              background: 'darkcyan'
+            },
+            callback: function () {
+              copiar();
+            }
+          },
+          {
+            icon: '<i class="fa fa-cut" aria-hidden="true"></i>',
+
+            label: 'Cortar',
+            display: {
+              color: 'white',
+              background: 'orangered'
+            },
+            callback: function () {
+              cortar();
+            }
+          },
+          {
+            icon: '<i class="fa fa-paste" aria-hidden="true"></i>',
+            label: 'Pegar',
+            display: {
+              color: 'white',
+              background: 'green'
+            },
+            callback: function () {
+              pegar();
+            }
+          },
+          {
+            icon: '<i class="fa fa-trash" aria-hidden="true"></i>',
+            label: 'Borrar',
+            display: {
+              color: 'white',
+              background: 'red'
+            },
+            callback: function () {
+              eliminar();
+            }
+          },
+
+        ];
+
+      var context = new Bubbler(options);
+    </script>
 
     <script>
       // el select guay
@@ -367,83 +423,7 @@
       var selected = [];
       var nav = [];
 
-      //fab
 
-      var fab = new Fab({
-        selector: "#cont",
-        button: {
-          style: "large teal",
-          html: "<i class='fas fa-plus'>"
-        },
-        icon: {
-          style: "amazon icon",
-          html: ""
-        },
-        // "top-left" || "top-right" || "bottom-left" || "bottom-right"
-        position: "bottom-right",
-        // "horizontal" || "vertical"
-        direction: "vertical",
-        buttons: [
-          {
-            button: {
-              style: "medium metal",
-              html: ""
-            },
-            icon: {
-              style: "",  
-              html: "<i class='fas fa-copy'>"
-            },
-            onClick: function () {
-              copiar();
-            }
-          },
-          {
-            button: {
-              style: "small gold",
-              html: ""
-            },
-            icon: {
-              style: "book icon",
-              html: "<i class='fas fa-cut'>"
-            },
-            onClick: function () {
-              cortar();
-            }
-          },
-          {
-            button: {
-              style: "small green",
-              html: ""
-            },
-            icon: {
-              style: "bullhorn icon",
-              html: "<i class='fas fa-paste'>"
-            },
-            onClick: function () {
-              pegar();
-            }
-          },
-          {
-            button: {
-              style: "small red",
-              html: ""
-            },
-            icon: {
-              style: "chart pie icon",
-              html: "<i class='fas fa-trash'>"
-            },
-            onClick: function () {
-              console.log("ice");
-            }
-          }
-        ],
-        onOpen: function () {
-
-        },
-        onClose: function () {
-
-        }
-      });
 
       // $('#columnas').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
       //   // do something...
