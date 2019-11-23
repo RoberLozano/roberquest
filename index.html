@@ -112,8 +112,6 @@
       </nav>
     </div>
 
-    <h2 id="titulo">Roberquest</h2>
-
     <!-- Modal -->
     <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalTitle"
       aria-hidden="true">
@@ -190,10 +188,6 @@
     </div>
 
 
-
-
-
-
     <!-- #region tabs -->
     <div class="tab-content">
       <div id="home" class="tab-pane fade in active">
@@ -232,9 +226,13 @@
 
       </div>
       <div id="habilidades" class="tab-pane fade">
-        <p>Busca en cualquier campo:</p>
-        <input class="form-control" id="buscar" type="text" placeholder="Buscar..">
-        <br>
+
+        <div class="input-group ">
+          <div class="input-group-prepend">
+            <span class="input-group-text"><i class="fas fa-search"></i></span>
+          </div>
+          <input class="form-control" id="buscar" type="text" placeholder="Buscar..">
+        </div>
         <select class="selectpicker" id="columnas" multiple data-live-search="true" data-width="fit" multiple
           title="Seleccione columnas a mostrar">
           <option selected>nombre</option>
@@ -252,12 +250,15 @@
         </table>
       </div>
       <div id="inventario" class="tab-pane fade">
-        <h3>Inventario</h3>
         <button type="button" class="btn btn-primary" onclick="atras()"> <i class="fas fa-arrow-left"></i>
           Atras</button>
-        <p>Busca en cualquier campo:</p>
-        <input class="form-control" id="buscarObjeto" type="text" placeholder="Buscar..">
-        <br>
+
+        <div class="input-group ">
+          <div class="input-group-prepend">
+            <span class="input-group-text"><i class="fas fa-search"></i></span>
+          </div>
+          <input class="form-control" id="buscarObjeto" type="text" placeholder="Buscar..">
+        </div>
         <select class="selectpicker" id="colInventario" multiple data-live-search="true" data-width="fit" multiple
           title="Seleccione columnas a mostrar">
           <option selected>nombre</option>
@@ -271,7 +272,7 @@
         <div class="btn-group">
           <div class="dropdown">
             <button type="button" class="btn btn-dark dropdown-toggle" data-toggle="dropdown">
-              Nuevo Objeto
+              Añadir
               <div class="dropdown-menu" onmouseover="this.style.color='red';" onmouseout="this.style.color='white';"
                 style=" color: #fff;
               background-color: #000;
@@ -1447,12 +1448,15 @@
           }
 
           if (valor === undefined) valor = "";
+
           cell.innerHTML = '<i data-toggle="tooltip"  id="' + id + "|" + key + "|" + valor + '" title=' + key + '>' + valor + '</i>';
           crearEventos(object, cell, key);
           i++;
         }
 
-        if (object instanceof Habilidad) { var cell = row.insertCell(i); cell.innerHTML = "<b>" + object.v + "</b>" }
+        if (object instanceof Habilidad) { var cell = row.insertCell(i); cell.innerHTML =
+         `<i data-toggle="tooltip" title="E: ${object.e}\nC: ${object.c} "> <b> ${object.v}</b> </i>`
+        }
 
       }
 
