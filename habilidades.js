@@ -112,23 +112,24 @@ class TipoTirada {
     //TODO: quitar static para que vaya en firefox
     static tirada = ["PIFIA", "FALLO", "EXITO", "ESPECIAL", "CRITICO", "SUPERCRITICO"];
     static get PIFIA() {
-        return -1;
-    }
-    static get FALLO() {
         return 0;
     }
-    static get EXITO() {
+    static get FALLO() {
         return 1;
     }
-    static get ESPECIAL() {
+    static get EXITO() {
         return 2;
     }
-    static get CRITICO() {
+    static get ESPECIAL() {
         return 3;
     }
-    static get SUPERCRITICO() {
+    static get CRITICO() {
         return 4;
     }
+    static get SUPERCRITICO() {
+        return 5;
+    }
+
 
 }
 

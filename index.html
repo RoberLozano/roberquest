@@ -100,7 +100,7 @@
           aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
-        <input type="text" list="listaPJ" class="text-light bg-dark h3 " style="font-family: Old Europe" value="Blanc"
+        <input type="text" list="listaPJ" class="text-light bg-dark h3 " style="font-family: Old Europe" value="Rosssel"
           id="nombre">
         <datalist id="listaPJ">
           <option value="Personaje">
@@ -136,7 +136,7 @@
     </div>
 
     <!-- Modal Hechizo -->
-    <div class="modal fade" id="modalHechizo" tabindex="-1" role="dialog" aria-labelledby="modalHechizoTitle"
+    <!-- <div class="modal fade" id="modalHechizo" tabindex="-1" role="dialog" aria-labelledby="modalHechizoTitle"
       aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -153,7 +153,7 @@
                 <div class="input-group-prepend">
                   <span id="lbDuración" class="input-group-text">Duración: 130%</span>
                   <input id="iPMDuración" type="number" value="0" class="form-control number-input">
-                  <span class="input-group-text"><i class="fas fa-dice-six"></i>🎲</span>
+                  <span class="input-group-text"><i class="fas fa-dice-six"></i></span>
                   <input id="iDadosDuración" type="number" class="form-control number-input">
                   <button id="btDuraciónOK" class="btn btn-primary" type="button">OK</button>
                 </div>
@@ -185,7 +185,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
 
 
     <!-- #region tabs -->
@@ -335,6 +335,8 @@
 
     <button onclick="act()"> Cambiar fecha y hora</button>
     <button onclick="saveStats()"> Guardar</button>
+
+    <div id="salida"></div>
 
     <!-- script de Bubble -->
     <script>
@@ -1146,7 +1148,11 @@
           act();
         }
 
-        ipm.addEventListener("change", cambiaIntensidad);
+        ipm.addEventListener("change", function () {
+          valorDuración = $("#iPMDuración").val();
+          console.log("#iPMDuración" + pmDuración);
+          act();
+        }); ("change", cambiaIntensidad);
 
         dpm.addEventListener("change", function () {
           valorDuración = $("#iPMDuración").val();
@@ -1188,6 +1194,85 @@
           pj.save();
           console.log("***********SE HA PULSADO LANZAR");
         });
+
+      }
+
+      var iPM = [];
+
+      function hechizos(hechizo) {
+        // las habilidades
+        var nombres = [
+          "Multiconjuro",
+          "Sobrepotencia",
+          "Refuerzo",
+          "Alcance",
+          "Duración",
+          "Intensidad",
+          "Puntería",
+          "Velocidad"
+        ]
+
+
+        pa = []
+        var habilidades = []
+        var html = ""
+        var h;
+        var dados=[];
+        document.getElementById("salida").innerHTML="";
+        //pongo todas las habilidades mágicas en habilidades
+        nombres.forEach(n => {
+          h = pj.getHabilidad(n);
+          if (h) {
+            habilidades.push(h)
+            document.getElementById("salida").innerHTML +=
+              `
+      <div class="input-group-prepend">
+        <span id="lb${h.nombre}" class="input-group-text col-4">${h.nombre}: ${h.v}%</span>
+        <input id="iPM${h.nombre}" type="number" value="0" class="form-control number-input col-2">
+        <span class="input-group-text col-1"><i class="fas fa-dice-six"></i></span>
+        <input id="iDados${h.nombre}" type="number" class="form-control number-input col-2">
+        <button id="bt${h.nombre}OK" class="btn btn-primary col-1" type="button">OK</button>
+      </div>
+        `
+
+
+
+          }
+        });
+        // console.log("habilidades");
+        // console.log(habilidades);
+        habilidades.forEach(h => {
+          console.log(h);
+          // iPM[h.nombre]=""
+          // iPM[h.nombre] = document.getElementById(`iPM${h.nombre}`);
+
+          $(`#iPM${h.nombre}`).change( function () {
+            valor = event.target.value;
+            console.log(`#iPM${h.nombre} valor: ${event.target.value}`);
+            iPM[h.nombre]= valor;
+          });
+
+          $(`#iDados${h.nombre}`).change( function () {
+            valor = event.target.value;
+            console.log(`#iDados${h.nombre} valor: ${event.target.value}`);
+            dados[h.nombre]= valor;
+            console.log(TipoTirada.tirada[h.tirada(valor)]);
+          });
+          
+
+          // iPM[h.nombre].addEventListener("change", function () {
+          //   console.log(`valor: ${iPM[h.nombre].value}`);
+          //   console.log(`valor: ${event.target.value}`);
+            
+          //   valor = $(`#iPM${h.nombre}`).val();
+          //   console.log(`#iPM${h.nombre}` + valor);
+
+          // });
+
+
+        });
+        // document.getElementById("salida").innerHTML=html
+
 
       }
 
@@ -1454,8 +1539,10 @@
           i++;
         }
 
-        if (object instanceof Habilidad) { var cell = row.insertCell(i); cell.innerHTML =
-         `<i data-toggle="tooltip" title="E: ${object.e}\nC: ${object.c} "> <b> ${object.v}</b> </i>`
+        if (object instanceof Habilidad) {
+          // en habilidad pongo el total (.v) y un tooltip con el E y C
+          var cell = row.insertCell(i); cell.innerHTML =
+            `<i data-toggle="tooltip" title="E: ${object.e}\nC: ${object.c} "> <b> ${object.v}</b> </i>`
         }
 
       }

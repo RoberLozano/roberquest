@@ -15,16 +15,18 @@
 
 <h1>Importar Habilidades</h1>
 <input type="text" class="text-light bg-dark h3 " id="nombre">
+<input type="checkbox" id="incluir0" value="1" checked>Añadir habilidades con 0<br>
 <p>Introduzca los datos en la caja de texto</p>
     <textarea  id = "datos" name="text" rows =30 id="text"  style="width:96%;padding:2%;font:15px sans-serif;">
-
     </textarea>
     <button onclick="scan()">Scan</button>
-    <textarea placeholder="Describe yourself here..."></textarea> 
+    <p id="resultado"></p>
 
     <script>
         var listaHabilidades=[];
+        var cont=0;
         var tipo="Agilidad";
+        //inicializo el nombre a pj
         let nombre = document.getElementById("nombre");
         nombre.value=pj.nombre;
 
@@ -32,16 +34,21 @@
         }
 
         function scan(params) {
+            cont=0;
             var datos = document.getElementById("datos");
             var texto= datos.value;
             var lineas = texto.split("\n");
             lineas.forEach(linea => {
-               porLinea(linea,"\t")
+                try {
+                    porLinea(linea,"\t")
+                } catch (e) {
+                console.log("error en linea: "+linea);
+                }
             });
             // console.log(listaHabilidades);
             pj.nombre=nombre = $("#nombre").val();
             console.log(pj);
-            
+            document.getElementById("resultado").innerText="Número de habilidades guardadas:"+cont;
 
         }
 
@@ -59,8 +66,10 @@
                 if(h[1]==="") h[1]=0;
                 habilidad.xp=parseInt(h[1]);
                 // listaHabilidades.push(habilidad);
+                if(habilidad.valor==0 && !document.getElementById("incluir0").checked) return;
                 pj.setHabilidad(habilidad);
                 habilidad.save();
+                ++cont;
             }
 
 

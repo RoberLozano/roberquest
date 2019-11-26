@@ -1,6 +1,6 @@
 {
   "lock": false,
-  "active": "b8e88637f23fbe26fa18a139cf76af353b60e507",
+  "active": "eca3401e43534dc60020f475f418db8ac69813a4",
   "sets": {
     "default": {
       "source": "default",
@@ -9,12 +9,12 @@
         "e7c3800e31ff2e7695b9f5bed95a6de6715dca44": {
           "name": "Menus",
           "data": [
+            "c:\\GitHub\\roberquest\\index.html",
             "c:\\GitHub\\roberquest\\importar.html",
             "c:\\GitHub\\roberquest\\menus.html",
             "c:\\GitHub\\roberquest\\rol.js",
             "c:\\GitHub\\roberquest\\habilidades.js",
-            "c:\\GitHub\\roberquest\\popup.html",
-            "c:\\GitHub\\roberquest\\index.html"
+            "c:\\GitHub\\roberquest\\popup.html"
           ]
         },
         "b8e88637f23fbe26fa18a139cf76af353b60e507": {
@@ -23,15 +23,7 @@
             "c:\\GitHub\\roberquest\\index.html",
             "c:\\GitHub\\roberquest\\habilidades.js",
             "c:\\GitHub\\roberquest\\rol.js",
-            "c:\\GitHub\\roberquest\\inventario.js",
-            "c:\\GitHub\\roberquest\\fm.html",
-            "c:\\GitHub\\roberquest\\radial.html",
-            "c:\\GitHub\\roberquest\\otro",
-            "c:\\GitHub\\roberquest\\otro.html",
-            "c:\\GitHub\\roberquest\\fma.html",
-            "c:\\GitHub\\roberquest\\fab.css",
-            "c:\\GitHub\\roberquest\\fab.js",
-            "c:\\GitHub\\roberquest\\bubbler.css"
+            "c:\\GitHub\\roberquest\\inventario.js"
           ]
         },
         "a73f1345df69647021f401499146a518864ef87a": {
@@ -46,8 +38,8 @@
         "859fc84a73bdb78bd1612362f1aa93440e66a510": {
           "name": "Personaje",
           "data": [
-            "c:\\GitHub\\roberquest\\habilidades.js",
-            "c:\\GitHub\\roberquest\\index.html"
+            "c:\\GitHub\\roberquest\\index.html",
+            "c:\\GitHub\\roberquest\\habilidades.js"
           ]
         },
         "eca3401e43534dc60020f475f418db8ac69813a4": {
@@ -69,6 +61,13 @@
           "name": "Toast",
           "data": [
             "c:\\GitHub\\roberquest\\index.html"
+          ]
+        },
+        "b28a544bd4cdc91a267bbbed376ab6a85ad96952": {
+          "name": "Importar",
+          "data": [
+            "c:\\GitHub\\roberquest\\importar.html",
+            "c:\\GitHub\\roberquest\\habilidades.js"
           ]
         }
       }
