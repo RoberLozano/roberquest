@@ -336,6 +336,9 @@
     <button onclick="act()"> Cambiar fecha y hora</button>
     <button onclick="saveStats()"> Guardar</button>
 
+    <select class="selectpicker" id="hm" multiple data-live-search="true" data-width="fit" multiple
+      title="Modificadores de Hechizo">
+    </select>
     <div id="salida"></div>
 
     <!-- script de Bubble -->
@@ -983,6 +986,14 @@
         tablaStats();
 
       }
+
+      function dados(nombre) {
+
+        let v = Math.trunc(Math.random() * 100 + 1);
+        console.log(v);
+        $(nombre).val(v);
+
+      }
       function lanzarHechizo(hechizo) {
 
         let h = new Hechizo("Hechizo", 7, 100, null);
@@ -1011,7 +1022,7 @@
 
         var dDuración = document.getElementById("iDadosDuración");
         var dIntensidad = document.getElementById("iDadosIntensidad");
-        var dHechizo = document.getElementById("iDadosHechizo");
+        var i = document.getElementById("iDadosHechizo");
 
         $("#lbIntensidad").text(`Intensidad: ${pIntensidad}%`);
         $("#lbDuración").text(`Duración: ${pDuración}%`);
@@ -1197,8 +1208,13 @@
 
       }
 
-      var iPM = [];
+      //Todas las variables necesarias para los hechizos
 
+
+      /**
+       * Crea la interfaz para lanzar un hechizo
+       * @param hechizo: el hechizo 
+       */
       function hechizos(hechizo) {
         // las habilidades
         var nombres = [
@@ -1212,13 +1228,23 @@
           "Velocidad"
         ]
 
+        var iPM = [];
+        /**
+          *Puntos de intensidad gastados
+          */
+        var pig = []
 
-        pa = []
         var habilidades = []
         var html = ""
         var h;
-        var dados=[];
-        document.getElementById("salida").innerHTML="";
+        var dados = [];
+        var pmGastados = 0;
+
+        //penalizacion al hechizo por Intensidad
+        var penalizacion = 0
+
+        document.getElementById("salida").innerHTML = "";
+        document.getElementById("hm").innerHTML = "";
         //pongo todas las habilidades mágicas en habilidades
         nombres.forEach(n => {
           h = pj.getHabilidad(n);
@@ -1226,54 +1252,154 @@
             habilidades.push(h)
             document.getElementById("salida").innerHTML +=
               `
-      <div class="input-group-prepend">
+      <div id="grupo${h.nombre}" class="input-group-prepend">
         <span id="lb${h.nombre}" class="input-group-text col-4">${h.nombre}: ${h.v}%</span>
         <input id="iPM${h.nombre}" type="number" value="0" class="form-control number-input col-2">
-        <span class="input-group-text col-1"><i class="fas fa-dice-six"></i></span>
+        <span class="input-group-text col-1"  id="d${h.nombre}"><i class="fas fa-dice-six"></i></span>
         <input id="iDados${h.nombre}" type="number" class="form-control number-input col-2">
         <button id="bt${h.nombre}OK" class="btn btn-primary col-1" type="button">OK</button>
       </div>
         `
-
-
-
           }
         });
+        //selectpicker con las habilidades a mostrar  onclick="dados('#iDados${h.nombre}')"
+        var hm = document.getElementById("hm");
+
+        //actualizar las habilidades mágicas(habilidad,valor)
+
+        /**
+         * actHM
+         ** Función que actualiza las habilidades de magia
+         * tras un cambio
+         *@author Roberto Lozano
+        */
+        function actHM(h, valor) {
+          // console.log();
+          let n = h.nombre;
+          var v = h.tirada(valor);
+          let pm = parseInt($(`#iPM${n}`).val());
+          let i = document.getElementById(`iDados${h.nombre}`);
+          switch (v) {
+            case (TipoTirada.SUPERCRITICO):
+              // pmHechizo = 1;
+              i.style.color = "red";
+              iPM[n] = pm + 5
+              pig[n] = 1;
+
+              break;
+            case (TipoTirada.CRITICO):
+            console.log("CRITICO");
+              // pmHechizo = 1;
+              i.style.color = "red";
+              iPM[n] = pm + 3
+              pig[n]=1; //GASTA 1
+              break;
+            case (TipoTirada.ESPECIAL):
+            console.log("ESPECIAL");
+              // pmHechizo = h.pm;
+              i.style.color = "green";
+              iPM[n] = pm;
+              pig[n] = pm - 1; //gasta uno menos
+              break;
+            case (TipoTirada.EXITO):
+            console.log("EXITO");
+              // pmHechizo = h.pm;
+              i.style.color = "black";
+              iPM[n] = pig[n] = pm;
+ 
+              //si es intensidad y éxito normal resta al hechizo
+              if (h.nombre == "Intensidad")
+                penalizacion=pm*5;
+              break;
+            case (TipoTirada.FALLO):
+            console.log("FALLO");
+              // pmHechizo = 1;
+              i.style.color = "grey";
+              iPM[n] = 0;
+              pig[n] = 1
+              break;
+            default:
+              ;
+          }
+          console.log(n+":"+iPM[n]+"gastados"+pig[n])
+          totalGastado();
+        }
+
+        function lanzarDados(nombre, h) {
+          let v = Math.trunc(Math.random() * 100 + 1);
+          console.log(v);
+          $(nombre).val(v);
+          actHM(h, v);
+
+        }
+
+        function totalGastado() {
+          let suma=0;
+          for( let v in pig)
+            suma+=pig[v]
+          console.log(suma);
+          return suma;
+        }
+
+
         // console.log("habilidades");
         // console.log(habilidades);
         habilidades.forEach(h => {
           console.log(h);
-          // iPM[h.nombre]=""
-          // iPM[h.nombre] = document.getElementById(`iPM${h.nombre}`);
+          //por cada habilidad mágica se añade un option
+          hm.add(new Option(h.nombre));
+          $("#hm").selectpicker('refresh');
+          // $("#hm").add(new Option(h.nombre));
 
-          $(`#iPM${h.nombre}`).change( function () {
+          $(`#d${h.nombre}`).click(function () {
+            lanzarDados(`#iDados${h.nombre}`, h);
+
+          });
+
+          $(`#iPM${h.nombre}`).change(function () {
             valor = event.target.value;
             console.log(`#iPM${h.nombre} valor: ${event.target.value}`);
-            iPM[h.nombre]= valor;
+            iPM[h.nombre] = valor;
           });
 
-          $(`#iDados${h.nombre}`).change( function () {
+          $(`#iDados${h.nombre}`).change(function () {
             valor = event.target.value;
             console.log(`#iDados${h.nombre} valor: ${event.target.value}`);
-            dados[h.nombre]= valor;
-            console.log(TipoTirada.tirada[h.tirada(valor)]);
+            dados[h.nombre] = valor;
+            actHM(h, valor)
           });
-          
 
-          // iPM[h.nombre].addEventListener("change", function () {
-          //   console.log(`valor: ${iPM[h.nombre].value}`);
-          //   console.log(`valor: ${event.target.value}`);
-            
-          //   valor = $(`#iPM${h.nombre}`).val();
-          //   console.log(`#iPM${h.nombre}` + valor);
-
+          // document.getElementById(`iDados${h.nombre}`).addEventListener('change', (event) => {
+          //   console.log(`Se ha cambiado el dado a ${event.target.value}`);
           // });
 
+          // hide(h.nombre);
 
         });
+
+        $("#hm").on("changed.bs.select",
+          function (e, clickedIndex, newValue, oldValue) {
+            let t = (hm[clickedIndex].text);
+            if (newValue)
+              show(t);
+            else
+              hide(t);
+
+          });
         // document.getElementById("salida").innerHTML=html
 
 
+      }
+
+      function hide(habilidad) {
+        $("#grupo" + habilidad).hide("slow");
+        //opcional dejar los valores en 0
+        // iPM[habilidad] = 0
+        // pig[habilidad] = 0 
+      }
+
+      function show(habilidad) {
+        $("#grupo" + habilidad).show("slow");
       }
 
       function atras() {
