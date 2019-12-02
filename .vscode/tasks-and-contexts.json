@@ -1,6 +1,6 @@
 {
   "lock": false,
-  "active": "eca3401e43534dc60020f475f418db8ac69813a4",
+  "active": "a73f1345df69647021f401499146a518864ef87a",
   "sets": {
     "default": {
       "source": "default",
@@ -32,7 +32,9 @@
             "c:\\GitHub\\roberquest\\inventario.js",
             "c:\\GitHub\\roberquest\\habilidades.js",
             "c:\\GitHub\\roberquest\\index.html",
-            "c:\\GitHub\\roberquest\\rol.js"
+            "c:\\GitHub\\roberquest\\rol.js",
+            "c:\\Program Files\\Microsoft VS Code\\resources\\app\\extensions\\node_modules\\typescript\\lib\\lib.dom.d.ts",
+            "c:\\GitHub\\roberquest\\D.js"
           ]
         },
         "859fc84a73bdb78bd1612362f1aa93440e66a510": {
@@ -46,8 +48,7 @@
           "name": "Hechizo",
           "data": [
             "c:\\GitHub\\roberquest\\index.html",
-            "c:\\GitHub\\roberquest\\habilidades.js",
-            "c:\\GitHub\\roberquest\\D.js"
+            "c:\\GitHub\\roberquest\\index.html"
           ]
         },
         "5e2ac727210fd43cd0a99f55042834460e12c144": {

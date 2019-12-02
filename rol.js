@@ -24,7 +24,7 @@ const PF = "PF"
 const PG = "PG"
 const PM = "PM"
 
-const PUNTOS= ["PF","PG","PM"]
+const PUNTOS = ["PF", "PG", "PM"]
 
 const CP = ["FUE", "CON", "TAM", "INT", "POD", "DES", "ASP"];
 
@@ -279,9 +279,9 @@ class Bon {
 //       this.efectos.push(efecto);
 //     }
 
-//     // sanar(tipoPuntos, valor){
-//     //   this.car[tipoPuntos]+= valor;
-//     // }
+    // sanar(tipoPuntos, valor){
+    //   this.car[tipoPuntos]+= valor;
+    // }
 
 // }
 
@@ -399,39 +399,39 @@ class Animal {
     }
     this[tipo] = this.getMaxPuntos(tipo);
   }
-/**
- * Gasta n puntos de magia
- * 
- * @param {*} n numero de PM a gastar
- * @param {boolean} gemas si se quiere gastar los pm de las gemas 
- * @returns un boolean que indica si se pueden gastar esos puntos
- */
-  gastarPM(n,gemas=false){
-    let pm=this[PM];
-    if(pm>=n){
-      this[PM]-=n; return true;
+  /**
+   * Gasta n puntos de magia
+   * 
+   * @param {*} n numero de PM a gastar
+   * @param {boolean} gemas si se quiere gastar los pm de las gemas 
+   * @returns un boolean que indica si se pueden gastar esos puntos
+   */
+  gastarPM(n, gemas = false) {
+    let pm = this[PM];
+    if (pm >= n) {
+      this[PM] -= n; return true;
     }
-    if(gemas==false) return false;
+    if (gemas == false) return false;
     //Con gemas
-    let extra=this.pmGemas();
-    if(pm+extra<n) return false; //si no llega con gemas
-    n=n-pm; this[PM]=0 ;//gasto los míos
+    let extra = this.pmGemas();
+    if (pm + extra < n) return false; //si no llega con gemas
+    n = n - pm; this[PM] = 0;//gasto los míos
     this.gastarPMGemas(n);  //gasto las gemas
-    
+
   }
-/**
- * Gasta n puntos de magia de las gemas
- * @param {number} n 
- */
-  gastarPMGemas(n){
-    var quedan=n // los pm que quedan por gastar
-    console.log("n:"+n);
+  /**
+   * Gasta n puntos de magia de las gemas
+   * @param {number} n 
+   */
+  gastarPMGemas(n) {
+    var quedan = n // los pm que quedan por gastar
+    console.log("n:" + n);
     (this.inventario.darClaseRecursiva(Gema)).forEach(gema => {
-     quedan=gema.gastar(n);
-     console.log(`${gema.nombre} : y quedan ${quedan}`);
-     if(quedan<=0) return;
-     n=quedan;
-     
+      quedan = gema.gastar(n);
+      console.log(`${gema.nombre} : y quedan ${quedan}`);
+      if (quedan <= 0) return;
+      n = quedan;
+
     });
   }
 
@@ -661,8 +661,80 @@ class Animal {
 
 }
 //Bonificación en Animal
+var d= new Dado("3d6");
+
+class Caballo extends Animal {
+  constructor(
+    {
+      nombre = "Caballo",
+      peso = 500, //en kg
+
+      FUE = new Dado("4d6+18").tirar(),
+      CON = d.tirar(),
+      TAM = new Dado("4d6+18").tirar(),
+      INT = 4,
+      POD = d.tirar(),
+      DES = new Dado("2d6+6").tirar(),
+      ASP = d.tirar()
+    }
+
+  ) {
+    super({})
+    this.car = {}
+    this.nombre = nombre
+    this.peso = peso
+    this.FUE = FUE
+    this.CON = CON
+    this.TAM = TAM
+    this.INT = INT
+    this.POD = POD
+    this.DES = DES
+    this.ASP = ASP
 
 
+
+
+    this.bonificacion = new Bon({});
+
+    this.inventario = creaInventario("Cuerpo");
+    // this.inventario = {}
+
+    this.habilidades = {}
+    this.efectos = [];
+    this.carga=[];
+    // this.backup = null
+    this.act();
+    
+    // // Carga ligera (permite correr)		=	(FUE + CON) x 1,0 	Kilogramos
+    // this.carga["ligera"] = this.getCar(FUE) + this.getCar(FUE);
+    // console.log("carga"+this.getCar(FUE) + this.getCar(FUE));
+    // // Carga normal (permite mov 100%)		=	(FUE + CON) x 2,2 	Kilogramos 
+    // this.carga["normal"] = (this.getCar(FUE) + this.getCar(FUE)) * 2.2;
+    // // Carga elevada (movimiento al 50%)	=	(FUE + CON) x 3,4	Kilogramos
+    // this.carga["elevada"] = (this.getCar(FUE) + this.getCar(FUE)) * 3.4;
+    // // Carga máxima (movimiento al 10%)	=	(FUE + CON) x 4,6 	Kilogramos
+    // this.carga["máxima"] = (this.getCar(FUE) + this.getCar(FUE)) * 4.6;
+  }
+
+  act(){
+    super.act();
+    this.carga=[];
+    this.carga["ligera"] = this.getCar(FUE) + this.getCar(FUE);
+    // Carga normal (permite mov 100%)		=	(FUE + CON) x 2,2 	Kilogramos 
+    this.carga["normal"] = (this.getCar(FUE) + this.getCar(FUE)) * 2.2;
+    // Carga elevada (movimiento al 50%)	=	(FUE + CON) x 3,4	Kilogramos
+    this.carga["elevada"] = (this.getCar(FUE) + this.getCar(FUE)) * 3.4;
+    // Carga máxima (movimiento al 10%)	=	(FUE + CON) x 4,6 	Kilogramos
+    this.carga["máxima"] = (this.getCar(FUE) + this.getCar(FUE)) * 4.6;
+  }
+
+   cargas() {
+     for( let c in this.carga){
+       console.log(c+":"+this.carga[c]);
+     }
+    
+  }
+}
 
 /**
  * Modifica una fecha.

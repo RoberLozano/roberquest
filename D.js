@@ -71,9 +71,9 @@
 		for (var i = 0; i < abs; i++) {
 			numero += Math.trunc( Math.random() * this.caras + 1);
 			//TODO: borrar verbose
-			console.log(this.toString()+":"+numero);
+			//console.log(this.toString()+":"+numero);
 		}
-		console.log(numero *signo);
+		//console.log(numero *signo);
 		
 		return numero *signo;
 	}
@@ -124,7 +124,7 @@ class Dado {
 	 *            Un string con el dado
 	 */
 	constructor(dado) {
-		console.log("string inicial:"+dado);
+		//console.log("string inicial:"+dado);
 		
 		let s=dado;
 		s = s.replace(" ", "","gi");
@@ -140,7 +140,7 @@ class Dado {
 		this.entero = 0
 
 		// buscar sumandos;
-		console.log("string final:"+s);
+		//console.log("string final:"+s);
 		this.buscarSumandos(s);
 		let stringDado = "";
 		for ( let i of this.dados) {
@@ -267,7 +267,7 @@ class Dado {
 			sumandos = sumando.split("d");
 			let _d = new D(parseInt(sumandos[0]),
 					parseInt(sumandos[1]));
-			// console.log(this.dados);
+			// //console.log(this.dados);
 			
 			for ( let i of this.dados) {
 				if (i.caras == _d.caras) {
@@ -300,7 +300,7 @@ class Dado {
 		let sumandos;
 		if (dado.includes("+")) {// separo en sumandos
 			sumandos = dado.split("+");
-			// console.log(sumandos);
+			// //console.log(sumandos);
 			
 			for (let i = 0; i < sumandos.length; i++) {
 				// el dado máximo de cada sumando y el minimo
@@ -329,9 +329,9 @@ class Dado {
 		let valor=0;
 		for(;veces>0;veces--){
 			let i=this.tirarDado(dados);
-			// console.log(dados);
+			// //console.log(dados);
 			valor=Math.max(valor, i);
-			// console.log("valor:"+valor);	
+			// //console.log("valor:"+valor);	
 		}
 		return valor;
 	}
@@ -342,10 +342,10 @@ class Dado {
 
 // var d1= new D(3,6);
 // var _2d6 = new D(2,6); 
-// console.log(d1.max());
-// console.log(d1.min());
-// console.log(d1.newSum(_2d6)+"");
-// console.log(x);
+// //console.log(d1.max());
+// //console.log(d1.min());
+// //console.log(d1.newSum(_2d6)+"");
+// //console.log(x);
 
 
 // let dado1=new Dado("1d10");
@@ -361,37 +361,37 @@ class Dado {
 
 // for (let i = 0; i < 10; i++) {
 // 	// Alex intenta entender qué hago aquí
-// 	console.log(dado1.tirarDado("1d10"));
+// 	//console.log(dado1.tirarDado("1d10"));
 	 
 // }
 
 
 // Imprimo el número de veces que ha salido cada número
 // for (let i = 0; i < 10; i++)
-// 	console.log(i + 1 + ": " + resultados[i]);
+// 	//console.log(i + 1 + ": " + resultados[i]);
 
 
-console.log(new Dado("1d5+1d10+6"));
-console.log(new Dado("1d5+1d10+6").dado);
-console.log(new Dado("1d10+3d10"));
-console.log(new Dado("1d10+3d10").dado);
-console.log(new Dado("1d5-4+1d4+6+3"));
-console.log(new Dado("1d5-4+1d4-0+4"));
-console.log(new Dado("1d5-4+1d4+6+3"));
-console.log(new Dado("1d5-4+1d4+6+3").dado);
-console.log(new Dado("2d4-1d3"));
-console.log(new Dado("2d4-1d3").dado);
+//console.log(new Dado("1d5+1d10+6"));
+//console.log(new Dado("1d5+1d10+6").dado);
+//console.log(new Dado("1d10+3d10"));
+//console.log(new Dado("1d10+3d10").dado);
+//console.log(new Dado("1d5-4+1d4+6+3"));
+//console.log(new Dado("1d5-4+1d4-0+4"));
+//console.log(new Dado("1d5-4+1d4+6+3"));
+//console.log(new Dado("1d5-4+1d4+6+3").dado);
+//console.log(new Dado("2d4-1d3"));
+//console.log(new Dado("2d4-1d3").dado);
 // let d1 = new Dado("1d10-1d3");
-// console.log(d1.tirar());
+// //console.log(d1.tirar());
 
 // for( let i=0;i<100;i++)
-// 	console.log(d1.tirar());
+// 	//console.log(d1.tirar());
 
-// console.log(d1.mejor(10, "3d6"));
-// console.log(d1.mejor(1));
+// //console.log(d1.mejor(10, "3d6"));
+// //console.log(d1.mejor(1));
 
-// console.log(d1.dadoMin());
-// console.log(d1.dadoMax());
+// //console.log(d1.dadoMin());
+// //console.log(d1.dadoMax());
 
 
 

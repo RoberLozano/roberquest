@@ -97,9 +97,10 @@ class Gema extends Usable {
 }
 
 class Pociones extends Objetos {
-    constructor(nombre = "Poción 5 PG", peso = 0.1, valor, efectos = "pj.modificarPuntos(PG,5)", ctd) {
+    constructor(nombre = "Poción 5 PG", peso = 0.1, valor, efectos = "pj.modificarPuntos(PG,5)", ctd, magnitud) {
         super(nombre, peso, valor, ctd);
         this.efectos = efectos;
+        this.magnitud =magnitud;
     }
     tomar() {
         console.log("me meto en tomar:" + this.efectos);
@@ -139,6 +140,8 @@ class Contenedor extends Objeto {
             else
             if (ob.hasOwnProperty("efectos")) { oo = new Pociones(); }
             else
+            if (ob.hasOwnProperty("capacidad")) { oo = new Gema(); }
+                    else
                 if (ob.hasOwnProperty("objetos")) { oo = new Contenedor(); }
                 else
                     if (ob.hasOwnProperty("daño")) { oo = new Arma(); }

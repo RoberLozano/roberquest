@@ -71,7 +71,7 @@
   <script src="bubbler.js"></script>
 
 
-
+  <script src='D.js'></script>
   <script src='habilidades.js'></script>
   <script src='inventario.js'></script>
   <script src='rol.js'></script>
@@ -703,16 +703,46 @@
           }
         }
 
+
+
+        if (object instanceof Gema && key === "nombre") {
+          cell.innerHTML = `<i class="fas fa-gem"></i> ` + cell.innerHTML;
+          cell.innerHTML += ` <span class="badge " style="color:blue;" >${object.pm}/${object.capacidad}</span>`;
+          // cell.innerHTML += ` <span class="badge badge-dark" style="background: linear-gradient(315deg, #b8d0e0 0%, #a6afb9 54%,  #b8d0e0 80% );">${object.ctd}</span>`
+
+        }
+        if (object instanceof Pociones && key === "nombre") {
+
+          let index = object.efectos.search(/\(/g);
+          let s = object.efectos.substring(index, object.efectos.length)
+          cell.innerHTML = `<i class="fas fa-flask" ></i> ` + cell.innerHTML;
+          cell.innerHTML += ` <span class="badge " style="color:blue;" >${s}</span>`;
+          var ht = new Hammer(cell);
+          ht.on("press tap", function (ev) {
+            console.log(ev);
+            if (ev.type == "tap")
+              console.log("TAP");
+            else
+            object.tomar();
+          });
+          // cell.innerHTML += ` <span class="badge badge-dark" style="background: linear-gradient(315deg, #b8d0e0 0%, #a6afb9 54%,  #b8d0e0 80% );">${object.ctd}</span>`
+
+        }
+
         if (object instanceof Objetos && key === "nombre") {
           if (object[key] == "mo") cell.innerHTML += ` <span class="badge badge-dark gold" >${object.ctd}</span>`;
-          if (object[key] == "mm") cell.innerHTML += ` <span class="badge metal" >${object.ctd}</span>`;
+          else
+            if (object[key] == "mm") cell.innerHTML += ` <span class="badge metal" >${object.ctd}</span>`;
+            else
+              cell.innerHTML += ` <span class="badge badge-dark"  >${object.ctd}</span>`;
           // cell.innerHTML += ` <span class="badge badge-dark" style="background: linear-gradient(315deg, #b8d0e0 0%, #a6afb9 54%,  #b8d0e0 80% );">${object.ctd}</span>`
 
         }
 
 
-        if (object instanceof Objeto) {
 
+
+        if (object instanceof Objeto) {
           var hammertime = new Hammer(cell);
           hammertime.on('swipe', function (ev) {
             console.log(ev);
@@ -720,8 +750,6 @@
               // cell.parentElement.style.background = "white";
               cell.parentElement.classList.remove("selec");
               deseleccionar(object);
-
-
             } //a izq
             else {
               // cell.parentElement.style.background = "green";
@@ -760,15 +788,15 @@
 
         }
 
-        if (object instanceof Pociones) {
-          objetoActual = object;
-          console.log("me meto en pociones");
-          cell.addEventListener("click", function () {
-            console.log("Voy a tomar");
-            object.tomar();
-          });
+        // if (object instanceof Pociones) {
+        //   objetoActual = object;
+        //   console.log("me meto en pociones");
+        //   cell.addEventListener("dbclick", function () {
+        //     console.log("Voy a tomar");
+        //     object.tomar();
+        //   });
+        // }
 
-        }
         if (object instanceof Habilidad) {
           if (key === "xp") { //si doy un click en xp +1
             cell.addEventListener("click", function () {
@@ -1288,31 +1316,31 @@
 
               break;
             case (TipoTirada.CRITICO):
-            console.log("CRITICO");
+              console.log("CRITICO");
               // pmHechizo = 1;
               i.style.color = "red";
               iPM[n] = pm + 3
-              pig[n]=1; //GASTA 1
+              pig[n] = 1; //GASTA 1
               break;
             case (TipoTirada.ESPECIAL):
-            console.log("ESPECIAL");
+              console.log("ESPECIAL");
               // pmHechizo = h.pm;
               i.style.color = "green";
               iPM[n] = pm;
               pig[n] = pm - 1; //gasta uno menos
               break;
             case (TipoTirada.EXITO):
-            console.log("EXITO");
+              console.log("EXITO");
               // pmHechizo = h.pm;
               i.style.color = "black";
               iPM[n] = pig[n] = pm;
- 
+
               //si es intensidad y éxito normal resta al hechizo
               if (h.nombre == "Intensidad")
-                penalizacion=pm*5;
+                penalizacion = pm * 5;
               break;
             case (TipoTirada.FALLO):
-            console.log("FALLO");
+              console.log("FALLO");
               // pmHechizo = 1;
               i.style.color = "grey";
               iPM[n] = 0;
@@ -1321,7 +1349,7 @@
             default:
               ;
           }
-          console.log(n+":"+iPM[n]+"gastados"+pig[n])
+          console.log(n + ":" + iPM[n] + "gastados" + pig[n])
           totalGastado();
         }
 
@@ -1334,9 +1362,9 @@
         }
 
         function totalGastado() {
-          let suma=0;
-          for( let v in pig)
-            suma+=pig[v]
+          let suma = 0;
+          for (let v in pig)
+            suma += pig[v]
           console.log(suma);
           return suma;
         }
