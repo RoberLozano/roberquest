@@ -97,10 +97,10 @@ class Gema extends Usable {
 }
 
 class Pociones extends Objetos {
-    constructor(nombre = "Poción 5 PG", peso = 0.1, valor, efectos = "pj.modificarPuntos(PG,5)", ctd, magnitud) {
+    constructor(nombre = "Poción 5 PG", peso = 0.1, valor, efectos = "pj.modificarPuntos(PG,5)", ctd) {
         super(nombre, peso, valor, ctd);
         this.efectos = efectos;
-        this.magnitud =magnitud;
+        
     }
     tomar() {
         console.log("me meto en tomar:" + this.efectos);
