@@ -69,6 +69,34 @@ class D {
 		return numero * signo;
 	}
 
+/**
+ * Tirada con cierta cantidad de dados extra que intercambiar por las tiradas más bajas.
+ * Indicado para crear PJ o PNJ
+ * @param {number} extra numeros de dados extra
+ * @returns {number} el valor de los dados tirado sustituyendo los menores con los dados extra
+ */
+	bonus(extra){
+		if(this.num<1) return this.norm(); //no tiene sentido con dados negativos
+		let total= this.num+extra;
+		let arr=[];
+
+		for (var i = 0; i < total; i++) {
+			arr.push( Math.floor(Math.random() * this.caras + 1));
+			//TODO: borrar verbose
+			//console.log(this.toString()+":"+numero);
+		}
+		arr.sort((a,b)=>a-b);
+		console.log(arr);
+		arr=arr.slice(extra);
+		console.log(arr);
+
+		var tirada = arr.reduce((a,b)=>a+b);
+		console.log(tirada);
+		
+		
+		return tirada;
+	}
+
 	/**
 	 * Devuelvo un nuevo dado, sumando n dados de igual número de caras
 	 * @param d el dado a sumar
@@ -83,7 +111,7 @@ class D {
 
 
 	/**
-	 * Suma n dados de igual número de caras, modificiando su valor
+	 * Suma n dados de igual número de caras, modificando su valor
 	 * @param d el dado a sumar
 	 * 
 	 */
@@ -387,10 +415,12 @@ return resultados;
 
 
 
-var d1= new Dado("3d6");
-console.log(test(d1,100));
+// var d1= new Dado("3d6");
+// console.log(test(d1,100));
 
-// var _2d6 = new D(2,6); 
+
+var _3d6 = new D(3,6); 
+_3d6.bonus(2);
 // //console.log(d1.max());
 // //console.log(d1.min());
 // //console.log(d1.newSum(_2d6)+"");
@@ -433,22 +463,22 @@ console.log(test(d1,100));
 
 var regex = /^(\d+d\d+)?([+|-](\d+|(\d+d\d+)))*$/;
 var re = new RegExp(regex);
-console.log("1d5+1d10+6" + re.test("1d5+1d10+6"))
-console.log("1d5+1d10+6" + re.test("1d5+1d10+6"))
-console.log("1d5+1d10+6" + re.test("1d5+1d10+6"))
-console.log("1d10+3d10" + re.test("1d10+3d10"))
-console.log("1d10+3d10" + re.test("1d10+3d10"))
-console.log("1d5-4+1d4+6" + re.test("1d5-4+1d4+6"))
-console.log("1d5-4+1d4-0" + re.test("1d5-4+1d4-0"))
-console.log("1d5-4+1d4+0" + re.test("1d5-4+1d4+0"))
-console.log("1d5-4+1d4-0" + re.test("1d5-4+1d4-0"))
-console.log("1d5-4+1d4+66" + re.test("1d5-4+1d4+66"))
-console.log("1d5-4+1d4+6+1d" + re.test("1d5-4+1d4+6+1d"))
-console.log("2d4-1d3" + re.test("2d4-1d3"))
-console.log("pern2d6" + re.test("pern2d6"))
-console.log("1d51d6" + re.test("1d51d6"))
-console.log("2d6" + re.test("2d6"))
-console.log("2d6+" + re.test("2d6+"))
+// console.log("1d5+1d10+6" + re.test("1d5+1d10+6"))
+// console.log("1d5+1d10+6" + re.test("1d5+1d10+6"))
+// console.log("1d5+1d10+6" + re.test("1d5+1d10+6"))
+// console.log("1d10+3d10" + re.test("1d10+3d10"))
+// console.log("1d10+3d10" + re.test("1d10+3d10"))
+// console.log("1d5-4+1d4+6" + re.test("1d5-4+1d4+6"))
+// console.log("1d5-4+1d4-0" + re.test("1d5-4+1d4-0"))
+// console.log("1d5-4+1d4+0" + re.test("1d5-4+1d4+0"))
+// console.log("1d5-4+1d4-0" + re.test("1d5-4+1d4-0"))
+// console.log("1d5-4+1d4+66" + re.test("1d5-4+1d4+66"))
+// console.log("1d5-4+1d4+6+1d" + re.test("1d5-4+1d4+6+1d"))
+// console.log("2d4-1d3" + re.test("2d4-1d3"))
+// console.log("pern2d6" + re.test("pern2d6"))
+// console.log("1d51d6" + re.test("1d51d6"))
+// console.log("2d6" + re.test("2d6"))
+// console.log("2d6+" + re.test("2d6+"))
 
 
 
