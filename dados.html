@@ -1,13 +1,51 @@
 <!DOCTYPE html>
 <html>
+
+
 <head>
-<title>Dados</title>
-<script src='D.js'></script>
+    <meta charset="UTF-8">
+    <title>Dados</title>
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"> -->
+    <!-- Simulador de dados sin formatos para una rápida carga
+Roberto Lozano Sáez ©2019 -->
+
+<!-- mobile -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
 </head>
 
 <body>
-The content of the document......
+
+    <h1>Simulador de dados</h1>
+
+
+    <input id="nDados" type="number" value="3" class="sml" /> nº dados<br>
+    <input id="caras" type="number" value="6" class="sml" /> caras<br>
+    <input id="veces" type="number" value="1" class="sml" /> veces<br>
+
+
+
+
+    <div class="btn-toolbar" role="toolbar">
+        <button onClick="javascript:rolladie(); return false;" class="btn btn-primary">Roll</button>
+    </div>
+
+    <br>
+
+    <div>
+        Introduzca el dado <input id="dados" type="text" placeholder="Ej: 1d6+2" class="sml" /><br>
+    </div>
+    <div class="btn-toolbar" role="toolbar">
+        <button id="bLanzar" type="button" class="btn"
+            onClick="javascript:resultStartStop(); return false;">Lanzar</button>
+    </div>
+
+
+
+    <script src='D.js'></script>
+
 
 </body>
+<!-- <footer>Roberto Lozano Sáez &copy;2019</footer> -->
 
 </html>

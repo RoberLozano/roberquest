@@ -74,27 +74,28 @@ class D {
  * Indicado para crear PJ o PNJ
  * @param {number} extra numeros de dados extra
  * @returns {number} el valor de los dados tirado sustituyendo los menores con los dados extra
+ * TODO: ¿Sería interesante con negativos?
  */
 	bonus(extra){
 		if(this.num<1) return this.norm(); //no tiene sentido con dados negativos
 		let total= this.num+extra;
 		let arr=[];
 
-		for (var i = 0; i < total; i++) {
+		for (let i = 0; i < total; i++) {
 			arr.push( Math.floor(Math.random() * this.caras + 1));
-			//TODO: borrar verbose
-			//console.log(this.toString()+":"+numero);
 		}
+		//ordeno el array
 		arr.sort((a,b)=>a-b);
-		console.log(arr);
+		// console.log(arr);
+		//quito los extra más bajos
 		arr=arr.slice(extra);
-		console.log(arr);
+		// console.log(arr);
 
-		var tirada = arr.reduce((a,b)=>a+b);
-		console.log(tirada);
+		//sumo las tiradas mayores
+		let tiradas = arr.reduce((a,b)=>a+b);
+		// console.log(tirada);
 		
-		
-		return tirada;
+		return tiradas;
 	}
 
 	/**
