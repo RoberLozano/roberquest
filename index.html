@@ -1679,15 +1679,16 @@
         for (key of visibles) {//Esto serían todas
           var cell = row.insertCell(i);
           let valor;
-          if (key.includes("()")) {//si es un método
-            valor = eval("object." + key);
-          }
-          else {
+          //Hacer un get de property en vez de método
+          // if (key.includes("()")) {//si es un método
+          //   valor = eval("object." + key);
+          // }
+          // else {
             if (i == 0) id = object[key];
             // crearEventos(object, cell, key);
             // console.log(object[key]);
             valor = object[key];
-          }
+          // }
 
           if (valor === undefined) valor = "";
 
