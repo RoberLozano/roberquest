@@ -1,28 +1,33 @@
 <!DOCTYPE html>
 <html>
 
-
 <head>
     <meta charset="UTF-8">
     <title>Dados</title>
     <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"> -->
     <!-- Simulador de dados sin formatos para una rápida carga
-Roberto Lozano Sáez ©2019 -->
+    Roberto Lozano Sáez ©2019 -->
 
-<!-- mobile -->
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<style> 
-    input{
-        font-size:18px;
-      /* width: 100%; */
-      /* padding: 12px 20px; */
-      text-align: center;
-      margin: 8px 0;
-      box-sizing: border-box;
-      border: none;
-      border-bottom: 2px solid red;
-    }
+    <!-- mobile -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <style>
+        input {
+            font-size: 18px;
+            /* width: 100%; */
+            /* padding: 12px 20px; */
+            text-align: center;
+            margin: 8px 0;
+            box-sizing: border-box;
+            border: none;
+            border-bottom: 2px solid red;
+        }
 
+        .resultado {
+            font-size: 55px;
+            padding: 12px 20px;
+            margin: 8px 0;
+
+        }
     </style>
 
 </head>
@@ -31,32 +36,67 @@ Roberto Lozano Sáez ©2019 -->
 
     <h1>Simulador de dados</h1>
 
-
     <input id="nDados" type="number" value="3" class="sml" /> nº dados<br>
     <input id="caras" type="number" value="6" class="sml" /> caras<br>
     <input id="veces" type="number" value="1" class="sml" /> veces<br>
-
-
-
+    <input id="extras" type="number" value="0" class="sml" /> dados extra <span id="question" onclick="cambiarVisibilidad('infoBonus')">&#10067;</span>
+    <div id="infoBonus" style="display: none;">Lanza una cantidad de dados extra, y se quitan ese número de dados con los valores más bajos</div>
+    <br>
+    <div id="resumen">Resumen</div>
 
     <div class="btn-toolbar" role="toolbar">
-        <button onClick="javascript:rolladie(); return false;" class="btn btn-primary">Roll</button>
+        <button onClick="lanzarD()" class="btn btn-primary">Tirar</button>
     </div>
 
     <br>
+    <div class="resultado" id="tirada">13</div>
 
     <div>
         Introduzca el dado <input id="dados" type="text" placeholder="Ej: 1d6+2" class="sml" /><br>
     </div>
     <div class="btn-toolbar" role="toolbar">
-        <button id="bLanzar" type="button" class="btn"
-            onClick="javascript:resultStartStop(); return false;">Lanzar</button>
+        <button id="bLanzar" type="button" class="btn" onClick="lanzar()">Lanzar</button>
     </div>
 
-
-
     <script src='D.js'></script>
+    <script>
 
+        function lanzarD() {
+            var nDados = document.getElementById("dados").value
+
+            //los paso a entero
+            var nDados = parseInt(document.getElementById("nDados").value)
+            var caras = parseInt(document.getElementById("caras").value)
+            var veces = parseInt(document.getElementById("veces").value)
+            var extras = parseInt(document.getElementById("extras").value)
+            var dado = new D(nDados, caras);
+            var res = dado.bonus(extras);
+            document.getElementById("tirada").innerHTML = res;
+            //actualizo el resumen
+            document.getElementById("resumen").innerHTML = `Lanza ${nDados} dados de ${caras} caras ${veces} veces, con ${extras} dados extra`;
+
+        }
+
+        function lanzar() {
+            var d = document.getElementById("dados").value
+            var d1 = new Dado(d);
+            var res = d1.tirar()
+            console.log(res);
+
+            document.getElementById("tirada").innerHTML = res;
+
+        }
+
+        function cambiarVisibilidad(id) {
+            var x = document.getElementById(id);
+            if (x.style.display === "none") {
+                x.style.display = "block";
+            } else {
+                x.style.display = "none";
+            }
+        }
+
+    </script>
 
 </body>
 <!-- <footer>Roberto Lozano Sáez &copy;2019</footer> -->

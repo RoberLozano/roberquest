@@ -19,8 +19,9 @@ class D {
 	caras;
 
 	constructor(num, caras) {
-		this.num = num;
-		this.caras = caras;
+		//por si acaso viene como string
+		this.num = parseInt(num);
+		this.caras = parseInt(caras);
 	}
 
 	toString() {
@@ -69,32 +70,32 @@ class D {
 		return numero * signo;
 	}
 
-/**
- * Tirada con cierta cantidad de dados extra que intercambiar por las tiradas más bajas.
- * Indicado para crear PJ o PNJ
- * @param {number} extra numeros de dados extra
- * @returns {number} el valor de los dados tirado sustituyendo los menores con los dados extra
- * TODO: ¿Sería interesante con negativos?
- */
-	bonus(extra){
-		if(this.num<1) return this.norm(); //no tiene sentido con dados negativos
-		let total= this.num+extra;
-		let arr=[];
+	/**
+	 * Tirada con cierta cantidad de dados extra que intercambiar por las tiradas más bajas.
+	 * Indicado para crear PJ o PNJ
+	 * @param {number} extra numeros de dados extra
+	 * @returns {number} el valor de los dados tirado sustituyendo los menores con los dados extra
+	 * TODO: ¿Sería interesante con negativos?
+	 */
+	bonus(extra) {
+		if (this.num < 1|| extra<1) return this.norm(); //no tiene sentido con dados negativos
+		let total = this.num+extra;
+		let arr = [];
 
 		for (let i = 0; i < total; i++) {
-			arr.push( Math.floor(Math.random() * this.caras + 1));
+			arr.push(Math.floor(Math.random() * this.caras + 1));
 		}
 		//ordeno el array
-		arr.sort((a,b)=>a-b);
-		// console.log(arr);
+		arr.sort((a, b) => a - b);
+		console.log(arr);
 		//quito los extra más bajos
-		arr=arr.slice(extra);
-		// console.log(arr);
+		arr = arr.slice(extra);
+		console.log(arr);
 
 		//sumo las tiradas mayores
-		let tiradas = arr.reduce((a,b)=>a+b);
+		let tiradas = arr.reduce((a, b) => a + b);
 		// console.log(tirada);
-		
+
 		return tiradas;
 	}
 
@@ -151,7 +152,7 @@ class Dado {
 		//Pruebo si la cadena tiene el formato correcto
 		// if (!re.test(s)) return "error formato inválido";	//formato inválido
 
-		
+
 		s = s.replace(" ", "", "gi");	//quito espacios
 		s = s.replace("-", "+-", "gi");	//reemplazo - con +-
 
@@ -229,38 +230,48 @@ class Dado {
 		return dado;
 
 	}
-/**
- *Devuelve el mínimo valor de la tirada de dados
- *
- * @returns {number} el mínimo
- * @memberof Dado
- */
-dadoMin() {
+	/**
+	 *Devuelve el mínimo valor de la tirada de dados
+	 *
+	 * @returns {number} el mínimo
+	 * @memberof Dado
+	 */
+	dadoMin() {
 		let _min = 0;
 		for (let d of this.dados) {
 			_min += d.min();
 		}
-		return _min+this.entero;
+		return _min + this.entero;
 	}
-	
-/**
- *Devuelve el máximo valor de la tirada de dados
- *
- * @returns {number} el máximo
- * @memberof Dado
- */
+
+	/**
+	 *Devuelve el máximo valor de la tirada de dados
+	 *
+	 * @returns {number} el máximo
+	 * @memberof Dado
+	 */
 	dadoMax() {
 		let _max = 0;
 		for (let d of this.dados) {
 			_max += d.max();
 		}
-		return _max+this.entero;
+		return _max + this.entero;
 	}
 
+	/**
+	 * Baremo para establecer que dado es más alto en general;
+	 * suma del mínimo y el máximo
+	 * @returns el mínimo más el máximo
+	 */
 	dadoTotal() {
 		return this.dadoMin() + this.dadoMax();
 	}
 
+	/**
+	 * Devuelve un dado suma del actual y el parámetro
+	 * @param {Dado} d El dado que se suma
+	 * @returns {Dado} El dado suma de los dos
+	 */
 	sumaDado(d) {
 		return new Dado(this.dado + d.dado);
 	}
@@ -316,7 +327,7 @@ dadoMin() {
 			for (let i of this.dados) {
 				if (i.caras == _d.caras) {
 					//si existe lo sumo
-					i.sum(_d);	
+					i.sum(_d);
 					return;
 				}
 			}
@@ -327,6 +338,12 @@ dadoMin() {
 	}
 
 
+	/**
+	 * Una tirada normal de dados
+	 *
+	 * @returns {number} el resultado de una tirada normal de dados
+	 * @memberof Dado
+	 */
 	tirar() {
 		let sumatorio = 0;
 		// por cada dado tiro el número de veces
@@ -337,36 +354,37 @@ dadoMin() {
 		return sumatorio;
 
 	}
-	
+
 	/**
-	 *Tira un dado que se le 
+	 *Tira un dado que se le  ES INNECESARIO. HACER ALGO STATIC
 	 *
 	 * @param {string|Dado} dado Un string con el valor del dado o un Dado con el que ahcer la tirada
 	 * @returns el resultado de tirar un dado
 	 * @memberof Dado
+	 * TODO: eliminar
 	 */
-	tirarDado(dado) {
+	// tirarDado(dado) {
 
-		//si es un Dado se utiliza el string d
-		if (dado instanceof Dado) return tirarDado(dado.dado);
+	// 	//si es un Dado se utiliza el string d
+	// 	if (dado instanceof Dado) return tirarDado(dado.dado);
 
-		let total = 0;
-		let sumandos;
-		if (dado.includes("+")) {// separo en sumandos
-			sumandos = dado.split("+");
-			// //console.log(sumandos);
+	// 	let total = 0;
+	// 	let sumandos;
+	// 	if (dado.includes("+")) {// separo en sumandos
+	// 		sumandos = dado.split("+");
+	// 		// //console.log(sumandos);
 
-			for (let i = 0; i < sumandos.length; i++) {
-				// el dado máximo de cada sumando y el minimo
-				total += this.dadoTirado(sumandos[i]);
-			}
-		}
+	// 		for (let i = 0; i < sumandos.length; i++) {
+	// 			// el dado máximo de cada sumando y el minimo
+	// 			total += this.dadoTirado(sumandos[i]);
+	// 		}
+	// 	}
 
-		else {
-			total = this.dadoTirado(dado);
-		}
-		return total;
-	}
+	// 	else {
+	// 		total = this.dadoTirado(dado);
+	// 	}
+	// 	return total;
+	// }
 
 
 	/**
@@ -375,10 +393,10 @@ dadoMin() {
 	 * @param dados El string que representa a los dados a tirar
 	 * @return
 	 */
-	mejor(veces, dados = this.dado) {
+	mejor(veces) {
 		let valor = 0;
 		for (; veces > 0; veces--) {
-			let i = this.tirarDado(dados);
+			let i = this.tirar();
 			// //console.log(dados);
 			valor = Math.max(valor, i);
 			// //console.log("valor:"+valor);	
@@ -397,30 +415,30 @@ dadoMin() {
  * @returns Un array con los resultados de la tirada
  * TODO: hacer con un map y permitir negativos
  */
-function test(dado,veces) {
+function test(dado, veces) {
 	//inicializo
 	let resultados = [];
-	if(dado.dadoMin()<0) return "Sólo con dados positivos";
-	let max=dado.dadoMax();
+	if (dado.dadoMin() < 0) return "Sólo con dados positivos";
+	let max = dado.dadoMax();
 	//para que el valor sea el mismo que el índice
-for (let i = 0; i <= max; i++)
-	resultados[i] = 0;
+	for (let i = 0; i <= max; i++)
+		resultados[i] = 0;
 
-for (let i = 0; i < veces; i++) {
-	// Alex intenta entender qué hago aquí
-	resultados[dado.tirar()]++;
+	for (let i = 0; i < veces; i++) {
+		// Alex intenta entender qué hago aquí
+		resultados[dado.tirar()]++;
+	}
+	return resultados;
+
 }
-return resultados;
-	
-}
 
 
 
-// var d1= new Dado("3d6");
+var d1 = new Dado("3d6");
 // console.log(test(d1,100));
 
 
-var _3d6 = new D(3,6); 
+var _3d6 = new D(3, 6);
 _3d6.bonus(2);
 // //console.log(d1.max());
 // //console.log(d1.min());
@@ -486,7 +504,7 @@ var re = new RegExp(regex);
 // for( let i=0;i<100;i++)
 // 	//console.log(d1.tirar());
 
-// //console.log(d1.mejor(10, "3d6"));
+console.log(d1.mejor(10, "3d6"));
 // //console.log(d1.mejor(1));
 
 // //console.log(d1.dadoMin());

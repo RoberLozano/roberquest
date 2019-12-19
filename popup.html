@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <title>Bootstrap Example</title>
   <meta charset="utf-8">
@@ -8,19 +9,62 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+  <script src="localizaciones.js"></script>
 </head>
+
 <body>
 
-<div class="container">
-  <h3>Popover Example</h3>
-  <a href="#" data-toggle="popover" title="Popover Header" data-content="Some content inside the popover">Toggle popover</a>
-</div>
+  <div class="container">
+    <h3>Popover Example</h3>
+    <a href="#" data-toggle="popover" title="Popover Header" data-content="Some content inside the popover">Toggle
+      popover</a>
+  </div>
+  <canvas id="myCanvas" src="Body.png" width="500" height="1000" style="border:1px solid #d3d3d3;">
+    Your browser does not support the HTML5 canvas tag.</canvas>
+  <img id="cuerpo" src="Body.png" alt="Cuerpo" usemap="#bodymap">
+  <map name="bodymap">
+    <area shape="circle" coords="243,59,50" alt="Cabeza" onclick="alert('Hostia en al bocha')">
 
-<script>
-$(document).ready(function(){
-  $('[data-toggle="popover"]').popover();   
-});
-</script>
+    <area shape="circle" coords="124,58,8" href="#" alt="Venus">
+  </map>
+
+  <script>
+    $(document).ready(function () {
+      $('[data-toggle="popover"]').popover();
+    });
+
+
+    window.onload = function () {
+      var canvas = document.getElementById("myCanvas");
+      var ctx = canvas.getContext("2d");
+      var img = document.getElementById("cuerpo");
+      ctx.drawImage(img, 0, 0);
+   
+      ctx.globalAlpha=0.5
+    ctx.beginPath();
+    ctx.arc(243,59, 30, 0, 2 * Math.PI, false);
+    ctx.fillStyle = 'red';
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(150,180, 30, 0, 2 * Math.PI, false);
+    ctx.fillStyle = 'orange';
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(100,450, 10, 0, 2 * Math.PI, false);
+    ctx.globalAlpha=1
+    ctx.font = "30px Arial";
+    ctx.fillStyle = 'red';
+    ctx.fillText("2", 100, 450);
+    ctx.globalAlpha=0.5
+    ctx.fillStyle = 'green';
+    ctx.fill();
+
+  };
+
+  </script>
+
+
 
 </body>
+
 </html>

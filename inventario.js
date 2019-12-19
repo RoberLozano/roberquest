@@ -11,6 +11,10 @@ class Objeto {
 
     }
 
+    get pesa (){
+        return this.peso 
+    }
+
     setAll(o) {
         // const keys = Object.keys(this);
         // const oKeys = Object.keys(o);
@@ -24,7 +28,6 @@ class Objeto {
         // this.valor =  o.valor ;
     }
 
-    pesa() { return this.peso };
 
 }
 
@@ -47,7 +50,7 @@ class Objetos extends Objeto {
         return this.ctd * this.valor;
     }
 
-    pesa() { return roundTo(4, this.ctd * this.peso); }//roundTo está en index.html
+    get pesa () { return roundTo(4, this.ctd * this.peso); }//roundTo está en index.html
 
 
     //incrementar la cantidad, negativos para decrementar
@@ -160,7 +163,7 @@ class Contenedor extends Objeto {
         let c = 0;
         for (var o of this.objetos)
             // c+=o.pesoTotal(); //da problemas con los datos de firebase database, terndria que convertir el array en objetos
-            c += o.pesa();
+            c += o.pesa;
         return c * this.multiplicador;
     }
 
@@ -170,7 +173,7 @@ class Contenedor extends Objeto {
         // else (console.log("Demasiado peso")); 
     }
 
-    pesa() {
+    get pesa () {
         return this.carga + this.peso;
     }
 

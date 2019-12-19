@@ -266,7 +266,7 @@
           <option>ctd</option>
           <option>valor</option>
           <option>daño</option>
-          <option>pesa()</option>
+          <option>pesa</option>
         </select>
 
         <div class="btn-group">
@@ -842,8 +842,11 @@
           k = keys[i];
           v = values[i];
 
+          console.log(k+" ->"+v )
+
           editor.innerHTML = editor.innerHTML + ' <b>' + k.toUpperCase() + ':</b>' +
-            '<input data-toggle="tooltip"  id="edit' + keys[i] + '" value=' + values[i] + ' title=' + keys[i] + ' ><br>';
+          `<input data-toggle="tooltip"  id="edit${k}" value='${v}'' title="${k}" ><br>`
+            // '<input data-toggle="tooltip"  id="edit' + keys[i] + '" value=' + values[i] + ' title=' + keys[i] + ' ><br>';
           //Probar con forms
 
         }
@@ -927,8 +930,8 @@
           //   cargarContenedor(contenedorActual);
           // }
           // else
-          cargaInventario(pj);
-
+          // cargaInventario(pj);
+          cargarPersonaje(pj);
 
 
           // alert();
@@ -1554,7 +1557,7 @@
           // addObjet2Table(element, "tbInv")
           objetoTabla(element, "tbInv", visibles);
         });
-        addObjet2Table(["peso Total", roundTo(3, object.pesa())], "tbInv")
+        addObjet2Table(["peso Total", roundTo(3, object.pesa)], "tbInv")
       }
 
       function roundTo(precision, num) {
