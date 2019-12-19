@@ -400,6 +400,41 @@
     <script>
       // el select guay
       $('select').selectpicker();
+      var colAntes, colDespues;
+
+
+      $('select').on('show.bs.select', function (e) {
+        // console.log("aparece "+$('select').val());
+        colAntes = $('select').val()
+      });
+
+      //para tabla habilidades
+      $('#columnas').on('hidden.bs.select', function (e) {
+        // console.log("se esconde "+$('#columnas').val());
+        colDespues = $('#columnas').val()
+        // console.log(colAntes+"->"+colDespues);
+
+        if (colAntes.join(',') == colDespues.join(',')) return; //si son iguales no hago nada
+        // si no son iguales vuelvo a cargar con las nuevas columnas
+        tablaHabilidades();
+      });
+
+      $('#colInventario').on('hidden.bs.select', function (e) {
+        // console.log("se esconde "+$('#columnas').val());
+        colDespues = $('#colInventario').val()
+        // console.log(colAntes+"->"+colDespues);
+
+        if (colAntes.join(',') == colDespues.join(',')) return; //si son iguales no hago nada
+        // si no son iguales vuelvo a cargar con las nuevas columnas
+        cargarContenedor();
+      });
+
+
+
+
+
+
+
 
       //actualizar los puntos al cambiarlos en el editor
 
@@ -723,7 +758,7 @@
             if (ev.type == "tap")
               console.log("TAP");
             else
-            object.tomar();
+              object.tomar();
           });
           // cell.innerHTML += ` <span class="badge badge-dark" style="background: linear-gradient(315deg, #b8d0e0 0%, #a6afb9 54%,  #b8d0e0 80% );">${object.ctd}</span>`
 
@@ -842,11 +877,11 @@
           k = keys[i];
           v = values[i];
 
-          console.log(k+" ->"+v )
+          console.log(k + " ->" + v)
 
           editor.innerHTML = editor.innerHTML + ' <b>' + k.toUpperCase() + ':</b>' +
-          `<input data-toggle="tooltip"  id="edit${k}" value='${v}'' title="${k}" ><br>`
-            // '<input data-toggle="tooltip"  id="edit' + keys[i] + '" value=' + values[i] + ' title=' + keys[i] + ' ><br>';
+            `<input data-toggle="tooltip"  id="edit${k}" value='${v}'' title="${k}" ><br>`
+          // '<input data-toggle="tooltip"  id="edit' + keys[i] + '" value=' + values[i] + ' title=' + keys[i] + ' ><br>';
           //Probar con forms
 
         }
@@ -1684,10 +1719,10 @@
           //   valor = eval("object." + key);
           // }
           // else {
-            if (i == 0) id = object[key];
-            // crearEventos(object, cell, key);
-            // console.log(object[key]);
-            valor = object[key];
+          if (i == 0) id = object[key];
+          // crearEventos(object, cell, key);
+          // console.log(object[key]);
+          valor = object[key];
           // }
 
           if (valor === undefined) valor = "";
