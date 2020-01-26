@@ -2,6 +2,7 @@
 // import {Habilidad, BonHabilidad} from './habilidades';
 // import {Objeto, Objetos, Arma, Contenedor} from './inventario';
 
+
 var fechaMundo = new Date(778, 0, 1, 0, 0, 0, 0);
 
 const FUE = "FUE"
@@ -279,9 +280,9 @@ class Bon {
 //       this.efectos.push(efecto);
 //     }
 
-    // sanar(tipoPuntos, valor){
-    //   this.car[tipoPuntos]+= valor;
-    // }
+// sanar(tipoPuntos, valor){
+//   this.car[tipoPuntos]+= valor;
+// }
 
 // }
 
@@ -321,6 +322,7 @@ class Animal {
     this.efectos = [];
     // this.backup = null
     this.act();
+    this.cuerpo= new Localizaciones(this.getMaxPuntos(PG));
   }
 
   getCar(car) {
@@ -661,7 +663,7 @@ class Animal {
 
 }
 //Bonificación en Animal
-var d= new Dado("3d6");
+var d = new Dado("3d6");
 
 class Caballo extends Animal {
   constructor(
@@ -701,10 +703,10 @@ class Caballo extends Animal {
 
     this.habilidades = {}
     this.efectos = [];
-    this.carga=[];
+    this.carga = [];
     // this.backup = null
     this.act();
-    
+
     // // Carga ligera (permite correr)		=	(FUE + CON) x 1,0 	Kilogramos
     // this.carga["ligera"] = this.getCar(FUE) + this.getCar(FUE);
     // console.log("carga"+this.getCar(FUE) + this.getCar(FUE));
@@ -716,9 +718,9 @@ class Caballo extends Animal {
     // this.carga["máxima"] = (this.getCar(FUE) + this.getCar(FUE)) * 4.6;
   }
 
-  act(){
+  act() {
     super.act();
-    this.carga=[];
+    this.carga = [];
     this.carga["ligera"] = this.getCar(FUE) + this.getCar(FUE);
     // Carga normal (permite mov 100%)		=	(FUE + CON) x 2,2 	Kilogramos 
     this.carga["normal"] = (this.getCar(FUE) + this.getCar(FUE)) * 2.2;
@@ -728,11 +730,11 @@ class Caballo extends Animal {
     this.carga["máxima"] = (this.getCar(FUE) + this.getCar(FUE)) * 4.6;
   }
 
-   cargas() {
-     for( let c in this.carga){
-       console.log(c+":"+this.carga[c]);
-     }
-    
+  cargas() {
+    for (let c in this.carga) {
+      console.log(c + ":" + this.carga[c]);
+    }
+
   }
 }
 
@@ -758,6 +760,118 @@ Date.prototype.mod = function (interval, units) {
   return ret;
 }
 
+
+class Humanoide extends Animal {
+  constructor(
+    {
+      // nombre = "Humanoide",
+      peso = 60, //en kg
+      FUE = d.tirar(),
+      CON = d.tirar(),
+      TAM = d.tirar(),
+      INT = d.tirar(),
+      POD = d.tirar(),
+      DES = d.tirar(),
+      ASP = d.tirar()
+    }
+
+  ) {
+    super({})
+    this.car = {}
+    // this.nombre=nombre
+    this.peso = peso
+    this.FUE = FUE
+    this.CON = CON
+    this.TAM = TAM
+    this.INT = INT
+    this.POD = POD
+    this.DES = DES
+    this.ASP = ASP
+
+
+
+
+    this.bonificacion = new Bon({});
+
+    this.inventario = creaInventario("Cuerpo");
+    // this.inventario = {}
+
+    this.habilidades = {}
+    this.efectos = [];
+    this.carga = [];
+    this.crearCuerpo();
+
+
+    // this.backup = null
+    this.act();
+
+    // // Carga ligera (permite correr)		=	(FUE + CON) x 1,0 	Kilogramos
+    // this.carga["ligera"] = this.getCar(FUE) + this.getCar(FUE);
+    // console.log("carga"+this.getCar(FUE) + this.getCar(FUE));
+    // // Carga normal (permite mov 100%)		=	(FUE + CON) x 2,2 	Kilogramos 
+    // this.carga["normal"] = (this.getCar(FUE) + this.getCar(FUE)) * 2.2;
+    // // Carga elevada (movimiento al 50%)	=	(FUE + CON) x 3,4	Kilogramos
+    // this.carga["elevada"] = (this.getCar(FUE) + this.getCar(FUE)) * 3.4;
+    // // Carga máxima (movimiento al 10%)	=	(FUE + CON) x 4,6 	Kilogramos
+    // this.carga["máxima"] = (this.getCar(FUE) + this.getCar(FUE)) * 4.6;
+  }
+
+  crearCuerpo() {
+    // this.cuerpo = new Localizaciones();
+    //Menteniendo junta toda la localización
+    var cabeza = new Localizacion("Cabeza", 0.333, 1, 9, 0)
+    var brazoD = new Localizacion("Brazo D", 0.25, 10, 26, 0)
+    var brazoI = (new Localizacion("Brazo I", 0.25, 27, 43, 0))
+    //TODO:Habría que hacer subLocalización?
+    var pecho = (new Localizacion("Pecho", 0.4, 44, 58, 0))
+
+    var abdomen = (new Localizacion("Abdomen", 0.333, 59, 72, 0))
+    var piernaD = (new Localizacion("Pierna D", 0.333, 73, 86, 0))
+    var piernaI = (new Localizacion("Pierna I", 0.333, 87, 100, 0))
+
+    cabeza.add(new Localizacion("Craneo", 1, 1, 4, 0))
+    cabeza.add(new Localizacion("Cara", 1, 5, 7, 0))
+    cabeza.add(new Localizacion("Cuello", 1, 8, 9, 0))
+
+    brazoD.add(new Localizacion("Hombro D", 1, 10, 13, 0))
+    brazoD.add(new Localizacion("Biceps D", 1, 14, 18, 0))
+    brazoD.add(new Localizacion("Antebrazo D", 1, 19, 23, 0))
+    brazoD.add(new Localizacion("Codo D", 1, 24, 24, 0))
+    brazoD.add(new Localizacion("Mano D", 1, 25, 26, 0))
+
+    brazoI.add(new Localizacion("Hombro I", 1, 27, 30, 0))
+    brazoI.add(new Localizacion("Biceps I", 1, 31, 35, 0))
+    brazoI.add(new Localizacion("Antebrazo I", 1, 36, 40, 0))
+    brazoI.add(new Localizacion("Codo I", 1, 41, 41, 0))
+    brazoI.add(new Localizacion("Mano I", 1, 42, 43, 0))
+
+    abdomen.add(new Localizacion("Vientre", 1, 59, 65, 0))
+    abdomen.add(new Localizacion("Cadera D", 1, 66, 68, 0))
+    abdomen.add(new Localizacion("Ingle", 1, 69, 69, 0))
+    abdomen.add(new Localizacion("Cadera I", 1, 70, 72, 0))
+
+    piernaD.add(new Localizacion("Muslo Superior D", 1, 73, 77, 0))
+    piernaD.add(new Localizacion("Muslo Inferior D", 1, 78, 80, 0))
+    piernaD.add(new Localizacion("Rodilla D", 1, 81, 81, 0))
+    piernaD.add(new Localizacion("Pierna Inf D", 1, 82, 85, 0))
+    piernaD.add(new Localizacion("Pie D", 1, 86, 86, 0))
+
+    piernaI.add(new Localizacion("Muslo Superior I", 1, 87, 91, 0))
+    piernaI.add(new Localizacion("Muslo Inferior I", 1, 92, 94, 0))
+    piernaI.add(new Localizacion("Rodilla I", 1, 95, 95, 0))
+    piernaI.add(new Localizacion("Pierna Inf I", 1, 96, 99, 0))
+    piernaI.add(new Localizacion("Pie I", 1, 100, 100, 0))
+
+    this.cuerpo.add(cabeza);
+    this.cuerpo.add(brazoD);
+    this.cuerpo.add(brazoI);
+    this.cuerpo.add(pecho);
+    this.cuerpo.add(abdomen);
+    this.cuerpo.add(piernaD);
+    this.cuerpo.add(piernaI);
+  }
+
+}
 
 /**
  * variable global con el personaje sobre
@@ -792,9 +906,11 @@ let a = new Animal({ nombre: "Animal A" });
 
 
 // console.log(a);
-let v = new Animal({ FUE: 13, DES: 7 });
+let v = new Humanoide({ FUE: 13, DES: 7, nombre: "Paco" });
 // let v=new Bon({FUE:1, DES: 2, Agilidad:20, PF:3});
-// console.log(v);
+console.log("HUMANOIDE");
+
+console.log(v);
 // a.bonificacion=v;
 // a.set(DES, 30);
 // console.log(a);

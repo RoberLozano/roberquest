@@ -40,7 +40,15 @@
     }
 
     .number-input {
-      width: 60px;
+      width: 5em;
+    }
+
+    .dado {
+      width: 3em;
+    }
+
+    .dados {
+      width: 4em;
     }
 
     .gold {
@@ -74,6 +82,8 @@
   <script src='D.js'></script>
   <script src='habilidades.js'></script>
   <script src='inventario.js'></script>
+  <script src='localizaciones.js'></script>
+
   <script src='rol.js'></script>
 </head>
 
@@ -130,6 +140,67 @@
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
             <button type="button" class="btn btn-danger" onclick="quitarObjeto()" data-dismiss="modal">Eliminar</button>
             <button type="button" class="btn btn-primary" onclick="nuevoObjeto()">Nuevo</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Entrenar -->
+    <div class="modal fade" id="modalEntrenar" tabindex="-1" role="dialog" aria-labelledby="modalEntrenarTitle"
+      aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 class="modal-title" id="modalEntrenarTitle">Entrenar</h3>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" id="editor">
+            <form>
+              <div class="input-group mb-2">
+                <div class="input-group-prepend">
+                  <!-- <label class="form-check-label" for="chMaestro">
+                    <input type="checkbox" id="chMaestro" name="maestro" checked>Maestro
+                  </label> <br> -->
+                  <span id="lbEntrenador" class="input-group-text">Entrenar%</span>
+                  <input id="iEntrenador" type="number" value=100 class="form-control number-input">
+
+                  <span class="input-group-text">Caras</span>
+                  <input id="iDadosEntrenador" type="number" value=3 class="form-control dado">
+                  <span class="input-group-text"><i class="fas fa-dice-six"></i></span>
+                  <input id="iTiradaEntrenador" type="number" class="form-control dados">
+                  <button id="btDuraciónOK" class="btn btn-primary" type="button">OK</button>
+                </div>
+
+                <!-- <div class="input-group-prepend">
+                  <span id="lbIntensidad" class="input-group-text">Intensidad: 130%</span>
+                  <input id="iPMIntensidad" type="number" value="0" class="form-control number-input">
+                  <span class="input-group-text"><i class="fas fa-dice-six"></i></span>
+                  <input id="iDadosIntensidad" type="number" class="form-control number-input">
+                  <button id="btIntensidadOK" class="btn btn-primary" type="button">OK</button>
+                </div> -->
+                <div class="number-input"></div>
+                <div class="input-group-prepend">
+                  <span id="lbEntrenar" class="input-group-text">Habilidad</span>
+                  <input id="iHabilidad" type="number" class="form-control number-input">
+                  <span class="input-group-text">Horas:</span>
+                  <input id="iHoras" type="number" class="form-control number-input">
+                  <span class="input-group-text"><i class="fas fa-dice-six"></i></span>
+                  <input id="iTiradaSubir" type="number" class="form-control dados" placeholder=99>
+                </div>
+                <span class="input-group-text">Total:</span>
+                <input id="iTotal" type="number" class="form-control number-input">
+              </div>
+            </form>
+            <div>
+              PM disponibles: <span id="pmTotales" class="input-group-text"></span>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            <button id="bManual" type="button" class="btn btn-success">Manual</button>
+            <button id="bEntrenar" type="button" class="btn btn-primary" >Entrenar</button>
           </div>
         </div>
       </div>
@@ -238,7 +309,7 @@
           <option selected>nombre</option>
           <option>xp</option>
           <option>tipo</option>
-          <option>valor</option>
+          <option selected>valor</option>
         </select>
         <table class="table table-hover">
           <thead id="header">
@@ -313,6 +384,13 @@
           <button class="btn btn-danger" onclick="lanzarHechizo()">Hechizo</button>
 
         </div>
+        <div>
+
+          <button class="btn btn-danger" onclick="entrenar()">Entrenar</button>
+
+        </div>
+
+
       </div>
     </div>
     <!-- #endregion -->
@@ -428,12 +506,6 @@
         // si no son iguales vuelvo a cargar con las nuevas columnas
         cargarContenedor();
       });
-
-
-
-
-
-
 
 
       //actualizar los puntos al cambiarlos en el editor
@@ -775,8 +847,6 @@
         }
 
 
-
-
         if (object instanceof Objeto) {
           var hammertime = new Hammer(cell);
           hammertime.on('swipe', function (ev) {
@@ -849,8 +919,15 @@
               //y lo muestro
               $("#editModal").modal();
             });
-
           }
+
+          if (key === "valor") {
+            cell.addEventListener("click", function () {
+              entrenar(object);
+              //y lo muestro
+            });
+          }
+
         }
         // else
         //   cell.addEventListener("click", function () {
@@ -1060,6 +1137,90 @@
         $(nombre).val(v);
 
       }
+
+      function entrenar(habilidad) {
+        var valor;
+        var bon;
+        var horas;
+
+        var dado = 3;
+
+        $("#modalEntrenar").modal();
+        //inicializa
+        if (habilidad instanceof Habilidad) {
+          valor = habilidad.valor;
+          horas = habilidad.horasEntrenadas;
+          bon = habilidad.v - valor;
+
+          console.log(`${valor} ${horas} ${bon}`);
+
+          $("#iHabilidad").val(valor);
+          $("#iHoras").val(horas);
+          $("#lbEntrenar").text(habilidad.nombre);
+
+        }
+
+        function act() {
+          // console.log("ACT");
+          valor = parseInt($("#iHabilidad").val())
+          horas = parseInt($("#iHoras").val())
+
+          $("#iHabilidad").val(valor);
+          $("#iHoras").val(horas);
+          // console.log(horas-(valor-bon));
+
+          //tiene que ser un numero igual de horas al %
+          if (horas >= valor) {
+            // $("#iTiradaSubir").val('+'+(valor-bon))
+            $("#iTiradaSubir").prop("disabled", false);
+            $("#iTiradaSubir").attr('placeholder', ((valor - bon)))
+            // $("#iTiradaSubir").css( "color", "red" );
+          }
+          else
+            $("#iTiradaSubir").prop("disabled", true);
+        }
+
+        function subir(x) {
+          // if(!x) x=parseInt($("#iTiradaSubir").val())
+          $("#iHabilidad").val(valor + x); //sumo lo que se sube
+          // resto de las horas
+          $("#iHoras").val(horas - valor);
+          act();
+
+        }
+
+        $("#bManual").click(function (event) {
+          subir(parseInt($("#iTiradaSubir").val()))
+        });
+
+        $("#bEntrenar").click(function (event) {
+          let d100 = new D(1, 100)
+          let d = new D(1, dado)
+          let limite = valor - bon;
+          while (horas >= valor) {
+            let subida = 0;
+            let tirada = d100.norm()
+            if (tirada == 7 || tirada == 77)
+              subida = dado + d.norm();//ó dado*2
+            else
+              if (tirada == 100)
+                subida = dado
+              else
+                if (tirada >= limite)
+                  subida = d.norm()
+
+            console.log(tirada+"->"+subida);
+                  
+            subir(subida);
+
+          }
+        });
+        $("input[type='number']").change(function () {
+          act()
+        });
+
+      }
+
       function lanzarHechizo(hechizo) {
 
         let h = new Hechizo("Hechizo", 7, 100, null);

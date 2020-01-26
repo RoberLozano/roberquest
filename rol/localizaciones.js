@@ -1,14 +1,14 @@
-class Localizaciones {
+export class Localizaciones {
     /**
      *Creates an instance of Localizaciones.
      * @param {number} pg Los puntos de golpe del personaje
      * @memberof Localizaciones
      */
-    constructor(pg=1) {
+    constructor(pg) {
         this.localizaciones = []
         /** Se utiliza para un daño general como desangramiento o succionar PG */
         this.dañoGeneral = 0;
-        this.pg=pg //=1
+        this.pg //=1
     }
 
     /**
@@ -18,7 +18,7 @@ class Localizaciones {
      * @memberof localizaciones
      */
     add(loc) {
-        if(this.pg) loc.setPG(this.pg)
+        if(this.pg) loc.setPG(pg)
         this.localizaciones.push(loc)
         // console.log(this.localizaciones);
     }
@@ -53,7 +53,7 @@ class Localizaciones {
      */
     darLocalizacion(x) {
         var l;
-        // console.log("Localizaciones en " + x);
+        console.log("Localizaciones en " + x);
         //Si es final y coincide se devuelve pero ya lo hace el padre
         // if (this.esFinal() && this.max >= x && this.min <= x) {
         //     // l=this;
@@ -64,8 +64,7 @@ class Localizaciones {
             // console.log("no numero:" +this.nombre);
             this.localizaciones.forEach(loc => {
                 //si miro aqui si es final y la devuelvo me ahorro una llamada a darLocalizacion
-                if (loc.esFinal() && loc.nombre==x) {
-                    //  console.log("Encontrado:"+x);
+                if (loc.esFinal() && loc.nombre==x) { console.log("Encontrado:"+x);
                 l = loc; return loc; } //da error si no hago l=loc
                 else
                 if(!loc.esFinal()){
@@ -80,7 +79,7 @@ class Localizaciones {
         }
         else //si es número
         {
-            // console.log("numero");
+            console.log("numero");
             this.localizaciones.forEach(loc => {
                 //si miro aqui si es final y la devuelvo me ahorro una llamada a darLocalizacion
                 if (loc.esFinal() && loc.max >= x && loc.min <= x) { l = loc; return loc; } //da error si no hago l=loc
@@ -133,11 +132,23 @@ class Localizaciones {
     * Daña una localizacion
     *
     * @param {number} pg PG de daño
-    * @param {number|string} localizacion el numero de tirada o el nombre de una localización
+    * @param {number|Localizacion} localizacion el numero de tirada o una localización
     * @memberof Localizacion
     */
     dañarLocalizacion(pg, localizacion) {
-        this.darLocalizacion(localizacion).dañar(pg);
+        if (!isNaN(localizacion)) { //si es un numero
+            var objetivo = this.darLocalizacion(localizacion);
+            objetivo.dañar(pg)
+            console.log(objetivo);
+
+
+        } else {
+            //si no es final deberia dañarse una sublocalización
+            if (localizacion instanceof Localizacion && localizacion.esFinal())
+                localizacion.dañar(pg);
+
+        }
+
     }
 
     /**
@@ -184,7 +195,7 @@ class Localizaciones {
  *
  * @class localizacion
  */
-class Localizacion extends Localizaciones {
+export class Localizacion extends Localizaciones {
     /**
      *Creates an instance of localizacion.
      * @param {string} nombre el nombre de la localización
@@ -254,8 +265,7 @@ class Localizacion extends Localizaciones {
 
 }
 
-
-// var humanoide = new Localizaciones();
+var humanoide = new Localizaciones();
 
 //Localizaciones de RQ normales
 
