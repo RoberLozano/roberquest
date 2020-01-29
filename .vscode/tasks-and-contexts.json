@@ -1,6 +1,6 @@
 {
   "lock": false,
-  "active": "a73f1345df69647021f401499146a518864ef87a",
+  "active": "eca3401e43534dc60020f475f418db8ac69813a4",
   "sets": {
     "default": {
       "source": "default",
@@ -20,24 +20,19 @@
         "b8e88637f23fbe26fa18a139cf76af353b60e507": {
           "name": "Inventario",
           "data": [
+            "c:\\GitHub\\roberquest\\inventario.js",
             "c:\\GitHub\\roberquest\\index.html",
             "c:\\GitHub\\roberquest\\habilidades.js",
-            "c:\\GitHub\\roberquest\\rol.js",
-            "c:\\GitHub\\roberquest\\inventario.js"
+            "c:\\GitHub\\roberquest\\rol.js"
           ]
         },
         "a73f1345df69647021f401499146a518864ef87a": {
           "name": "Rol",
           "data": [
             "c:\\GitHub\\roberquest\\index.html",
-            "c:\\GitHub\\roberquest\\dados.html",
-            "c:\\GitHub\\roberquest\\localizaciones.js",
-            "c:\\GitHub\\roberquest\\popup.html",
-            "c:\\GitHub\\roberquest\\D.js",
             "c:\\GitHub\\roberquest\\habilidades.js",
-            "c:\\GitHub\\roberquest\\rol.js",
-            "c:\\GitHub\\roberquest\\js.html",
-            "c:\\Users\\Rober\\AppData\\Local\\Programs\\Microsoft VS Code\\resources\\app\\extensions\\node_modules\\typescript\\lib\\lib.dom.d.ts"
+            "c:\\GitHub\\roberquest\\localizaciones.js",
+            "c:\\GitHub\\roberquest\\rol.js"
           ]
         },
         "859fc84a73bdb78bd1612362f1aa93440e66a510": {
@@ -50,7 +45,7 @@
         "eca3401e43534dc60020f475f418db8ac69813a4": {
           "name": "Hechizo",
           "data": [
-            "c:\\GitHub\\roberquest\\index.html",
+            "c:\\GitHub\\roberquest\\habilidades.js",
             "c:\\GitHub\\roberquest\\index.html"
           ]
         },

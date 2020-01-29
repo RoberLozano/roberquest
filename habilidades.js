@@ -225,7 +225,24 @@ class Habilidad extends XP {
      * Te devuelve que tipo de tirada se obtiene con t
      * @param {number} t la tirada del dado
      */
-    tirada(t) {
+    tirada(t,suerte=[]) {
+
+        if (t == 100)
+                return TipoTirada.PIFIA; //la pifia siempre es pifia
+
+        if(suerte.length>0)
+        {
+            // console.log("SUERTE"+suerte);
+            let mejor=this.tirada(t);
+            suerte.forEach(valor => {
+                // let v= parseInt(valor)+parseInt(t);//si no concatena el hdp
+                let v= +valor+(+t) //así parece q suma
+                let x=this.tirada(v);
+                // console.log(` mejor=${mejor}, tirada(${v})=${x}`);
+                if(x> mejor) mejor=x;
+            });
+            return mejor;
+        }
         //TODO: soporte para -1,etc en tiradas?
         switch (true) {
             case (t == 7 || t == 77):

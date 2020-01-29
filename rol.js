@@ -534,6 +534,7 @@ class Animal {
         for (let k in o[key]) {
           // console.log("setAll habilidades"+k);
           let h = new Habilidad();
+          if(o[key][k].hasOwnProperty("pm")){ h= new Hechizo()}
           h.setAll(o[key][k])
           // console.log(h);
           this.habilidades[h.nombre] = h;
