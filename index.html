@@ -30,6 +30,10 @@
       src: url("Old Europe.ttf");
     }
 
+    h6 {
+      font-family: Friedolin;
+      font-size: 200%;
+    }
     h5 {
       font-family: Friedolin;
       font-size: 300%;
@@ -212,22 +216,21 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="modalHechizoTitle">Hechizo</h5>
+            <h6 class="modal-title" id="modalHechizoTitle">Hechizo</h6>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <div class="modal-body" id="editor">
+          <div class="modal-body w-100" id="editor">
             <select class="selectpicker" id="hm" multiple data-live-search="true" data-width="fit" multiple
               title="Modificadores de Hechizo">
             </select>
             <div id="salida"></div>
-            ...
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
             <button type="button" class="btn btn-danger" onclick="hechizos()" data-dismiss="modal">Eliminar</button>
-            <button type="button" class="btn btn-primary" onclick="nuevoObjeto()">Nuevo</button>
+            <button type="button" class="btn btn-primary" onclick="">Nuevo</button>
           </div>
         </div>
       </div>
@@ -284,7 +287,6 @@
         </div>
       </div>
     </div> -->
-
 
     <!-- #region tabs -->
     <div class="tab-content">
@@ -965,7 +967,7 @@
               if (ev.type == "tap")
                 console.log("TAP");
               else
-              hechizos(object); //en toque largo hechizo
+                hechizos(object); //en toque largo hechizo
             });
           }
 
@@ -1488,7 +1490,7 @@
        * @param hechizo: el hechizo 
        */
       function hechizos(hechizo) {
-        var _hechizo=new Hechizo("Hechizo",hechizo.pm,hechizo.valor)
+        var _hechizo = new Hechizo("Hechizo", hechizo.pm, hechizo.valor)
         // las habilidades
         var nombres = [
           "Multiconjuro",
@@ -1513,7 +1515,7 @@
         var h;
         var dados = [];
         var pmGastados = 0;
-        var porcentaje= hechizo.v;
+        var porcentaje = hechizo.v;
 
         //penalizacion al hechizo por Intensidad
         var penalizacion = 0
@@ -1523,17 +1525,28 @@
 
         document.getElementById("salida").innerHTML = "";
         document.getElementById("hm").innerHTML = "";
+        document.getElementById("modalHechizoTitle").innerHTML=hechizo.nombre+
+        ` <span class="badge badge-pill badge-dark">${hechizo.pm}</span>`
         //pongo todas las habilidades mágicas en habilidades
         nombres.forEach(n => {
           h = pj.getHabilidad(n);
           if (h) {
             habilidades.push(h)
             document.getElementById("salida").innerHTML +=
-              `
+      //         `
+      // <div id="grupo${h.nombre}" class="input-group-prepend">
+      //   <span id="lb${h.nombre}" class="input-group-text col-4">${h.nombre}: ${h.v}%</span>
+      //   <input id="iPM${h.nombre}" type="number" value="0" class="form-control number-input col-2">
+      //   <span class="input-group-text col-1"  id="d${h.nombre}"><i class="fas fa-dice-six"></i></span>
+      //   <input id="iDados${h.nombre}" type="number" class="form-control number-input col-2">
+      //   <button id="bt${h.nombre}OK" class="btn btn-primary col-1" type="button">OK</button>
+      // </div>
+      //   `
+      `
       <div id="grupo${h.nombre}" class="input-group-prepend">
-        <span id="lb${h.nombre}" class="input-group-text col-4">${h.nombre}: ${h.v}%</span>
-        <input id="iPM${h.nombre}" type="number" value="0" class="form-control number-input col-2">
-        <span class="input-group-text col-1"  id="d${h.nombre}"><i class="fas fa-dice-six"></i></span>
+        <span id="lb${h.nombre}" class="input-group-text col-6">${h.nombre}: ${h.v}%</span>
+        <input id="iPM${h.nombre}" type="number" value=0 class="form-control number-input col-2">
+        <span class="input-group-text dado"  id="d${h.nombre}"> <i class="fas fa-dice-six"></i></span>
         <input id="iDados${h.nombre}" type="number" class="form-control number-input col-2">
         <button id="bt${h.nombre}OK" class="btn btn-primary col-1" type="button">OK</button>
       </div>
@@ -1542,20 +1555,25 @@
         });
 
         //TODO: Metemos el hechizo
-        _hechizo.nombre="Hechizo" //para evitar los espacios del nombre
+        _hechizo.nombre = "Hechizo" //para evitar los espacios del nombre
         h = _hechizo;
         habilidades.push(h)
         document.getElementById("salida").innerHTML +=
           `
       <div id="grupo${h.nombre}" class="input-group-prepend">
-        <span id="lb${h.nombre}" class="input-group-text col-4"><b>${h.nombre}: ${h.v}%</b></span>
+        <span id="lb${h.nombre}" class="input-group-text col-6"><b>${h.nombre}: ${h.v}%</b></span>
         <input id="iPM${h.nombre}" type="number" value="${h.pm}" class="form-control number-input col-2">
-        <span class="input-group-text col-1"  id="d${h.nombre}"><i class="fas fa-dice-six"></i></span>
+        <span class="input-group-text dado"  id="d${h.nombre}"> <center><i class="fas fa-dice-six text-center"></center></i></span>
         <input id="iDados${h.nombre}" type="number" class="form-control number-input col-2">
         <button id="bt${h.nombre}OK" class="btn btn-primary col-1" type="button">OK</button>
       </div>
         `
-
+        // document.getElementById("salida").innerHTML +=
+        // `
+        // <div id="grupo${h.nombre}" class="input-group-prepend w-100">
+        //   <div class="w-100 p-3" style="background-color: #eee;">Width 100%</div>
+        // </div>
+        // `
 
 
         //selectpicker con las habilidades a mostrar  onclick="dados('#iDados${h.nombre}')"
@@ -1572,14 +1590,14 @@
         function actHM(h, valor) {
           // console.log();
           let n = h.nombre;
-          var v = h.tirada(valor,[-1,1]);
+          var v = h.tirada(valor, [-1, 1]);
           let pm = parseInt($(`#iPM${n}`).val());
           let i = document.getElementById(`iDados${h.nombre}`);
-          if (h.nombre == "Intensidad"){
-                penalizacion = 0; //en principio sin penalizacion
-                _hechizo.bvalor=-penalizacion;
-                $(`#lb${_hechizo.nombre}`).text(`<b>${_hechizo.nombre}: ${_hechizo.v}%</b>`);
-              }
+          if (h.nombre == "Intensidad") {
+            penalizacion = 0; //en principio sin penalizacion
+            _hechizo.bvalor = -penalizacion;
+            $(`#lb${_hechizo.nombre}`).text(`<b>${_hechizo.nombre}: ${_hechizo.v}%</b>`);
+          }
           switch (v) {
             case (TipoTirada.SUPERCRITICO):
               // pmHechizo = 1;
@@ -1609,14 +1627,14 @@
               iPM[n] = pig[n] = pm;
 
               //si es intensidad y éxito normal resta al hechizo
-              if (h.nombre == "Intensidad"){
+              if (h.nombre == "Intensidad") {
                 penalizacion = pm * 5;
-                _hechizo.bvalor=-penalizacion;
+                _hechizo.bvalor = -penalizacion;
                 console.log(_hechizo.v);
-              console.log(`#lb${_hechizo.nombre}).text(${_hechizo.nombre}: ${hechizo.v}%`);
-              
+                // console.log(`#lb${_hechizo.nombre}).text(${_hechizo.nombre}: ${hechizo.v}%`);
+
                 $(`#lb${_hechizo.nombre}`).text(`${_hechizo.nombre}: ${_hechizo.v}%`);
-                // $(`#iDados${h.nombre}`).val(porcentaje);
+                // $("[id='${_hechizo.nombre}']").text(`${_hechizo.nombre}: ${_hechizo.v}%`);
 
               }
               break;
@@ -1662,7 +1680,9 @@
           // $("#hm").add(new Option(h.nombre));
 
           $(`#d${h.nombre}`).click(function () {
+            console.log(`#d${h.nombre} presionado`);
             lanzarDados(`#iDados${h.nombre}`, h);
+
 
           });
 
