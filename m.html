@@ -11,6 +11,36 @@
 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
+    <style type="text/css">
+        @font-face {
+            font-family: "Friedolin";
+            src: url("Friedolin.ttf");
+        }
+
+        @font-face {
+            font-family: "MediciText";
+            src: url("MediciText.otf");
+        }
+
+        @font-face {
+            font-family: "Old Europe";
+            src: url("Old Europe.ttf");
+        }
+
+        .dark {
+            background-color: black;
+            color: blanchedalmond;
+        }
+
+        h5 {
+            font-family: Friedolin;
+            font-size: 300%;
+        }
+
+        h2 {
+            font-family: MediciText;
+        }
+    </style>
 
 </head>
 
@@ -20,7 +50,7 @@
         <!-- navbar content here  -->
     </nav>
 
-    <ul id="slide-out" class="sidenav">
+    <ul id="slide-out" class="sidenav dark">
         <li>
             <div class="user-view">
                 <div class="background">
@@ -55,10 +85,10 @@
         </div>
         <div class="nav-content">
             <ul class="tabs tabs-transparent">
-                <li class="tab"><a href="#test1">Test 1</a></li>
-                <li class="tab"><a class="active" href="#test2">Test 2</a></li>
-                <li class="tab"><a href="#inventario">Inventario</a></li>
-                <li class="tab"><a href="#test4">Test 4</a></li>
+                <li class="tab dark"><a href="#test1">Test 1</a></li>
+                <li class="tab dark"><a class="active" href="#test2">Test 2</a></li>
+                <li class="tab dark"><a href="#inventario">Inventario</a></li>
+                <li class="tab dark"><a href="#test4">Test 4</a></li>
             </ul>
         </div>
     </nav>
@@ -73,27 +103,46 @@
     <div id="inventario" class="fade">
         El puto Inventario </div>
 
-    <div id="test2" class="col s12">Test 2</div>
+    <div id="test2" class="col s12 dark">Test 2</div>
     <div id="test3" class="col s12">Test 3</div>
     <div id="test4" class="col s12">Test 4</div>
 
-    <div class="row">
-        <div class="col s12">
-            <ul class="tabs">
-                <li class="tab col s3"><a href="#inbox">Inbox</a></li>
-                <li class="tab col s3"><a class="active" href="#unread">
-                        Unread</a></li>
-                <li class="tab col s3 disabled"><a href="#outbox">
-                        Outbox (Disabled)</a></li>
-                <li class="tab col s3"><a href="#sent">Sent</a></li>
-            </ul>
-        </div>
 
-        <div id="inbox" class="col s12">Inbox</div>
-        <div id="unread" class="col s12">Unread</div>
-        <div id="outbox" class="col s12">Outbox (Disabled)</div>
-        <div id="sent" class="col s12">Sent</div>
+    <ul id="tabs-swipe-demo" class="tabs">
+        <li class="tab col s3"><a href="#test-swipe-1">Test 1</a></li>
+        <li class="tab col s3"><a class="active" href="#test-swipe-2">Test 2</a></li>
+        <li class="tab col s3"><a href="#test-swipe-3">Test 3</a></li>
+      </ul>
+      <div id="test-swipe-1" class="col s12 blue">
+          Test 1
+          Las viejas
+          sdfsdgf<br>
+          dfsgsdfg
+          sdfgsdfg
+          sdfgsdfgfgfsdg
+          sdfgsdfgfgfsdgsdf<br>
+          dfsgsdfg<br>
+          jtuyiuy
+          st
+        </div>
+      <div id="test-swipe-2" class="col s12 red">Test 2</div>
+      <div id="test-swipe-3" class="col s12 green">Test 3</div>
+
+
+
+  <!-- Modal Trigger -->
+  <a class="waves-effect waves-light btn modal-trigger" href="#modal1">Modal</a>
+
+  <!-- Modal Structure -->
+  <div id="modal1" class="modal">
+    <div class="modal-content">
+      <h4>Modal Header</h4>
+      <p>A bunch of text</p>
     </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
+    </div>
+  </div>
 
 
     <div class="fixed-action-btn">
@@ -117,6 +166,9 @@
             $('.sidenav').sidenav();
             $('.fixed-action-btn').floatingActionButton();
             $('.tabs').tabs();
+            $('.modal').modal();
+
+            M.toast({html: 'Buenos días'})
         });
 
 
