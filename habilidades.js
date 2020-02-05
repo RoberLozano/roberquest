@@ -262,8 +262,8 @@ class Habilidad extends XP {
         }
     }
 
-    xpTirada(t) {
-        switch (this.tirada(t)) {
+    xpTirada(t,suerte=[]) {
+        switch (this.tirada(t,suerte)) {
             case TipoTirada.SUPERCRITICO:
                 this.xp+=4;
                 break;

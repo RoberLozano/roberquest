@@ -34,6 +34,7 @@
       font-family: Friedolin;
       font-size: 200%;
     }
+
     h5 {
       font-family: Friedolin;
       font-size: 300%;
@@ -228,9 +229,9 @@
             <div id="salida"></div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-            <button type="button" class="btn btn-danger" onclick="hechizos()" data-dismiss="modal">Eliminar</button>
-            <button type="button" class="btn btn-primary" onclick="">Nuevo</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            <button id="bLanzarHechizo" type="button" class="btn btn-primary" data-dismiss="modal">Lanzar</button>
+            <!-- <button type="button" class="btn btn-primary" onclick="">Nuevo</button> -->
           </div>
         </div>
       </div>
@@ -1525,24 +1526,24 @@
 
         document.getElementById("salida").innerHTML = "";
         document.getElementById("hm").innerHTML = "";
-        document.getElementById("modalHechizoTitle").innerHTML=hechizo.nombre+
-        ` <span class="badge badge-pill badge-dark">${hechizo.pm}</span>`
+        document.getElementById("modalHechizoTitle").innerHTML = hechizo.nombre +
+          ` <span class="badge badge-pill badge-dark">${hechizo.pm}</span>`
         //pongo todas las habilidades mágicas en habilidades
         nombres.forEach(n => {
           h = pj.getHabilidad(n);
           if (h) {
             habilidades.push(h)
             document.getElementById("salida").innerHTML +=
-      //         `
-      // <div id="grupo${h.nombre}" class="input-group-prepend">
-      //   <span id="lb${h.nombre}" class="input-group-text col-4">${h.nombre}: ${h.v}%</span>
-      //   <input id="iPM${h.nombre}" type="number" value="0" class="form-control number-input col-2">
-      //   <span class="input-group-text col-1"  id="d${h.nombre}"><i class="fas fa-dice-six"></i></span>
-      //   <input id="iDados${h.nombre}" type="number" class="form-control number-input col-2">
-      //   <button id="bt${h.nombre}OK" class="btn btn-primary col-1" type="button">OK</button>
-      // </div>
-      //   `
-      `
+              //         `
+              // <div id="grupo${h.nombre}" class="input-group-prepend">
+              //   <span id="lb${h.nombre}" class="input-group-text col-4">${h.nombre}: ${h.v}%</span>
+              //   <input id="iPM${h.nombre}" type="number" value="0" class="form-control number-input col-2">
+              //   <span class="input-group-text col-1"  id="d${h.nombre}"><i class="fas fa-dice-six"></i></span>
+              //   <input id="iDados${h.nombre}" type="number" class="form-control number-input col-2">
+              //   <button id="bt${h.nombre}OK" class="btn btn-primary col-1" type="button">OK</button>
+              // </div>
+              //   `
+              `
       <div id="grupo${h.nombre}" class="input-group-prepend">
         <span id="lb${h.nombre}" class="input-group-text col-6">${h.nombre}: ${h.v}%</span>
         <input id="iPM${h.nombre}" type="number" value=0 class="form-control number-input col-2">
@@ -1575,6 +1576,28 @@
         // </div>
         // `
 
+        $("#bLanzarHechizo").one("click", function () { //one para que no lo lance cada vez que ejecuto lanzar hechizo
+          pj.gastarPM(totalGastado(), true);
+          console.log(`Se le resta ${totalGastado()} y quedan ${pj.PM} PM`);
+
+          habilidades.forEach(h => {
+          //por cada habilidad mágica que mire el resultado
+            let v=$(`#iDados${h.nombre}`).val()
+            // si hay tirada, que suba en xp
+            if(v &&v>0) {
+              //TODO, luego hacerlo con el nombre
+              //como hechizo no se hace con su nombre
+              if(h.nombre=="Hechizo") hechizo.xpTirada(v, pj.suerte);
+               else h.xpTirada(v, pj.suerte);
+              console.log(h.nombre+ " se ha comprobado XP");
+              
+            }
+
+        });
+
+         pj.save()
+          console.log("***********SE HA PULSADO LANZAR");
+      });
 
         //selectpicker con las habilidades a mostrar  onclick="dados('#iDados${h.nombre}')"
         var hm = document.getElementById("hm");
@@ -1590,13 +1613,17 @@
         function actHM(h, valor) {
           // console.log();
           let n = h.nombre;
-          var v = h.tirada(valor, [-1, 1]);
+          var v = h.tirada(valor, pj.suerte);
           let pm = parseInt($(`#iPM${n}`).val());
           let i = document.getElementById(`iDados${h.nombre}`);
           if (h.nombre == "Intensidad") {
             penalizacion = 0; //en principio sin penalizacion
             _hechizo.bvalor = -penalizacion;
-            $(`#lb${_hechizo.nombre}`).text(`<b>${_hechizo.nombre}: ${_hechizo.v}%</b>`);
+
+            // let lb = document.getElementById(`lb${_hechizo.nombre}`);
+            // lb.innerHTML=`<b>${hechizo.nombre}: ${_hechizo.v}%</b>`
+            $(`#lb${_hechizo.nombre}`).html(`<b>${_hechizo.nombre}: ${_hechizo.v}%</b>`);
+            
           }
           switch (v) {
             case (TipoTirada.SUPERCRITICO):
@@ -1633,7 +1660,7 @@
                 console.log(_hechizo.v);
                 // console.log(`#lb${_hechizo.nombre}).text(${_hechizo.nombre}: ${hechizo.v}%`);
 
-                $(`#lb${_hechizo.nombre}`).text(`${_hechizo.nombre}: ${_hechizo.v}%`);
+                $(`#lb${_hechizo.nombre}`).html(`<b>${_hechizo.nombre}: ${_hechizo.v}%</b>`);
                 // $("[id='${_hechizo.nombre}']").text(`${_hechizo.nombre}: ${_hechizo.v}%`);
 
               }
@@ -1665,7 +1692,7 @@
           let suma = 0;
           for (let v in pig)
             suma += pig[v]
-          console.log(suma);
+          // console.log(suma);
           return suma;
         }
 
@@ -1690,6 +1717,7 @@
             valor = event.target.value;
             console.log(`#iPM${h.nombre} valor: ${event.target.value}`);
             iPM[h.nombre] = valor;
+            //TODO: tal vez actualizar
           });
 
           $(`#iDados${h.nombre}`).change(function () {

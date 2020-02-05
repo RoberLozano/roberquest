@@ -318,6 +318,9 @@ class Animal {
     this.inventario = creaInventario("Cuerpo");
     // this.inventario = {}
 
+    /** Si se le puede sumar o restar a la tirada */
+    this.suerte=[]
+
     this.habilidades = {}
     this.efectos = [];
     // this.backup = null
