@@ -1,14 +1,18 @@
+class LocImagen {
+
+}
+
 class Localizaciones {
     /**
      *Creates an instance of Localizaciones.
      * @param {number} pg Los puntos de golpe del personaje
      * @memberof Localizaciones
      */
-    constructor(pg=1) {
+    constructor(pg = 1) {
         this.localizaciones = []
         /** Se utiliza para un daño general como desangramiento o succionar PG */
         this.dañoGeneral = 0;
-        this.pg=pg //=1
+        this.pg = pg //=1
     }
 
     /**
@@ -18,7 +22,7 @@ class Localizaciones {
      * @memberof localizaciones
      */
     add(loc) {
-        if(this.pg) loc.setPG(this.pg)
+        if (this.pg) loc.setPG(this.pg)
         this.localizaciones.push(loc)
         // console.log(this.localizaciones);
     }
@@ -60,19 +64,20 @@ class Localizaciones {
         //     return this;
         // }
 
-        if(isNaN(x)){ //si no es un numero busca por nombre
+        if (isNaN(x)) { //si no es un numero busca por nombre
             // console.log("no numero:" +this.nombre);
             this.localizaciones.forEach(loc => {
                 //si miro aqui si es final y la devuelvo me ahorro una llamada a darLocalizacion
-                if (loc.esFinal() && loc.nombre==x) {
+                if (loc.esFinal() && loc.nombre == x) {
                     //  console.log("Encontrado:"+x);
-                l = loc; return loc; } //da error si no hago l=loc
+                    l = loc; return loc;
+                } //da error si no hago l=loc
                 else
-                if(!loc.esFinal()){
-                    let ok= loc.darLocalizacion(x); //busca recursiva hasta que sea final
-                    if(ok) l=ok; //si no es undefined es la que se busca
-                }
-                    
+                    if (!loc.esFinal()) {
+                        let ok = loc.darLocalizacion(x); //busca recursiva hasta que sea final
+                        if (ok) l = ok; //si no es undefined es la que se busca
+                    }
+
                 //    loc.darLocalizacion(x);
                 // console.log(`${loc.nombre}, ${loc.min}-${loc.max}`);
             });
@@ -204,6 +209,33 @@ class Localizacion extends Localizaciones {
         this.daño = 0;
         this.pg;//??
     }
+    /**
+     * Da coordenadas para la localizacion
+     * en estilo area de HTML
+     * @param {*} coords coordenadas
+     * @param {*} shape forma (rect, circle, poly)
+     * @memberof Localizacion
+     */
+    setCoordenadas(coords, shape) {
+        this.coords = coords;
+        this.shape = shape;
+    }
+    /**
+     *Si hay coordenadas para la localizacion
+     *
+     * @returns Boolean si hay coordenadas
+     * @memberof Localizacion
+     */
+    isCoordenadas() {
+        return (this.coords && this.shape)
+    }
+
+    getCoords() {
+        return this.coords;
+    }
+    getShape() {
+        return this.shape;
+    }
 
     /**
      * Pone los PG dependiendo de los de la localizacion padre
@@ -253,6 +285,8 @@ class Localizacion extends Localizaciones {
     }
 
 }
+
+
 
 
 // var humanoide = new Localizaciones();

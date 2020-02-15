@@ -259,8 +259,15 @@ class Contenedor extends Objeto {
         });
         return lista;
     }
-
-    darClaseRecursiva( clase, lista = null,) {
+/**
+ *  Da una lista con todos los objetos de esa clase 
+ * buscando recursivamente (dentro de cada contenedor)
+ * 
+ * @param {class} clase la clase que se quiere buscar
+ * @returns
+ * @memberof Contenedor
+ */
+darClaseRecursiva( clase, lista = null,) {
         if (lista === null) var lista = [];
         this.objetos.forEach(element => {
             if (element instanceof Contenedor) {
@@ -271,6 +278,14 @@ class Contenedor extends Objeto {
         return lista;
     }
 
+/**
+ *  Da una lista con todos los objetos de esa clase en
+ * el presente inventario (llevarlo encima)
+ *
+ * @param {class} clase la clase que se quiere buscar
+ * @returns
+ * @memberof Contenedor
+ */
     darClase(clase) {
         return this.objetos.filter(obj => obj instanceof clase);
     }
@@ -304,8 +319,6 @@ function creaInventario(nombre = "mochila") {
 
     // bolsita.mover(bolsita.sacarIndex(0), bolsa);
     contenedor.add(new Arma("espada", 1.2, 200));
-
-
 
     return contenedor;
 }

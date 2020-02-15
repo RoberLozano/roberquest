@@ -5,35 +5,43 @@
   <title>Bootstrap Example</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+  <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"> -->
+  <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> -->
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script> -->
+  <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script> -->
   <script src="localizaciones.js"></script>
+
+  <style>
+    area:hover, area:active, area:focus {
+     border: 5px #f00 solid;
+    }
+    body{
+      background-color: black;
+    }
+  </style>
+
 </head>
 
 <body>
 
   <div class="container">
-    <h3>Popover Example</h3>
-    <a href="#" data-toggle="popover" title="Popover Header" data-content="Some content inside the popover">Toggle
-      popover</a>
-  </div>
+    <h3>Localizaciones</h3>
+
   <canvas id="myCanvas" src="Body.jpg" width="500" height="1000" style="border:1px solid #d3d3d3;">
     Your browser does not support the HTML5 canvas tag.</canvas>
-  <img id="cuerpo" src="Body.jpg" alt="Cuerpo" usemap="#bodymap">
-  <map name="bodymap">
-    <area shape="circle" coords="243,59,50" alt="Cabeza" onclick="alert('Hostia en al bocha')">
-
-    <area shape="circle" coords="124,58,8" href="#" alt="Venus">
+  <img id="cuerpo" src="Body.png" alt="Cuerpo" usemap="#bodymap">
+  <map name="bodymap" id="bodymap">
+    <!-- <area shape="circle" coords="243,59,50" alt="Cabeza" onclick="console.log('Hostia en la bocha')"> -->
+    <area shape="circle" coords="243,130,30" alt="cuello" onclick="console.log('Hostia en cuello')">
+    <area shape="circle" coords="242,60,40" alt="cara" title="cara" onclick="console.log('Hostia en cara')">
+    <area shape="circle" coords="243,19,20" alt="craneo" title="craneo" onclick="console.log('Hostia en craneo');">
+    <area shape="circle" coords="243,59,50" alt="" onclick="console.log('Hostia en ')">
+    <!-- <area shape="circle" coords="243,59,314,248" alt="" onclick="console.log('Hostia en pecho')"> -->
+    <area shape="rect" coords="170,158,314,248" alt="pecho" onclick="console.log('Hostia en pecho')">
+    <area shape="rect" coords="94,320,159,410" alt="antebrazo D" onclick="console.log('Hostia en antebrazo D')">
   </map>
 
   <script>
-    $(document).ready(function () {
-      $('[data-toggle="popover"]').popover();
-    });
-
-
     window.onload = function () {
       var canvas = document.getElementById("myCanvas");
       var ctx = canvas.getContext("2d");

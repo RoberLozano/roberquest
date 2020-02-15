@@ -327,8 +327,14 @@ class Animal {
     this.act();
     this.cuerpo= new Localizaciones(this.getMaxPuntos(PG));
   }
-
-  getCar(car) {
+/**
+ *Da la característica más su bonificación
+ *
+ * @param {string} car El nombre de la característica 
+ * @returns el valor de la característica más su bonificación
+ * @memberof Animal
+ */
+getCar(car) {
     return this[car] + this.bonificacion[car];
   }
   /**
@@ -466,7 +472,7 @@ class Animal {
   }
 
   /**
-   * añade o modifica la habilidad en el objeto
+   * añade o modifica la habilidad en el objeto sin guardar
    * @param {Habilidad} h la habilidad que se añadirá/sobrescribirá
    */
   setHabilidad(h) {
@@ -500,6 +506,18 @@ class Animal {
 
   getHabilidad(nombre) {
     return this.habilidades[nombre];
+  }
+/**
+ * Para tratar con habilidades de otros personaje, daria el .v
+ * TODO: el E y C
+ * @param {string} nombre de la habilidad
+ * @returns el valor dw la habilidad con todos los bonificadores
+ * @memberof Animal
+ */
+vHabilidad(nombre){
+    let hab=this.habilidades[nombre];
+    hab.valor
+    return hab.valor + hab.bvalor + this.getCar(hab.tipo) 
   }
 
   cambiaformas(forma2) {
@@ -641,7 +659,7 @@ class Animal {
 
     }
 
-    this.bonificacion = this.bonificacion = new Bon({});
+    this.bonificacion = new Bon({});
 
     for (let e of this.efectos) {
 
