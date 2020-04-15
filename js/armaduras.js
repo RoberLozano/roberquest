@@ -14,6 +14,46 @@
 
 // }
 
+class Material {
+    constructor(nombre, pa, peso, precio) {
+        this.nombre = nombre;
+        this.peso = peso;
+        this.precio = precio;
+        this.pa = pa;
+    }
+}
+
+class Calidad {
+    constructor(nombre, pa, peso, precio) {
+        this.nombre = nombre;
+        this.peso = peso;
+        this.precio = precio;
+        this.pa = pa;
+    }
+}
+
+class TipoArmadura {
+    constructor(
+        nombre
+        , pa
+        , precio
+        , pinicial
+        , pmul
+        , rigida
+        , metal
+    ) {
+        this.nombre = nombre
+        this.pa = pa
+        this.precio = precio
+        this.pinicial = pinicial
+        this.pmul = pmul
+        this.rigida = rigida
+        this.metal = metal
+
+    }
+}
+
+
 //TODO hacerla por capas?
 class Armadura {
     constructor(piezas) {
@@ -35,18 +75,18 @@ class Armadura {
         });
 
         // en que tiene un orden mayor recibe el impacto antes
-        lista.sort(function(a, b){return b.orden-a.orden});
+        lista.sort(function (a, b) { return b.orden - a.orden });
         return lista;
 
     }
 
-    atacar(daño, tipo,localizacion){
-        let d=daño;
-        let lista=daPiezas(localizacion);
-        if(lista.length<1) return daño;
+    atacar(daño, tipo, localizacion) {
+        let d = daño;
+        let lista = daPiezas(localizacion);
+        if (lista.length < 1) return daño;
         lista.forEach(l => {
-            if(d=0) return 0;
-            d= l.atacar(d,tipo);
+            if (d = 0) return 0;
+            d = l.atacar(d, tipo);
         });
         return d;
     }
@@ -59,12 +99,12 @@ class Armadura {
  */
 class Pieza {
 
-    constructor(localizaciones, orden=0, material, tipo,) {
+    constructor(localizaciones, orden = 0, material, tipo, ) {
         this.localizaciones = [];
         //por cada nombre de localizacion se crea una  
         localizaciones.forEach(l => {
             // this.localizaciones.push(new LocPieza(l, tipo.pa + material.pa, material.mPr))
-            this.localizaciones.push(new LocPieza(l, 5,5,orden))
+            this.localizaciones.push(new LocPieza(l, 5, 5, orden))
         });
     }
 
@@ -77,24 +117,33 @@ class Pieza {
      * @memberof Pieza
      */
     daLoc(nombre) {
-        let loc=false;
+        let loc = false;
         this.localizaciones.forEach(l => {
-            console.log(l.nombre+ ":"+ nombre);
-            if(l.nombre==nombre) loc=l;
+            console.log(l.nombre + ":" + nombre);
+            if (l.nombre == nombre) loc = l;
         });
-        
+
         return loc;
     }
 
 }
 
+class Clase {
+    constructor(v1, v2, v3) {
+        this._v1 = v1
+        this._v2 = v2
+        this._v3 = v3
+    }
+}
+
+
 class LocPieza {
-    constructor(localizacion, pa, mPr = 5, orden=0) {
+    constructor(localizacion, pa, mPr = 5, orden = 0) {
         this.nombre = localizacion;
         // this.pa = pa;
         this.pr = pa * mPr //TODO
         //el orden de las capas (0 lo más pegado al cuerpo)
-        this.orden=orden;
+        this.orden = orden;
     }
 
     get pa() {
@@ -106,7 +155,7 @@ class LocPieza {
             return 0;
         else {
             let d = daño - this.pa; 5
-            this.pr =this.pr - daño; //se restan PR
+            this.pr = this.pr - daño; //se restan PR
             return d;
         }
     }
@@ -125,22 +174,51 @@ Array.prototype.lado = function (lado) {
 
 
 
+
+
+let daPiezas = a.daPiezas("Pecho");
+
+//Materiales
+const Hierro = new Material("Hierro", 1, 1, 0);
+const Acero = new Material("Acero", 1, 1.5, 1);
+const AcEnano = new Material("Acero Enano", 0.77, 13, 3);
+const AcElfico = new Material("Acero Élfico", 0.55, 20, 2);
+const AcLigero = new Material("Acero Ligero", 0.9, 1.5, 1);
+const AcPesado = new Material("Acero Pesado", 1.25, 1.3, 2);
+
+//Fluctuacion del Mithril
+const Mithril = new Material("Mithril", 0.25, 10000, 6);
+const MithrilNegro = new Material("Mithril Negro", 0.25, 30000, 7);
+
+//Materiales de Cuero
+const Normal = new Material("Normal", 1, 1, 0);
+const Excelente = new Material("Excelente", 1, 10, 1);
+const Unicornio = new Material("Unicornio", 1, 50000, 7);
+
+
+const Cuero = new TipoArmadura("Cuero", 1, 20, false, 1.5, 0.1, false);
+const CueroDuro = new TipoArmadura("Cuero Duro", 2, 20, true, 3, 0.2, false);
+const Cuirbouilli = new TipoArmadura("Cuirbouilli", 3, 45, true, 3, 0.2, false);
+const Bezanteada = new TipoArmadura("Bezanteada", 4, 70, false, 4.5, 0.3, false);
+const CotaAnillos = new TipoArmadura("Anillos", 5, 110, false, 6, 0.4, true);
+const Lamelar = new TipoArmadura("Lamelar", 6, 200, true, 10, 0.75, true);
+const Escamas = new TipoArmadura("Escamas", 6, 120, true, 12, 0.8, true);
+const Brigandina = new TipoArmadura("Brigandina", 7, 120, true, 13.5, 0.9, true);
+const CotaMalla = new TipoArmadura("Malla", 7, 240, false, 12, 0.8, true);
+const Coraza = new TipoArmadura("Coraza", 8, 270, true, 15, 1, true);
+
+// partes para crear distintas armaduras
 let capucha = ["Craneo", "Cuello"];
 let chaleco = ["Pecho", "Abdomen"];
 let manga = ["Hombro", "Codo", "Brazo Superior", "Antebrazo"];
 manga = manga.lado('I')
 
-let blusa= new Pieza(chaleco);
+let blusa = new Pieza(chaleco);
 
 
-let cota= new Pieza(chaleco,1);
-let coraza= new Pieza(chaleco,2)
-let a = new Armadura([cota,blusa,coraza]);
-
-let daPiezas =a.daPiezas("Pecho");
-
-
-
+let cota = new Pieza(chaleco, 1);
+let coraza = new Pieza(chaleco, 2)
+let a = new Armadura([cota, blusa, coraza]);
 
 
 // var cabeza = new Localizacion("Cabeza", 0.333, 1, 9, 0)
@@ -163,6 +241,7 @@ brazoD = brazoD.concat("Antebrazo D")
 brazoD = brazoD.concat("Codo D")
 brazoD = brazoD.concat("Mano D")
 
+// chaleco y dos mangas
 todo = brazoD.concat(chaleco, manga, brazoD.lado('I'))
 
 // brazoI.add(new Localizacion("Hombro I", 1, 27, 30, 0))

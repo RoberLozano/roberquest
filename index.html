@@ -17,17 +17,17 @@
   <style type="text/css">
     @font-face {
       font-family: "Friedolin";
-      src: url("Friedolin.ttf");
+      src: url("fonts/Friedolin.ttf");
     }
 
     @font-face {
       font-family: "MediciText";
-      src: url("MediciText.otf");
+      src: url("fonts/MediciText.otf");
     }
 
     @font-face {
       font-family: "Old Europe";
-      src: url("Old Europe.ttf");
+      src: url("fonts/Old Europe.ttf");
     }
 
     h6 {
@@ -80,16 +80,16 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.9/js/bootstrap-select.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
-  <script src="hammer.min.js"></script>
-  <script src="bubbler.js"></script>
+  <script src="js/hammer.min.js"></script>
+  <script src="js/bubbler.js"></script>
 
 
-  <script src='D.js'></script>
-  <script src='habilidades.js'></script>
-  <script src='inventario.js'></script>
-  <script src='localizaciones.js'></script>
+  <script src='js/D.js'></script>
+  <script src='js/habilidades.js'></script>
+  <script src='js/inventario.js'></script>
+  <script src='js/localizaciones.js'></script>
 
-  <script src='rol.js'></script>
+  <script src='js/rol.js'></script>
 </head>
 
 <body>
@@ -99,8 +99,8 @@
       <div class="collapse" id="navbarToggleExternalContent">
         <div class="bg-dark p-4">
           <ul class="nav nav-tabs">
-            <li class="col-sm h3"><a data-toggle="tab" style="color:white; font-family: Friedolin" href="#home">
-                Personaje </a></li>
+            <li  class="col-sm h3"><a data-toggle="tab" style="color:white; font-family: Friedolin" href="#home">
+                <span id="btPersonaje">Personaje</span> </a></li>
             <li class="col-sm h3"><a data-toggle="tab" style="color:white; font-family: Friedolin" href="#habilidades">
                 Habilidades </a></li>
             <li class="col-sm h3"><a data-toggle="tab" style="color:white; font-family: Friedolin" href="#inventario">
@@ -502,6 +502,19 @@
     </script>
 
     <script>
+
+      //se busca si se pasa algún personaje como parámetro url
+      let s = location.search
+      const url = new URL(location);
+      const personaje = url.searchParams.get('pj')
+      console.log("PERSONAJE:" + personaje);
+      // si lo hay se carga
+      if (personaje) {
+        $("#nombre").val(personaje);
+        //TODO: Añadir a la lista?
+        cargarPersonaje(personaje);
+      }
+
       // el select guay
       $('select').selectpicker();
       var colAntes, colDespues;
@@ -1581,23 +1594,23 @@
           console.log(`Se le resta ${totalGastado()} y quedan ${pj.PM} PM`);
 
           habilidades.forEach(h => {
-          //por cada habilidad mágica que mire el resultado
-            let v=$(`#iDados${h.nombre}`).val()
+            //por cada habilidad mágica que mire el resultado
+            let v = $(`#iDados${h.nombre}`).val()
             // si hay tirada, que suba en xp
-            if(v &&v>0) {
+            if (v && v > 0) {
               //TODO, luego hacerlo con el nombre
               //como hechizo no se hace con su nombre
-              if(h.nombre=="Hechizo") hechizo.xpTirada(v, pj.suerte);
-               else h.xpTirada(v, pj.suerte);
-              console.log(h.nombre+ " se ha comprobado XP");
-              
+              if (h.nombre == "Hechizo") hechizo.xpTirada(v, pj.suerte);
+              else h.xpTirada(v, pj.suerte);
+              console.log(h.nombre + " se ha comprobado XP");
+
             }
 
-        });
+          });
 
-         pj.save()
+          pj.save()
           console.log("***********SE HA PULSADO LANZAR");
-      });
+        });
 
         //selectpicker con las habilidades a mostrar  onclick="dados('#iDados${h.nombre}')"
         var hm = document.getElementById("hm");
@@ -1623,7 +1636,7 @@
             // let lb = document.getElementById(`lb${_hechizo.nombre}`);
             // lb.innerHTML=`<b>${hechizo.nombre}: ${_hechizo.v}%</b>`
             $(`#lb${_hechizo.nombre}`).html(`<b>${_hechizo.nombre}: ${_hechizo.v}%</b>`);
-            
+
           }
           switch (v) {
             case (TipoTirada.SUPERCRITICO):
@@ -1896,6 +1909,13 @@
         if (nombre == true) {
           // contenedorActual = null;
           nav = [] //Llamo desde el boton y voy al inventario general
+          document.getElementById("btPersonaje").click();
+        }
+        else
+        if(nombre.length>0){
+          //Si se carga desde la url
+          document.getElementById("btPersonaje").click();
+
         }
 
         nombre = $("#nombre").val();
@@ -1908,7 +1928,9 @@
         // donde sea me, va a cargar el personaje entero
         fbActual.on('value', function (item) {
           console.log("onvalue personaje" + item.val().nombre);
-          pj = new Animal({});
+
+          pj = new Humanoide({});
+          // pj = new Animal({});
           pj.setAll(item.val());
 
           console.log("CARGA EL PUTO PERSONAJE:" + pj.nombre);
@@ -1938,7 +1960,6 @@
           // }
           // else
           cargarContenedor();
-
           // console.log("No ContenedorAct: CargaInventario");
         });
 

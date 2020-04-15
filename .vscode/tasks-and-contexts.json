@@ -1,6 +1,6 @@
 {
   "lock": false,
-  "active": "a73f1345df69647021f401499146a518864ef87a",
+  "active": "519707b8c767c58edf9a8a8c4fb9daa7fe9341bd",
   "sets": {
     "default": {
       "source": "default",
@@ -29,8 +29,8 @@
         "a73f1345df69647021f401499146a518864ef87a": {
           "name": "Rol",
           "data": [
-            "c:\\GitHub\\roberquest\\rol.js",
-            "c:\\GitHub\\roberquest\\localizaciones.js"
+            "c:\\GitHub\\roberquest\\index.html",
+            "c:\\GitHub\\roberquest\\importar.html"
           ]
         },
         "859fc84a73bdb78bd1612362f1aa93440e66a510": {
@@ -89,7 +89,28 @@
             "c:\\GitHub\\roberquest\\armaduras.js",
             "c:\\GitHub\\roberquest\\index.html",
             "c:\\GitHub\\roberquest\\popup.html",
-            "c:\\GitHub\\roberquest\\m.html"
+            "c:\\GitHub\\roberquest\\m.html",
+            "c:\\GitHub\\roberquest\\js\\localizaciones.js",
+            "c:\\GitHub\\roberquest\\js\\armaduras.js",
+            "c:\\GitHub\\roberquest\\js\\bubbler.js",
+            "c:\\GitHub\\roberquest\\js\\chosen.jquery.js",
+            "c:\\GitHub\\roberquest\\js\\habilidades.js",
+            "c:\\GitHub\\roberquest\\js\\hammer.min.js",
+            "c:\\GitHub\\roberquest\\js\\jquery.ui.touch-punch.min.js",
+            "c:\\GitHub\\roberquest\\js\\inventario.js",
+            "c:\\GitHub\\roberquest\\js\\D.js",
+            "c:\\GitHub\\roberquest\\js\\rol.js",
+            "c:\\GitHub\\roberquest\\.vscode\\tasks-and-contexts-commit-msg.txt",
+            "c:\\GitHub\\roberquest\\bubbler.css",
+            "c:\\GitHub\\roberquest\\fonts",
+            "c:\\GitHub\\roberquest\\dados.html",
+            "c:\\GitHub\\roberquest\\importar.html",
+            "c:\\GitHub\\roberquest\\js.html",
+            "c:\\GitHub\\roberquest\\menus.html",
+            "c:\\GitHub\\roberquest\\Rol.html",
+            "c:\\GitHub\\roberquest\\diario.html",
+            "c:\\GitHub\\roberquest\\diario1.html",
+            "c:\\Program Files\\Microsoft VS Code\\resources\\app\\extensions\\node_modules\\typescript\\lib\\lib.dom.d.ts"
           ]
         }
       }
