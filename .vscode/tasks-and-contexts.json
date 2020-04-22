@@ -1,6 +1,6 @@
 {
   "lock": false,
-  "active": "519707b8c767c58edf9a8a8c4fb9daa7fe9341bd",
+  "active": "b8e88637f23fbe26fa18a139cf76af353b60e507",
   "sets": {
     "default": {
       "source": "default",
@@ -9,12 +9,10 @@
         "e7c3800e31ff2e7695b9f5bed95a6de6715dca44": {
           "name": "Menus",
           "data": [
-            "c:\\GitHub\\roberquest\\index.html",
             "c:\\GitHub\\roberquest\\importar.html",
             "c:\\GitHub\\roberquest\\menus.html",
-            "c:\\GitHub\\roberquest\\rol.js",
-            "c:\\GitHub\\roberquest\\habilidades.js",
-            "c:\\GitHub\\roberquest\\popup.html"
+            "c:\\GitHub\\roberquest\\popup.html",
+            "c:\\GitHub\\roberquest\\js\\habilidades.js"
           ]
         },
         "b8e88637f23fbe26fa18a139cf76af353b60e507": {
@@ -85,32 +83,10 @@
         "519707b8c767c58edf9a8a8c4fb9daa7fe9341bd": {
           "name": "Localizaciones",
           "data": [
-            "c:\\GitHub\\roberquest\\localizaciones.js",
-            "c:\\GitHub\\roberquest\\armaduras.js",
             "c:\\GitHub\\roberquest\\index.html",
-            "c:\\GitHub\\roberquest\\popup.html",
-            "c:\\GitHub\\roberquest\\m.html",
             "c:\\GitHub\\roberquest\\js\\localizaciones.js",
             "c:\\GitHub\\roberquest\\js\\armaduras.js",
-            "c:\\GitHub\\roberquest\\js\\bubbler.js",
-            "c:\\GitHub\\roberquest\\js\\chosen.jquery.js",
-            "c:\\GitHub\\roberquest\\js\\habilidades.js",
-            "c:\\GitHub\\roberquest\\js\\hammer.min.js",
-            "c:\\GitHub\\roberquest\\js\\jquery.ui.touch-punch.min.js",
-            "c:\\GitHub\\roberquest\\js\\inventario.js",
-            "c:\\GitHub\\roberquest\\js\\D.js",
-            "c:\\GitHub\\roberquest\\js\\rol.js",
-            "c:\\GitHub\\roberquest\\.vscode\\tasks-and-contexts-commit-msg.txt",
-            "c:\\GitHub\\roberquest\\bubbler.css",
-            "c:\\GitHub\\roberquest\\fonts",
-            "c:\\GitHub\\roberquest\\dados.html",
-            "c:\\GitHub\\roberquest\\importar.html",
-            "c:\\GitHub\\roberquest\\js.html",
-            "c:\\GitHub\\roberquest\\menus.html",
-            "c:\\GitHub\\roberquest\\Rol.html",
-            "c:\\GitHub\\roberquest\\diario.html",
-            "c:\\GitHub\\roberquest\\diario1.html",
-            "c:\\Program Files\\Microsoft VS Code\\resources\\app\\extensions\\node_modules\\typescript\\lib\\lib.dom.d.ts"
+            "c:\\Users\\Rober\\AppData\\Roaming\\Code\\User\\snippets\\class_s.code-snippets"
           ]
         }
       }
