@@ -9,19 +9,25 @@
         "e7c3800e31ff2e7695b9f5bed95a6de6715dca44": {
           "name": "Menus",
           "data": [
+            "c:\\GitHub\\roberquest\\js\\habilidades.js",
             "c:\\GitHub\\roberquest\\importar.html",
             "c:\\GitHub\\roberquest\\menus.html",
-            "c:\\GitHub\\roberquest\\popup.html",
-            "c:\\GitHub\\roberquest\\js\\habilidades.js"
+            "c:\\GitHub\\roberquest\\popup.html"
           ]
         },
         "b8e88637f23fbe26fa18a139cf76af353b60e507": {
           "name": "Inventario",
           "data": [
-            "c:\\GitHub\\roberquest\\inventario.js",
             "c:\\GitHub\\roberquest\\index.html",
-            "c:\\GitHub\\roberquest\\habilidades.js",
-            "c:\\GitHub\\roberquest\\rol.js"
+            "c:\\GitHub\\roberquest\\js.html",
+            "c:\\GitHub\\roberquest\\js\\rol.js",
+            "c:\\GitHub\\roberquest\\js\\hammer.min.js",
+            "c:\\GitHub\\roberquest\\js\\localizaciones.js",
+            "c:\\GitHub\\roberquest\\js\\inventario.js",
+            "c:\\GitHub\\roberquest\\js\\habilidades.js",
+            "c:\\GitHub\\roberquest\\Rol.html",
+            "c:\\GitHub\\roberquest\\tigre.html",
+            "c:\\GitHub\\roberquest\\tiger.svg"
           ]
         },
         "a73f1345df69647021f401499146a518864ef87a": {
