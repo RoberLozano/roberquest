@@ -33,25 +33,33 @@
         function limpiar(){
         }
 
+        // function scan(params) {
+        //     cont=0;
+        //     var datos = document.getElementById("datos");
+        //     var texto= datos.value;
+        //     var lineas = texto.split("\n");
+        //     lineas.forEach(linea => {
+        //         try {
+        //             porLinea(linea,"\t")
+        //         } catch (e) {
+        //         console.log("error en linea: "+linea);
+        //         }
+        //     });
+        //     // console.log(listaHabilidades);
+        //     pj.nombre=nombre = $("#nombre").val();
+        //     console.log(pj);
+        //     document.getElementById("resultado").innerText="Número de habilidades guardadas:"+cont;
+
+        // }
+
         function scan(params) {
-            cont=0;
+             var contenedor = new Contenedor("bolsa",1,1,100);
             var datos = document.getElementById("datos");
             var texto= datos.value;
-            var lineas = texto.split("\n");
-            lineas.forEach(linea => {
-                try {
-                    porLinea(linea,"\t")
-                } catch (e) {
-                console.log("error en linea: "+linea);
-                }
-            });
-            // console.log(listaHabilidades);
-            pj.nombre=nombre = $("#nombre").val();
-            console.log(pj);
-            document.getElementById("resultado").innerText="Número de habilidades guardadas:"+cont;
-
+             contenedor.escanear(texto.trim());
+             console.log(contenedor);
+            
         }
-
         function porLinea(linea, separador=";"){
             if(linea.startsWith(separador)||linea.startsWith("_")) return; // si la linea no tiene nombre se vuelve o si empieza en ___
             var h = linea.split(separador, 3); //nombre,xp,valor
@@ -74,6 +82,7 @@
 
 
         }
+
 
         
 function capitalice(string) 

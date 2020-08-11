@@ -290,6 +290,44 @@ darClaseRecursiva( clase, lista = null,) {
         return this.objetos.filter(obj => obj instanceof clase);
     }
 
+/**
+ * 
+ * @param {string} texto El texto del que extraer los objetos
+ */
+    escanear(texto){
+            var lineas = texto.split("\n");
+            lineas.forEach(linea => {
+                try {
+                    porLinea(this,linea,"\t")
+                } catch (e) {
+                console.log("error en linea: "+linea);
+                }
+            });
+
+            function porLinea(contenedor,linea, separador=";"){
+                if(linea.startsWith(separador)||linea.startsWith("_")) return; // si la linea no tiene nombre se vuelve o si empieza en ___
+                var h = linea.split(separador, 3); //nombre,peso,ctd
+                let nombre=h[0];
+                if(!nombre) return;
+                let peso=h[1]?Number.parseFloat(h[1].replace(',','.')):0;
+                let ctd=parseInt(h[2])||1;
+                var item;
+
+               if(ctd>1)
+                    item = new Objetos(h[0], peso, 0,ctd);
+                else
+                    item = new Objeto(h[0], peso);    
+                    
+                contenedor.add(item);
+                console.log(item);
+            }
+
+
+
+       
+
+    }
+
     //Guarda el contenedor entero en el firebase
     // guardarFirebase(fbInventario){
     //     fbInventario.child(this.nombre).set(this);
