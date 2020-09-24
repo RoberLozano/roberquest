@@ -34,6 +34,7 @@ class Localizaciones {
      * @memberof Localizaciones
      */
     actPG(pg) {
+        console.log("actualizar PG");
         this.pg = pg;
         this.localizaciones.forEach(loc => {
             loc.setPG(pg);
@@ -98,6 +99,40 @@ class Localizaciones {
         }
 
         return l;
+    }
+
+    setAll(o) {
+        for (let key in o) {
+            this[key] = o[key];
+        }
+        if(this.localizaciones.length > 0){
+            console.log("entro en las localizaciones de "+this.nombre);
+        let lt=[] //localizaciones temporales
+        for (let l of this.localizaciones) {
+            //miro los distintos tipos de objetos por una propiedad única
+            //TODO: tal vez poner el tipo de clase en una propiedad
+            let ol = new Localizacion() //objeto localizaciones
+            
+            ol.setAll(l);//se rellena con datos, si tiene más localizaciones debe hacerlo recursivo
+            ol.setPG(this.pg) //pongo los PG 
+            lt.push(ol); //se guarda en el temporal
+        }
+        this.localizaciones=lt; //se guardan el temporal como objetos localizaciones
+    }
+
+    }
+
+    /**
+     * Devuelve las localizaciones dañadas a partir de dañoMinimo (=0)
+     * @param {Number} dañoMinimo el daño mínimo a partir del cual se darán las localizaciones (0 por defecto)
+     * @returns Un array ordenado de las localizaciones ordenadas descendente por daño
+     */
+    dañadas(dañoMinimo=0){
+        let dañadas = this.localizaciones.filter(l => l.darDaño() > dañoMinimo);
+        //Las más dañadas primero (con respecto a los pg que tiene)
+        console.log(dañadas.sort((a, b) => (b.daño / b.pg) - (a.daño / a.pg)));
+        return dañadas;
+
     }
 
     sanar(x) {
@@ -177,6 +212,29 @@ class Localizaciones {
         }
         return true;
         // Math.min(...data.map(f=>f.rest) )
+    }
+
+    todosNombres(lista,finales=true){
+        if(!lista) lista =[]
+        if (this.esFinal()) lista.push( this.nombre)
+        else this.localizaciones.forEach(l => {
+            l.todosNombres(lista);
+        });
+
+        return lista;
+    }
+
+    todosDaños(lista,finales=true){
+        if(!lista) lista =[]
+        if (this.esFinal()&& this.darDaño() > 0) lista.push( this)
+        else this.localizaciones.forEach(l => {
+            l.todosDaños(lista);
+        });
+
+        if (lista.length>0)
+        console.log(lista.sort((a, b) => (b.daño / b.pg) - (a.daño / a.pg)))
+
+        return lista;
     }
 
 

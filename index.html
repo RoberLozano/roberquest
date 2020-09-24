@@ -88,6 +88,7 @@
   <script src='js/habilidades.js'></script>
   <script src='js/inventario.js'></script>
   <script src='js/localizaciones.js'></script>
+  <script src='js/coor.js'></script>
 
   <script src='js/rol.js'></script>
 </head>
@@ -125,6 +126,28 @@
         </datalist>
         <button class="btn btn-danger" onclick="cargarPersonaje(true)">Cargar</button>
       </nav>
+    </div>
+
+
+    <!-- Modal  atacar-->
+    <div class="modal fade" id="modalAtacar" tabindex="-1" role="dialog" aria-labelledby="modalAtacarTitle"
+      aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editModalTitle">Atacar</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" id="atacar">
+            ...
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Modal -->
@@ -413,14 +436,28 @@
         <div>
           <!-- <canvas id="barChart"></canvas>
           <canvas id="radarChart"></canvas> -->
-          <button class="btn btn-danger" onclick="lanzarHechizo()">Hechizo</button>
+          <!-- <button class="btn btn-danger" onclick="lanzarHechizo()">Hechizo</button> -->
+          <button class="btn btn-danger" onclick="atacarModal()">Atacar</button>
+
 
         </div>
         <div>
 
           <button class="btn btn-danger" onclick="entrenar()">Entrenar</button>
+          <my-counter id="idcounter" valor=34></my-counter>
+          <my-counter id="idcounter" valor=34></my-counter>
+          <my-counter id="idcounter" valor=34></my-counter>
+
+          <div>
+            <input-dado  id="idPrueba" habilidad="50" >
+            
+            
+          </div>
+          <input-dado  habilidad="50" ></input-dado>
+          <input-dado  id="idPrueba2" habilidad="67" ></input-dado>
 
         </div>
+
 
 
       </div>

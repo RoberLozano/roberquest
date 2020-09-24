@@ -13,7 +13,10 @@
 </head>
 <body>
 
-<h1>Importar Habilidades</h1>
+<h2>Importar <select id="select" style="font-family: 'Times New Roman', Times, serif; font-size: large;">
+    <option value="hab" selected>Habilidades</option>
+    <option value="inv">Inventario</option>
+  </select></h2>
 <input type="text" class="text-light bg-dark h3 " id="nombre">
 <input type="checkbox" id="incluir0" value="1" checked>Añadir habilidades con 0<br>
 <p>Introduzca los datos en la caja de texto</p>
@@ -33,26 +36,34 @@
         function limpiar(){
         }
 
-        // function scan(params) {
-        //     cont=0;
-        //     var datos = document.getElementById("datos");
-        //     var texto= datos.value;
-        //     var lineas = texto.split("\n");
-        //     lineas.forEach(linea => {
-        //         try {
-        //             porLinea(linea,"\t")
-        //         } catch (e) {
-        //         console.log("error en linea: "+linea);
-        //         }
-        //     });
-        //     // console.log(listaHabilidades);
-        //     pj.nombre=nombre = $("#nombre").val();
-        //     console.log(pj);
-        //     document.getElementById("resultado").innerText="Número de habilidades guardadas:"+cont;
-
-        // }
-
         function scan(params) {
+            if( document.getElementById("select").value=="hab")
+            habilidades();
+            else
+            inventario();
+            
+        }
+
+        function habilidades(params) {
+            cont=0;
+            var datos = document.getElementById("datos");
+            var texto= datos.value;
+            var lineas = texto.split("\n");
+            lineas.forEach(linea => {
+                try {
+                    porLinea(linea,"\t")
+                } catch (e) {
+                console.log("error en linea: "+linea);
+                }
+            });
+            // console.log(listaHabilidades);
+            pj.nombre=nombre = $("#nombre").val();
+            console.log(pj);
+            document.getElementById("resultado").innerText="Número de habilidades guardadas:"+cont;
+
+        }
+
+        function inventario(params) {
              var contenedor = new Contenedor("bolsa",1,1,100);
             var datos = document.getElementById("datos");
             var texto= datos.value;
@@ -73,10 +84,10 @@
                 var habilidad = new Habilidad(h[0], tipo, parseInt(h[2]));
                 if(h[1]==="") h[1]=0;
                 habilidad.xp=parseInt(h[1]);
-                // listaHabilidades.push(habilidad);
+                listaHabilidades.push(habilidad);
                 if(habilidad.valor==0 && !document.getElementById("incluir0").checked) return;
-                pj.setHabilidad(habilidad);
-                habilidad.save();
+                // pj.setHabilidad(habilidad);
+                // habilidad.save();
                 ++cont;
             }
 

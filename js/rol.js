@@ -2,7 +2,6 @@
 // import {Habilidad, BonHabilidad} from './habilidades';
 // import {Objeto, Objetos, Arma, Contenedor} from './inventario';
 
-
 var fechaMundo = new Date(778, 0, 1, 0, 0, 0, 0);
 
 const FUE = "FUE"
@@ -47,21 +46,21 @@ const TipoHabilidades =
 //IMPORTANT: REPLACE THESE WITH YOUR VALUES (these ones won't work)
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-//TODO: cambiar a un proyecto propio
-var config = {
-  apiKey: "AIzaSyAuYTgzpd8BydHMLmx4mNhDb-bKGYVZfNo",
-  authDomain: "compras-rls777.firebaseapp.com",
-  databaseURL: "https://compras-rls777.firebaseio.com/",
-  projectId: "compras-rls777",
-  storageBucket: "compras-rls777.appspot.com",
-};
+// //TODO: cambiar a un proyecto propio
+// var config = {
+//   apiKey: "AIzaSyAuYTgzpd8BydHMLmx4mNhDb-bKGYVZfNo",
+//   authDomain: "compras-rls777.firebaseapp.com",
+//   databaseURL: "https://compras-rls777.firebaseio.com/",
+//   projectId: "compras-rls777",
+//   storageBucket: "compras-rls777.appspot.com",
+// };
 
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-//initialize your firebase
-firebase.initializeApp(config);
-var database = firebase.database();
+// //initialize your firebase
+// firebase.initializeApp(config);
+// var database = firebase.database();
 
 class Efecto {
   // constructor(nombre, efecto, obj, fecha = 0) {
@@ -319,22 +318,22 @@ class Animal {
     // this.inventario = {}
 
     /** Si se le puede sumar o restar a la tirada */
-    this.suerte=[]
+    this.suerte = []
 
     this.habilidades = {}
     this.efectos = [];
     // this.backup = null
     this.act();
-    this.cuerpo= new Localizaciones(this.getMaxPuntos(PG));
+    this.cuerpo = new Localizaciones(this.getMaxPuntos(PG));
   }
-/**
- *Da la característica más su bonificación
- *
- * @param {string} car El nombre de la característica 
- * @returns el valor de la característica más su bonificación
- * @memberof Animal
- */
-getCar(car) {
+  /**
+   *Da la característica más su bonificación
+   *
+   * @param {string} car El nombre de la característica 
+   * @returns el valor de la característica más su bonificación
+   * @memberof Animal
+   */
+  getCar(car) {
     return this[car] + this.bonificacion[car];
   }
   /**
@@ -507,18 +506,29 @@ getCar(car) {
   getHabilidad(nombre) {
     return this.habilidades[nombre];
   }
-/**
- * Para tratar con habilidades de otros personaje, daria el .v
- * TODO: el E y C
- * @param {string} nombre de la habilidad
- * @returns el valor dw la habilidad con todos los bonificadores
- * @memberof Animal
- */
-vHabilidad(nombre){
-    let hab=this.habilidades[nombre];
-    hab.valor
-    return hab.valor + hab.bvalor + this.getCar(hab.tipo) 
+
+  /**
+   * Devuelve un array con las habilidades filtradas, o todas si no hay filtro
+   * @param {*} filtro el método que filtra las habilidades
+   */
+  getHabilidades(filtro){
+    if (filtro)
+    return Object.values(this.habilidades).filter(filtro);
+    else return Object.values(this.habilidades);
   }
+
+  // /**
+  //  * Para tratar con habilidades de otros personaje, daria el .v
+  //  * TODO: el E y C
+  //  * @param {string} nombre de la habilidad
+  //  * @returns el valor dw la habilidad con todos los bonificadores
+  //  * @memberof Animal
+  //  */
+  // vHabilidad(nombre) {
+  //   let hab = this.habilidades[nombre];
+  //   hab.valor
+  //   return hab.valor + hab.bvalor + this.getCar(hab.tipo)
+  // }
 
   cambiaformas(forma2) {
     this.forma2 = forma2;
@@ -533,10 +543,19 @@ vHabilidad(nombre){
       this[key] = o[key];
       // console.log(this[key]);
 
+      //TODO: Parece que va
+      if (key == "cuerpo") {
+        this.cuerpo = new Localizaciones();
+        this.cuerpo.setAll(o[key]);
+
+
+      }
+
       if (key == "inventario") {
         this.inventario = new Contenedor();
         this.inventario.setAll(o[key]);
       }
+
 
       //TODO: Parece que va
       if (key == "efectos") {
@@ -555,7 +574,8 @@ vHabilidad(nombre){
         for (let k in o[key]) {
           // console.log("setAll habilidades"+k);
           let h = new Habilidad();
-          if(o[key][k].hasOwnProperty("pm")){ h= new Hechizo()}
+          if (o[key][k].hasOwnProperty("pm")) { h = new Hechizo() }
+          if (o[key][k].hasOwnProperty("arma")) { h = new HabilidadMarcial() }
           h.setAll(o[key][k])
           // console.log(h);
           this.habilidades[h.nombre] = h;
@@ -586,7 +606,7 @@ vHabilidad(nombre){
   SN(car) { return Math.round((10 - this.getCar(car)) / 2) }
 
   /**
-   * actualiza el valor de los tipo de habilidades
+   * actualiza el valor de los tipo de habilidades y guarda la bonificacion en las habilidades
    */
   act() {
     // this.Agilidad = this.P("DES") + this.S("FUE") + this.SN("TAM")
@@ -597,6 +617,15 @@ vHabilidad(nombre){
     // this.Percepción = this.P("CON")
     // this.Sigilo = this.P("DES") + this.S("FUE") + this.N("TAM")
 
+    //guardo las anteriores 
+    // let oldAgilidad =this.Agilidad;
+    // let oldComunicación =this.Comunicación;
+    // let oldConocimiento =this.Conocimiento;
+    // let oldMagia =this.Magia;
+    // let oldManipulación =this.Manipulación;
+    // let oldPercepción =this.Percepción;
+    // let oldSigilo =this.Sigilo;
+
     //Roberquest (como en Excel)
     this.Agilidad = this.P("DES") + this.S("FUE") + this.SN("TAM")
     this.Comunicación = this.P("INT") + this.P("ASP")
@@ -604,8 +633,40 @@ vHabilidad(nombre){
     this.Magia = this.P("INT") + this.P("POD") + this.S("DES")
     this.Manipulación = this.P("DES") + this.S("FUE") + this.P("INT")
     this.Percepción = this.P("CON") + this.S("INT")
-    this.Sigilo = this.P("DES") + this.S("INT") + this.SN("TAM")
+    this.Sigilo = this.P("DES") + this.S("INT") + this.SN("TAM");
 
+    // if(oldAgilidad !=this.Agilidad) actBonHab(Agilidad);
+    // if(oldComunicación !=this.Comunicación) actBonHab(Comunicación);
+    // if(oldConocimiento !=this.Conocimiento) actBonHab(Conocimiento);
+    // if(oldMagia !=this.Magia) actBonHab(Magia);
+    // if(oldManipulación !=this.Manipulación) actBonHab(Manipulación);
+    // if(oldPercepción !=this.Percepción) actBonHab(Percepción);
+    // if(oldSigilo !=this.Sigilo) actBonHab(Sigilo);
+    this.actTodosBonHab();
+    this.cuerpo?.actPG(this.getMaxPuntos(PG));
+
+  }
+
+  actTodosBonHab() {
+    console.log("actualizar todos bonificadores");
+    // console.log(this.habilidades);
+    // if(this.habilidades)
+
+    for (let h in this.habilidades) {
+      // console.log(h);
+      // console.log("setAll habilidades"+k);
+      let hab = this.habilidades[h];
+      hab.bh = this.getCar(hab.tipo);
+      // console.log(`${hab.bh} = ${this.getCar(hab.tipo)}`);
+    }
+
+  }
+  actBonHab(tipo) {
+    let bon = this.getCar(tipo);
+    if (this.habilidades)
+      this.habilidades.forEach(h => {
+        if (h.tipo == tipo) h.bh = bon;
+      });
   }
 
   pmGemas() {
@@ -629,6 +690,20 @@ vHabilidad(nombre){
     database.ref("personajes").child(this.nombre).set(this);
     console.log("GUARDADO:" + this.nombre);
 
+  }
+
+  /**
+   * Guarda localmente en el navegador
+   */
+  saveLocal() {
+    // let st=JSON.stringify(this)
+    // console.log(st);
+    // console.log(JSON.parse(st));
+    localStorage.setItem(this.nombre, JSON.stringify(this));
+  }
+
+  cargarLocal() {
+    this.setAll(JSON.parse(localStorage.getItem(this.nombre)))
   }
 
   aplicar(efecto) {
@@ -839,7 +914,7 @@ class Humanoide extends Animal {
   }
 
   crearCuerpo() {
-    // this.cuerpo = new Localizaciones();
+    this.cuerpo = new Localizaciones(this.getMaxPuntos(PG));
     //Menteniendo junta toda la localización
     var cabeza = new Localizacion("Cabeza", 0.333, 1, 9, 0)
     var brazoD = new Localizacion("Brazo D", 0.25, 10, 26, 0)
@@ -891,6 +966,8 @@ class Humanoide extends Animal {
     this.cuerpo.add(abdomen);
     this.cuerpo.add(piernaD);
     this.cuerpo.add(piernaI);
+
+    
   }
 
 }
@@ -933,6 +1010,8 @@ let v = new Humanoide({ FUE: 13, DES: 7, nombre: "Paco" });
 console.log("HUMANOIDE");
 
 console.log(v);
+
+v.cuerpo.dañarLocalizacion(4, 4)
 // a.bonificacion=v;
 // a.set(DES, 30);
 // console.log(a);
@@ -967,6 +1046,29 @@ var añoMas = new Date(778, 9, 1, 1, 0, 0, 0);
 var finDeAnio = new Date(776, 11, 31, 23, 59, 59, 999);
 fechaMundo = añoMas;
 
+function en(s) {
+  let x = [];
+  for (c in s) {
+    x.push(+s.codePointAt(c) + 7)
+
+  }
+
+  console.log(x.toString());
+  // console.log(s.charCodeAt(c));
+
+  return x;
+}
+
+function de(s) {
+  let x = "";
+  for (c of s) {
+    x += String.fromCodePoint(+c - 7);
+
+  }
+  // x+=s.charCodeAt(c));
+
+  return x;
+}
 
 // efNombre = new Efecto("cambiarNombre", `this.nombre="Activo"`, null, fechaMundo.add("año", 4));
 // efFuerza = new Efecto("fuerza", `this.sb(FUE,"+5")`,  fechaMundo.add("dia", 4));
@@ -999,7 +1101,37 @@ fechaMundo = añoMas;
 // console.log(pj.backup);
 
 
+var config = JSON.parse(de(coor));
+
+firebase.initializeApp(config);
+var database = firebase.database();
+
+function guerrero(personaje, nivel, ...armas) {
+  
+  personaje.setHabilidad(new HabilidadMarcial("Esquivar", Agilidad, 25 + (nivel * 5),false));
+  personaje.setHabilidad(new HabilidadMarcial("Puñetazo D", Manipulación, 25 + (nivel * 5),true, "Brazo D"));
+  armas.forEach(a => {
+    let arma = new Arma(a, 0, 10, "1d8");
+    personaje.inventario.add(arma);
+    personaje.setHabilidad(new HabilidadMarcial(a, Manipulación, 25 + (nivel * 10),true, "Brazo D",arma));
+    
+    
+    personaje.act();
+  });
+
+  console.log(personaje.inventario.darClase(Arma));
+  // personaje.save();
+  console.log(personaje.habilidades);
+  // for( h in personaje.habilidades){
+  //   if
+  // }
+  
+  console.log(Object.values(personaje.habilidades).filter(h => (!h.ataque)));
+  console.log(personaje.getHabilidades(h => (!h.ataque)));
+  console.log(personaje.getHabilidades());
 
 
 
+
+}
 

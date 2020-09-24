@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
+</head>
+<body>
+  <style>
+    span.dado {
+    background: url(img/d10.svg) no-repeat top left;
+    background-size: contain;
+    cursor: pointer;
+    display: inline-block;
+    height: 24px;
+    width: 24px;
+}
+  </style>
+    <script src="js/diana.js"></script>
+    <div>
+      <input type="number" name="tirada" id="tirada" placeholder="tirada" max="100" min="1" style="text-align:center;">
+  <button  style="border:0px solid black; background-color: transparent;" onclick="getElementById('tirada').value = d(100);">
+    <img src="img/10_sided_die.svg" alt="A sample SVG button." width="16" height="16"/>
+</button>
+
+  <button><span class="dado"></span></button>
+      <input type="number" name="arco" id="arco" placeholder="% arco"   max="9999" min="0"style="text-align:right;">% <br>
+      <button id="tirar">Tirar</button>
+    </div>
+
+ 
+    <!-- <div id="diana-div" style="width: 200mm; height: 200mm; border:1px solid black; "></div> -->
+    <svg
+
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   version="1.0"
+   width="20cm"
+   height="20cm"
+   viewBox="-10 -10 20 20"
+   id="diana">
+
+  <circle cx="0" cy="0" r="10" fill="white" stroke="black" stroke-width="0.05" id="Zone1" />
+  <circle cx="0" cy="0" r="9" fill="white" stroke="black" stroke-width="0.05" id="Zone2" />
+  <circle cx="0" cy="0" r="8"   fill="black" id="Zone3" />
+  <circle cx="0" cy="0" r="7" fill="black" stroke="white" stroke-width="0.05" id="Zone4" />
+  <circle cx="0" cy="0" r="6"   fill="#41b7c8" id="Zone5" />
+  <circle cx="0" cy="0" r="5" fill="#41b7c8" stroke="black" stroke-width="0.05" id="Zone6" />
+  <circle cx="0" cy="0" r="4" fill="#fd1b14" stroke="black" stroke-width="0.05" id="Zone7" />
+  <circle cx="0" cy="0" r="3" fill="#fd1b14" stroke="black" stroke-width="0.05" id="Zone8" />
+  <circle cx="0" cy="0" r="2" fill="#fff535" stroke="black" stroke-width="0.05" id="Zone9" />
+  <circle cx="0" cy="0" r="1" fill="#fff535" stroke="black" stroke-width="0.05" id="Zone10" />
+  <circle cx="0" cy="0" r="0.5" fill="#fff535" stroke="black" stroke-width="0.025" id="Inner10" />
+  <path d="M -0.1 0 L 0.1 0 M 0 -0.1 L 0 0.1" stroke="black" stroke-width="0.025" id="Center" />
+  <g id="tiros" fill="#fe0f0b" stroke-width="1.4137"></g>
+</svg>
+<button onclick="limpiar()">Limpiar</button>
+<table class="table">
+  <thead id="header">
+    <!-- <th>Habilidad</th>
+    <th>Tipo</th>
+    <th>Valor</th> -->
+  </thead>
+  <tbody id="tbTorneo" style=" text-align: center;"></tbody>
+</table>
+<div id="log"></div>
+</body>
+</html>

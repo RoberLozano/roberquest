@@ -48,9 +48,16 @@ $('#colInventario').on('hidden.bs.select', function (e) {
 
 //actualizar los puntos al cambiarlos en el editor
 
+// PUNTOS.forEach(pt => {
+//   $('#i' + pt).change(function () {
+//     pj[pt] = parseInt($(this).val());
+//     pj.save();
+//   });
+// });
+
 PUNTOS.forEach(pt => {
-  $('#i' + pt).change(function () {
-    pj[pt] = parseInt($(this).val());
+  document.getElementById('i' + pt).addEventListener('change', (event) => {
+    pj[pt] = parseInt(event.target.value);
     pj.save();
   });
 });
@@ -781,6 +788,75 @@ function entrenar(habilidad) {
 
 }
 
+/**
+ * Escala un valor x entre m1 y M1 a otro valor entre m2 y M2
+ *  x [m1,M1]->[m2,M2]
+ * @param {Number} x 
+ * @param {Number} m1 
+ * @param {Number} M1 
+ * @param {Number} m2 
+ * @param {Number} M2 
+ */
+function escalar(x,m1,M1,m2,M2) {
+  let d1=M1-m1;
+  let d2=M2-m2;
+  return (x-m1)*(d2/d1)+m2;
+}
+
+function atacarModal(habilidad) {
+  console.log("estoy en atacar modal");
+  var valor;
+  var bon;
+  var horas;
+
+  var dado = 3;
+
+  $("#modalAtacar").modal();
+  //inicializa
+
+  var  datalist="<datalist id='listaLocalizaciones'>"
+  var listaLoc= [];
+  pj.cuerpo.todosNombres(listaLoc);
+
+  listaLoc.forEach(l => {
+    datalist+=` <option value="${l}"></option>`
+});
+datalist+="</datalist>"
+
+  document.getElementById("atacar").innerHTML =
+  
+  ` <div>
+  <input type="radio" id="r-todo" name="lugar" value="todo"
+         checked>
+  <label for="huey">Todo</label>
+
+  <input type="radio" id="r-arriba" name="lugar" value="arriba">
+  <label for="dewey">Arriba</label>
+
+  <input type="radio" id="r-abajo" name="lugar" value="abajo">
+  <label for="louie">Abajo</label>
+</div> 
+   <input id="iDadosLoc" type="number" class="form-control number-input col-2"><input type="text" list="listaLocalizaciones" class="text-light bg-dark h3 " style="font-family: Old Europe" "
+  id="localizaciones">` +datalist;
+
+  $(`#iDadosLoc`).change(function () {
+    valor = event.target.value;
+    let medio=60
+    if(document.getElementById("r-arriba").checked){
+      if(valor>medio) valor=Math.trunc(escalar(valor,medio,100,1,medio))
+    } 
+    else
+    if(document.getElementById("r-abajo").checked){
+      if(valor<medio) valor=Math.trunc(escalar(valor,1,medio,medio,100))
+    }
+
+
+    $(`#localizaciones`).val(pj.cuerpo.darLocalizacion(valor).nombre)
+  });
+
+
+
+}
 // function lanzarHechizo(hechizo) {
 
 //   let h = new Hechizo("Hechizo", 7, 100, null);
@@ -1042,7 +1118,7 @@ function hechizos(hechizo) {
     ` <span class="badge badge-pill badge-dark">${hechizo.pm}</span>`
 
 
-    document.getElementById("salida").innerHTML +=` <div class="input-group-prepend">
+  document.getElementById("salida").innerHTML += ` <div class="input-group-prepend">
   <span class="input-group-text col-6">PM: ${pj.getCar(PM)}</span>
   <input type="number" value=${pj.getCar(PM)} class="form-control number-input col-2">
   <span class="input-group-text col-6">Gemas: ${pj.pmGemas()}</span>
@@ -1338,9 +1414,9 @@ function pegar() {
  */
 function portapapeles() {
   navigator.clipboard.readText().then(clipText =>
-  pj.inventario.navegar(nav).escanear(clipText));
+    pj.inventario.navegar(nav).escanear(clipText));
 
-  
+
 }
 
 
@@ -1431,11 +1507,11 @@ function cargarPersonaje(nombre) {
     document.getElementById("btPersonaje").click();
   }
   else
-  if(nombre.length>0){
-    //Si se carga desde la url
-    document.getElementById("btPersonaje").click();
+    if (nombre.length > 0) {
+      //Si se carga desde la url
+      document.getElementById("btPersonaje").click();
 
-  }
+    }
 
   nombre = $("#nombre").val();
   let ruta = `personajes/${nombre}/`;
@@ -1505,6 +1581,32 @@ function cargarPersonaje(nombre) {
 
 }
 
+var pnj={}
+/**
+ * 
+ * @param {String} nombre El nombre del PNJ a cargar
+ * @param {var} pnj La variable donde se guarda el PNJ
+ */
+function cargarPNJ(nombre,id=nombre) {
+  let ruta = `personajes/${nombre}/`;
+  // console.log("CARGAR RUTA:" + ruta);
+  fbActual = database.ref(ruta);
+
+  // si lo hago así es menos eficiente,
+  // porque siempre que haya un cambio
+  // donde sea me, va a cargar el personaje entero
+  
+  fbActual.on('value', function (item) {
+    console.log("onvalue PNJ" + item.val().nombre);
+
+    pnj[id] = new Humanoide({});
+    // pnj = new Animal({});
+    pnj[id].setAll(item.val());
+
+    console.log(`CARGA EL PNJ: ${pnj[id].nombre} en pnj["${id}"]`);
+
+  });
+}
 
 // var lastObject={};
 
@@ -1571,5 +1673,17 @@ function objetoTabla(object, tabla, visibles) {
   }
 
 }
+
+//COSILLAS
+var ami="amigo"
+cargarPNJ("Enemigo",ami);
+function dañ(params) {
+  pnj.amigo.cuerpo.dañarLocalizacion(4,100);
+pnj.amigo.cuerpo.dañarLocalizacion(4,1)
+pnj.amigo.cuerpo.dañarLocalizacion(4,50)
+
+pnj.amigo.cuerpo.todosDaños();
+}
+
 
 

@@ -8,6 +8,8 @@ class Objeto {
         this.nombre = nombre || "";
         this.peso = peso;
         this.valor = valor;
+        this.bonificador=null;
+        this.efectos=null;
 
     }
 
