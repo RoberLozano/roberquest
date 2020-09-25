@@ -813,8 +813,54 @@ function atacarModal(habilidad) {
 
   $("#modalAtacar").modal();
   //inicializa
+  atPJ();
 
-  var  datalist="<datalist id='listaLocalizaciones'>"
+//   var  datalist="<datalist id='listaLocalizaciones'>"
+//   var listaLoc= [];
+//   pj.cuerpo.todosNombres(listaLoc);
+
+//   listaLoc.forEach(l => {
+//     datalist+=` <option value="${l}"></option>`
+// });
+// datalist+="</datalist>"
+
+//   document.getElementById("atPJ").innerHTML=
+  
+//   ` <div>
+//   <input type="radio" id="r-todo" name="lugar" value="todo"
+//          checked>
+//   <label for="huey">Todo</label>
+
+//   <input type="radio" id="r-arriba" name="lugar" value="arriba">
+//   <label for="dewey">Arriba</label>
+
+//   <input type="radio" id="r-abajo" name="lugar" value="abajo">
+//   <label for="louie">Abajo</label>
+// </div> 
+//    <input id="iDadosLoc" type="number" class="form-control number-input col-2"><input type="text" list="listaLocalizaciones" class="text-light bg-dark h3 " style="font-family: Old Europe" "
+//   id="localizaciones">` +datalist;
+
+//   $(`#iDadosLoc`).change(function () {
+//     valor = event.target.value;
+//     let medio=60
+//     if(document.getElementById("r-arriba").checked){
+//       if(valor>medio) valor=Math.trunc(escalar(valor,medio,100,1,medio))
+//     } 
+//     else
+//     if(document.getElementById("r-abajo").checked){
+//       if(valor<medio) valor=Math.trunc(escalar(valor,1,medio,medio,100))
+//     }
+
+
+//     $(`#localizaciones`).val(pj.cuerpo.darLocalizacion(valor).nombre)
+//   });
+
+
+
+}
+
+function atPJ(personaje="pj") {
+  var  datalist=`<datalist id='listaLocalizaciones${personaje}'>`
   var listaLoc= [];
   pj.cuerpo.todosNombres(listaLoc);
 
@@ -823,38 +869,38 @@ function atacarModal(habilidad) {
 });
 datalist+="</datalist>"
 
-  document.getElementById("atacar").innerHTML+=
+  document.getElementById("atPJ").innerHTML+=
   
   ` <div>
-  <input type="radio" id="r-todo" name="lugar" value="todo"
+  <input type="radio" id="r-todo${personaje}" name="lugar" value="todo"
          checked>
   <label for="huey">Todo</label>
 
-  <input type="radio" id="r-arriba" name="lugar" value="arriba">
+  <input type="radio" id="r-arriba${personaje}" name="lugar" value="arriba">
   <label for="dewey">Arriba</label>
 
-  <input type="radio" id="r-abajo" name="lugar" value="abajo">
+  <input type="radio" id="r-abajo${personaje}" name="lugar" value="abajo">
   <label for="louie">Abajo</label>
 </div> 
-   <input id="iDadosLoc" type="number" class="form-control number-input col-2"><input type="text" list="listaLocalizaciones" class="text-light bg-dark h3 " style="font-family: Old Europe" "
-  id="localizaciones">` +datalist;
+   <input id="iDadosLoc${personaje}" type="number" class="form-control number-input col-2" ondblclick="this.value=Math.round(Math.random() * 100);">
+   <input type="text" list="listaLocalizaciones${personaje}" class="text-light bg-dark h3" style="font-family: Old Europe" 
+  id="localizaciones${personaje}"> ${datalist}  <br><input-dado></input-dado><br><br><br><br><br><br>HOLA`;
 
-  $(`#iDadosLoc`).change(function () {
+
+  $(`#iDadosLoc${personaje}`).change(function () {
     valor = event.target.value;
     let medio=60
-    if(document.getElementById("r-arriba").checked){
+    if(document.getElementById(`r-arriba${personaje}`).checked){
       if(valor>medio) valor=Math.trunc(escalar(valor,medio,100,1,medio))
     } 
     else
-    if(document.getElementById("r-abajo").checked){
+    if(document.getElementById(`r-abajo${personaje}`).checked){
       if(valor<medio) valor=Math.trunc(escalar(valor,1,medio,medio,100))
     }
 
 
-    $(`#localizaciones`).val(pj.cuerpo.darLocalizacion(valor).nombre)
+    $(`#localizaciones${personaje}`).val(pj.cuerpo.darLocalizacion(valor).nombre)
   });
-
-
 
 }
 // function lanzarHechizo(hechizo) {
