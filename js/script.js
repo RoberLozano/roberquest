@@ -823,7 +823,7 @@ function atacarModal(habilidad) {
 });
 datalist+="</datalist>"
 
-  document.getElementById("atacar").innerHTML =
+  document.getElementById("atacar").innerHTML+=
   
   ` <div>
   <input type="radio" id="r-todo" name="lugar" value="todo"
