@@ -797,10 +797,10 @@ function entrenar(habilidad) {
  * @param {Number} m2 
  * @param {Number} M2 
  */
-function escalar(x,m1,M1,m2,M2) {
-  let d1=M1-m1;
-  let d2=M2-m2;
-  return (x-m1)*(d2/d1)+m2;
+function escalar(x, m1, M1, m2, M2) {
+  let d1 = M1 - m1;
+  let d2 = M2 - m2;
+  return (x - m1) * (d2 / d1) + m2;
 }
 
 function atacarModal(habilidad) {
@@ -813,65 +813,200 @@ function atacarModal(habilidad) {
 
   $("#modalAtacar").modal();
   //inicializa
-  atPJ();
+  // atPJ();
+  atP(pj.nombre, "PJ")
+  let enemigo = $('#nombreEnemigo').val()
+  console.log("ENEMIGO es-->"+enemigo);
+  cargarPNJ(enemigo, enemigo);
+  atP(enemigo, "PNJ")
+  // atPNJ(enemigo);
 
-//   var  datalist="<datalist id='listaLocalizaciones'>"
-//   var listaLoc= [];
-//   pj.cuerpo.todosNombres(listaLoc);
+  //   var  datalist="<datalist id='listaLocalizaciones'>"
+  //   var listaLoc= [];
+  //   pj.cuerpo.todosNombres(listaLoc);
 
-//   listaLoc.forEach(l => {
-//     datalist+=` <option value="${l}"></option>`
-// });
-// datalist+="</datalist>"
+  //   listaLoc.forEach(l => {
+  //     datalist+=` <option value="${l}"></option>`
+  // });
+  // datalist+="</datalist>"
 
-//   document.getElementById("atPJ").innerHTML=
-  
-//   ` <div>
-//   <input type="radio" id="r-todo" name="lugar" value="todo"
-//          checked>
-//   <label for="huey">Todo</label>
+  //   document.getElementById("atPJ").innerHTML=
 
-//   <input type="radio" id="r-arriba" name="lugar" value="arriba">
-//   <label for="dewey">Arriba</label>
+  //   ` <div>
+  //   <input type="radio" id="r-todo" name="lugar" value="todo"
+  //          checked>
+  //   <label for="huey">Todo</label>
 
-//   <input type="radio" id="r-abajo" name="lugar" value="abajo">
-//   <label for="louie">Abajo</label>
-// </div> 
-//    <input id="iDadosLoc" type="number" class="form-control number-input col-2"><input type="text" list="listaLocalizaciones" class="text-light bg-dark h3 " style="font-family: Old Europe" "
-//   id="localizaciones">` +datalist;
+  //   <input type="radio" id="r-arriba" name="lugar" value="arriba">
+  //   <label for="dewey">Arriba</label>
 
-//   $(`#iDadosLoc`).change(function () {
-//     valor = event.target.value;
-//     let medio=60
-//     if(document.getElementById("r-arriba").checked){
-//       if(valor>medio) valor=Math.trunc(escalar(valor,medio,100,1,medio))
-//     } 
-//     else
-//     if(document.getElementById("r-abajo").checked){
-//       if(valor<medio) valor=Math.trunc(escalar(valor,1,medio,medio,100))
-//     }
+  //   <input type="radio" id="r-abajo" name="lugar" value="abajo">
+  //   <label for="louie">Abajo</label>
+  // </div> 
+  //    <input id="iDadosLoc" type="number" class="form-control number-input col-2"><input type="text" list="listaLocalizaciones" class="text-light bg-dark h3 " style="font-family: Old Europe" "
+  //   id="localizaciones">` +datalist;
+
+  //   $(`#iDadosLoc`).change(function () {
+  //     valor = event.target.value;
+  //     let medio=60
+  //     if(document.getElementById("r-arriba").checked){
+  //       if(valor>medio) valor=Math.trunc(escalar(valor,medio,100,1,medio))
+  //     } 
+  //     else
+  //     if(document.getElementById("r-abajo").checked){
+  //       if(valor<medio) valor=Math.trunc(escalar(valor,1,medio,medio,100))
+  //     }
 
 
-//     $(`#localizaciones`).val(pj.cuerpo.darLocalizacion(valor).nombre)
-//   });
+  //     $(`#localizaciones`).val(pj.cuerpo.darLocalizacion(valor).nombre)
+  //   });
 
 
 
 }
 
-function atPJ(personaje="pj") {
-  var  datalist=`<datalist id='listaLocalizaciones${personaje}'>`
-  var listaLoc= [];
-  pj.cuerpo.todosNombres(listaLoc);
+
+
+function atP(personaje = "Enemigo", rol = "PNJ") {
+  if (rol === "PNJ") console.log("atP-->PNJ");
+  else console.log("atP-->PJ");
+  var datalist = `<datalist id='listaLocalizaciones${personaje}'>`
+  var listaLoc = [];
+  if (rol === "PNJ")
+    pnj[personaje].cuerpo.todosNombres(listaLoc);
+  else
+    pj.cuerpo.todosNombres(listaLoc);
 
   listaLoc.forEach(l => {
-    datalist+=` <option value="${l}"></option>`
-});
-datalist+="</datalist>"
+    datalist += ` <option value="${l}"></option>`
+  });
+  datalist += "</datalist>"
 
-  document.getElementById("atPJ").innerHTML+=
-  
-  ` <div>
+  document.getElementById(`at${rol}`).innerHTML =
+
+    `
+     <div>
+  Habilidad ofensiva:<br>
+  <input-dado id="id${personaje}"></input-dado>
+  <br>
+  Daño: <input id="iDaño${personaje}" type="number" class="form-control number-input col-2"
+  ondblclick="this.value=Math.round(Math.random() * 15);"
+  onchange="
+  ${(rol === "PNJ")?'pnj.'+personaje:"pj"}.cuerpo.dañarLocalizacion(this.value,document.getElementById('localizaciones${personaje}').value);
+  console.log(document.getElementById('localizaciones${personaje}').value );
+  atDaños();
+  console.log(${(rol === "PNJ")?'pnj.'+personaje:"pj"}.cuerpo.darLocalizacion(document.getElementById('localizaciones${personaje}').value));">
+  <br>
+  <input type="radio" id="r-todo${personaje}" name="lugar" value="todo"
+         checked>
+  <label for="huey">Todo</label>
+
+  <input type="radio" id="r-arriba${personaje}" name="lugar" value="arriba">
+  <label for="dewey">Arriba</label>
+
+  <input type="radio" id="r-abajo${personaje}" name="lugar" value="abajo">
+  <label for="louie">Abajo</label>
+</div> 
+   <input id="iDadosLoc${personaje}" type="number" class="form-control number-input col-2" ondblclick="this.value=Math.round(Math.random() * 100);">
+   <input type="text" list="listaLocalizaciones${personaje}" class="text-light bg-dark" 
+  id="localizaciones${personaje}"> ${datalist} <div id="daños${(rol === "PNJ")?'PNJ':"PJ"}"> <br>DAÑOS<br> </div>
+  <canvas id="myCanvas" src="Body.jpg" width="500" height="1000" style="border:1px solid #d3d3d3;">
+  Your browser does not support the HTML5 canvas tag.</canvas>
+<img id="cuerpo" src="Body.png" alt="Cuerpo">`;
+
+
+  // console.log(${(rol === "PNJ")?'pnj.'+personaje:"pj"}.cuerpo.darLocalizacion(document.getElementById('localizaciones${personaje}').value).dañar(this.value) );
+
+  $(`#iDadosLoc${personaje}`).change(function () {
+    valor = event.target.value;
+    let medio = 60
+    if (document.getElementById(`r-arriba${personaje}`).checked) {
+      if (valor > medio) valor = Math.trunc(escalar(valor, medio, 100, 1, medio))
+    }
+    else
+      if (document.getElementById(`r-abajo${personaje}`).checked) {
+        if (valor < medio) valor = Math.trunc(escalar(valor, 1, medio, medio, 100))
+      }
+
+    if (rol === "PNJ"){$(`#localizaciones${personaje}`).val(pj.cuerpo.darLocalizacion(valor).nombre)}
+      
+    else{$(`#localizaciones${personaje}`).val(pnj[$('#nombreEnemigo').val()].cuerpo.darLocalizacion(valor).nombre)}
+      
+
+  });
+
+  if (rol === "PNJ")
+    {document.getElementById(`id${personaje}`).setPersonaje(pnj[personaje])}
+  else
+    {document.getElementById(`id${personaje}`).setPersonaje(pj);}
+
+    var canvas = document.getElementById("myCanvas");
+    var ctx = canvas.getContext("2d");
+    var img = document.getElementById("cuerpo");
+    ctx.drawImage(img, 0, 0);
+ 
+    ctx.globalAlpha=0.5
+  ctx.beginPath();
+  ctx.arc(243,59, 30, 0, 2 * Math.PI, false);
+  ctx.fillStyle = 'red';
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(150,180, 30, 0, 2 * Math.PI, false);
+  ctx.fillStyle = 'orange';
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(100,450, 10, 0, 2 * Math.PI, false);
+  ctx.globalAlpha=1
+  ctx.font = "30px Arial";
+  ctx.fillStyle = 'red';
+  ctx.fillText("2", 100, 450);
+  ctx.globalAlpha=0.5
+  ctx.fillStyle = 'green';
+  ctx.fill();
+
+}
+
+function atDaños(params) {
+  let todos=[];
+  let string=""
+  pnj[$('#nombreEnemigo').val()].cuerpo.todosDaños(todos);
+  todos.forEach(l => {
+    // console.log(l.nombre,l.daño);
+    string+=`${l.nombre} :<b>${l.daño}</b>/${l.pg}<br>`
+    // string+=l.nombre+":"+l.daño+"<br>";
+  });
+  // string+=`${pnj[$('#nombreEnemigo').val()].getCar("PG")} / ${pnj[$('#nombreEnemigo').val()].getMaxPuntos(PG)}`
+  document.getElementById('dañosPJ').innerHTML= string;
+
+  todos=[];
+  string=""
+  pj.cuerpo.todosDaños(todos);
+  todos.forEach(l => {
+    // console.log(l.nombre,l.daño);
+    string+=`${l.nombre} :<b>${l.daño}</b>/${l.pg}<br>`
+    // string+=l.nombre+":"+l.daño+"<br>";
+  });
+  document.getElementById('dañosPNJ').innerHTML= string;
+
+
+  // document.getElementById('dañosPJ').innerHTML= JSON.stringify(todos);
+  // document.getElementById('dañosPJ').innerHTML= JSON.stringify(pnj[$('#nombreEnemigo').val()].cuerpo.dañadas())
+  // document.getElementById('dañosPNJ').innerHTML= JSON.stringify(pj.cuerpo.dañadas());
+}
+
+function atPNJ(personaje = "Enemigo", rol = "PNJ") {
+  var datalist = `<datalist id='listaLocalizaciones${personaje}'>`
+  var listaLoc = [];
+  pnj[personaje].cuerpo.todosNombres(listaLoc);
+
+  listaLoc.forEach(l => {
+    datalist += ` <option value="${l}"></option>`
+  });
+  datalist += "</datalist>"
+
+  document.getElementById(`at${rol}`).innerHTML +=
+
+    ` <div>
   <input type="radio" id="r-todo${personaje}" name="lugar" value="todo"
          checked>
   <label for="huey">Todo</label>
@@ -889,14 +1024,59 @@ datalist+="</datalist>"
 
   $(`#iDadosLoc${personaje}`).change(function () {
     valor = event.target.value;
-    let medio=60
-    if(document.getElementById(`r-arriba${personaje}`).checked){
-      if(valor>medio) valor=Math.trunc(escalar(valor,medio,100,1,medio))
-    } 
-    else
-    if(document.getElementById(`r-abajo${personaje}`).checked){
-      if(valor<medio) valor=Math.trunc(escalar(valor,1,medio,medio,100))
+    let medio = 60
+    if (document.getElementById(`r-arriba${personaje}`).checked) {
+      if (valor > medio) valor = Math.trunc(escalar(valor, medio, 100, 1, medio))
     }
+    else
+      if (document.getElementById(`r-abajo${personaje}`).checked) {
+        if (valor < medio) valor = Math.trunc(escalar(valor, 1, medio, medio, 100))
+      }
+
+
+    // $(`#localizaciones${personaje}`).val(pj.cuerpo.darLocalizacion(valor).nombre)
+  });
+
+}
+
+function atPJ(personaje = "pj", rol = "PJ") {
+  var datalist = `<datalist id='listaLocalizaciones${personaje}'>`
+  var listaLoc = [];
+  pj.cuerpo.todosNombres(listaLoc);
+
+  listaLoc.forEach(l => {
+    datalist += ` <option value="${l}"></option>`
+  });
+  datalist += "</datalist>"
+
+  document.getElementById(`atPJ`).innerHTML +=
+
+    ` <div>
+  <input type="radio" id="r-todo${personaje}" name="lugar" value="todo"
+         checked>
+  <label for="huey">Todo</label>
+
+  <input type="radio" id="r-arriba${personaje}" name="lugar" value="arriba">
+  <label for="dewey">Arriba</label>
+
+  <input type="radio" id="r-abajo${personaje}" name="lugar" value="abajo">
+  <label for="louie">Abajo</label>
+</div> 
+   <input id="iDadosLoc${personaje}" type="number" class="form-control number-input col-2" ondblclick="this.value=Math.round(Math.random() * 100);">
+   <input type="text" list="listaLocalizaciones${personaje}" class="text-light bg-dark h3" style="font-family: Old Europe" 
+  id="localizaciones${personaje}"> ${datalist}  <br><input-dado></input-dado><br><br><br><br><br><br>HOLA`;
+
+
+  $(`#iDadosLoc${personaje}`).change(function () {
+    valor = event.target.value;
+    let medio = 60
+    if (document.getElementById(`r-arriba${personaje}`).checked) {
+      if (valor > medio) valor = Math.trunc(escalar(valor, medio, 100, 1, medio))
+    }
+    else
+      if (document.getElementById(`r-abajo${personaje}`).checked) {
+        if (valor < medio) valor = Math.trunc(escalar(valor, 1, medio, medio, 100))
+      }
 
 
     $(`#localizaciones${personaje}`).val(pj.cuerpo.darLocalizacion(valor).nombre)
@@ -1627,13 +1807,13 @@ function cargarPersonaje(nombre) {
 
 }
 
-var pnj={}
+var pnj = {}
 /**
  * 
  * @param {String} nombre El nombre del PNJ a cargar
  * @param {var} pnj La variable donde se guarda el PNJ
  */
-function cargarPNJ(nombre,id=nombre) {
+function cargarPNJ(nombre, id = nombre) {
   let ruta = `personajes/${nombre}/`;
   // console.log("CARGAR RUTA:" + ruta);
   fbActual = database.ref(ruta);
@@ -1641,7 +1821,7 @@ function cargarPNJ(nombre,id=nombre) {
   // si lo hago así es menos eficiente,
   // porque siempre que haya un cambio
   // donde sea me, va a cargar el personaje entero
-  
+
   fbActual.on('value', function (item) {
     console.log("onvalue PNJ" + item.val().nombre);
 
@@ -1721,14 +1901,14 @@ function objetoTabla(object, tabla, visibles) {
 }
 
 //COSILLAS
-var ami="amigo"
-cargarPNJ("Enemigo",ami);
+// var ami = "amigo"
+// cargarPNJ("Enemigo", ami);
 function dañ(params) {
-  pnj.amigo.cuerpo.dañarLocalizacion(4,100);
-pnj.amigo.cuerpo.dañarLocalizacion(4,1)
-pnj.amigo.cuerpo.dañarLocalizacion(4,50)
+  pnj.amigo.cuerpo.dañarLocalizacion(4, 100);
+  pnj.amigo.cuerpo.dañarLocalizacion(4, 1)
+  pnj.amigo.cuerpo.dañarLocalizacion(4, 50)
 
-pnj.amigo.cuerpo.todosDaños();
+  pnj.amigo.cuerpo.todosDaños();
 }
 
 

@@ -232,7 +232,8 @@ class Localizaciones {
         });
 
         if (lista.length>0)
-        console.log(lista.sort((a, b) => (b.daño / b.pg) - (a.daño / a.pg)))
+        lista.sort((a, b) => (b.daño / b.pg) - (a.daño / a.pg))
+        // console.log(lista.sort((a, b) => (b.daño / b.pg) - (a.daño / a.pg)))
 
         return lista;
     }
@@ -304,7 +305,7 @@ class Localizacion extends Localizaciones {
      */
     setPG(x) {
         //TODO: dejar en int?
-        this.pg = x * this.mpg;
+        this.pg = Math.round(x * this.mpg);
     }
 
     /**

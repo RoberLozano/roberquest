@@ -144,17 +144,27 @@
             <div class="card mb-3" >
               <div class="row no-gutters">
                 <div class="col-md-6">
-                  <div class="card-body" id="atPJ">
-                    <h5 class="card-title">Personaje</h5>
-                    <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                    <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                  <div class="card-body" >
+                    <input type="text" list="listaEnemigos" class="text-light bg-dark h3 " style="font-family: Old Europe" value="Personaje"
+                    id="nombrePersonaje">
+                    <!-- <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p> -->
+                    <p class="card-text"><small class="text-muted">Tu personaje</small></p>
+                    <div id="atPJ"></div>
+                    <canvas id="myCanvas" src="Body.jpg" width="500" height="1000" style="border:1px solid #d3d3d3;"></canvas>
                   </div>
                 </div>
                 <div class="col-md-6">
-                  <div class="card-body" id="atPNJ">
-                    <h5 class="card-title">Enemigo</h5>
-                    <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                    <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                  <div class="card-body" >
+                    <input type="text" list="listaEnemigos" class="text-light bg-dark h3 " style="font-family: Old Europe" value="Enemigo"
+                    id="nombreEnemigo">
+                  <datalist id="listaEnemigos">
+                    <option value="Personaje">
+                    <option value="Enemigo">
+                    <option value="Rosssel">
+                    <option value="Blanc">
+                  </datalist>
+                    <p class="card-text"><small class="text-muted">Personaje enemigo al que atacar</small></p>
+                    <div id="atPNJ"></div>
                   </div>
                 </div>
               </div>
@@ -455,7 +465,6 @@
           <!-- <canvas id="barChart"></canvas>
           <canvas id="radarChart"></canvas> -->
           <!-- <button class="btn btn-danger" onclick="lanzarHechizo()">Hechizo</button> -->
-          <button class="btn btn-danger" onclick="atacarModal()">Atacar</button>
 
 
         </div>
@@ -473,6 +482,7 @@
           </div>
           <input-dado  habilidad="50" ></input-dado>
           <input-dado  id="idPrueba2" habilidad="67" ></input-dado>
+          
 
         </div>
 
@@ -492,7 +502,10 @@
       </div>
     </div>
     <!-- #endregion -->
-
+    
+    <button class="btn btn-danger" onclick="atacarModal()">Atacar</button>
+<div>
+</div>
 
     <p>Elige la fecha del Mundo</p>
     <input class="form-control" type="datetime-local" value="0177-07-07T00:00:01.0" id="fecha">
@@ -500,6 +513,8 @@
 
     <button onclick="act()"> Cambiar fecha y hora</button>
     <button onclick="saveStats()"> Guardar</button>
+
+    
 
 
     <!-- script de Bubble -->

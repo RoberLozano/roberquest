@@ -264,17 +264,20 @@ class Habilidad extends XP {
   }
 
   xpTirada(t, suerte = []) {
-    switch (this.tirada(t, suerte)) {
+    console.log(t);
+    let tir=this.tirada(t, suerte);
+    console.log(tir);
+    switch (tir) {
       case TipoTirada.SUPERCRITICO:
-        this.xp += 4;
+        this.xp += 4;console.log("Sube SUPERCRITICO");
         break;
       case TipoTirada.CRITICO:
-        this.xp += 3;
+        this.xp += 3;console.log("Sube CRITICO");
         break;
       case TipoTirada.ESPECIAL:
-        this.xp += 1;
+        this.xp += 1;console.log("Sube ESPECIAL");
         break;
-      default:
+      default: console.log("NO SUBE NADA");
         break;
     }
   }
@@ -646,9 +649,21 @@ class InputDado extends HTMLElement {
 
     this.label = document.createElement('input');
     this.label.setAttribute("type", "text");
+
     this.label.classList.add("hab");
     this.label.setAttribute("value", this.habilidad.nombre);
-    this.label.readOnly = true;
+    // this.label.readOnly = true;
+    this.label.addEventListener('change', (event) => {
+
+      
+      console.log(this.personaje.habilidades[event.target.value]);
+      // console.log(pj.habilidades[event.target.value]);
+      this.setHabilidad(this.personaje.habilidades[event.target.value])
+      // console.log(this.getAttribute('habilidad'));
+      // if(input.value>this.getAttribute('habilidad')) input.style.color="red"
+      // else input.style.color="black"
+    });
+
 
     // input.setAttribute('max', '100');
     this.label.style.width = "7em";
@@ -725,7 +740,7 @@ class InputDado extends HTMLElement {
     this.ok.src = this.habilidad.ataque?'img/sword.svg':'img/shield.svg';
     // this.ok.src = 'img/check.svg';
     this.ok.addEventListener('click', (event) => {
-      this.habilidad.xpTirada(this.porcentaje.value)
+      this.habilidad.xpTirada(this.input.value)
     });
 
 
@@ -734,13 +749,12 @@ class InputDado extends HTMLElement {
             position: relative;
           }
           *{
-            font-size: 110%;
+            font-size: 100%;
             border-style: none;
           }
           img {
             width: 1.7rem;
             vertical-align: text-top; 
-            filter: blur(1px);
             transition: .5s ease;
           }
           img:hover{
@@ -788,6 +802,23 @@ class InputDado extends HTMLElement {
     // Create a shadow root
   }
 
+  lista(id,habilidades){
+    let options="";
+    habilidades.forEach(h => {
+      options+=`<option value="${h.nombre}"></option>`
+  });
+    this.label.innerHTML= `  <datalist id=${id}>
+    ${options}
+  </datalist>`
+  this.label.setAttribute("list",id);
+  }
+
+  setPersonaje(personaje){
+    this.personaje=personaje;
+
+    this.lista("listaHab"+personaje.nombre,this.personaje.getHabilidades())
+  }
+
   set h(habilidad) {
     this.setHabilidad(habilidad);
     // this.habilidad = habilidad;
@@ -802,6 +833,7 @@ class InputDado extends HTMLElement {
     if (habilidad)this.habilidad = habilidad;
     this.label.setAttribute("value", this.habilidad.nombre);
     this.porcentaje.setAttribute("value", this.habilidad.v);
+    this.porcentaje.value= this.habilidad.v;
     this.ok.src = this.habilidad.ataque?'img/sword.svg':'img/check.svg';
   }
 

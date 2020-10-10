@@ -467,14 +467,14 @@ M2=68
 // }
 
 
-var ti1 = new Tirador("tirador 1", 35,"green");
-var ti2 = new Tirador("tirador 2", 44, "blue");
-var ti3 = new Tirador("tirador 3", 23,);
-var ti4 = new Tirador("tirador 4", 61);
+var ti1 = new Tirador("tirador 1", 50,"grey");
+var ti2 = new Tirador("tirador 2", 45, "blue");
+var ti3 = new Tirador("tirador 3", 36,);
+var ti4 = new Tirador("tirador 4", 20);
 var ti5 = new Tirador("tirador 5", 99);
-var ti6 = new Tirador("tirador 6", 99);
-var ti7 = new Tirador("tirador 7", 99);
-var roci = new Tirador("Rosssel", 88,"ForestGreen");
+// var ti6 = new Tirador("tirador 6", 99);
+// var ti7 = new Tirador("tirador 7", 99);
+var roci = new Tirador("Rosssel", 69,"ForestGreen");
 
 
 var torneo = new Torneo("nombre", 100, 3, 3);
@@ -487,8 +487,8 @@ torneo.add(ti2);
 torneo.add(ti3);
 torneo.add(ti4);
 torneo.add(ti5);
-torneo.add(ti6);
-torneo.add(ti7);
+// torneo.add(ti6);
+// torneo.add(ti7);
 
 
 
