@@ -511,9 +511,9 @@ class Animal {
    * Devuelve un array con las habilidades filtradas, o todas si no hay filtro
    * @param {*} filtro el método que filtra las habilidades
    */
-  getHabilidades(filtro){
+  getHabilidades(filtro) {
     if (filtro)
-    return Object.values(this.habilidades).filter(filtro);
+      return Object.values(this.habilidades).filter(filtro);
     else return Object.values(this.habilidades);
   }
 
@@ -897,6 +897,26 @@ class Dragon extends Animal {
     }
 
   }
+
+  crearCuerpo() {
+    this.cuerpo = new Localizaciones(this.getMaxPuntos(PG));
+    //Menteniendo junta toda la localización
+ 
+
+    //Puntos de armadura
+    let pa = 12;
+
+    var cabeza = new Localizacion("Cola", 0.25, 01, 02, pa); this.cuerpo.add(cabeza);
+    cabeza = new Localizacion("Pata Trasera Derecha", 0.333, 03, 04, pa); this.cuerpo.add(cabeza);
+    cabeza = new Localizacion("Pata Trasera Izquierda", 0.333, 05, 06, pa); this.cuerpo.add(cabeza);
+    cabeza = new Localizacion("Cuartos Traseros", 0.4, 07, 08, pa); this.cuerpo.add(cabeza);
+    cabeza = new Localizacion("Cuartos Delanteros", 0.4, 09, 10, pa); this.cuerpo.add(cabeza);
+    cabeza = new Localizacion("Ala Derecha", 0.25, 11, 12, pa); this.cuerpo.add(cabeza);
+    cabeza = new Localizacion("Ala Izquierda", 0.25, 13, 14, pa); this.cuerpo.add(cabeza);
+    cabeza = new Localizacion("Pata Delantera Derecha", 0.333, 15, 16, pa); this.cuerpo.add(cabeza);
+    cabeza = new Localizacion("Pata Delantera Izquierda", 0.333, 17, 18, pa); this.cuerpo.add(cabeza);
+    cabeza = new Localizacion("Cabeza", 0.333, 19, 20, pa); this.cuerpo.add(cabeza);
+  }
 }
 
 /**
@@ -1031,7 +1051,7 @@ class Humanoide extends Animal {
     this.cuerpo.add(piernaD);
     this.cuerpo.add(piernaI);
 
-    
+
   }
 
 }
@@ -1171,15 +1191,15 @@ firebase.initializeApp(config);
 var database = firebase.database();
 
 function guerrero(personaje, nivel, ...armas) {
-  
-  personaje.setHabilidad(new HabilidadMarcial("Esquivar", Agilidad, 25 + (nivel * 5),false));
-  personaje.setHabilidad(new HabilidadMarcial("Puñetazo D", Manipulación, 25 + (nivel * 5),true, "Brazo D"));
+
+  personaje.setHabilidad(new HabilidadMarcial("Esquivar", Agilidad, 25 + (nivel * 5), false));
+  personaje.setHabilidad(new HabilidadMarcial("Puñetazo D", Manipulación, 25 + (nivel * 5), true, "Brazo D"));
   armas.forEach(a => {
     let arma = new Arma(a, 0, 10, "1d8");
     personaje.inventario.add(arma);
-    personaje.setHabilidad(new HabilidadMarcial(a, Manipulación, 25 + (nivel * 10),true, "Brazo D",arma));
-    
-    
+    personaje.setHabilidad(new HabilidadMarcial(a, Manipulación, 25 + (nivel * 10), true, "Brazo D", arma));
+
+
     personaje.act();
   });
 
@@ -1189,7 +1209,7 @@ function guerrero(personaje, nivel, ...armas) {
   // for( h in personaje.habilidades){
   //   if
   // }
-  
+
   console.log(Object.values(personaje.habilidades).filter(h => (!h.ataque)));
   console.log(personaje.getHabilidades(h => (!h.ataque)));
   console.log(personaje.getHabilidades());
