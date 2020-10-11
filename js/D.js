@@ -406,6 +406,12 @@ class Dado {
 
 }
 
+class Daño extends Dado{
+  constructor(dado, tipo) {
+    super(dado);
+    this.tipo=tipo;
+  }
+}
 
 /**
  *Función para testear los resultados de dados siempre positivos
