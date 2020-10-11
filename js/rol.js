@@ -835,6 +835,70 @@ class Caballo extends Animal {
   }
 }
 
+class Dragon extends Animal {
+  constructor(
+    {
+      nombre = "Dragón",
+      peso = 500, //en kg
+
+      FUE = new Dado("4d6+18").tirar(),
+      CON = d.tirar(),
+      TAM = new Dado("4d6+18").tirar(),
+      INT = 4,
+      POD = d.tirar(),
+      DES = new Dado("2d6+6").tirar(),
+      ASP = d.tirar()
+    }
+
+  ) {
+    super({})
+    this.car = {}
+    this.nombre = nombre
+    this.peso = peso
+    this.FUE = FUE
+    this.CON = CON
+    this.TAM = TAM
+    this.INT = INT
+    this.POD = POD
+    this.DES = DES
+    this.ASP = ASP
+
+
+
+
+    this.bonificacion = new Bon({});
+
+    this.inventario = creaInventario("Cuerpo");
+    // this.inventario = {}
+
+    this.habilidades = {}
+    this.efectos = [];
+    this.carga = [];
+    // this.backup = null
+    this.act();
+
+  }
+
+  act() {
+    super.act();
+    this.carga = [];
+    this.carga["ligera"] = this.getCar(FUE) + this.getCar(FUE);
+    // Carga normal (permite mov 100%)		=	(FUE + CON) x 2,2 	Kilogramos 
+    this.carga["normal"] = (this.getCar(FUE) + this.getCar(FUE)) * 2.2;
+    // Carga elevada (movimiento al 50%)	=	(FUE + CON) x 3,4	Kilogramos
+    this.carga["elevada"] = (this.getCar(FUE) + this.getCar(FUE)) * 3.4;
+    // Carga máxima (movimiento al 10%)	=	(FUE + CON) x 4,6 	Kilogramos
+    this.carga["máxima"] = (this.getCar(FUE) + this.getCar(FUE)) * 4.6;
+  }
+
+  cargas() {
+    for (let c in this.carga) {
+      console.log(c + ":" + this.carga[c]);
+    }
+
+  }
+}
+
 /**
  * Modifica una fecha.
  * 

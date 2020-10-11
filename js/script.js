@@ -811,7 +811,7 @@ function atacarModal(habilidad) {
 
   var dado = 3;
 
-  $("#modalAtacar").modal();
+
   //inicializa
   // atPJ();
   atP(pj.nombre, "PJ")
@@ -819,6 +819,8 @@ function atacarModal(habilidad) {
   console.log("ENEMIGO es-->"+enemigo);
   cargarPNJ(enemigo, enemigo);
   atP(enemigo, "PNJ")
+  
+    $("#modalAtacar").modal();
   // atPNJ(enemigo);
 
   //   var  datalist="<datalist id='listaLocalizaciones'>"
