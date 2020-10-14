@@ -258,7 +258,7 @@ class Localizacion extends Localizaciones {
      * @param {number} [pa=0] los puntos de armadura naturales
      * @memberof localizacion
      */
-    constructor(nombre, mpg, min, max, pa = 0) {
+    constructor(nombre, mpg, min, max, pa = 0,x=null,y=null) {
         super();
         this.nombre = nombre;
         this.mpg = mpg;
@@ -267,6 +267,8 @@ class Localizacion extends Localizaciones {
         this.max = max;
         this.daño = 0;
         this.pg;//??
+        this.x=x;
+        this.y=y;
     }
     /**
      * Da coordenadas para la localizacion

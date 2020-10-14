@@ -814,13 +814,14 @@ function atacarModal(habilidad) {
 
   //inicializa
   // atPJ();
-  atP(pj.nombre, "PJ")
   let enemigo = $('#nombreEnemigo').val()
-  console.log("ENEMIGO es-->"+enemigo);
+  atP(pj.nombre, "PJ")
+ 
+  console.log("ENEMIGO es-->" + enemigo);
   cargarPNJ(enemigo, enemigo);
   atP(enemigo, "PNJ")
-  
-    $("#modalAtacar").modal();
+
+  $("#modalAtacar").modal();
   // atPNJ(enemigo);
 
   //   var  datalist="<datalist id='listaLocalizaciones'>"
@@ -894,10 +895,11 @@ function atP(personaje = "Enemigo", rol = "PNJ") {
   Daño: <input id="iDaño${personaje}" type="number" class="form-control number-input col-2"
   ondblclick="this.value=Math.round(Math.random() * 15);"
   onchange="
-  ${(rol === "PNJ")?'pnj.'+personaje:"pj"}.cuerpo.dañarLocalizacion(this.value,document.getElementById('localizaciones${personaje}').value);
+  dañar('${rol}',this.value,document.getElementById('localizaciones${personaje}').value);
+  
   console.log(document.getElementById('localizaciones${personaje}').value );
   atDaños();
-  console.log(${(rol === "PNJ")?'pnj.'+personaje:"pj"}.cuerpo.darLocalizacion(document.getElementById('localizaciones${personaje}').value));">
+  ">
   <br>
   <input type="radio" id="r-todo${personaje}" name="lugar" value="todo"
          checked>
@@ -911,11 +913,13 @@ function atP(personaje = "Enemigo", rol = "PNJ") {
 </div> 
    <input id="iDadosLoc${personaje}" type="number" class="form-control number-input col-2" ondblclick="this.value=Math.round(Math.random() * 100);">
    <input type="text" list="listaLocalizaciones${personaje}" class="text-light bg-dark" 
-  id="localizaciones${personaje}"> ${datalist} <div id="daños${(rol === "PNJ")?'PNJ':"PJ"}"> <br>DAÑOS<br> </div>
-  <canvas id="myCanvas" src="Body.jpg" width="500" height="1000" style="border:1px solid #d3d3d3;">
+  id="localizaciones${personaje}"> ${datalist} <div id="daños${(rol === "PNJ") ? 'PNJ' : "PJ"}"> <br>DAÑOS<br> </div>
+  <canvas id="canvas${rol}" src="Body.jpg" width="500" height="1000" style="border:1px solid #d3d3d3;">
   Your browser does not support the HTML5 canvas tag.</canvas>
-<img id="cuerpo" src="Body.png" alt="Cuerpo">`;
+  <div style="display:none;"><img id="cuerpo" src="Body.png" alt="Cuerpo"></div>
+`;
 
+// ${(rol === "PJ") ? 'pnj.' + personaje : "pj"}.cuerpo.dañarLocalizacion(this.value,document.getElementById('localizaciones${personaje}').value);
 
   // console.log(${(rol === "PNJ")?'pnj.'+personaje:"pj"}.cuerpo.darLocalizacion(document.getElementById('localizaciones${personaje}').value).dañar(this.value) );
 
@@ -930,65 +934,93 @@ function atP(personaje = "Enemigo", rol = "PNJ") {
         if (valor < medio) valor = Math.trunc(escalar(valor, 1, medio, medio, 100))
       }
 
-    if (rol === "PNJ"){$(`#localizaciones${personaje}`).val(pj.cuerpo.darLocalizacion(valor).nombre)}
-      
-    else{$(`#localizaciones${personaje}`).val(pnj[$('#nombreEnemigo').val()].cuerpo.darLocalizacion(valor).nombre)}
-      
+    if (rol === "PNJ") { $(`#localizaciones${personaje}`).val(pj.cuerpo.darLocalizacion(valor).nombre) }
+
+    else { $(`#localizaciones${personaje}`).val(pnj[$('#nombreEnemigo').val()].cuerpo.darLocalizacion(valor).nombre) }
+
 
   });
 
-  if (rol === "PNJ")
-    {document.getElementById(`id${personaje}`).setPersonaje(pnj[personaje])}
-  else
-    {document.getElementById(`id${personaje}`).setPersonaje(pj);}
+  if (rol === "PNJ") { document.getElementById(`id${personaje}`).setPersonaje(pnj[personaje]) }
+  else { document.getElementById(`id${personaje}`).setPersonaje(pj); }
 
-    var canvas = document.getElementById("myCanvas");
-    var ctx = canvas.getContext("2d");
-    var img = document.getElementById("cuerpo");
-    ctx.drawImage(img, 0, 0);
- 
-    ctx.globalAlpha=0.5
-  ctx.beginPath();
-  ctx.arc(243,59, 30, 0, 2 * Math.PI, false);
-  ctx.fillStyle = 'red';
-  ctx.fill();
-  ctx.beginPath();
-  ctx.arc(150,180, 30, 0, 2 * Math.PI, false);
-  ctx.fillStyle = 'orange';
-  ctx.fill();
-  ctx.beginPath();
-  ctx.arc(100,450, 10, 0, 2 * Math.PI, false);
-  ctx.globalAlpha=1
-  ctx.font = "30px Arial";
-  ctx.fillStyle = 'red';
-  ctx.fillText("2", 100, 450);
-  ctx.globalAlpha=0.5
-  ctx.fillStyle = 'green';
-  ctx.fill();
+  // var canvas = document.getElementById("myCanvas");
+  // var ctx = canvas.getContext("2d");
+  // var img = document.getElementById("cuerpo");
+  // ctx.drawImage(img, 0, 0);
+
+  //   ctx.globalAlpha=0.5
+  // ctx.beginPath();
+  // ctx.arc(243,59, 30, 0, 2 * Math.PI, false);
+  // ctx.fillStyle = 'red';
+  // ctx.fill();
+  // ctx.beginPath();
+  // ctx.arc(150,180, 30, 0, 2 * Math.PI, false);
+  // ctx.fillStyle = 'orange';
+  // ctx.fill();
+  // ctx.beginPath();
+  // ctx.arc(100,450, 10, 0, 2 * Math.PI, false);
+  // ctx.globalAlpha=1
+  // ctx.font = "30px Arial";
+  // ctx.fillStyle = 'red';
+  // ctx.fillText("2", 100, 450);
+  // ctx.globalAlpha=0.5
+  // ctx.fillStyle = 'green';
+  // ctx.fill();
 
 }
 
+function dañar(p,daño,loc) {
+  console.log("Daño",p,daño);
+  if(p === "PJ")  pnj[$('#nombreEnemigo').val()].cuerpo.dañarLocalizacion(daño,loc)
+  else
+  pj.cuerpo.dañarLocalizacion(daño,loc)
+  
+}
+
 function atDaños(params) {
-  let todos=[];
-  let string=""
+  let todos = [];
+  let string = ""
+  //dibujar
+
+  console.log("atDaños");
+
+  // var canvas = document.getElementById("myCanvas");
+  // var ctx = canvas.getContext("2d");
+  // var img = document.getElementById("cuerpo");
+  // ctx.drawImage(img, 0, 0);
+
+ pnj[$('#nombreEnemigo').val()].cuerpoDaño("canvasPNJ");
+
   pnj[$('#nombreEnemigo').val()].cuerpo.todosDaños(todos);
   todos.forEach(l => {
     // console.log(l.nombre,l.daño);
-    string+=`${l.nombre} :<b>${l.daño}</b>/${l.pg}<br>`
+    string += `${l.nombre} :<b>${l.daño}</b>/${l.pg}<br>`
     // string+=l.nombre+":"+l.daño+"<br>";
+    // if(l.x && l.y){
+    //   console.log("dibujo ",l.nombre,l.x, l.y, l.daño*5);
+    //   ctx.globalAlpha = 0.5
+    //   ctx.beginPath();
+    //   ctx.arc(l.x, l.y, l.daño*5, 0, 2 * Math.PI, false);
+    //   ctx.fillStyle = 'red';
+    //   ctx.fill();
+    // }
+
   });
   // string+=`${pnj[$('#nombreEnemigo').val()].getCar("PG")} / ${pnj[$('#nombreEnemigo').val()].getMaxPuntos(PG)}`
-  document.getElementById('dañosPJ').innerHTML= string;
+  document.getElementById('dañosPNJ').innerHTML = string;
 
-  todos=[];
-  string=""
+
+  todos = [];
+  string = ""
   pj.cuerpo.todosDaños(todos);
+  pj.cuerpoDaño("canvasPJ");
   todos.forEach(l => {
     // console.log(l.nombre,l.daño);
-    string+=`${l.nombre} :<b>${l.daño}</b>/${l.pg}<br>`
+    string += `${l.nombre} :<b>${l.daño}</b>/${l.pg}<br>`
     // string+=l.nombre+":"+l.daño+"<br>";
   });
-  document.getElementById('dañosPNJ').innerHTML= string;
+  document.getElementById('dañosPJ').innerHTML = string;
 
 
   // document.getElementById('dañosPJ').innerHTML= JSON.stringify(todos);

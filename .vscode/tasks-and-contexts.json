@@ -89,6 +89,8 @@
             "c:\\GitHub\\roberquest\\js\\rol.js",
             "c:\\GitHub\\roberquest\\js\\habilidades.js",
             "c:\\GitHub\\roberquest\\js\\armaduras.js",
+            "c:\\GitHub\\roberquest\\js\\localizaciones.js",
+            "c:\\GitHub\\roberquest\\popup.html",
             "c:\\GitHub\\roberquest\\index.html",
             "c:\\GitHub\\roberquest\\js\\script.js",
             "c:\\GitHub\\roberquest\\js\\diana.js"
@@ -97,22 +99,14 @@
         "58d93743767fa6e0931f6676b51059b69bd9d79a": {
           "name": "Lucha",
           "data": [
+            "c:\\GitHub\\roberquest\\js\\rol.js",
+            "c:\\GitHub\\roberquest\\js\\script.js",
+            "c:\\GitHub\\roberquest\\index.html",
             "c:\\GitHub\\roberquest\\diana.html",
             "c:\\GitHub\\roberquest\\js\\diana.js",
             "c:\\GitHub\\roberquest\\js\\localizaciones.js",
             "c:\\GitHub\\roberquest\\js\\habilidades.js",
-            "c:\\GitHub\\roberquest\\index.html",
-            "c:\\Program Files\\Microsoft VS Code\\resources\\app\\extensions\\node_modules\\typescript\\lib\\lib.dom.d.ts",
-            "c:\\GitHub\\roberquest\\js\\script.js",
-            "c:\\GitHub\\roberquest\\img\\10_sided_die.svg",
-            "c:\\Program Files\\Microsoft VS Code\\resources\\app\\extensions\\node_modules\\typescript\\lib\\lib.es5.d.ts",
-            "c:\\GitHub\\roberquest\\js\\armaduras.js",
-            "c:\\GitHub\\roberquest\\js\\rol.js",
-            "c:\\GitHub\\roberquest\\js\\coor.js",
-            "c:\\GitHub\\roberquest\\img\\check.svg",
-            "c:\\GitHub\\roberquest\\img\\sword.svg",
-            "c:\\GitHub\\roberquest\\img\\shield.svg",
-            "c:\\GitHub\\roberquest\\popup.html"
+            "c:\\Program Files\\Microsoft VS Code\\resources\\app\\extensions\\node_modules\\typescript\\lib\\lib.dom.d.ts"
           ]
         }
       }
