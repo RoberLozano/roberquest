@@ -914,7 +914,7 @@ function atP(personaje = "Enemigo", rol = "PNJ") {
    <input id="iDadosLoc${personaje}" type="number" class="form-control number-input col-2" ondblclick="this.value=Math.round(Math.random() * 100);">
    <input type="text" list="listaLocalizaciones${personaje}" class="text-light bg-dark" 
   id="localizaciones${personaje}"> ${datalist} <div id="daños${(rol === "PNJ") ? 'PNJ' : "PJ"}"> <br>DAÑOS<br> </div>
-  <canvas id="canvas${rol}" src="Body.jpg" width="500" height="1000" style="border:1px solid #d3d3d3;">
+  <canvas id="canvas${rol}" src="Body.jpg" width="500" height="900" style="border:1px solid #d3d3d3;">
   Your browser does not support the HTML5 canvas tag.</canvas>
   <div style="display:none;"><img id="cuerpo" src="Body.png" alt="Cuerpo"></div>
 `;
@@ -1014,7 +1014,7 @@ function atDaños(params) {
   todos = [];
   string = ""
   pj.cuerpo.todosDaños(todos);
-  pj.cuerpoDaño("canvasPJ");
+  pj.cuerpoDaño("canvasPJ",0.5);
   todos.forEach(l => {
     // console.log(l.nombre,l.daño);
     string += `${l.nombre} :<b>${l.daño}</b>/${l.pg}<br>`

@@ -1057,13 +1057,13 @@ class Humanoide extends Animal {
 
   }
 
-  cuerpoDaño(canvas){
+  cuerpoDaño(canvas, scale=1){
 
    canvas = document.getElementById(canvas);
   var ctx = canvas.getContext("2d");
   ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height)
   var img = document.getElementById("cuerpo");
-  ctx.drawImage(img, 0, 0);
+  ctx.drawImage(img, 0, 0,500*scale,900*scale);
   let todos = [];
   console.log("cuerpoDano de " + this.nombre);
 
@@ -1074,18 +1074,54 @@ class Humanoide extends Animal {
       // string += `${l.nombre} :<b>${l.daño}</b>/${l.pg}<br>`
       // string+=l.nombre+":"+l.daño+"<br>";
       if(l.x && l.y){
-        console.log("dibujo ",l.nombre,l.x, l.y, l.daño*5);
+        console.log("dibujo ",l.nombre,l.x, l.y, l.daño*5,l.pg);
         ctx.globalAlpha = 0.5
         ctx.beginPath();
-        ctx.arc(l.x, l.y, l.daño*5, 0,  Math.PI, true);
+        ctx.arc(l.x*scale, l.y*scale, l.daño*5*scale, 0, Math.PI, true);
+        // ctx.arc(l.x, l.y, 45, 0, (l.daño/l.pg)*2* Math.PI, false);
         ctx.fillStyle = l.daño>=l.pg?'red':'orange';
         ctx.fill();
 
-        ctx.globalAlpha = 0.7
+        // Texto
+        ctx.globalAlpha = 1
+        ctx.font = (l.daño*2+20)*scale+'px Sans-serif';
+        ctx.strokeStyle = 'black';
+        ctx.textAlign = "center" 
+        ctx.textBaseline = "bottom";
+        // ctx.textAlign = "end" 
+        ctx.lineWidth = 5;
+        ctx.strokeText(l.daño+"/"+l.pg, l.x*scale, l.y*scale);
+        ctx.fillStyle = 'white';
+        ctx.fillText(l.daño+"/"+l.pg, l.x*scale, l.y*scale);
+
+        //quesito
+        // let cx=l.x;
+        // let cy=l.y;
+        // ctx.beginPath();
+        // ctx.moveTo(cx, cy);
+        // ctx.arc(cx, cy, 30, 0, (l.daño/l.pg)*2* Math.PI, false);
+        // ctx.closePath();
+        // ctx.fillStyle = l.daño>=l.pg?'red':'orange';
+        // ctx.strokeStyle = 'black';
+        // ctx.fill();
+        // ctx.stroke();
+
+        ctx.globalAlpha = 0.77
         ctx.beginPath();
-        ctx.arc(l.x, l.y, l.pg*5, 0,  Math.PI, false);
+        ctx.arc(l.x*scale, l.y*scale, l.pg*5*scale, 0,  Math.PI, false);
         ctx.fillStyle = "grey";
         ctx.fill();
+
+              ctx.globalAlpha = 1
+        ctx.font = (l.daño*2+20)*scale+'px Sans-serif';
+        ctx.strokeStyle = 'black';
+        ctx.textAlign = "center" 
+        ctx.textBaseline = "top";
+        // ctx.textAlign = "end" 
+        ctx.lineWidth = 5;
+        ctx.strokeText(l.daño, l.x*scale, l.y*scale);
+        ctx.fillStyle = 'white';
+        ctx.fillText(l.daño, l.x*scale, l.y*scale);
         ctx.globalAlpha = 1;
       }
   
