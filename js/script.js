@@ -868,7 +868,7 @@ function atacarModal(habilidad) {
 
 }
 
-
+var zoomCuerpo=1;
 
 function atP(personaje = "Enemigo", rol = "PNJ") {
   if (rol === "PNJ") console.log("atP-->PNJ");
@@ -914,10 +914,14 @@ function atP(personaje = "Enemigo", rol = "PNJ") {
    <input id="iDadosLoc${personaje}" type="number" class="form-control number-input col-2" ondblclick="this.value=Math.round(Math.random() * 100);">
    <input type="text" list="listaLocalizaciones${personaje}" class="text-light bg-dark" 
   id="localizaciones${personaje}"> ${datalist} <div id="daños${(rol === "PNJ") ? 'PNJ' : "PJ"}"> <br>DAÑOS<br> </div>
-  <canvas id="canvas${rol}" src="Body.jpg" width="500" height="900" style="border:1px solid #d3d3d3;">
+  <input  id="zoom" type="range" min="0" max="1" step="any" onchange="zoomCuerpo=this.value;atDaños()" style="width: 100%;" >
+  <canvas id="canvas${rol}"  width="500" height="900" style="border:1px solid #d3d3d3;">
   Your browser does not support the HTML5 canvas tag.</canvas>
   <div style="display:none;"><img id="cuerpo" src="Body.png" alt="Cuerpo"></div>
 `;
+
+{/* <button id="+" onclick="zoomCuerpo+=0.1;atDaños()">+</button>
+<button id="-" onclick="zoomCuerpo-=0.1;atDaños()">-</button> */}
 
 // ${(rol === "PJ") ? 'pnj.' + personaje : "pj"}.cuerpo.dañarLocalizacion(this.value,document.getElementById('localizaciones${personaje}').value);
 
@@ -940,6 +944,8 @@ function atP(personaje = "Enemigo", rol = "PNJ") {
 
 
   });
+
+
 
   if (rol === "PNJ") { document.getElementById(`id${personaje}`).setPersonaje(pnj[personaje]) }
   else { document.getElementById(`id${personaje}`).setPersonaje(pj); }
@@ -969,6 +975,7 @@ function atP(personaje = "Enemigo", rol = "PNJ") {
   // ctx.fill();
 
 }
+
 
 function dañar(p,daño,loc) {
   console.log("Daño",p,daño);
@@ -1014,7 +1021,7 @@ function atDaños(params) {
   todos = [];
   string = ""
   pj.cuerpo.todosDaños(todos);
-  pj.cuerpoDaño("canvasPJ",0.5);
+  pj.cuerpoDaño("canvasPJ",zoomCuerpo);
   todos.forEach(l => {
     // console.log(l.nombre,l.daño);
     string += `${l.nombre} :<b>${l.daño}</b>/${l.pg}<br>`
