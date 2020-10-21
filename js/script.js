@@ -892,14 +892,14 @@ function atP(personaje = "Enemigo", rol = "PNJ") {
   Habilidad ofensiva:<br>
   <input-dado id="id${personaje}"></input-dado>
   <br> <br>
-  <div>
-  Daño: <input id="iDaño${personaje}" type="number" ondblclick="this.value=Math.round(Math.random() * 15);">
-  <button id="bDañar" onclick="
+  <form class="form-inline">
+  Daño: <input id="iDaño${personaje}" type="number"  class="form-control number-input col-2" ondblclick="this.value=Math.round(Math.random() * 15);">
+  <button id="bDañar" type="button" class="btn btn-danger" onclick="
   dañar('${rol}',document.getElementById('iDaño${personaje}').value,document.getElementById('localizaciones${personaje}').value);
   console.log(document.getElementById('localizaciones${personaje}').value );
   atDaños();
   ">Dañar</button>
-  </div>
+  </form>
   <br>
   <input type="radio" id="r-todo${personaje}" name="lugar" value="todo"
          checked>
