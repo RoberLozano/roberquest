@@ -915,7 +915,7 @@ function atP(personaje = "Enemigo", rol = "PNJ") {
    <input type="text" list="listaLocalizaciones${personaje}" class="text-light bg-dark" 
   id="localizaciones${personaje}"> ${datalist} <div id="daños${(rol === "PNJ") ? 'PNJ' : "PJ"}"> <br>DAÑOS<br> </div>
   <input  id="zoom" type="range" min="0" max="1" step="any" onchange="zoomCuerpo=this.value;atDaños()" style="width: 100%;" >
-  <canvas id="canvas${rol}"  width="500" height="900" style="border:1px solid #d3d3d3;">
+  <canvas id="canvas${rol}"  width="500" height="900" style="background-color: black;border:1px solid #d3d3d3;">
   Your browser does not support the HTML5 canvas tag.</canvas>
   <div style="display:none;"><img id="cuerpo" src="Body.png" alt="Cuerpo"></div>
 `;
@@ -1021,7 +1021,12 @@ function atDaños(params) {
   todos = [];
   string = ""
   pj.cuerpo.todosDaños(todos);
+  let canvas= document.getElementById('canvasPJ');
+  canvas.width = 500 * zoomCuerpo;
+  canvas.height = 900 * zoomCuerpo;
   pj.cuerpoDaño("canvasPJ",zoomCuerpo);
+  
+
   todos.forEach(l => {
     // console.log(l.nombre,l.daño);
     string += `${l.nombre} :<b>${l.daño}</b>/${l.pg}<br>`

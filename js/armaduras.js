@@ -128,14 +128,6 @@ class Pieza {
 
 }
 
-class Clase {
-    constructor(v1, v2, v3) {
-        this._v1 = v1
-        this._v2 = v2
-        this._v3 = v3
-    }
-}
-
 
 class LocPieza {
     constructor(localizacion, pa, mPr = 5, orden = 0) {
