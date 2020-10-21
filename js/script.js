@@ -816,7 +816,7 @@ function atacarModal(habilidad) {
   // atPJ();
   let enemigo = $('#nombreEnemigo').val()
   atP(pj.nombre, "PJ")
- 
+
   console.log("ENEMIGO es-->" + enemigo);
   cargarPNJ(enemigo, enemigo);
   atP(enemigo, "PNJ")
@@ -868,7 +868,7 @@ function atacarModal(habilidad) {
 
 }
 
-var zoomCuerpo=1;
+var zoomCuerpo = 1;
 
 function atP(personaje = "Enemigo", rol = "PNJ") {
   if (rol === "PNJ") console.log("atP-->PNJ");
@@ -891,15 +891,15 @@ function atP(personaje = "Enemigo", rol = "PNJ") {
      <div>
   Habilidad ofensiva:<br>
   <input-dado id="id${personaje}"></input-dado>
-  <br>
-  Daño: <input id="iDaño${personaje}" type="number" class="form-control number-input col-2"
-  ondblclick="this.value=Math.round(Math.random() * 15);"
-  onchange="
-  dañar('${rol}',this.value,document.getElementById('localizaciones${personaje}').value);
-  
+  <br> <br>
+  <div>
+  Daño: <input id="iDaño${personaje}" type="number" ondblclick="this.value=Math.round(Math.random() * 15);">
+  <button id="bDañar" onclick="
+  dañar('${rol}',document.getElementById('iDaño${personaje}').value,document.getElementById('localizaciones${personaje}').value);
   console.log(document.getElementById('localizaciones${personaje}').value );
   atDaños();
-  ">
+  ">Dañar</button>
+  </div>
   <br>
   <input type="radio" id="r-todo${personaje}" name="lugar" value="todo"
          checked>
@@ -920,10 +920,10 @@ function atP(personaje = "Enemigo", rol = "PNJ") {
   <div style="display:none;"><img id="cuerpo" src="Body.png" alt="Cuerpo"></div>
 `;
 
-{/* <button id="+" onclick="zoomCuerpo+=0.1;atDaños()">+</button>
-<button id="-" onclick="zoomCuerpo-=0.1;atDaños()">-</button> */}
+  /* <button id="+" onclick="zoomCuerpo+=0.1;atDaños()">+</button>
+  <button id="-" onclick="zoomCuerpo-=0.1;atDaños()">-</button> */
 
-// ${(rol === "PJ") ? 'pnj.' + personaje : "pj"}.cuerpo.dañarLocalizacion(this.value,document.getElementById('localizaciones${personaje}').value);
+  // ${(rol === "PJ") ? 'pnj.' + personaje : "pj"}.cuerpo.dañarLocalizacion(this.value,document.getElementById('localizaciones${personaje}').value);
 
   // console.log(${(rol === "PNJ")?'pnj.'+personaje:"pj"}.cuerpo.darLocalizacion(document.getElementById('localizaciones${personaje}').value).dañar(this.value) );
 
@@ -945,44 +945,22 @@ function atP(personaje = "Enemigo", rol = "PNJ") {
 
   });
 
-
-
   if (rol === "PNJ") { document.getElementById(`id${personaje}`).setPersonaje(pnj[personaje]) }
   else { document.getElementById(`id${personaje}`).setPersonaje(pj); }
-
-  // var canvas = document.getElementById("myCanvas");
-  // var ctx = canvas.getContext("2d");
-  // var img = document.getElementById("cuerpo");
-  // ctx.drawImage(img, 0, 0);
-
-  //   ctx.globalAlpha=0.5
-  // ctx.beginPath();
-  // ctx.arc(243,59, 30, 0, 2 * Math.PI, false);
-  // ctx.fillStyle = 'red';
-  // ctx.fill();
-  // ctx.beginPath();
-  // ctx.arc(150,180, 30, 0, 2 * Math.PI, false);
-  // ctx.fillStyle = 'orange';
-  // ctx.fill();
-  // ctx.beginPath();
-  // ctx.arc(100,450, 10, 0, 2 * Math.PI, false);
-  // ctx.globalAlpha=1
-  // ctx.font = "30px Arial";
-  // ctx.fillStyle = 'red';
-  // ctx.fillText("2", 100, 450);
-  // ctx.globalAlpha=0.5
-  // ctx.fillStyle = 'green';
-  // ctx.fill();
 
 }
 
 
-function dañar(p,daño,loc) {
-  console.log("Daño",p,daño);
-  if(p === "PJ")  pnj[$('#nombreEnemigo').val()].cuerpo.dañarLocalizacion(daño,loc)
-  else
-  pj.cuerpo.dañarLocalizacion(daño,loc)
-  
+function dañar(p, daño, loc) {
+  console.log("Daño", p, daño);
+  if (p === "PJ") {
+    pnj[$('#nombreEnemigo').val()].cuerpo.dañarLocalizacion(daño, loc)
+  }
+  else {
+    pj.cuerpo.dañarLocalizacion(daño, loc)
+  }
+
+
 }
 
 function atDaños(params) {
@@ -997,7 +975,10 @@ function atDaños(params) {
   // var img = document.getElementById("cuerpo");
   // ctx.drawImage(img, 0, 0);
 
- pnj[$('#nombreEnemigo').val()].cuerpoDaño("canvasPNJ");
+  let canvas = document.getElementById('canvasPNJ');
+  canvas.width = 500 * zoomCuerpo;
+  canvas.height = 900 * zoomCuerpo;
+  pnj[$('#nombreEnemigo').val()].cuerpoDaño("canvasPNJ", zoomCuerpo);
 
   pnj[$('#nombreEnemigo').val()].cuerpo.todosDaños(todos);
   todos.forEach(l => {
@@ -1021,11 +1002,11 @@ function atDaños(params) {
   todos = [];
   string = ""
   pj.cuerpo.todosDaños(todos);
-  let canvas= document.getElementById('canvasPJ');
+  canvas = document.getElementById('canvasPJ');
   canvas.width = 500 * zoomCuerpo;
   canvas.height = 900 * zoomCuerpo;
-  pj.cuerpoDaño("canvasPJ",zoomCuerpo);
-  
+  pj.cuerpoDaño("canvasPJ", zoomCuerpo);
+
 
   todos.forEach(l => {
     // console.log(l.nombre,l.daño);
@@ -1039,312 +1020,6 @@ function atDaños(params) {
   // document.getElementById('dañosPJ').innerHTML= JSON.stringify(pnj[$('#nombreEnemigo').val()].cuerpo.dañadas())
   // document.getElementById('dañosPNJ').innerHTML= JSON.stringify(pj.cuerpo.dañadas());
 }
-
-function atPNJ(personaje = "Enemigo", rol = "PNJ") {
-  var datalist = `<datalist id='listaLocalizaciones${personaje}'>`
-  var listaLoc = [];
-  pnj[personaje].cuerpo.todosNombres(listaLoc);
-
-  listaLoc.forEach(l => {
-    datalist += ` <option value="${l}"></option>`
-  });
-  datalist += "</datalist>"
-
-  document.getElementById(`at${rol}`).innerHTML +=
-
-    ` <div>
-  <input type="radio" id="r-todo${personaje}" name="lugar" value="todo"
-         checked>
-  <label for="huey">Todo</label>
-
-  <input type="radio" id="r-arriba${personaje}" name="lugar" value="arriba">
-  <label for="dewey">Arriba</label>
-
-  <input type="radio" id="r-abajo${personaje}" name="lugar" value="abajo">
-  <label for="louie">Abajo</label>
-</div> 
-   <input id="iDadosLoc${personaje}" type="number" class="form-control number-input col-2" ondblclick="this.value=Math.round(Math.random() * 100);">
-   <input type="text" list="listaLocalizaciones${personaje}" class="text-light bg-dark h3" style="font-family: Old Europe" 
-  id="localizaciones${personaje}"> ${datalist}  <br><input-dado></input-dado><br><br><br><br><br><br>HOLA`;
-
-
-  $(`#iDadosLoc${personaje}`).change(function () {
-    valor = event.target.value;
-    let medio = 60
-    if (document.getElementById(`r-arriba${personaje}`).checked) {
-      if (valor > medio) valor = Math.trunc(escalar(valor, medio, 100, 1, medio))
-    }
-    else
-      if (document.getElementById(`r-abajo${personaje}`).checked) {
-        if (valor < medio) valor = Math.trunc(escalar(valor, 1, medio, medio, 100))
-      }
-
-
-    // $(`#localizaciones${personaje}`).val(pj.cuerpo.darLocalizacion(valor).nombre)
-  });
-
-}
-
-function atPJ(personaje = "pj", rol = "PJ") {
-  var datalist = `<datalist id='listaLocalizaciones${personaje}'>`
-  var listaLoc = [];
-  pj.cuerpo.todosNombres(listaLoc);
-
-  listaLoc.forEach(l => {
-    datalist += ` <option value="${l}"></option>`
-  });
-  datalist += "</datalist>"
-
-  document.getElementById(`atPJ`).innerHTML +=
-
-    ` <div>
-  <input type="radio" id="r-todo${personaje}" name="lugar" value="todo"
-         checked>
-  <label for="huey">Todo</label>
-
-  <input type="radio" id="r-arriba${personaje}" name="lugar" value="arriba">
-  <label for="dewey">Arriba</label>
-
-  <input type="radio" id="r-abajo${personaje}" name="lugar" value="abajo">
-  <label for="louie">Abajo</label>
-</div> 
-   <input id="iDadosLoc${personaje}" type="number" class="form-control number-input col-2" ondblclick="this.value=Math.round(Math.random() * 100);">
-   <input type="text" list="listaLocalizaciones${personaje}" class="text-light bg-dark h3" style="font-family: Old Europe" 
-  id="localizaciones${personaje}"> ${datalist}  <br><input-dado></input-dado><br><br><br><br><br><br>HOLA`;
-
-
-  $(`#iDadosLoc${personaje}`).change(function () {
-    valor = event.target.value;
-    let medio = 60
-    if (document.getElementById(`r-arriba${personaje}`).checked) {
-      if (valor > medio) valor = Math.trunc(escalar(valor, medio, 100, 1, medio))
-    }
-    else
-      if (document.getElementById(`r-abajo${personaje}`).checked) {
-        if (valor < medio) valor = Math.trunc(escalar(valor, 1, medio, medio, 100))
-      }
-
-
-    $(`#localizaciones${personaje}`).val(pj.cuerpo.darLocalizacion(valor).nombre)
-  });
-
-}
-// function lanzarHechizo(hechizo) {
-
-//   let h = new Hechizo("Hechizo", 7, 100, null);
-//   const porcentajeInicial = h.valor;
-//   $("#modalHechizo").modal();
-//   $("#pmTotales").text(pj.getCar(PM) + "+" + pj.pmGemas() + "=" + (pj.getCar(PM) + pj.pmGemas()));
-//   intensidad = pj.getHabilidad("Intensidad");
-//   duración = pj.getHabilidad("Duración");
-//   pIntensidad = intensidad.v;
-//   pDuración = duración.v;
-//   let pmGastados = 0;
-//   let valorIntensidad = $("#iPMIntensidad").val();
-//   let valorDuración = $("#iPMDuración").val();
-//   let penalizacion = 0;
-//   let ipm, dpm;
-//   let tHechizo, tIntensidad, tDuración = TipoTirada.EXITO;
-//   // var xpHechizo, xpIntensidad, xpDuración = 0;
-//   let pmIntensidad, pmDuración, pmHechizo = 0;
-//   let intensidadReal, duraciónReal = 0;
-
-//   ipm = //$("#iPMIntensidad");
-//     document.getElementById("iPMIntensidad");
-
-//   dpm =
-//     document.getElementById("iPMDuración");
-
-//   var dDuración = document.getElementById("iDadosDuración");
-//   var dIntensidad = document.getElementById("iDadosIntensidad");
-//   var i = document.getElementById("iDadosHechizo");
-
-//   $("#lbIntensidad").text(`Intensidad: ${pIntensidad}%`);
-//   $("#lbDuración").text(`Duración: ${pDuración}%`);
-
-
-
-//   function swDuración() {
-//     if (dpm.value == 0) { pmDuración = 0; return; }
-//     switch (tDuración) {
-//       case (SUPERCRITICO):
-//         duraciónReal = dpm.value + 5;
-//         pmDuración = 1;
-//         dDuración.style.background = "red";
-//         break;
-//       case (CRITICO):
-//         duraciónReal = dpm.value + 3;
-//         pmDuración = 1;
-//         dDuración.style.color = "red";
-//         break;
-//       case (ESPECIAL):
-//         duraciónReal = dpm.value + 1;
-//         pmDuración = valorDuración;
-//         dDuración.style.color = "green";
-//         break;
-//       case (EXITO):
-//         duraciónReal = valorDuración;
-//         pmDuración = valorDuración;
-//         dDuración.style.color = "black";
-//         break;
-//       case (FALLO):
-//         duraciónReal = 0;
-//         pmDuración = 1;
-//         dDuración.style.color = "black";
-//         break;
-//       default:
-//         ;
-//     }
-//   }
-//   function swIntensidad() {
-//     if (ipm.value == 0) { pmIntensidad = 0; return; }
-//     switch (tIntensidad) {
-//       case (SUPERCRITICO):
-//         intensidadReal = ipm.value + 5;
-//         pmIntensidad = 1;
-//         penalizacion = 0;
-//         dIntensidad.style.color = "red";
-//         break;
-//       case (CRITICO):
-//         intensidadReal = ipm.value + 3;
-//         pmIntensidad = 1;
-//         penalizacion = 0;
-//         dIntensidad.style.color = "red";
-//         break;
-//       case (ESPECIAL):
-//         intensidadReal = ipm.value + 1;
-//         pmIntensidad = valorIntensidad;
-//         penalizacion = 0;
-//         dIntensidad.style.color = "green";
-//         break;
-//       case (EXITO):
-//         intensidadReal = valorIntensidad;
-//         pmIntensidad = valorIntensidad;
-//         dIntensidad.style.color = "black";
-//         break;
-//       case (FALLO):
-//         intensidadReal = 0;
-//         pmIntensidad = 1;
-//         dIntensidad.style.color = "black";
-//         break;
-//       default:
-//         ;
-//     }
-
-//   }
-//   function swHechizo() {
-//     switch (tHechizo) {
-//       case (SUPERCRITICO):
-//         pmHechizo = 1;
-//         dHechizo.style.color = "red";
-//         break;
-//       case (CRITICO):
-//         pmHechizo = 1;
-//         dHechizo.style.color = "red";
-//         break;
-//       case (ESPECIAL):
-//         pmHechizo = h.pm;
-//         dHechizo.style.color = "green";
-//         break;
-//       case (EXITO):
-//         pmHechizo = h.pm;
-//         dHechizo.style.color = "black";
-//         break;
-//       case (FALLO):
-//         pmHechizo = 1;
-//         break;
-//       default:
-//         ;
-//     }
-
-//   }
-
-//   function act() {
-//     //% de habilidad
-//     swDuración();
-//     swIntensidad();
-//     swHechizo();
-
-//     h.valor = porcentajeInicial - penalizacion;
-
-//     $("#lbHechizo").text(`Hechizo: ${h.v}%`);
-
-//     let suma = pmIntensidad + pmDuración + pmHechizo;
-//     console.log("SUMA:" + parseInt(pmIntensidad) +
-//       parseInt(pmHechizo) +
-//       parseInt(pmDuración));
-
-//     pmGastados = parseInt(pmIntensidad) +
-//       parseInt(pmHechizo) +
-//       parseInt(pmDuración);
-//     // console.log("Gastados");
-//     // console.log(pmGastados);
-//     $("#iGastados").val(pmGastados);
-
-//     // $("#iGastados").val(parseInt(pmIntensidad) +
-//     //   parseInt(pmHechizo) +
-//     //   parseInt(pmDuración));
-
-//   }
-
-//   function cambiaIntensidad() {
-//     valorIntensidad = $("#iPMIntensidad").val();
-//     //TODO: hacerlo con bonificación de verdad BonHabilidad
-//     penalizacion = valorIntensidad * 5;
-//     act();
-//   }
-
-//   ipm.addEventListener("change", function () {
-//     valorDuración = $("#iPMDuración").val();
-//     console.log("#iPMDuración" + pmDuración);
-//     act();
-//   }); ("change", cambiaIntensidad);
-
-//   dpm.addEventListener("change", function () {
-//     valorDuración = $("#iPMDuración").val();
-//     console.log("#iPMDuración" + pmDuración);
-//     act();
-//   });
-
-//   dDuración.addEventListener("change", function () {
-//     tDuración = duración.tirada(dDuración.value);
-//     // console.log("Duración" + (tDuración));
-//     act();
-//   });
-
-//   dIntensidad.addEventListener("change", function () {
-//     tIntensidad = intensidad.tirada(dIntensidad.value);
-//     // console.log("Intensidad" + (tIntensidad));
-//     //TODO: hacerlo con bonificación de verdad BonHabilidad
-//     penalizacion = valorIntensidad * 5;
-//     act();
-//   });
-
-//   dHechizo.addEventListener("change", function () {
-//     tHechizo = h.tirada(dHechizo.value);
-//     // console.log("Hechizo" + (tHechizo));
-//     //TODO: hacerlo con bonificación de verdad BonHabilidad
-//     act();
-//   });
-
-//   $("#lbIntensidad").text(`Intensidad: ${pIntensidad}%`);
-
-//   $("#bLanzar").one("click", function () { //one para que no lo lance cada vez que ejecuto lanzar hechizo
-//     pj.gastarPM(pmGastados, true);
-//     // pj.modificarPuntos(PM, pmGastados * -1);
-//     console.log(pmGastados * -1);
-//     intensidad.xpTirada(dIntensidad.value);
-//     duración.xpTirada(dDuración.value);
-//     //El hechizo deberia ser la tirada con penalización
-//     console.log(`dur:${pmDuración} , int:${pmIntensidad}, hechi:${pmHechizo} = ${pmGastados * -1}`);
-//     pj.save();
-//     console.log("***********SE HA PULSADO LANZAR");
-//   });
-
-// }
-
-//Todas las variables necesarias para los hechizos
-
 
 /**
  * Crea la interfaz para lanzar un hechizo
