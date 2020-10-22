@@ -533,6 +533,15 @@ class Animal {
   cambiaformas(forma2) {
     this.forma2 = forma2;
   }
+  
+ /**
+   * Combate contra un enemigo
+   * @param {Animal} enemigo El enemigo contra el que combatir
+   */
+  combatir(enemigo){
+    this.enemigo=enemigo
+}
+  
   /**
    * Copia toda la información de un objeto, sea de la misma clase
    * o no, si tiene las mismas propiedades
