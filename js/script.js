@@ -915,7 +915,7 @@ function atP(personaje = "Enemigo", rol = "PNJ") {
 <form class="form-inline">
    <input id="iDadosLoc${personaje}" type="number" class="form-control number-input col-2" ondblclick="this.value=Math.round(Math.random() * 100);">
    <input type="text" list="listaLocalizaciones${personaje}" class="text-light bg-dark" 
-  id="localizaciones${personaje}"> ${datalist} <div id="daños${(rol === "PNJ") ? 'PNJ' : "PJ"}"> <br>DAÑOS<br> </form>
+  id="localizaciones${personaje}"> ${datalist} <div id="daños${(rol === "PNJ") ? 'PNJ' : 'PJ'}"> <br>DAÑOS<br> </form> </div>
   <input  id="zoom" type="range" min="0" max="1" step="any" onchange="zoomCuerpo=this.value;atDaños()" style="width: 100%;" >
   <canvas id="canvas${rol}"  width="500" height="900" style="background-color: black;border:1px solid #d3d3d3;">
   Your browser does not support the HTML5 canvas tag.</canvas>
