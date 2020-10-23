@@ -899,6 +899,7 @@ function atP(personaje = "Enemigo", rol = "PNJ") {
   console.log(document.getElementById('localizaciones${personaje}').value );
   atDaños();
   ">Dañar</button>
+  <input-daño id="daño${personaje}"></input-daño>
   </form>
   <br>
   <input type="radio" id="r-todo${personaje}" name="lugar" value="todo"

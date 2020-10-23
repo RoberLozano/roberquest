@@ -441,7 +441,8 @@ this.daño.addEventListener('change', (event) => {
     });
 
     this.tipo = document.createElement('span');
-    this.tipo.innerHTML = `,${this.d.tipo}`;
+    // this.tipo.innerHTML = ` <b>${this.d.tipo}</b> `;
+    this.tipo.innerHTML = ` ${this.d.tipo} `;
 
     this.icon = document.createElement('span');
     this.icon.setAttribute('class', 'icon');
@@ -459,15 +460,15 @@ this.daño.addEventListener('change', (event) => {
     this.input.setAttribute("placeholder", "100");
     this.input.setAttribute('min', '0');
     this.input.setAttribute('max', '100');
-    this.input.style.width = "2.3em";
+	this.input.style.width = "2.3em";
+	this.input.style.textAlign = "center";
 
 
     this.input.addEventListener('change', (event) => {
       this.act(this.input);
       // console.log(this.getAttribute('habilidad'));
-      alert(input.value)
-       if(input.value>=this.d.dadoMax()) input.style.color="red"
-       else input.style.color="black"
+    //    if(input.value>=this.d.dadoMax()) input.style.color="red"
+    //    else input.style.color="black"
     });
 
     // Take attribute content and put it inside the info span
