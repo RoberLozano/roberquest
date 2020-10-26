@@ -364,9 +364,25 @@ function creaInventario(nombre = "mochila") {
 }
 
 class Arma extends Objeto {
-    constructor(nombre, peso, valor, daño = "1d8") {
+    constructor(nombre, peso, valor, ...daños) {
         super(nombre, peso, valor);
-        this.daño = daño;
+        this.daños = daños;
+        console.log(this.daños);
+        if (this.daños)
+          this.index=0
+    }
+    set daño(valor){
+     // if (valor typeof Number){
+      if (valor>=0 &&
+      valor<this.daños.length){
+        this.index=valor
+      }
+      
+      // TODO: hacer string y Daño
+      this.dañar()
+    }
+    get daño(){
+      return this.daños[this.index]
     }
 
     setAll(o) {
@@ -374,7 +390,10 @@ class Arma extends Objeto {
         // this.nombre = o.nombre;
         // this.peso   = o.peso ;
         // this.valor  = o.valor ;
-        this.daño = o.daño;
+        this.daños = o.daños;
+    }
+    dañar(){
+      console.log(this.daños[this.index]);
     }
 
 }

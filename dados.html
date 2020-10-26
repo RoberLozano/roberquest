@@ -62,7 +62,18 @@
   
 
     <script src='js/D.js'></script>
+  <script src="js/inventario.js" type="text/javascript" charset="utf-8"></script>
     <script>
+
+var d1=new Daño('1d6', 'F')
+var d2=new Daño('1d8', 'P')
+var a1 = new Arma('espada', 1,300,d1,d2)
+
+a1.daño=1;
+console.log('a1.daño')
+console.log(a1.daño)
+var ia=new InputArma(a1)
+console.log(ia.d)
 
         function lanzarD() {
             var nDados = document.getElementById("dados").value

@@ -442,7 +442,7 @@ this.daño.addEventListener('change', (event) => {
 
     this.tipo = document.createElement('span');
     // this.tipo.innerHTML = ` <b>${this.d.tipo}</b> `;
-    this.tipo.innerHTML = ` ${this.d.tipo} `;
+    this.tipo.innerHTML = ` | ${this.d.tipo} `;
 
     this.icon = document.createElement('span');
     this.icon.setAttribute('class', 'icon');
@@ -590,8 +590,19 @@ this.daño.addEventListener('change', (event) => {
 }
 
 // Define the new element
+class InputArma extends InputDaño{
+  constructor(arma) {
+    // Always call super first in constructor
+    
+    super(arma.daño);
+    this.daños=arma.daños;
+    console.log(arma.daños);
+    
+  }
+}
 
 customElements.define('input-daño', InputDaño);
+customElements.define('input-arma', InputArma);
 
 
 /**
@@ -691,7 +702,7 @@ var re = new RegExp(regex);
 // for( let i=0;i<100;i++)
 // 	//console.log(d1.tirar());
 
-console.log(d1.mejor(10, "3d6"));
+//console.log(d1.mejor(10, "3d6"));
 // //console.log(d1.mejor(1));
 
 // //console.log(d1.dadoMin());
