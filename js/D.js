@@ -435,8 +435,8 @@ class InputDaño extends HTMLElement {
 
 this.daño.addEventListener('change', (event) => {
   //console.log(this.daño.value);
-  this.d= new Daño(this.daño.value,this.d.tipo)
-      this.act(this.input);
+//   this.d= new Daño(this.daño.value,this.d.tipo)
+//       this.act(this.input);
       
     });
 
@@ -558,12 +558,13 @@ this.daño.addEventListener('change', (event) => {
 
   
   set d(daño) {
-    this._daño=daño;
+	this._daño=daño;
+	console.log("SET DAÑO");
+	console.log(daño);
     // si es string crear nuevo daño
     // this.label.setAttribute("value", this.habilidad.nombre);
-     this.daño.setAttribute("value", daño.dado);
-     this.tipo=daño.tipo
-     
+	 this.daño.setAttribute("value", daño.dado);
+	 this.tipo.innerHTML = ` | ${daño.tipo} `;
   }
   get d() {
     return this._daño;
@@ -622,7 +623,8 @@ class InputArma extends InputDaño{
     });
     this.daño.addEventListener('change', (event) => {
       console.log(this.daño.value);
-      console.log(this.daño.label);
+	  this.arma.daño=this.daño.value;
+	  this.d=this.arma.daño;
     
     });
     

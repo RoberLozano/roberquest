@@ -1,6 +1,6 @@
 {
   "lock": false,
-  "active": "58d93743767fa6e0931f6676b51059b69bd9d79a",
+  "active": "e0f8d7d06d4cb7c209e7f17b15b2e2079dd3fb14",
   "sets": {
     "default": {
       "source": "default",
@@ -74,7 +74,10 @@
           "data": [
             "c:\\GitHub\\roberquest\\dados.html",
             "c:\\GitHub\\roberquest\\Rol.html",
-            "c:\\GitHub\\roberquest\\D.js"
+            "c:\\GitHub\\roberquest\\D.js",
+            "c:\\GitHub\\roberquest\\js\\D.js",
+            "c:\\GitHub\\roberquest\\js\\inventario.js",
+            "c:\\Program Files\\Microsoft VS Code\\resources\\app\\extensions\\node_modules\\typescript\\lib\\lib.dom.d.ts"
           ]
         },
         "c63ae6dd4fc9f9dda66970e827d13f7c73fe841c": {
@@ -99,17 +102,15 @@
         "58d93743767fa6e0931f6676b51059b69bd9d79a": {
           "name": "Lucha",
           "data": [
-            "c:\\GitHub\\roberquest\\js\\rol.js",
+            "c:\\GitHub\\roberquest\\diario.html",
             "c:\\GitHub\\roberquest\\js\\script.js",
             "c:\\GitHub\\roberquest\\index.html",
             "c:\\GitHub\\roberquest\\diana.html",
             "c:\\GitHub\\roberquest\\js\\diana.js",
             "c:\\GitHub\\roberquest\\js\\localizaciones.js",
             "c:\\GitHub\\roberquest\\js\\habilidades.js",
-            "c:\\Program Files\\Microsoft VS Code\\resources\\app\\extensions\\node_modules\\typescript\\lib\\lib.dom.d.ts",
-            "c:\\GitHub\\roberquest\\diario.html",
-            "c:\\GitHub\\roberquest\\diario1.html",
-            "c:\\GitHub\\roberquest\\js\\D.js"
+            "c:\\GitHub\\roberquest\\js\\D.js",
+            "c:\\GitHub\\roberquest\\js\\rol.js"
           ]
         }
       }

@@ -372,11 +372,20 @@ class Arma extends Objeto {
           this.index=0
     }
     set daño(valor){
-     // if (valor typeof Number){
-      if (valor>=0 &&
+        console.log(typeof valor);
+     if (typeof valor === 'string'){
+         this.daños.forEach((d,i) => {
+             console.log(d.dado,i);
+                 if (d.dado===valor)
+                    this.index=i;
+             });
+     }
+     else
+      if ( typeof valor === 'number' && valor>=0 &&
       valor<this.daños.length){
         this.index=valor
       }
+    
       
       // TODO: hacer string y Daño
       this.dañar()
