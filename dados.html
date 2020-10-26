@@ -35,8 +35,8 @@
 <body>
 
     <h1>Simulador de dados</h1>
-  <div>
-      <input-daño>
+  <div id="inputs">
+      
     </div>
     <input id="nDados" type="number" value="3" class="sml" /> nº dados<br>
     <input id="caras" type="number" value="6" class="sml" /> caras<br>
@@ -75,6 +75,10 @@ console.log(a1.daño)
 var ia=new InputArma(a1)
 console.log(ia.d)
 
+function armas(){
+  document.getElementById("inputs").appendChild(ia,0)
+}
+
         function lanzarD() {
             var nDados = document.getElementById("dados").value
 
@@ -110,6 +114,7 @@ console.log(ia.d)
             }
         }
 
+armas();
     </script>
 
 </body>

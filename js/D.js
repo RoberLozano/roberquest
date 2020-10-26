@@ -429,12 +429,12 @@ class InputDaño extends HTMLElement {
     this.daño.value=this.d.dado;
     // this.daño.setAttribute("value", this.habilidad.v);
     
-    this.daño.style.width = "6em";
+    this.daño.style.width = "4em";
     this.daño.style.textAlign = "right";
     this.daño.style.borderStyle = "none";
 
 this.daño.addEventListener('change', (event) => {
-  console.log(this.daño.value);
+  //console.log(this.daño.value);
   this.d= new Daño(this.daño.value,this.d.tipo)
       this.act(this.input);
       
@@ -546,7 +546,6 @@ this.daño.addEventListener('change', (event) => {
     this.shadow.appendChild(style);
     console.log(style.isConnected);
     this.shadow.appendChild(this.wrapper);
-   
     this.wrapper.appendChild(this.daño);
     this.wrapper.appendChild(this.tipo);
     this.wrapper.appendChild(this.icon);
@@ -589,15 +588,63 @@ this.daño.addEventListener('change', (event) => {
   }
 }
 
-// Define the new element
+
+/**
+ * Clase que crea un input del arma
+ * @param {Arma} arma El arma del input
+ */
 class InputArma extends InputDaño{
+  /**
+   * crea un input del arma
+   * @param {Arma} arma El arma del input
+   */
   constructor(arma) {
     // Always call super first in constructor
-    
     super(arma.daño);
-    this.daños=arma.daños;
-    console.log(arma.daños);
+    this._arma=arma;
+    this.txtArma = document.createElement('input');
+    this.txtArma.setAttribute("id", "txtArma");
+    this.txtArma.setAttribute("type", "text");
+    this.txtArma.value=this.arma.nombre;
+    // this.daño.setAttribute("value", this.habilidad.v);
     
+    this.txtArma.style.width = "7em";
+    this.txtArma.style.textAlign = "right";
+    this.txtArma.style.borderStyle = "none"
+   // this.wrapper.appendChild(this.txtArma)
+    this.wrapper.insertBefore(this.txtArma,this.daño)
+    //this.wrapper.childNodes.push(this.txtArma)
+    console.log(this._arma);
+    this.lista('listaDaño',this._arma.daños)
+    this.daño.addEventListener('click', (event) => {
+      this.daño.value = ''
+      
+    });
+    this.daño.addEventListener('change', (event) => {
+      console.log(this.daño.value);
+      console.log(this.daño.label);
+    
+    });
+    
+  }
+  
+  lista(id,daños){
+    let options="";
+    daños.forEach((d,i) => {
+      options+=`<option value="${d.dado}">${d.tipo}</option>`
+  });
+    this.daño.innerHTML= `  <datalist id=${id}>
+    ${options}
+  </datalist>`
+  this.daño.setAttribute("list",id);
+  }
+  set arma(a){
+    this._arma=a;
+    this._daño=a.daño;
+    act();
+  }
+  get arma(){
+    return this._arma;
   }
 }
 
@@ -635,14 +682,12 @@ function test(dado, veces) {
 var d1 = new Dado("3d6");
 // console.log(test(d1,100));
 
-
 var _3d6 = new D(3, 6);
 _3d6.bonus(2);
 // //console.log(d1.max());
 // //console.log(d1.min());
 // //console.log(d1.newSum(_2d6)+"");
 // //console.log(x);
-
 
 // let dado1=new Dado("1d10");
 // let resultados = [];
