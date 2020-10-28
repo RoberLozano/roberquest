@@ -16,18 +16,16 @@
   <!-- <input type="datetime-local" name="fecha" id="fecha" value="0183-11-18T00:27" /> -->
   <input type="checkbox" name="cbFecha" id="cbFecha" onclick='buscar(this.checked);'>
   <label for="cbFecha"> Buscar fechas</label><br>
-
   <button onclick="cargar()">cargar</button>
   <button onclick="formatear()">añadir</button>
   <button onclick=" fo()">H2</button>
   <button onclick=" formatearPersonaje()">Personajes</button>
+  <button onclick=" clases()">Clases</button>
   <textarea name="text" autocomplete="true" rows=10 id="texto" style="width:96%;padding:2%;font:15px sans-serif;">
     </textarea>
-
   <div id="diario">
   </div>
   <div id="diario">
-
   </div>
   <div id="Personajes">
     <h2 id="Nethmorlug">Nethmorlug</h2>
@@ -127,12 +125,12 @@
       // do stuff with the range
     }
 
-    function fo( ) {
+    function fo() {
       var el = document.getElementById('texto')
-  var s = window.getSelection().toString();
-  const [start, end] = [el.selectionStart, el.selectionEnd];
-  el.setRangeText(`<h2 id='${s}'>${s}</h2>`, start, end, 'select');
-}
+      var s = window.getSelection().toString();
+      const [start, end] = [el.selectionStart, el.selectionEnd];
+      el.setRangeText(`<h2 id='${s}'>${s}</h2>`, start, end, 'select');
+    }
 
     function buscar(b) {
       buscarFecha = b;
@@ -156,7 +154,25 @@
       document.getElementById('entrada').innerHTML = links
     }
 
+function clases(){
+  let t =
+        document.getElementById('texto').value
+      let clases=  t.match(/class ([\p{L}]+) extends ([\p{L}]+)/gu);
+      console.log(clases)
+      let s=clases.toString()
+      console.log(s)
+      var replace = /class ([\p{L}]+) extends ([\p{L}]+)/
+      var re = new RegExp(replace, "gu");
+      let str ='['
+      let res= s.replace(re,
+      `$2['$1']=$1\n`)
+      str+=res
+      str+=']'
+      //console.log(res)
+      console.log(str)
+}
     var fecha
+
     function formatear(arg) {
       // body...
       let t =
@@ -173,8 +189,7 @@
           `<a href="#$1">$1</a>$2`)
         // `<a href="#${l}">${l}</a>`)
 
-      }
-      )
+      })
 
       if (buscarFecha) {
         t = formatearFecha(t);
@@ -203,21 +218,20 @@
       return t;
     }
 
-    function formatearPersonaje(s= document.getElementById('texto').value) {
+    function formatearPersonaje(s = document.getElementById('texto').value) {
       let t = s;
       console.log(t.match(/\n([\p{L}\s]+)\n/gu));
       t = t.replace(/\n([\p{L}\s]+)\n/gu,
         `<h2 id='$1'>$1</h2>`);
 
-        
 
-        document.getElementById('Personajes').innerHTML += t
+
+      document.getElementById('Personajes').innerHTML += t
       return t;
     }
 
 
     console.log(formatearFecha('11-11-777\n11-13-777\n14-11-777'));
-
   </script>
 </body>
 
