@@ -5,6 +5,8 @@
 
 class Objeto {
   constructor(nombre, peso = 0, valor = 0) {
+    this.clase=this.constructor.name;
+    console.log(this.clase);
     this.nombre = nombre || "";
     this.peso = peso;
     this.valor = valor;
