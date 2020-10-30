@@ -157,19 +157,17 @@
 function clases(){
   let t =
         document.getElementById('texto').value
-      let clases=  t.match(/class ([\p{L}]+) extends ([\p{L}]+)/gu);
-      console.log(clases)
-      let s=clases.toString()
+      let clases=  t.matchAll(/class ([\p{L}]+) extends ([\p{L}]+)/gu);
+      //console.log(clases)
+      let arr=[...clases]
+      let s=''
+      arr.forEach((x,i)=> {
+        s+=`${x[2]}['${x[1]}']=${x[1]}\n`
+        // console.log(x[1],x[2])
+        console.log(
+          `${x[2]}['${x[1]}']=${x[1]};\n`)
+      })
       console.log(s)
-      var replace = /class ([\p{L}]+) extends ([\p{L}]+)/
-      var re = new RegExp(replace, "gu");
-      let str ='['
-      let res= s.replace(re,
-      `$2['$1']=$1\n`)
-      str+=res
-      str+=']'
-      //console.log(res)
-      console.log(str)
 }
     var fecha
 
