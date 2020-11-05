@@ -404,7 +404,7 @@ class Arma extends Objeto {
     //cargar cada daño
     this.daños=[]
     //TODO: probar
-    o.daños.forEach((d, i) => {
+    o.daños?.forEach((d, i) => {
       let da=new Daño(d.dado,d.tipo)
       this.daños.push(da)
     });

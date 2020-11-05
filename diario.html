@@ -17,8 +17,10 @@
   <input type="checkbox" name="cbFecha" id="cbFecha" onclick='buscar(this.checked);'>
   <label for="cbFecha"> Buscar fechas</label><br>
   <button onclick="cargar()">cargar</button>
+  <button onclick="buscarEnlaces()">Buscar Enlaces</button>
   <button onclick="formatear()">añadir</button>
-  <button onclick=" fo()">H2</button>
+  <button onclick="all()">ALL</button>
+  <!-- <button onclick=" fo()">H2</button> -->
   <button onclick=" formatearPersonaje()">Personajes</button>
   <button onclick=" clases()">Clases</button>
   <textarea name="text" autocomplete="true" rows=10 id="texto" style="width:96%;padding:2%;font:15px sans-serif;">
@@ -27,7 +29,7 @@
   </div>
   <div id="diario">
   </div>
-  <div id="Personajes">
+  <!-- <div id="Personajes">
     <h2 id="Nethmorlug">Nethmorlug</h2>
     Nethmorlug, es el verdadero nombre del padre de Rosssel. Significa “joven dragón negro”, y poco a poco ha ido
     dejando
@@ -109,128 +111,10 @@
     un
     entrañable anciano. Gran amigo de Skasendor, es una de las pocas personas del mundo con las que tiene trato. En los
     últimos siglos se ha relacionado más con los leshtor que con los humanos.
-  </div>
+  </div> -->
+  <div id= "Personajes"></div>
   <!-- Project -->
-  <script type="text/javascript" charset="utf-8">
-    var links = []
-    var fechas = []
-    var buscarFecha = false;
-    cargar()
-
-    function foo() {
-      var selObj = window.getSelection();
-      alert(selObj);
-      var selRange = selObj.getRangeAt(0);
-      console.log(selRange);
-      // do stuff with the range
-    }
-
-    function fo() {
-      var el = document.getElementById('texto')
-      var s = window.getSelection().toString();
-      const [start, end] = [el.selectionStart, el.selectionEnd];
-      el.setRangeText(`<h2 id='${s}'>${s}</h2>`, start, end, 'select');
-    }
-
-    function buscar(b) {
-      buscarFecha = b;
-      console.log(buscarFecha);
-    }
-
-    function cargar(hx = 'h2') {
-      let h = document.getElementsByTagName(hx)
-      //console.log(h);
-      links = []
-      for (l in h) {
-        let n = (h[l].innerText);
-        if (n) {
-          if (n.match(/(\d{1,2}-\d{1,2}-\d{3,4})/))
-            fechas.push(n)
-          else
-            links.push(n)
-          console.log(n);
-        }
-      }
-      document.getElementById('entrada').innerHTML = links
-    }
-
-function clases(){
-  let t =
-        document.getElementById('texto').value
-      let clases=  t.matchAll(/class ([\p{L}]+) extends ([\p{L}]+)/gu);
-      //console.log(clases)
-      let arr=[...clases]
-      let s=''
-      arr.forEach((x,i)=> {
-        s+=`${x[2]}['${x[1]}']=${x[1]}\n`
-        // console.log(x[1],x[2])
-        console.log(
-          `${x[2]}['${x[1]}']=${x[1]};\n`)
-      })
-      console.log(s)
-}
-    var fecha
-
-    function formatear(arg) {
-      // body...
-      let t =
-        document.getElementById('texto').value
-      links.forEach((l) => t = t.replace(l,
-        `<a href="#${l}">${l}</a>`
-      ))
-
-
-      fechas.forEach((l) => {
-        var replace = `(${l})([^\n])`;
-        var re = new RegExp(replace, "g");
-        t = t.replace(re,
-          `<a href="#$1">$1</a>$2`)
-        // `<a href="#${l}">${l}</a>`)
-
-      })
-
-      if (buscarFecha) {
-        t = formatearFecha(t);
-        document.getElementById('diario').innerHTML += t
-      }
-      else {
-
-        let f =
-          document.getElementById('fecha').value
-        fecha = new Date(f);
-        var sfecha = fecha.getDate() + '/' +
-          (fecha.getMonth() + 1) + '/' + fecha.getFullYear()
-        console.log(sfecha);
-        //   document.getElementById('entrada').innerHTML=`<h2 id='${f}'>${f}</h2>`+t
-        // console.log(f);
-        document.getElementById('diario').innerHTML += `<h2 id='${sfecha}' >${sfecha}</h2>` + t
-      }
-
-
-    }
-
-    function formatearFecha(s) {
-      let t = s;
-      t = t.replace(/(\d{1,2}-\d{1,2}-\d{3,4})\n/g,
-        `<h2 id='$1'>$1</h2>`);
-      return t;
-    }
-
-    function formatearPersonaje(s = document.getElementById('texto').value) {
-      let t = s;
-      console.log(t.match(/\n([\p{L}\s]+)\n/gu));
-      t = t.replace(/\n([\p{L}\s]+)\n/gu,
-        `<h2 id='$1'>$1</h2>`);
-
-
-
-      document.getElementById('Personajes').innerHTML += t
-      return t;
-    }
-
-
-    console.log(formatearFecha('11-11-777\n11-13-777\n14-11-777'));
-  </script>
+  <script src="js/diario.js"></script>
 </body>
 
 </html>

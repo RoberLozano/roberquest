@@ -2,6 +2,12 @@
 // import {Habilidad, BonHabilidad} from './habilidades';
 // import {Objeto, Objetos, Arma, Contenedor} from './inventario';
 
+
+// var Clases = {}
+// Clases['Caballo']=Caballo
+// Clases['Dragon']=Dragon
+// Clases['Humanoide']=Humanoide
+
 var fechaMundo = new Date(778, 0, 1, 0, 0, 0, 0);
 
 const FUE = "FUE"
@@ -301,6 +307,7 @@ class Animal {
     }
 
   ) {
+    this.clase=this.constructor.name;
     this.car = {}
     this.nombre = nombre
     this.peso = peso

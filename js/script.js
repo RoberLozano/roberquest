@@ -1464,8 +1464,38 @@ function cargarPersonaje(nombre) {
     }
 
   nombre = $("#nombre").val();
-  let ruta = `personajes/${nombre}/`;
+  
+  cargarPersonajeOnline(nombre);
+
+
+  //  podría hacerlo con once y luego responder a cambios en habilidades,
+  //  en inventario y en las características
+
+  // fbActual.once("value", function (data) {
+  //    pj = new Animal({});
+  //    pj.setAll(item.val());
+  //    // mostrar las demás: makeTable("", pj), etc
+  // });
+
+  // fbActual.on("child_changed", function (snapshot) {
+  //   var changedPost = snapshot.val();
+  //   console.log("The updated post title is " + changedPost.title);
+  // });
+
+  // Mover un objeto
+  //  pj.inventario.mover(1, a.inventario);
+  //  console.log(pj);
+  //  console.log(a);
+  //  pj.save();
+  //  a.save();
+
+}
+
+function cargarPersonajeOnline(nombre){
+  try {
+    let ruta = `personajes/${nombre}/`;
   // console.log("CARGAR RUTA:" + ruta);
+ 
   fbActual = database.ref(ruta);
 
   // si lo hago así es menos eficiente,
@@ -1474,6 +1504,10 @@ function cargarPersonaje(nombre) {
   fbActual.on('value', function (item) {
     console.log("onvalue personaje" + item.val().nombre);
 
+    let nuevo=item.val();
+    if (nuevo.clase){
+      pj =  new Humanoide({});
+    }
     pj = new Humanoide({});
     // pj = new Animal({});
     pj.setAll(item.val());
@@ -1507,27 +1541,16 @@ function cargarPersonaje(nombre) {
     cargarContenedor();
     // console.log("No ContenedorAct: CargaInventario");
   });
+  
+  } catch (error) {
+    console.log("ERROR EN CARGA ONLINE");
+    alert("ERROR EN CARGA ONLINE")
+    
+  }
 
-  //  podría hacerlo con once y luego responder a cambios en habilidades,
-  //  en inventario y en las características
+}
 
-  // fbActual.once("value", function (data) {
-  //    pj = new Animal({});
-  //    pj.setAll(item.val());
-  //    // mostrar las demás: makeTable("", pj), etc
-  // });
-
-  // fbActual.on("child_changed", function (snapshot) {
-  //   var changedPost = snapshot.val();
-  //   console.log("The updated post title is " + changedPost.title);
-  // });
-
-  // Mover un objeto
-  //  pj.inventario.mover(1, a.inventario);
-  //  console.log(pj);
-  //  console.log(a);
-  //  pj.save();
-  //  a.save();
+function cargarPersonajeOffline(nombre){
 
 }
 
