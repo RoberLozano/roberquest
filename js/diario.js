@@ -152,6 +152,10 @@ function clases(){
 
     function formatearFecha(s) {
       let t = s;
+      //hace referencia en todas las fechas
+      t = t.replace(/(\d{1,2}-\d{1,2}-\d{3,4})([^\n])/g,
+        `<a href="#$1">$1</a>$2`);
+        
       t = t.replace(/(\d{1,2}-\d{1,2}-\d{3,4})\n/g,
         `<h2 id='$1'>$1</h2>`);
       return t;
