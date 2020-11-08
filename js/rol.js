@@ -1277,8 +1277,13 @@ function de(s) {
 
 var config = JSON.parse(de(coor));
 
-firebase.initializeApp(config);
+try {
+  firebase.initializeApp(config);
 var database = firebase.database();
+} catch (error) {
+  alert('Error en firebase')
+}
+
 
 function guerrero(personaje, nivel, ...armas) {
 
