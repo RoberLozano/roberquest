@@ -115,7 +115,7 @@
     </div>
 
     <div id="test2" class="col s12">
-        Fecha<input type="date" name="fecha" value="0777-09-13">
+        Fecha<input type="date" id="fecha" value="0777-09-13">
     </div>
     <div id="test4" class="col s12">Test 4</div>
 
@@ -195,8 +195,43 @@
 
             M.toast({ html: 'Buenos días' })
         });
+        
+ /**
+ * Modifica una fecha.
+ * 
+ * @param interval  One of: año, mes, dia, segundo,...
+ * @param units  Numero de unidades a añadir o restar, si negativas.
+ */
+Date.prototype.mod = function (interval, units) {
+  var ret = new Date(this.valueOf()); //don't change original date
 
+  switch (interval.toLowerCase()) {
+    case 'año': ret.setFullYear(ret.getFullYear() + units); break;
+    case 'mes': ret.setMonth(ret.getMonth() + units); break;
+    case 'semana': ret.setDate(ret.getDate() + 7 * units); break;
+    case 'dia': ret.setDate(ret.getDate() + units); break;
+    case 'hora': ret.setTime(ret.getTime() + units * 3600000); break;
+    case 'minuto': ret.setTime(ret.getTime() + units * 60000); break;
+    case 'segundo': ret.setTime(ret.getTime() + units * 1000); break;
+    default: ret = undefined; break;//en default undefined o pasar la original?
+  }
+  return ret;
+}
 
+Date.prototype.fecha = function (interval, units) {
+  return this.toISOString().substring(0,10)
+}
+
+$(`#fecha`).change(function () {
+      var valor = event.target.value;
+      console.log(` valor: ${event.target.value}`);
+      //this.value='0777-07-07'
+      var d=new Date(event.target.value)
+     d.setDate(d.getDate()-4)
+     console.log(d.fecha())
+     this.value=d.fecha()
+      //TODO: tal vez actualizar
+    });
     </script>
 
 
