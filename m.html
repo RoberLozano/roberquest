@@ -227,7 +227,8 @@ $(`#fecha`).change(function () {
       console.log(` valor: ${event.target.value}`);
       //this.value='0777-07-07'
       var d=new Date(event.target.value)
-     d.setDate(d.getDate()-4)
+     //d.setDate(d.getDate()-4)
+     d=d.mod('dia',-4)
      console.log(d.fecha())
      this.value=d.fecha()
       //TODO: tal vez actualizar
