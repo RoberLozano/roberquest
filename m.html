@@ -59,11 +59,11 @@
         }
 
         .dado {
-      width: 3em;
-    }
+            width: 3em;
+        }
 
 
-        /* .dropdown-content.select-dropdown>li span {
+        .dropdown-content.select-dropdown>li span {
             background-color: black;
             color: lightgray;
 
@@ -76,8 +76,13 @@
         }
 
         .select-dropdown {
-            color: white;
+            color: red;
             background-color: black;
+        }
+
+        /* input{
+            background-color: black !important; 
+            color: red !important;
         } */
 
         h5 {
@@ -96,7 +101,7 @@
 
     <nav class="nav-extended">
         <div class="nav-wrapper black">
-            <a href="#" class="brand-logo">Logo</a>
+            <a href="#" class="brand-logo" id="brand">Roberquest</a>
             <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
             <ul id="nav-mobile" class="right hide-on-med-and-down">
                 <li><a href="dados.html">Dados</a></li>
@@ -128,12 +133,25 @@
     </ul>
 
     <div id="personaje" class="col s12">
-        <div id="info">
-            <div class="input-field inline"><input id="iNombre" type="text"><label for="iNombre">Nombre</label> </div> <label id="btNombre" class="btn btn-light" onclick="$('#iNombre').val(pj.nombre);alert(pj.nombre)">Nombre</label>
-            <div class="input-field inline"><input id="iRaza" type="text"><label for="iRaza">Raza</label>       </div> <label id="btRaza" class="btn btn-light" onclick="$('#iRaza').val(pj.clase);alert(pj.clase)">Raza</label>
-            <div class="input-field inline"><input id="iPeso" type="number"><label for="iPeso">Peso</label>     </div> <label id="btPeso" class="btn btn-light" onclick="$('#iPeso').val(pj.peso);alert(pj.peso)">Peso</label>
-            
-        </div>
+        <ul class="collapsible">
+            <li>
+                <div id="cabeceraInfo" class="collapsible-header"><i class="material-icons">info</i>Información</div>
+                <div id="info" class="collapsible-body">
+                    
+                        <div class="input-field inline"><input id="iNombre" type="text"><label
+                                for="iNombre">Nombre</label> </div>
+                        <!-- <label id="btNombre" class="btn btn-light" onclick="$('#iNombre').val(pj.nombre);alert(pj.nombre)">Nombre</label> -->
+                        <div class="input-field inline"><input id="iRaza" type="text"><label for="iRaza">Raza</label>
+                        </div>
+                        <!-- <label id="btRaza" class="btn btn-light" onclick="$('#iRaza').val(pj.clase);alert(pj.clase)">Raza</label> -->
+                        <div class="input-field inline"><input id="iPeso" type="number"><label for="iPeso">Peso</label>
+                        </div>
+                        <!-- <label id="btPeso" class="btn btn-light" onclick="$('#iPeso').val(pj.peso);alert(pj.peso)">Peso</label> -->
+
+                    
+                </div>
+            </li>
+        </ul>
         <table class="table table-hover">
             <thead>
                 <!-- <th>Característica</th>
@@ -144,11 +162,14 @@
             <tbody id="statsTable"></tbody>
         </table>
         <form>
-            <div >
+            <div>
                 <div>
-                    <div class="input-field inline"><input id="iPG" type="number"><label for="iPG">PG</label></div><label id="btPG"class="btn btn-light" onclick="pMax(PG)">PG</label>
-                    <div class="input-field inline"><input id="iPF" type="number"><label for="iPF">PF</label></div><label id="btPF"class="btn btn-light" onclick="pMax(PF)">PF</label>
-                    <div class="input-field inline"><input id="iPM" type="number"><label for="iPM">PM</label></div><label id="btPM"class="btn btn-light" onclick="pMax(PM)">PM</label>
+                    <div class="input-field inline"><input id="iPG" type="number"><label for="iPG">PG</label></div>
+                    <label id="btPG" class="btn btn-light" onclick="pMax(PG)">PG</label>
+                    <div class="input-field inline"><input id="iPF" type="number"><label for="iPF">PF</label></div>
+                    <label id="btPF" class="btn btn-light" onclick="pMax(PF)">PF</label>
+                    <div class="input-field inline"><input id="iPM" type="number"><label for="iPM">PM</label></div>
+                    <label id="btPM" class="btn btn-light" onclick="pMax(PM)">PM</label>
                 </div>
 
             </div>
@@ -173,17 +194,14 @@
     <div id="habilidades" class="col s12" style="padding-left: 13px;">
         <div class="row">
             <div class="row">
+                <div class="input-field col s6">
+                    <input id="buscar" type="search" required>
+                    <label class="label-icon" for="buscar"><i class="material-icons">search</i></label>
+                    <!-- <label  for="buscar"><i class="material-icons prefix">search</i></label> -->
+                    <i class="material-icons" onclick="$('#buscar').val(``)">close</i>
+                </div>
 
-            <div class="input-field col s6" >
-                <input id="buscar" type="search" required>
-                <!-- <label class="label-icon" for="buscar"><i class="material-icons prefix">search</i></label> -->
-                <label  for="buscar"><i class="material-icons prefix">search</i></label>
-                <i class="material-icons" onclick="$('#buscar').val(``)">close</i>
             </div>
-            
- 
-      </div>
-
             <select class="selectpicker col s6" id="columnas" multiple data-live-search="true" data-width="fit" multiple
                 title="Seleccione columnas a mostrar">
                 <option selected>nombre</option>
@@ -288,6 +306,7 @@
             $('#tabs-swipe-demo').tabs({ 'swipeable': true });
             $('.modal').modal();
             $('select').formSelect();
+            $('.collapsible').collapsible();
             // $(".dropdown-content.select-dropdown > li span").addClass('dark')
             // $(".dropdown-content.select-dropdown > li span").css("background-color", "black");
             // $(".dropdown-content.select-dropdown > li span").css("color", "white");
@@ -298,8 +317,8 @@
             // });
 
             M.toast({ html: 'Buenos días' })
-         
-            
+
+
         });
 
         /**

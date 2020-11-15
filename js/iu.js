@@ -177,12 +177,21 @@ $('#columnas').change( function (e) {
 });
 
 
+function info(params) {
+  $('#brand').text(pj.nombre);
+  document.title = pj.nombre;
+    document.getElementById("cabeceraInfo").innerHTML='<i class="material-icons">info</i>Información de '+pj.nombre
+    $('#iNombre').val(pj.nombre);
+$('#iRaza').val(pj.clase);
+$('#iPeso').val(pj.peso);
 
+}
 
 console.log("CARGA EL PUTO PERSONAJE:" + pj.nombre);
     // console.log(nav);
     // console.log(pj);
     document.title = pj.nombre;
+    info();
 
     // makeTable("", pj);
     tablaHabilidades();
