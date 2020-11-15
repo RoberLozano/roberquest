@@ -145,6 +145,23 @@ function tablaStats(idTabla = "statsTable") {
     addObjet2Table(["peso Total", roundTo(3, object.pesa)], "tbInv")
   }
 
+  function pantalla() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+  }
+
+  function tabActiva(params) {
+    
+      console.log("Active Tab:"+$(".active").attr('id'));
+      console.log("Active Tab Div:"+$(".active").attr('href'));
+     
+  }
+
   function pMax(puntos) {
     let valor = pj.getMaxPuntos(puntos);
     $("#i" + puntos).val(valor);
@@ -187,10 +204,49 @@ $('#iPeso').val(pj.peso);
 
 }
 
+function buscar() {
+  let x = document.getElementById("buscador");
+
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+}
+
+//BUSCAR
+$("#buscar").on("keyup", function () {
+  var value = $(this).val().toLowerCase();
+  $("#tbHab tr").filter(function () {
+    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+  });
+});
+
+//DARKMODE
+function dark() {
+  var element = document.body;
+  element.classList.toggle("dark");
+  //  document.getElementById('tabla').classList.toggle("table-dark");
+  document.getElementById('tbHab').classList.toggle("dark");
+  $("input").toggleClass("dark");
+  $("#cabeceraInfo").toggleClass("dark");
+  // $("#cabeceraInfo").css("color", "red");
+
+  
+
+  // $(":input").css("color", "white");
+  
+
+
+
+
+  // $('#tabla').DataTable();
+
+}
+
 console.log("CARGA EL PUTO PERSONAJE:" + pj.nombre);
     // console.log(nav);
     // console.log(pj);
-    document.title = pj.nombre;
     info();
 
     // makeTable("", pj);

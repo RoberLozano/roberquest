@@ -54,25 +54,22 @@
         }
 
         .dark {
-            background-color: black;
-            color: blanchedalmond;
+            background-color: black !important;
+            color: white !important;
         }
 
         .dado {
             width: 3em;
         }
 
-
         .dropdown-content.select-dropdown>li span {
             background-color: black;
             color: lightgray;
-
         }
 
         .dropdown-content.select-dropdown>li span:hover {
             background-color: red;
             color: white;
-
         }
 
         .select-dropdown {
@@ -80,7 +77,7 @@
             background-color: black;
         }
 
-        /* input{
+        /* .dark-input{
             background-color: black !important; 
             color: red !important;
         } */
@@ -103,6 +100,12 @@
         <div class="nav-wrapper black">
             <a href="#" class="brand-logo" id="brand">Roberquest</a>
             <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+            <ul class="right">
+
+                <li><a onclick="$('#new').css('display','block')"><i class="material-icons">add</i></a></li>
+                <li><a onclick="buscar()"><i class="material-icons">search</i></a></li>
+                <li><a onclick="pantalla()"><i class="material-icons">fullscreen</i></a></li>
+              </ul>
             <ul id="nav-mobile" class="right hide-on-med-and-down">
                 <li><a href="dados.html">Dados</a></li>
                 <li><a href="diario.html">Diario</a></li>
@@ -125,6 +128,33 @@
             </ul>
         </div>
     </nav>
+
+
+
+    <div id="buscador" class="navbar-fixed" style="display: none;">
+        <nav class="red accent-4">
+          <div class="nav-wrapper">
+            <div class="input-field">
+              <input id="buscar" type="search" required placeholder="Buscar..">
+              <label class="label-icon" for="search"><i class="material-icons">search</i></label>
+              <i class="material-icons" onclick="buscar()">close</i>
+            </div>
+          </div>
+        </nav>
+      </div>
+
+      <div id="new" class="navbar-fixed" style="display: none;">
+        <nav class="red accent-4">
+          <div class="nav-wrapper">
+            <a class="waves-effect waves-light btn-small">hechizo</a>
+            <a class="waves-effect waves-light btn-small">ataque</a>
+            <a class="waves-effect waves-light btn-small">defensa</a>
+        <a class="waves-effect waves-light btn-small">técnica</a>
+        <a ><i class="material-icons right" onclick="$('#new').css('display','none')">close</i></a>
+
+          </div>
+        </nav>
+      </div>
 
     <ul class="sidenav" id="mobile-demo">
         <li><a href="dados.html">Dados</a></li>
@@ -193,15 +223,6 @@
 
     <div id="habilidades" class="col s12" style="padding-left: 13px;">
         <div class="row">
-            <div class="row">
-                <div class="input-field col s6">
-                    <input id="buscar" type="search" required>
-                    <label class="label-icon" for="buscar"><i class="material-icons">search</i></label>
-                    <!-- <label  for="buscar"><i class="material-icons prefix">search</i></label> -->
-                    <i class="material-icons" onclick="$('#buscar').val(``)">close</i>
-                </div>
-
-            </div>
             <select class="selectpicker col s6" id="columnas" multiple data-live-search="true" data-width="fit" multiple
                 title="Seleccione columnas a mostrar">
                 <option selected>nombre</option>
@@ -350,6 +371,7 @@
         var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
         //para compensar el cambio de juliano a gregoriano que hacen en mobile
         if (isMobile) {
+            console.log('Móvil');
             $(`#fecha`).change(function () {
                 // console.log(` valor: ${event.target.value}`);
                 //this.value='0777-07-07'

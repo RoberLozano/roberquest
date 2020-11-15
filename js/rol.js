@@ -1146,11 +1146,28 @@ class Humanoide extends Animal {
 
 }
 
+class Humano extends Humanoide{
+  constructor(){
+    super({});
+  }
+}
+
+class Enano extends Humanoide{
+  constructor(){
+    super({ FUE: new Dado('3d6+6').tirar(),CON: new Dado('3d6+6').tirar()});
+    this.nombre='Durin';
+    this.peso=77;
+  }
+}
+
+
 /**
  * variable global con el personaje sobre
  * el que se harán todas las acciones en la página
  */
-var pj = new Humanoide({});
+// var pj = new Humanoide({});
+var pj = new Enano();
+
 
 
 /**
