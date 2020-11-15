@@ -1150,7 +1150,7 @@ class Humanoide extends Animal {
  * variable global con el personaje sobre
  * el que se harán todas las acciones en la página
  */
-var pj = new Animal({});
+var pj = new Humanoide({});
 
 
 /**
@@ -1172,20 +1172,20 @@ var objetoActual;
  */
 var contenedorActual;
 
-let a = new Animal({ nombre: "Animal A" });
-// for(i of CP){
-//   a[i]=7;
-// }
+// let a = new Animal({ nombre: "Animal A" });
+// // for(i of CP){
+// //   a[i]=7;
+// // }
 
 
-// console.log(a);
-let v = new Humanoide({ FUE: 13, DES: 7, nombre: "Paco" });
-// let v=new Bon({FUE:1, DES: 2, Agilidad:20, PF:3});
-console.log("HUMANOIDE");
+// // console.log(a);
+// let v = new Humanoide({ FUE: 13, DES: 7, nombre: "Paco" });
+// // let v=new Bon({FUE:1, DES: 2, Agilidad:20, PF:3});
+// console.log("HUMANOIDE");
 
-console.log(v);
+// console.log(v);
 
-v.cuerpo.dañarLocalizacion(4, 4)
+// v.cuerpo.dañarLocalizacion(4, 4)
 // a.bonificacion=v;
 // a.set(DES, 30);
 // console.log(a);
@@ -1275,13 +1275,15 @@ function de(s) {
 // console.log(pj.backup);
 
 
-var config = JSON.parse(de(coor));
 
+//Cargo el firebase
 try {
+  var config = JSON.parse(de(coor));
   firebase.initializeApp(config);
 var database = firebase.database();
 } catch (error) {
-  alert('Error en firebase')
+  // alert('Error en firebase')
+  console.log('Error en firebase')
 }
 
 
@@ -1309,8 +1311,6 @@ function guerrero(personaje, nivel, ...armas) {
   console.log(personaje.getHabilidades(h => (!h.ataque)));
   console.log(personaje.getHabilidades());
 
-
-
-
 }
 
+guerrero(pj,10,'espada','arco', 'daga')

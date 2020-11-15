@@ -3,15 +3,15 @@
 
 <head>
     <meta charset='utf-8'>
-    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <!-- <meta http-equiv='X-UA-Compatible' content='IE=edge'> -->
     <title>Materialize</title>
-    <meta name='viewport' content='width=device-width, initial-scale=1'>
+
     <!-- Compiled and minified CSS -->
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"> -->
     <link rel="stylesheet" href="css/materialize.min.css">
 
     <!-- <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> -->
-
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
 
     <style type="text/css">
         /* fallback */
@@ -58,6 +58,28 @@
             color: blanchedalmond;
         }
 
+        .dado {
+      width: 3em;
+    }
+
+
+        /* .dropdown-content.select-dropdown>li span {
+            background-color: black;
+            color: lightgray;
+
+        }
+
+        .dropdown-content.select-dropdown>li span:hover {
+            background-color: red;
+            color: white;
+
+        }
+
+        .select-dropdown {
+            color: white;
+            background-color: black;
+        } */
+
         h5 {
             font-family: Friedolin;
             font-size: 300%;
@@ -71,20 +93,28 @@
 </head>
 
 <body>
+
     <nav class="nav-extended">
-        <div class="nav-wrapper">
+        <div class="nav-wrapper black">
             <a href="#" class="brand-logo">Logo</a>
             <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
             <ul id="nav-mobile" class="right hide-on-med-and-down">
                 <li><a href="dados.html">Dados</a></li>
                 <li><a href="diario.html">Diario</a></li>
                 <li><a href="index.html">Principal</a></li>
+                <li> <select>
+                        <option value="" disabled selected>Elige personaje</option>
+                        <option value="1">Option 1</option>
+                        <option value="2">Option 2</option>
+                        <option value="3">Option 3</option>
+                    </select>
+                    <label>Personaje</label></li>
             </ul>
         </div>
         <div class="nav-content">
-            <ul class="tabs tabs-transparent">
-                <li class="tab dark"><a href="#test1">Test 1</a></li>
-                <li class="tab dark"><a class="active" href="#test2">Test 2</a></li>
+            <ul class="tabs tabs-transparent black">
+                <li class="tab dark"><a href="#personaje">Personaje</a></li>
+                <li class="tab dark"><a class="active" href="#habilidades">Habilidades</a></li>
                 <li class="tab dark"><a href="#inventario">Inventario</a></li>
                 <li class="tab dark"><a href="#test4">Test 4</a></li>
             </ul>
@@ -97,7 +127,33 @@
         <li><a href="index.html">Index</a></li>
     </ul>
 
-    <div id="test1" class="col s12"></div>
+    <div id="personaje" class="col s12">
+        <div id="info">
+            <div class="input-field inline"><input id="iNombre" type="text"><label for="iNombre">Nombre</label> </div> <label id="btNombre" class="btn btn-light" onclick="$('#iNombre').val(pj.nombre);alert(pj.nombre)">Nombre</label>
+            <div class="input-field inline"><input id="iRaza" type="text"><label for="iRaza">Raza</label>       </div> <label id="btRaza" class="btn btn-light" onclick="$('#iRaza').val(pj.clase);alert(pj.clase)">Raza</label>
+            <div class="input-field inline"><input id="iPeso" type="number"><label for="iPeso">Peso</label>     </div> <label id="btPeso" class="btn btn-light" onclick="$('#iPeso').val(pj.peso);alert(pj.peso)">Peso</label>
+            
+        </div>
+        <table class="table table-hover">
+            <thead>
+                <!-- <th>Característica</th>
+              <th>Valor</th>
+              <th>Bonificación</th>
+              <th>Valor</th> -->
+            </thead>
+            <tbody id="statsTable"></tbody>
+        </table>
+        <form>
+            <div >
+                <div>
+                    <div class="input-field inline"><input id="iPG" type="number"><label for="iPG">PG</label></div><label id="btPG"class="btn btn-light" onclick="pMax(PG)">PG</label>
+                    <div class="input-field inline"><input id="iPF" type="number"><label for="iPF">PF</label></div><label id="btPF"class="btn btn-light" onclick="pMax(PF)">PF</label>
+                    <div class="input-field inline"><input id="iPM" type="number"><label for="iPM">PM</label></div><label id="btPM"class="btn btn-light" onclick="pMax(PM)">PM</label>
+                </div>
+
+            </div>
+        </form>
+    </div>
     <div id="inventario" class="fade">
         <img id="cuerpo" src="Body.png" alt="Cuerpo" usemap="#bodymap">
         <map name="bodymap" id="bodymap">
@@ -114,7 +170,37 @@
 
     </div>
 
-    <div id="test2" class="col s12">
+    <div id="habilidades" class="col s12" style="padding-left: 13px;">
+        <div class="row">
+            <div class="row">
+
+            <div class="input-field col s6" >
+                <input id="buscar" type="search" required>
+                <!-- <label class="label-icon" for="buscar"><i class="material-icons prefix">search</i></label> -->
+                <label  for="buscar"><i class="material-icons prefix">search</i></label>
+                <i class="material-icons" onclick="$('#buscar').val(``)">close</i>
+            </div>
+            
+ 
+      </div>
+
+            <select class="selectpicker col s6" id="columnas" multiple data-live-search="true" data-width="fit" multiple
+                title="Seleccione columnas a mostrar">
+                <option selected>nombre</option>
+                <option>xp</option>
+                <option>tipo</option>
+                <option selected>valor</option>
+            </select>
+        </div>
+        <table class="table table-hover">
+            <thead id="header">
+                <!-- <th>Habilidad</th>
+              <th>Tipo</th>
+              <th>Valor</th> -->
+            </thead>
+            <tbody id="tbHab"></tbody>
+        </table>
+
         Fecha<input type="date" id="fecha" value="0777-09-13">
     </div>
     <div id="test4" class="col s12">Test 4</div>
@@ -148,6 +234,8 @@
 
     <h2>Medici Text</h2>
     <h5>Friedolin</h5>
+    <div>
+    </div>
 
 
 
@@ -184,6 +272,14 @@
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script> -->
     <script src="js/materialize.min.js"></script>
 
+    <script src='js/D.js'></script>
+    <script src='js/habilidades.js'></script>
+    <script src='js/inventario.js'></script>
+    <script src='js/localizaciones.js'></script>
+    <!-- <script src='js/coor.js'></script> -->
+
+    <script src='js/rol.js'></script>
+    <script src="js/iu.js"></script>
     <script>
         $(document).ready(function () {
             $('.sidenav').sidenav();
@@ -191,8 +287,19 @@
             $('.tabs').tabs();
             $('#tabs-swipe-demo').tabs({ 'swipeable': true });
             $('.modal').modal();
+            $('select').formSelect();
+            // $(".dropdown-content.select-dropdown > li span").addClass('dark')
+            // $(".dropdown-content.select-dropdown > li span").css("background-color", "black");
+            // $(".dropdown-content.select-dropdown > li span").css("color", "white");
+            // $(".dropdown-content.select-dropdown > li span").hover(function () {
+            //     $(this).css("background-color", "red");
+            // }, function () {
+            //     $(this).css("background-color", "black");
+            // });
 
             M.toast({ html: 'Buenos días' })
+         
+            
         });
 
         /**
@@ -222,7 +329,7 @@
         }
 
         var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-        //para compensar el cambio de juliano a gregoriano que ahcen en mobile
+        //para compensar el cambio de juliano a gregoriano que hacen en mobile
         if (isMobile) {
             $(`#fecha`).change(function () {
                 // console.log(` valor: ${event.target.value}`);
@@ -234,6 +341,21 @@
                 this.value = d.fecha()
                 //TODO: tal vez actualizar
             });
+        }
+
+        function colorear(themeColor) {
+
+            $(".nav-wrapper").css("background-color", themeColor);
+            $(".secondary-content>.material-icons").css("color", themeColor);
+            $(".btn").css("background-color", themeColor);
+            $(".page-footer").css("background-color", themeColor);
+            $(".input-field").css("color", themeColor);
+            $(".input-field>.material-icons").css("color", themeColor);
+            $(".input-field>label").css("color", themeColor);
+            $(".btn-floating").css("background-color", themeColor);
+            $(".dropdown-content>li>a").css("color", themeColor);
+            $('select').css("color", themeColor);
+            $(".dropdown-content>li>a").css("color", themeColor);
         }
 
     </script>
