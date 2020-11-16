@@ -102,8 +102,8 @@
             <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
             <ul class="right">
 
-                <li><a onclick="$('#new').css('display','block')"><i class="material-icons">add</i></a></li>
-                <li><a onclick="buscar()"><i class="material-icons">search</i></a></li>
+                <li><a onclick="toogle('new')"><i class="material-icons">add</i></a></li>
+                <li><a onclick="toogle()"><i class="material-icons">search</i></a></li>
                 <li><a onclick="pantalla()"><i class="material-icons">fullscreen</i></a></li>
               </ul>
             <ul id="nav-mobile" class="right hide-on-med-and-down">
@@ -136,7 +136,10 @@
           <div class="nav-wrapper">
             <div class="input-field">
               <input id="buscar" type="search" required placeholder="Buscar..">
+
               <label class="label-icon" for="search"><i class="material-icons">search</i></label>
+              
+              <i class="material-icons" style="padding-right: 30px;" onclick="$('#buscar').val('')">autorenew</i>
               <i class="material-icons" onclick="buscar()">close</i>
             </div>
           </div>
@@ -146,8 +149,11 @@
       <div id="new" class="navbar-fixed" style="display: none;">
         <nav class="red accent-4">
           <div class="nav-wrapper">
+            <a>hechizo</a>
             <a class="waves-effect waves-light btn-small">hechizo</a>
             <a class="waves-effect waves-light btn-small">ataque</a>
+            <a class="waves-effect waves-light btn-small"><span  id="dado"> <img height="24" src="img/sword.svg"></img></span>ataque</a>
+            <a class="waves-effect waves-light btn-small"><span  id="dado"> <img height="24" src="img/shield.svg"></img></span>defensa</a>
             <a class="waves-effect waves-light btn-small">defensa</a>
         <a class="waves-effect waves-light btn-small">técnica</a>
         <a ><i class="material-icons right" onclick="$('#new').css('display','none')">close</i></a>

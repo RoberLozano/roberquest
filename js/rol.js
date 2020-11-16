@@ -1157,6 +1157,59 @@ class Enano extends Humanoide{
     super({ FUE: new Dado('3d6+6').tirar(),CON: new Dado('3d6+6').tirar()});
     this.nombre='Durin';
     this.peso=77;
+    this.haBasicas();
+  }
+
+  haBasicas(){
+
+
+"HABILIDADES DE SIGILO"
+"Deslizarse en Silencio"
+"Esconderse"
+
+
+this.setHabilidad(new Habilidad("Esquivar", Agilidad, 20));
+this.setHabilidad(new Habilidad("Montar", Agilidad, 20));
+this.setHabilidad(new Habilidad("Nadar", Agilidad, 20));
+this.setHabilidad(new Habilidad("Remar", Agilidad, 20));
+this.setHabilidad(new Habilidad("Saltar", Agilidad, 20));
+this.setHabilidad(new Habilidad("Trepar", Agilidad, 20));
+this.setHabilidad(new Habilidad("Correr", Agilidad, 20));
+
+this.setHabilidad(new Habilidad("Cantar", Comunicación, 20));
+this.setHabilidad(new Habilidad("Actuar", Comunicación, 20));
+this.setHabilidad(new Habilidad("Intimidar", Comunicación, 20));
+this.setHabilidad(new Habilidad("Regatear", Comunicación, 20));
+this.setHabilidad(new Habilidad("Enseñar", Comunicación, 20));
+this.setHabilidad(new Habilidad("Silbar", Comunicación, 20));
+this.setHabilidad(new Habilidad("Seducir", Comunicación, 20));
+
+this.setHabilidad(new Habilidad("Animal", Conocimiento, 20));
+this.setHabilidad(new Habilidad("Vegetal", Conocimiento, 20));
+this.setHabilidad(new Habilidad("Mineral", Conocimiento, 20));
+this.setHabilidad(new Habilidad("Mundo", Conocimiento, 20));
+this.setHabilidad(new Habilidad("Raza Propia", Conocimiento, 20));
+this.setHabilidad(new Habilidad("Otras Razas", Conocimiento, 20));
+this.setHabilidad(new Habilidad("Leer y escribir", Conocimiento, 20));
+this.setHabilidad(new Habilidad("Navegación", Conocimiento, 20));
+this.setHabilidad(new Habilidad("Primeros Auxilios", Conocimiento, 20));
+this.setHabilidad(new Habilidad("Tasación", Conocimiento, 20));
+this.setHabilidad(new Habilidad("Inventar", Conocimiento, 20));
+
+this.setHabilidad(new Habilidad("Lanzar", Manipulación, 20));
+this.setHabilidad(new Habilidad("Robar", Manipulación, 20));
+this.setHabilidad(new Habilidad("Construir", Manipulación, 20));
+
+this.setHabilidad(new Habilidad("Buscar", Percepción, 20));    
+this.setHabilidad(new Habilidad("Escuchar", Percepción, 20));    
+this.setHabilidad(new Habilidad("Otear", Percepción, 20));    
+this.setHabilidad(new Habilidad("Rastrear", Percepción, 20));    
+this.setHabilidad(new Habilidad("Oler", Percepción, 20));    
+this.setHabilidad(new Habilidad("Orientación", Percepción, 20));
+
+this.setHabilidad(new Habilidad("Deslizarse en Silencio", Sigilo, 20));    
+this.setHabilidad(new Habilidad("Esconderse", Sigilo, 20));    
+
   }
 }
 

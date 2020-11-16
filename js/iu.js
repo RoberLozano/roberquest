@@ -204,8 +204,8 @@ $('#iPeso').val(pj.peso);
 
 }
 
-function buscar() {
-  let x = document.getElementById("buscador");
+function toogle(id="buscador") {
+  let x = document.getElementById(id);
 
   if (x.style.display === "none") {
     x.style.display = "block";
