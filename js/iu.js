@@ -246,7 +246,9 @@ function tablaStats(idTabla = "statsTable") {
           editar(object);
           //y lo muestro
           // $("#editModal").modal();
-          $("#editModal").modal('open');
+          // $("#editModal").modal('open');
+          sel(object, cell); //selecciona o deselecciona si ya lo está
+          console.log(objeto);
         });
       }
   
@@ -282,28 +284,26 @@ function tablaStats(idTabla = "statsTable") {
   function editar(objeto) {
     // console.log("Editar:"+objeto );
     objetoActual = objeto;
-    const keys = Object.keys(objeto);
-    const values = Object.values(objeto);
-  
     var editor = document.getElementById("editor");
     editor.innerHTML = ""; //clear editor
-    var id = -1;
-    var k = -1
-    var v = -1;
-    for (i = 0; i < keys.length; i++) {
-      if (i == 0) id = values[i];
-      k = keys[i];
-      v = values[i];
-  
-      console.log(k + " ->" + v)
+
+      for (key in objeto){
+
+              //experimental
+              //editor por línea
+              // editor.innerHTML = editor.innerHTML + `<div class="input-field col s12">
+              //inline
+              editor.innerHTML = editor.innerHTML + `<div class="input-field inline">
+              <input id="edit${key}" type="${isNumber(objeto[key]) ? "number" : "text"}" class="validate" value="${objeto[key]}">
+              <label class="active" for="edit${key}">${key}</label>
+            </div>`
   
       // editor.innerHTML = editor.innerHTML + ' <b>' + k.toUpperCase() + ':</b>' +
       //   `<input data-toggle="tooltip"  id="edit${k}" value='${v}'' title="${k}" ><br>`
-        editor.innerHTML = editor.innerHTML +
-        `<div class="input-field inline"><input id="edit${k}"  value='${v}' type="text"><label for="edit${k}">${k}</label></div>`
+        // editor.innerHTML = editor.innerHTML +
+        // `<div class="input-field inline"><input id="edit${k}"  value='${v}' type="text"><label for="edit${k}">${k}</label></div>`
       // '<input data-toggle="tooltip"  id="edit' + keys[i] + '" value=' + values[i] + ' title=' + keys[i] + ' ><br>';
       //Probar con forms
-  
     }
     editor.innerHTML = editor.innerHTML + `<button type="button" class="btn btn-success" onclick="guardarObjeto()">Guardar</button>`
   
@@ -352,9 +352,6 @@ function tablaStats(idTabla = "statsTable") {
   function pMax(puntos) {
     let valor = pj.getMaxPuntos(puntos);
     $("#i" + puntos).val(valor);
-    // $("#i" + puntos).text(7);
-    // document.getElementById("#i" + puntos).innerText='7'
-    // pj.setCar(puntos,pj.getMaxPuntos(puntos))
   }
 
   PUNTOS.forEach(pt => {
@@ -443,20 +440,20 @@ function descuento() {
     });
   });
 
-  $('#descuentoOk').one("click", function () {
-    nombreLista = $("#nombreLista").val();
-    let d = $("#sl-descuento").val();
-    // console.log(d);
-    selected.forEach(element => {
-      let des;
-      if (d === "ud") { des = new Descuento(+$('#rg-descuento').val(), 1); }
-      else des = Descuento.oferta(d);
-      element.descuento = des;
-      // console.log(des);
-      console.log(`${element.nombre} => ${element.total}`);
-      element.guardar();
-    });
-  });
+  // $('#descuentoOk').one("click", function () {
+  //   nombreLista = $("#nombreLista").val();
+  //   let d = $("#sl-descuento").val();
+  //   // console.log(d);
+  //   selected.forEach(element => {
+  //     let des;
+  //     if (d === "ud") { des = new Descuento(+$('#rg-descuento').val(), 1); }
+  //     else des = Descuento.oferta(d);
+  //     element.descuento = des;
+  //     // console.log(des);
+  //     console.log(`${element.nombre} => ${element.total}`);
+  //     element.guardar();
+  //   });
+  // });
 
 }
 
@@ -634,6 +631,12 @@ function pegar() {
 //#endregion
 
 
+function isNumber(value) {
+  if (value instanceof Number)
+    return true
+  else
+    return !isNaN(value);
+}
 
 console.log("CARGA EL PUTO PERSONAJE:" + pj.nombre);
     // console.log(nav);
