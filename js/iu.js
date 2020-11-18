@@ -264,7 +264,7 @@ function tablaStats(idTabla = "statsTable") {
       if (key === "total") {
         cell.addEventListener("click", function () {
           sel(object, cell);
-          console.log(objeto);
+          console.log(object);
         });
       }
       
