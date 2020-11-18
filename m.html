@@ -77,6 +77,31 @@
             background-color: black;
         }
 
+        .transparente {
+            background-color: rgba(0, 0, 0, 0);
+        }
+
+        img {
+            width: 1.7rem;
+            vertical-align: text-top;
+            transition: .5s ease;
+        }
+
+        img:hover {
+            opacity: 0.9;
+            filter: none;
+        }
+
+        img:active {
+            -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+        }
+
+        img:active {
+            width: 2rem;
+            transition: .1s ease;
+        }
+
         /* .dark-input{
             background-color: black !important; 
             color: red !important;
@@ -105,7 +130,7 @@
                 <li><a onclick="toogle('new')"><i class="material-icons">add</i></a></li>
                 <li><a onclick="toogle()"><i class="material-icons">search</i></a></li>
                 <li><a onclick="pantalla()"><i class="material-icons">fullscreen</i></a></li>
-              </ul>
+            </ul>
             <ul id="nav-mobile" class="right hide-on-med-and-down">
                 <li><a href="dados.html">Dados</a></li>
                 <li><a href="diario.html">Diario</a></li>
@@ -125,7 +150,11 @@
                 <li class="tab dark"><a class="active" href="#habilidades">Habilidades</a></li>
                 <li class="tab dark"><a href="#inventario">Inventario</a></li>
                 <li class="tab dark"><a href="#test4">Test 4</a></li>
+
             </ul>
+            <!-- <a class="btn-floating btn-large halfway-fab waves-effect waves-light teal">
+                <i class="material-icons">add</i>
+              </a> -->
         </div>
     </nav>
 
@@ -133,34 +162,44 @@
 
     <div id="buscador" class="navbar-fixed" style="display: none;">
         <nav class="red accent-4">
-          <div class="nav-wrapper">
-            <div class="input-field">
-              <input id="buscar" type="search" required placeholder="Buscar..">
+            <div class="nav-wrapper">
+                <div class="input-field">
+                    <input id="buscar" type="search" required placeholder="Buscar..">
 
-              <label class="label-icon" for="search"><i class="material-icons">search</i></label>
-              
-              <i class="material-icons" style="padding-right: 30px;" onclick="$('#buscar').val('')">autorenew</i>
-              <i class="material-icons" onclick="buscar()">close</i>
+                    <label class="label-icon" for="search"><i class="material-icons">search</i></label>
+
+                    <i class="material-icons" style="padding-right: 30px;" onclick="$('#buscar').val('')">autorenew</i>
+                    <i class="material-icons" onclick="buscar()">close</i>
+                </div>
             </div>
-          </div>
         </nav>
-      </div>
+    </div>
 
-      <div id="new" class="navbar-fixed" style="display: none;">
-        <nav class="red accent-4">
-          <div class="nav-wrapper">
-            <a>hechizo</a>
-            <a class="waves-effect waves-light btn-small">hechizo</a>
-            <a class="waves-effect waves-light btn-small">ataque</a>
-            <a class="waves-effect waves-light btn-small"><span  id="dado"> <img height="24" src="img/sword.svg"></img></span>ataque</a>
-            <a class="waves-effect waves-light btn-small"><span  id="dado"> <img height="24" src="img/shield.svg"></img></span>defensa</a>
-            <a class="waves-effect waves-light btn-small">defensa</a>
-        <a class="waves-effect waves-light btn-small">técnica</a>
-        <a ><i class="material-icons right" onclick="$('#new').css('display','none')">close</i></a>
+    <div id="new" class="navbar-fixed" style="display: none;">
+        <nav class="transparente">
+            <div class="nav-wrapper">
+                <a>hechizo</a>
+                <a class="waves-effect waves-light btn-small">hechizo</a>
+                <a class="waves-effect waves-light btn-small"><span> <img height="24"
+                            src="img/magic-wand.svg"></img></span></a>
+                <a class="waves-effect waves-light btn-small">ataque</a>
+                <a class="waves-effect waves-light btn-small"><span id="dado"> <img height="24"
+                            src="img/sword.svg"></img></span>ataque</a>
+                <a class="waves-effect waves-light btn-small"><span> <img height="24"
+                            src="img/sword.svg"></img></span>ataque</a>
+                <a class="waves-effect waves-light btn-small"><span> <img height="24"
+                            src="img/sword.svg"></img></span>ataque</a>
+                <a class="waves-effect waves-light btn-small"><span> <img height="24"
+                            src="img/black-shield.svg"></img></span>defensa</a>
+                <a class="waves-effect waves-light btn-small">defensa</a>
+                <a class="waves-effect waves-light btn-small">técnica</a>
 
-          </div>
+
+                <a><i class="material-icons right red" onclick="$('#new').css('display','none')">close</i></a>
+
+            </div>
         </nav>
-      </div>
+    </div>
 
     <ul class="sidenav" id="mobile-demo">
         <li><a href="dados.html">Dados</a></li>
@@ -173,18 +212,18 @@
             <li>
                 <div id="cabeceraInfo" class="collapsible-header"><i class="material-icons">info</i>Información</div>
                 <div id="info" class="collapsible-body">
-                    
-                        <div class="input-field inline"><input id="iNombre" type="text"><label
-                                for="iNombre">Nombre</label> </div>
-                        <!-- <label id="btNombre" class="btn btn-light" onclick="$('#iNombre').val(pj.nombre);alert(pj.nombre)">Nombre</label> -->
-                        <div class="input-field inline"><input id="iRaza" type="text"><label for="iRaza">Raza</label>
-                        </div>
-                        <!-- <label id="btRaza" class="btn btn-light" onclick="$('#iRaza').val(pj.clase);alert(pj.clase)">Raza</label> -->
-                        <div class="input-field inline"><input id="iPeso" type="number"><label for="iPeso">Peso</label>
-                        </div>
-                        <!-- <label id="btPeso" class="btn btn-light" onclick="$('#iPeso').val(pj.peso);alert(pj.peso)">Peso</label> -->
 
-                    
+                    <div class="input-field inline"><input id="iNombre" type="text"><label for="iNombre">Nombre</label>
+                    </div>
+                    <!-- <label id="btNombre" class="btn btn-light" onclick="$('#iNombre').val(pj.nombre);alert(pj.nombre)">Nombre</label> -->
+                    <div class="input-field inline"><input id="iRaza" type="text"><label for="iRaza">Raza</label>
+                    </div>
+                    <!-- <label id="btRaza" class="btn btn-light" onclick="$('#iRaza').val(pj.clase);alert(pj.clase)">Raza</label> -->
+                    <div class="input-field inline"><input id="iPeso" type="number"><label for="iPeso">Peso</label>
+                    </div>
+                    <!-- <label id="btPeso" class="btn btn-light" onclick="$('#iPeso').val(pj.peso);alert(pj.peso)">Peso</label> -->
+
+
                 </div>
             </li>
         </ul>
@@ -247,6 +286,8 @@
         </table>
 
         Fecha<input type="date" id="fecha" value="0777-09-13">
+
+    </div>
     </div>
     <div id="test4" class="col s12">Test 4</div>
 
@@ -299,15 +340,42 @@
     </div>
 
 
+     <!-- Modal -->
+     <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalTitle"
+     aria-hidden="true">
+     <div class="modal-dialog" role="document">
+       <div class="modal-content">
+         <div class="modal-header">
+           <h5 class="modal-title" id="editModalTitle">Editar</h5>
+         </div>
+         <div class="modal-body" id="editor">
+           ...
+         </div>
+         <div class="modal-footer">
+           <button type="button" class="btn btn-secondary modal-close">Cerrar</button>
+           <button type="button" class="btn red accent-4 modal-close" onclick="quitarObjeto()">Eliminar</button>
+           <button type="button" class="btn btn-primary blue" onclick="nuevoObjeto()">Nuevo</button>
+         </div>
+       </div>
+     </div>
+   </div>
+
+
     <div class="fixed-action-btn">
         <a class="btn-floating btn-large red">
             <i class="large material-icons">mode_edit</i>
         </a>
         <ul>
-            <li><a class="btn-floating red"><i class="material-icons">insert_chart</i></a></li>
-            <li><a class="btn-floating yellow darken-1"><i class="material-icons">format_quote</i></a></li>
-            <li><a class="btn-floating green"><i class="material-icons">publish</i></a></li>
-            <li><a class="btn-floating blue"><i class="material-icons">attach_file</i></a></li>
+            <li><a class="btn-floating red"> <i class="material-icons">insert_chart</i></a></li>
+            <li><a class="btn-floating btn-large red"> <img height="28" src="img/sword.svg"></img></a></li>
+            <li><a class="btn-floating btn-large white"> <img height="28" src="img/black-shield.svg"></img></a></li>
+            <li><a class="btn-floating btn-large white"> <img height="28" src="img/blue-shield.svg"></img></a>
+            </li>
+            <li><a class="btn-floating btn-large teal"> <img height="28" src="img/magic-wand.svg"></img></a>
+            </li>
+            <li><a class="btn-floating btn-large transparente"> <i class="material-icons">publish</i></a></li>
+            <li><a class="btn-floating btn-large transparente"> <i class="material-icons">favorite</i></a></li>
+            <li><a class="btn-floating btn-large transparente"> <i class="material-icons">attach_file</i></a></li>
         </ul>
     </div>
 

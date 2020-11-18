@@ -35,6 +35,8 @@ function tablaHabilidades() {
     var visibles = $("#columnas").val();
     // visibles.push(v);
     clear("tbHab");
+    //header
+    createHeader(visibles);
     for (habilidad in pj.habilidades) {
       let hab = pj.getHabilidad(habilidad);
       objetoTabla(hab, "tbHab", visibles)
@@ -88,37 +90,217 @@ function tablaStats(idTabla = "statsTable") {
   
   }
 
-  function objetoTabla(object, tabla, visibles) {
-    var table = document.getElementById(tabla);
-    var row = table.insertRow();
-  
-    var i = 0
-    for (key of visibles) {//Esto serían todas
+
+  function createHeader(visibles, header = "header") {
+    var th = document.getElementById(header);
+    th.style.textTransform = "uppercase";
+    th.innerHTML = ""; //clear header
+    var row = th.insertRow(0);
+    for (var i in visibles) {
       var cell = row.insertCell(i);
-      let valor;
-      //Hacer un get de property en vez de método
-      // if (key.includes("()")) {//si es un método
-      //   valor = eval("object." + key);
-      // }
-      // else {
-      if (i == 0) id = object[key];
-      // crearEventos(object, cell, key);
-      // console.log(object[key]);
-      valor = object[key];
-      // }
-  
-      if (valor === undefined) valor = "";
-  
-      cell.innerHTML = '<i data-toggle="tooltip"  id="' + id + "|" + key + "|" + valor + '" title=' + key + '>' + valor + '</i>';
-    //   crearEventos(object, cell, key);
-      i++;
+      // cell.innerHTML = '<b>' + visibles[i].toUpperCase() + '</b>';
+      cell.innerHTML = '<b>' + visibles[i] + '</b>';
     }
+    if (header === "header") {//si es habilidades
+      // El total si sale siempre cambiar cuando se aplique tb a inventario
+      // a no ser que ponga el peso total
+      cell = row.insertCell();
+      cell.innerHTML = '<b>' + "TOTAL" + '</b>';
+      th.appendChild(row);
+    }
+  
+  }
+
+  function crearEventos(object, cell, key) {
+    //si e sun contenedor cargo lso elementos que contiene
+    if (object instanceof Contenedor) {
+  
+      if (key === "nombre") {
+        // cell.style.color = "red";
+        // cell.innerHTML += `   <button type="button" class="btn btn-secondary btn-sm" onclick="editar();" >Abrir</button>`
+        cell.innerHTML += ` <i class="fas fa-box-open"></i> <span class="badge badge-dark">${object.objetos.length}</span>`
+  
+        cell.addEventListener("click", function () {
+          let nc = object.nombre;
+          let index = pj.inventario.navegar(nav).objetos.indexOf(object);
+          nav.push(index);
+          console.log(nav);
+          cargarContenedor(object);
+          // editar(object);
+  
+        });
+      }
+    }
+  
+    if (object instanceof Gema && key === "nombre") {
+      cell.innerHTML = `<i class="fas fa-gem"></i> ` + cell.innerHTML;
+      cell.innerHTML += ` <span class="badge " style="color:blue;" >${object.pm}/${object.capacidad}</span>`;
+      // cell.innerHTML += ` <span class="badge badge-dark" style="background: linear-gradient(315deg, #b8d0e0 0%, #a6afb9 54%,  #b8d0e0 80% );">${object.ctd}</span>`
+  
+    }
+    if (object instanceof Pociones && key === "nombre") {
+  
+      let index = object.efectos.search(/\(/g);
+      let s = object.efectos.substring(index, object.efectos.length)
+      cell.innerHTML = `<i class="fas fa-flask" ></i> ` + cell.innerHTML;
+      cell.innerHTML += ` <span class="badge " style="color:blue;" >${s}</span>`;
+      var ht = new Hammer(cell);
+      ht.on("press tap", function (ev) {
+        console.log(ev);
+        if (ev.type == "tap")
+          console.log("TAP");
+        else
+          object.tomar();
+      });
+      // cell.innerHTML += ` <span class="badge badge-dark" style="background: linear-gradient(315deg, #b8d0e0 0%, #a6afb9 54%,  #b8d0e0 80% );">${object.ctd}</span>`
+  
+    }
+  
+    if (object instanceof Objetos && key === "nombre") {
+      if (object[key] == "mo") cell.innerHTML += ` <span class="badge badge-dark gold" >${object.ctd}</span>`;
+      else
+        if (object[key] == "mm") cell.innerHTML += ` <span class="badge metal" >${object.ctd}</span>`;
+        else
+          cell.innerHTML += ` <span class="badge badge-dark"  >${object.ctd}</span>`;
+      // cell.innerHTML += ` <span class="badge badge-dark" style="background: linear-gradient(315deg, #b8d0e0 0%, #a6afb9 54%,  #b8d0e0 80% );">${object.ctd}</span>`
+  
+    }
+  
+  //TODO: Objetos
+
+    // if (object instanceof Objeto) {
+    //   var hammertime = new Hammer(cell);
+    //   hammertime.on('swipe', function (ev) {
+    //     console.log(ev);
+    //     if (ev.direction == 2) {
+    //       // cell.parentElement.style.background = "white";
+    //       cell.parentElement.classList.remove("selec");
+    //       deseleccionar(object);
+    //     } //a izq
+    //     else {
+    //       // cell.parentElement.style.background = "green";
+    //       cell.parentElement.classList.add("selec");
+    //       seleccionar(object);
+    //     } //a derechas selecciona
+    //   });
+  
+  
+      // var mc = new Hammer.Manager(cell);
+  
+  
+      // // Tap recognizer with minimal 2 taps
+      // mc.add(new Hammer.Tap({ event: 'doubletap', taps: 2 }));
+      // // Single tap recognizer
+      // mc.add(new Hammer.Tap({ event: 'singletap' }));
+  
+  
+      // // we want to recognize this simulatenous, so a quadrupletap will be detected even while a tap has been recognized.
+      // mc.get('doubletap').recognizeWith('singletap');
+      // // we only want to trigger a tap, when we don't have detected a doubletap
+      // mc.get('singletap').requireFailure('doubletap');
+  
+  
+      // mc.on("singletap doubletap swipe", function (ev) {
+      //   console.log( "Toque " +ev.type + " ");
+      // });
+  
+      cell.addEventListener("dblclick", function () {
+        // alert("mover objeto") + object.nombre;
+        //modifico el editor modal
+        editar(object);
+        //y lo muestro
+        // $("#editModal").modal();
+        // document.getElementById('editModal').open();
+        $("#editModal").modal('open');
+      });
+  
+    
+  
+    // if (object instanceof Pociones) {
+    //   objetoActual = object;
+    //   console.log("me meto en pociones");
+    //   cell.addEventListener("dbclick", function () {
+    //     console.log("Voy a tomar");
+    //     object.tomar();
+    //   });
+    // }
+  
+  
   
     if (object instanceof Habilidad) {
-      // en habilidad pongo el total (.v) y un tooltip con el E y C
-      var cell = row.insertCell(i); cell.innerHTML =
-        `<i data-toggle="tooltip" title="E: ${object.e}\nC: ${object.c} "> <b> ${object.v}</b> </i>`
+      if (key === "xp") { //si doy un click en xp +1
+        cell.addEventListener("click", function () {
+          console.log('lo incremento y guardo' );
+          //lo incremento y guardo en firebase 
+          // object.xp++;
+          object.addXP(1);
+          // object.save();
+          tablaHabilidades()
+        });
+      }
+  
+      if (key === "nombre") {
+        cell.addEventListener("click", function () {
+          //modifico el editor modal
+          editar(object);
+          //y lo muestro
+          $("#editModal").modal();
+        });
+      }
+  
+      if (key === "valor") {
+        cell.addEventListener("click", function () {
+          entrenar(object);
+          //y lo muestro
+        });
+      }
+  
     }
+  
+    if (object instanceof Hechizo) {
+      if (key === "nombre") {
+        cell.innerHTML += ` <i class="fas fa-magic"></i><span class="badge " style="color:blue;" >${object.pm}</span>`;
+  
+        var ht = new Hammer(cell);
+        ht.on("press tap", function (ev) {
+          console.log(ev);
+          if (ev.type == "tap")
+            console.log("TAP");
+          else
+            hechizos(object); //en toque largo hechizo
+        });
+      }
+    }
+
+  }
+  
+  function editar(objeto) {
+    // console.log("Editar:"+objeto );
+    objetoActual = objeto;
+    const keys = Object.keys(objeto);
+    const values = Object.values(objeto);
+  
+    var editor = document.getElementById("editor");
+    editor.innerHTML = ""; //clear editor
+    var id = -1;
+    var k = -1
+    var v = -1;
+    for (i = 0; i < keys.length; i++) {
+      if (i == 0) id = values[i];
+      k = keys[i];
+      v = values[i];
+  
+      console.log(k + " ->" + v)
+  
+      // editor.innerHTML = editor.innerHTML + ' <b>' + k.toUpperCase() + ':</b>' +
+      //   `<input data-toggle="tooltip"  id="edit${k}" value='${v}'' title="${k}" ><br>`
+        editor.innerHTML = editor.innerHTML +
+        `<div class="input-field inline"><input id="edit${k}"  value='${v}' type="text"><label for="edit${k}">${k}</label></div>`
+      // '<input data-toggle="tooltip"  id="edit' + keys[i] + '" value=' + values[i] + ' title=' + keys[i] + ' ><br>';
+      //Probar con forms
+  
+    }
+    editor.innerHTML = editor.innerHTML + `<button type="button" class="btn btn-success" onclick="guardarObjeto()">Guardar</button>`
   
   }
 

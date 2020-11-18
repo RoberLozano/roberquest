@@ -307,7 +307,7 @@ class Animal {
     }
 
   ) {
-    this.clase=this.constructor.name;
+    this.clase = this.constructor.name;
     this.car = {}
     this.nombre = nombre
     this.peso = peso
@@ -540,15 +540,15 @@ class Animal {
   cambiaformas(forma2) {
     this.forma2 = forma2;
   }
-  
- /**
-   * Combate contra un enemigo
-   * @param {Animal} enemigo El enemigo contra el que combatir
-   */
-  combatir(enemigo){
-    this.enemigo=enemigo
-}
-  
+
+  /**
+    * Combate contra un enemigo
+    * @param {Animal} enemigo El enemigo contra el que combatir
+    */
+  combatir(enemigo) {
+    this.enemigo = enemigo
+  }
+
   /**
    * Copia toda la información de un objeto, sea de la misma clase
    * o no, si tiene las mismas propiedades
@@ -703,8 +703,14 @@ class Animal {
    * guarda en firebase
    */
   save() { //creo que da referencias cíclicas
-    database.ref("personajes").child(this.nombre).set(this);
-    console.log("GUARDADO:" + this.nombre);
+    try {
+      database.ref("personajes").child(this.nombre).set(this);
+      console.log("GUARDADO:" + this.nombre);
+    } catch (error) {
+      console.log('error en Firebase, guardando local');
+      this.saveLocal()
+    }
+
 
   }
 
@@ -718,8 +724,8 @@ class Animal {
     localStorage.setItem(this.nombre, JSON.stringify(this));
   }
 
-  cargarLocal() {
-    this.setAll(JSON.parse(localStorage.getItem(this.nombre)))
+  cargarLocal(nombre = this.nombre) {
+    this.setAll(JSON.parse(localStorage.getItem(nombre)))
   }
 
   aplicar(efecto) {
@@ -1019,7 +1025,7 @@ class Humanoide extends Animal {
     var brazoD = new Localizacion("Brazo D", 0.25, 10, 26, 0)
     var brazoI = (new Localizacion("Brazo I", 0.25, 27, 43, 0))
     //TODO:Habría que hacer subLocalización?
-    var pecho = (new Localizacion("Pecho", 0.4, 44, 58, 0,243,213))
+    var pecho = (new Localizacion("Pecho", 0.4, 44, 58, 0, 243, 213))
 
     var abdomen = (new Localizacion("Abdomen", 0.333, 59, 72, 0))
     var piernaD = (new Localizacion("Pierna D", 0.333, 73, 86, 0))
@@ -1029,38 +1035,38 @@ class Humanoide extends Animal {
     // <area shape="circle" coords="242,60,40" alt="cara" title="cara" onclick="console.log('Hostia en cara')">
     // <area shape="circle" coords="243,19,20" alt="craneo" title="craneo" onclick="console.log('Hostia en craneo');">
 
-    cabeza.add(new Localizacion("Craneo", 1, 1, 4, 0, 243,19))
-    cabeza.add(new Localizacion("Cara", 1, 5, 7, 0, 242,60))
-    cabeza.add(new Localizacion("Cuello", 1, 8, 9, 0, 243,130))
+    cabeza.add(new Localizacion("Craneo", 1, 1, 4, 0, 243, 19))
+    cabeza.add(new Localizacion("Cara", 1, 5, 7, 0, 242, 60))
+    cabeza.add(new Localizacion("Cuello", 1, 8, 9, 0, 243, 130))
 
-    brazoD.add(new Localizacion("Hombro D", 1, 10, 13, 0,155,177))
-    brazoD.add(new Localizacion("Biceps D", 1, 14, 18, 0,144,258))
-    brazoD.add(new Localizacion("Antebrazo D", 1, 19, 23, 0,126,355))
-    brazoD.add(new Localizacion("Codo D", 1, 24, 24, 0,137,307))
-    brazoD.add(new Localizacion("Mano D", 1, 25, 26, 0,97,446))
+    brazoD.add(new Localizacion("Hombro D", 1, 10, 13, 0, 155, 177))
+    brazoD.add(new Localizacion("Biceps D", 1, 14, 18, 0, 144, 258))
+    brazoD.add(new Localizacion("Antebrazo D", 1, 19, 23, 0, 126, 355))
+    brazoD.add(new Localizacion("Codo D", 1, 24, 24, 0, 137, 307))
+    brazoD.add(new Localizacion("Mano D", 1, 25, 26, 0, 97, 446))
 
-    brazoI.add(new Localizacion("Hombro I", 1, 27, 30, 0,335,177))
-    brazoI.add(new Localizacion("Biceps I", 1, 31, 35, 0,343,261))
-    brazoI.add(new Localizacion("Antebrazo I", 1, 36, 40, 0,362,355))
-    brazoI.add(new Localizacion("Codo I", 1, 41, 41, 0, 354,307))
-    brazoI.add(new Localizacion("Mano I", 1, 42, 43, 0,389,446))
+    brazoI.add(new Localizacion("Hombro I", 1, 27, 30, 0, 335, 177))
+    brazoI.add(new Localizacion("Biceps I", 1, 31, 35, 0, 343, 261))
+    brazoI.add(new Localizacion("Antebrazo I", 1, 36, 40, 0, 362, 355))
+    brazoI.add(new Localizacion("Codo I", 1, 41, 41, 0, 354, 307))
+    brazoI.add(new Localizacion("Mano I", 1, 42, 43, 0, 389, 446))
 
-    abdomen.add(new Localizacion("Vientre", 1, 59, 65, 0,243,348))
-    abdomen.add(new Localizacion("Cadera D", 1, 66, 68, 0,183,390))
-    abdomen.add(new Localizacion("Ingle", 1, 69, 69, 0,243,448))
-    abdomen.add(new Localizacion("Cadera I", 1, 70, 72, 0,306,390))
+    abdomen.add(new Localizacion("Vientre", 1, 59, 65, 0, 243, 348))
+    abdomen.add(new Localizacion("Cadera D", 1, 66, 68, 0, 183, 390))
+    abdomen.add(new Localizacion("Ingle", 1, 69, 69, 0, 243, 448))
+    abdomen.add(new Localizacion("Cadera I", 1, 70, 72, 0, 306, 390))
 
-    piernaD.add(new Localizacion("Muslo Superior D", 1, 73, 77, 0,195,503))
-    piernaD.add(new Localizacion("Muslo Inferior D", 1, 78, 80, 0,203,557))
-    piernaD.add(new Localizacion("Rodilla D", 1, 81, 81, 0,207,630))
-    piernaD.add(new Localizacion("Pierna Inf D", 1, 82, 85, 0,207,737))
-    piernaD.add(new Localizacion("Pie D", 1, 86, 86, 0,205,850))
+    piernaD.add(new Localizacion("Muslo Superior D", 1, 73, 77, 0, 195, 503))
+    piernaD.add(new Localizacion("Muslo Inferior D", 1, 78, 80, 0, 203, 557))
+    piernaD.add(new Localizacion("Rodilla D", 1, 81, 81, 0, 207, 630))
+    piernaD.add(new Localizacion("Pierna Inf D", 1, 82, 85, 0, 207, 737))
+    piernaD.add(new Localizacion("Pie D", 1, 86, 86, 0, 205, 850))
 
-    piernaI.add(new Localizacion("Muslo Superior I", 1, 87, 91, 0,287,503))
-    piernaI.add(new Localizacion("Muslo Inferior I", 1, 92, 94, 0,282,557))
-    piernaI.add(new Localizacion("Rodilla I", 1, 95, 95, 0,282,630))
-    piernaI.add(new Localizacion("Pierna Inf I", 1, 96, 99, 0,277,737))
-    piernaI.add(new Localizacion("Pie I", 1, 100, 100, 0,283,850))
+    piernaI.add(new Localizacion("Muslo Superior I", 1, 87, 91, 0, 287, 503))
+    piernaI.add(new Localizacion("Muslo Inferior I", 1, 92, 94, 0, 282, 557))
+    piernaI.add(new Localizacion("Rodilla I", 1, 95, 95, 0, 282, 630))
+    piernaI.add(new Localizacion("Pierna Inf I", 1, 96, 99, 0, 277, 737))
+    piernaI.add(new Localizacion("Pie I", 1, 100, 100, 0, 283, 850))
 
     this.cuerpo.add(cabeza);
     this.cuerpo.add(brazoD);
@@ -1073,15 +1079,15 @@ class Humanoide extends Animal {
 
   }
 
-  cuerpoDaño(canvas, scale=1){
+  cuerpoDaño(canvas, scale = 1) {
 
-   canvas = document.getElementById(canvas);
-  var ctx = canvas.getContext("2d");
-  ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height)
-  var img = document.getElementById("cuerpo");
-  ctx.drawImage(img, 0, 0,500*scale,900*scale);
-  let todos = [];
-  console.log("cuerpoDano de " + this.nombre);
+    canvas = document.getElementById(canvas);
+    var ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+    var img = document.getElementById("cuerpo");
+    ctx.drawImage(img, 0, 0, 500 * scale, 900 * scale);
+    let todos = [];
+    console.log("cuerpoDano de " + this.nombre);
 
     this.cuerpo.todosDaños(todos);
     console.log(todos);
@@ -1089,26 +1095,26 @@ class Humanoide extends Animal {
       // console.log(l.nombre,l.daño);
       // string += `${l.nombre} :<b>${l.daño}</b>/${l.pg}<br>`
       // string+=l.nombre+":"+l.daño+"<br>";
-      if(l.x && l.y){
-        console.log("dibujo ",l.nombre,l.x, l.y, l.daño*5,l.pg);
+      if (l.x && l.y) {
+        console.log("dibujo ", l.nombre, l.x, l.y, l.daño * 5, l.pg);
         ctx.globalAlpha = 0.5
         ctx.beginPath();
-        ctx.arc(l.x*scale, l.y*scale, l.daño*5*scale, 0, Math.PI, true);
+        ctx.arc(l.x * scale, l.y * scale, l.daño * 5 * scale, 0, Math.PI, true);
         // ctx.arc(l.x, l.y, 45, 0, (l.daño/l.pg)*2* Math.PI, false);
-        ctx.fillStyle = l.daño>=l.pg?'red':'orange';
+        ctx.fillStyle = l.daño >= l.pg ? 'red' : 'orange';
         ctx.fill();
 
         // Texto
         ctx.globalAlpha = 1
-        ctx.font = (l.daño*2+20)*scale+'px Sans-serif';
+        ctx.font = (l.daño * 2 + 20) * scale + 'px Sans-serif';
         ctx.strokeStyle = 'black';
-        ctx.textAlign = "center" 
+        ctx.textAlign = "center"
         ctx.textBaseline = "bottom";
         // ctx.textAlign = "end" 
         ctx.lineWidth = 5;
-        ctx.strokeText(l.daño+"/"+l.pg, l.x*scale, l.y*scale);
+        ctx.strokeText(l.daño + "/" + l.pg, l.x * scale, l.y * scale);
         ctx.fillStyle = 'white';
-        ctx.fillText(l.daño+"/"+l.pg, l.x*scale, l.y*scale);
+        ctx.fillText(l.daño + "/" + l.pg, l.x * scale, l.y * scale);
 
         //quesito
         // let cx=l.x;
@@ -1124,91 +1130,91 @@ class Humanoide extends Animal {
 
         ctx.globalAlpha = 0.77
         ctx.beginPath();
-        ctx.arc(l.x*scale, l.y*scale, l.pg*5*scale, 0,  Math.PI, false);
+        ctx.arc(l.x * scale, l.y * scale, l.pg * 5 * scale, 0, Math.PI, false);
         ctx.fillStyle = "grey";
         ctx.fill();
 
-              ctx.globalAlpha = 1
-        ctx.font = (l.daño*2+20)*scale+'px Sans-serif';
+        ctx.globalAlpha = 1
+        ctx.font = (l.daño * 2 + 20) * scale + 'px Sans-serif';
         ctx.strokeStyle = 'black';
-        ctx.textAlign = "center" 
+        ctx.textAlign = "center"
         ctx.textBaseline = "top";
         // ctx.textAlign = "end" 
         ctx.lineWidth = 5;
-        ctx.strokeText(l.daño, l.x*scale, l.y*scale);
+        ctx.strokeText(l.daño, l.x * scale, l.y * scale);
         ctx.fillStyle = 'white';
-        ctx.fillText(l.daño, l.x*scale, l.y*scale);
+        ctx.fillText(l.daño, l.x * scale, l.y * scale);
         ctx.globalAlpha = 1;
       }
-  
+
     });
   }
 
 }
 
-class Humano extends Humanoide{
-  constructor(){
+class Humano extends Humanoide {
+  constructor() {
     super({});
   }
 }
 
-class Enano extends Humanoide{
-  constructor(){
-    super({ FUE: new Dado('3d6+6').tirar(),CON: new Dado('3d6+6').tirar()});
-    this.nombre='Durin';
-    this.peso=77;
+class Enano extends Humanoide {
+  constructor() {
+    super({ FUE: new Dado('3d6+6').tirar(), CON: new Dado('3d6+6').tirar() });
+    this.nombre = 'Durin';
+    this.peso = 77;
     this.haBasicas();
   }
 
-  haBasicas(){
+  haBasicas() {
 
 
-"HABILIDADES DE SIGILO"
-"Deslizarse en Silencio"
-"Esconderse"
+    "HABILIDADES DE SIGILO"
+    "Deslizarse en Silencio"
+    "Esconderse"
 
 
-this.setHabilidad(new Habilidad("Esquivar", Agilidad, 20));
-this.setHabilidad(new Habilidad("Montar", Agilidad, 20));
-this.setHabilidad(new Habilidad("Nadar", Agilidad, 20));
-this.setHabilidad(new Habilidad("Remar", Agilidad, 20));
-this.setHabilidad(new Habilidad("Saltar", Agilidad, 20));
-this.setHabilidad(new Habilidad("Trepar", Agilidad, 20));
-this.setHabilidad(new Habilidad("Correr", Agilidad, 20));
+    this.setHabilidad(new Habilidad("Esquivar", Agilidad, 20));
+    this.setHabilidad(new Habilidad("Montar", Agilidad, 20));
+    this.setHabilidad(new Habilidad("Nadar", Agilidad, 20));
+    this.setHabilidad(new Habilidad("Remar", Agilidad, 20));
+    this.setHabilidad(new Habilidad("Saltar", Agilidad, 20));
+    this.setHabilidad(new Habilidad("Trepar", Agilidad, 20));
+    this.setHabilidad(new Habilidad("Correr", Agilidad, 20));
 
-this.setHabilidad(new Habilidad("Cantar", Comunicación, 20));
-this.setHabilidad(new Habilidad("Actuar", Comunicación, 20));
-this.setHabilidad(new Habilidad("Intimidar", Comunicación, 20));
-this.setHabilidad(new Habilidad("Regatear", Comunicación, 20));
-this.setHabilidad(new Habilidad("Enseñar", Comunicación, 20));
-this.setHabilidad(new Habilidad("Silbar", Comunicación, 20));
-this.setHabilidad(new Habilidad("Seducir", Comunicación, 20));
+    this.setHabilidad(new Habilidad("Cantar", Comunicación, 20));
+    this.setHabilidad(new Habilidad("Actuar", Comunicación, 20));
+    this.setHabilidad(new Habilidad("Intimidar", Comunicación, 20));
+    this.setHabilidad(new Habilidad("Regatear", Comunicación, 20));
+    this.setHabilidad(new Habilidad("Enseñar", Comunicación, 20));
+    this.setHabilidad(new Habilidad("Silbar", Comunicación, 20));
+    this.setHabilidad(new Habilidad("Seducir", Comunicación, 20));
 
-this.setHabilidad(new Habilidad("Animal", Conocimiento, 20));
-this.setHabilidad(new Habilidad("Vegetal", Conocimiento, 20));
-this.setHabilidad(new Habilidad("Mineral", Conocimiento, 20));
-this.setHabilidad(new Habilidad("Mundo", Conocimiento, 20));
-this.setHabilidad(new Habilidad("Raza Propia", Conocimiento, 20));
-this.setHabilidad(new Habilidad("Otras Razas", Conocimiento, 20));
-this.setHabilidad(new Habilidad("Leer y escribir", Conocimiento, 20));
-this.setHabilidad(new Habilidad("Navegación", Conocimiento, 20));
-this.setHabilidad(new Habilidad("Primeros Auxilios", Conocimiento, 20));
-this.setHabilidad(new Habilidad("Tasación", Conocimiento, 20));
-this.setHabilidad(new Habilidad("Inventar", Conocimiento, 20));
+    this.setHabilidad(new Habilidad("Animal", Conocimiento, 20));
+    this.setHabilidad(new Habilidad("Vegetal", Conocimiento, 20));
+    this.setHabilidad(new Habilidad("Mineral", Conocimiento, 20));
+    this.setHabilidad(new Habilidad("Mundo", Conocimiento, 20));
+    this.setHabilidad(new Habilidad("Raza Propia", Conocimiento, 20));
+    this.setHabilidad(new Habilidad("Otras Razas", Conocimiento, 20));
+    this.setHabilidad(new Habilidad("Leer y escribir", Conocimiento, 20));
+    this.setHabilidad(new Habilidad("Navegación", Conocimiento, 20));
+    this.setHabilidad(new Habilidad("Primeros Auxilios", Conocimiento, 20));
+    this.setHabilidad(new Habilidad("Tasación", Conocimiento, 20));
+    this.setHabilidad(new Habilidad("Inventar", Conocimiento, 20));
 
-this.setHabilidad(new Habilidad("Lanzar", Manipulación, 20));
-this.setHabilidad(new Habilidad("Robar", Manipulación, 20));
-this.setHabilidad(new Habilidad("Construir", Manipulación, 20));
+    this.setHabilidad(new Habilidad("Lanzar", Manipulación, 20));
+    this.setHabilidad(new Habilidad("Robar", Manipulación, 20));
+    this.setHabilidad(new Habilidad("Construir", Manipulación, 20));
 
-this.setHabilidad(new Habilidad("Buscar", Percepción, 20));    
-this.setHabilidad(new Habilidad("Escuchar", Percepción, 20));    
-this.setHabilidad(new Habilidad("Otear", Percepción, 20));    
-this.setHabilidad(new Habilidad("Rastrear", Percepción, 20));    
-this.setHabilidad(new Habilidad("Oler", Percepción, 20));    
-this.setHabilidad(new Habilidad("Orientación", Percepción, 20));
+    this.setHabilidad(new Habilidad("Buscar", Percepción, 20));
+    this.setHabilidad(new Habilidad("Escuchar", Percepción, 20));
+    this.setHabilidad(new Habilidad("Otear", Percepción, 20));
+    this.setHabilidad(new Habilidad("Rastrear", Percepción, 20));
+    this.setHabilidad(new Habilidad("Oler", Percepción, 20));
+    this.setHabilidad(new Habilidad("Orientación", Percepción, 20));
 
-this.setHabilidad(new Habilidad("Deslizarse en Silencio", Sigilo, 20));    
-this.setHabilidad(new Habilidad("Esconderse", Sigilo, 20));    
+    this.setHabilidad(new Habilidad("Deslizarse en Silencio", Sigilo, 20));
+    this.setHabilidad(new Habilidad("Esconderse", Sigilo, 20));
 
   }
 }
@@ -1350,7 +1356,7 @@ function de(s) {
 try {
   var config = JSON.parse(de(coor));
   firebase.initializeApp(config);
-var database = firebase.database();
+  var database = firebase.database();
 } catch (error) {
   // alert('Error en firebase')
   console.log('Error en firebase')
@@ -1383,4 +1389,4 @@ function guerrero(personaje, nivel, ...armas) {
 
 }
 
-guerrero(pj,10,'espada','arco', 'daga')
+guerrero(pj, 10, 'espada', 'arco', 'daga')

@@ -355,8 +355,6 @@ function crearEventos(object, cell, key) {
     }
   }
 
-
-
   if (object instanceof Gema && key === "nombre") {
     cell.innerHTML = `<i class="fas fa-gem"></i> ` + cell.innerHTML;
     cell.innerHTML += ` <span class="badge " style="color:blue;" >${object.pm}/${object.capacidad}</span>`;
