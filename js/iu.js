@@ -26,8 +26,11 @@ function objetoTabla(object, tabla, visibles) {
   
     if (object instanceof Habilidad) {
       // en habilidad pongo el total (.v) y un tooltip con el E y C
-      var cell = row.insertCell(i); cell.innerHTML =
+      var cell = row.insertCell(i);
+      cell.innerHTML =
         `<i data-toggle="tooltip" title="E: ${object.e}\nC: ${object.c} "> <b> ${object.v}</b> </i>`
+        crearEventos(object, cell, "total");
+
     }
   
   }
@@ -246,9 +249,9 @@ function tablaStats(idTabla = "statsTable") {
           editar(object);
           //y lo muestro
           // $("#editModal").modal();
-          // $("#editModal").modal('open');
-          sel(object, cell); //selecciona o deselecciona si ya lo está
-          console.log(objeto);
+          $("#editModal").modal('open');
+          // sel(object, cell); //selecciona o deselecciona si ya lo está
+          // console.log(objeto);
         });
       }
   
@@ -258,9 +261,13 @@ function tablaStats(idTabla = "statsTable") {
           //y lo muestro
         });
       }
-      else{
-        console.log(key);
+      if (key === "total") {
+        cell.addEventListener("click", function () {
+          sel(object, cell);
+          console.log(objeto);
+        });
       }
+      
   
     }
   
