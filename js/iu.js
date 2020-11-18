@@ -138,23 +138,23 @@ function tablaStats(idTabla = "statsTable") {
       // cell.innerHTML += ` <span class="badge badge-dark" style="background: linear-gradient(315deg, #b8d0e0 0%, #a6afb9 54%,  #b8d0e0 80% );">${object.ctd}</span>`
   
     }
-    if (object instanceof Pociones && key === "nombre") {
+    // if (object instanceof Pociones && key === "nombre") {
   
-      let index = object.efectos.search(/\(/g);
-      let s = object.efectos.substring(index, object.efectos.length)
-      cell.innerHTML = `<i class="fas fa-flask" ></i> ` + cell.innerHTML;
-      cell.innerHTML += ` <span class="badge " style="color:blue;" >${s}</span>`;
-      var ht = new Hammer(cell);
-      ht.on("press tap", function (ev) {
-        console.log(ev);
-        if (ev.type == "tap")
-          console.log("TAP");
-        else
-          object.tomar();
-      });
-      // cell.innerHTML += ` <span class="badge badge-dark" style="background: linear-gradient(315deg, #b8d0e0 0%, #a6afb9 54%,  #b8d0e0 80% );">${object.ctd}</span>`
+    //   let index = object.efectos.search(/\(/g);
+    //   let s = object.efectos.substring(index, object.efectos.length)
+    //   cell.innerHTML = `<i class="fas fa-flask" ></i> ` + cell.innerHTML;
+    //   cell.innerHTML += ` <span class="badge " style="color:blue;" >${s}</span>`;
+    //   var ht = new Hammer(cell);
+    //   ht.on("press tap", function (ev) {
+    //     console.log(ev);
+    //     if (ev.type == "tap")
+    //       console.log("TAP");
+    //     else
+    //       object.tomar();
+    //   });
+    //   // cell.innerHTML += ` <span class="badge badge-dark" style="background: linear-gradient(315deg, #b8d0e0 0%, #a6afb9 54%,  #b8d0e0 80% );">${object.ctd}</span>`
   
-    }
+    // }
   
     if (object instanceof Objetos && key === "nombre") {
       if (object[key] == "mo") cell.innerHTML += ` <span class="badge badge-dark gold" >${object.ctd}</span>`;
@@ -228,6 +228,7 @@ function tablaStats(idTabla = "statsTable") {
   
   
     if (object instanceof Habilidad) {
+      console.log(key);
       if (key === "xp") { //si doy un click en xp +1
         cell.addEventListener("click", function () {
           console.log('lo incremento y guardo' );
@@ -244,7 +245,8 @@ function tablaStats(idTabla = "statsTable") {
           //modifico el editor modal
           editar(object);
           //y lo muestro
-          $("#editModal").modal();
+          // $("#editModal").modal();
+          $("#editModal").modal('open');
         });
       }
   
@@ -253,6 +255,9 @@ function tablaStats(idTabla = "statsTable") {
           entrenar(object);
           //y lo muestro
         });
+      }
+      else{
+        console.log(key);
       }
   
     }
@@ -413,18 +418,222 @@ function dark() {
   $("input").toggleClass("dark");
   $("#cabeceraInfo").toggleClass("dark");
   // $("#cabeceraInfo").css("color", "red");
-
-  
-
   // $(":input").css("color", "white");
-  
-
-
-
-
   // $('#tabla').DataTable();
 
 }
+
+
+//#region edición
+
+var selected = [];
+var copiado = [];
+
+function descuento() {
+  //TODO: DESCUENTO
+  $('#descuento').modal('open');
+  $('#rg-descuento').change(function () {
+    console.log(this.value);
+  });
+
+  $('#quitarDescuento').one("click", function () {
+    selected.forEach(element => {
+      element.quitarDescuento();
+      element.guardar();
+    });
+  });
+
+  $('#descuentoOk').one("click", function () {
+    nombreLista = $("#nombreLista").val();
+    let d = $("#sl-descuento").val();
+    // console.log(d);
+    selected.forEach(element => {
+      let des;
+      if (d === "ud") { des = new Descuento(+$('#rg-descuento').val(), 1); }
+      else des = Descuento.oferta(d);
+      element.descuento = des;
+      // console.log(des);
+      console.log(`${element.nombre} => ${element.total}`);
+      element.guardar();
+    });
+  });
+
+}
+
+
+function checkContexto() {
+  if (selected.length < 1) { //si no hay seleccionados
+    // $("#fb-copiar").hide();
+    // $("#fb-cortar").hide();
+    // $("#fb-eliminar").hide();
+    // $("#fb-editar").hide();
+    // // $("#fb-descuento").hide();
+    // $("#deseleccionarTodo").hide();
+    // $("#fb-nuevo").show();
+
+
+  }
+  else {
+    // $("#fb-copiar").show();
+    // $("#fb-cortar").show();
+    // $("#fb-eliminar").show();
+    // $("#fb-editar").show();
+    // $("#deseleccionarTodo").show();
+    // $("#fb-nuevo").hide();
+
+  }
+
+  if (copiado.length < 1) {
+    // $("#fb-pegar").hide();
+  }
+  else {
+    // $("#fb-pegar").show();
+  }
+
+
+}
+
+function invertirSeleccion() {
+  $("#myTable").children('tr').each(function (i) {
+
+    var pos = selected.indexOf(articulos[i]);
+    if (pos > -1) { //deselecciono si ya está
+      console.log("Deselecciono" + i + "  " + articulos[i].nombre);
+
+      selected.splice(pos, 1);
+      this.classList.remove("selec"); //quito la clase de seleccionado
+    }
+    else { //si no está lo selecciono
+      console.log("Selecciono" + i + "  " + articulos[i].nombre);
+      selected.push(articulos[i]);
+      this.classList.add("selec");//pongo formato seleccionado
+    }
+
+
+  });
+  checkContexto();
+
+}
+
+
+function deseleccionarTodo() {
+  console.log(articulos);
+  selected = [];
+  $("#myTable").children('tr').each(function (i) {
+    this.classList.remove("selec");
+  });
+  checkContexto();
+}
+
+function seleccionarTodo() {
+  console.log(articulos);
+  // PETA copiar de uno en uno
+  // selected = articulos;
+  selected = [...articulos];
+
+  $("#myTable").children('tr').each(function (i) {
+    this.classList.add("selec");
+  });
+  checkContexto();
+
+  M.toast({ html: `${selected.length} seleccionado${selected.length > 1 ? 's' : ''}` })
+
+}
+
+function toast(s) {
+  M.toast({ html: s })
+}
+
+/**
+ * 
+ * @param {Object} objeto el objeto seleccionado
+ * @param {Cell} celda la celda sobre la que se actúa
+ */
+function sel(objeto, celda) {
+
+  console.log(selected);
+  var pos = selected.indexOf(objeto);
+  console.log("pos:" + pos);
+  if (pos > -1) { //deselecciono si ya está
+    selected.splice(pos, 1);
+    celda.parentElement.classList.remove("selec"); //quito la clase de seleccionado
+  }
+  else { //si no está lo selecciono
+    selected.push(objeto);
+    celda.parentElement.classList.add("selec");//pongo formato seleccionado
+  }
+
+  checkContexto();
+  console.log(selected);
+
+}
+
+// function seleccionar(objeto) {
+//   console.log(selected);
+//   var pos = selected.indexOf(objeto);
+//   console.log("pos:" + pos);
+//   if (pos > -1) return; //ya está seleccionado
+//   selected.push(objeto);
+//   console.log(selected);
+// }
+
+// function deseleccionar(objeto) {
+//   var pos = selected.indexOf(objeto);
+//   console.log("Encontrado en pos:" + pos);
+//   if (pos > -1) selected.splice(pos, 1);
+//   console.log(selected);
+
+// }
+
+function copiar() {
+  copiado = selected;
+  checkContexto();
+}
+
+function cortar() {
+  // copiado.push(objetoActual);
+  copiar();
+  eliminar();
+  // pj.inventario.navegar(nav).sacar(objetoActual);
+  // pj.save();
+  // cargarPersonaje(true);
+}
+
+function eliminar() {
+
+  let l=selected.length;
+
+  //se quita la escucha
+  off=true
+
+  selected.forEach((element,i) => {
+    if(i==(l-1)) off=false; //si es el último se vuelve a activar la escucha
+    element.borrar();
+  });
+
+  // $("#fb-pegar").hide();
+
+  // M.toast({html: selected.length +" eliminados"})
+  M.toast({ html: `${selected.length} eliminado${selected.length > 1 ? 's' : ''}` })
+  selected = [];
+  checkContexto();
+
+}
+
+function pegar() {
+  copiado.forEach(element => {
+    nuevoArticulo(element);
+  });
+  // copiado = [];
+  selected = [];
+  checkContexto();
+
+
+}
+
+//#endregion
+
+
 
 console.log("CARGA EL PUTO PERSONAJE:" + pj.nombre);
     // console.log(nav);
