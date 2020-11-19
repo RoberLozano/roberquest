@@ -121,12 +121,18 @@ function tablaStats(idTabla = "statsTable") {
       if (key === "nombre") {
         // cell.style.color = "red";
         // cell.innerHTML += `   <button type="button" class="btn btn-secondary btn-sm" onclick="editar();" >Abrir</button>`
-        cell.innerHTML += ` <i class="fas fa-box-open"></i> <span class="badge badge-dark">${object.objetos.length}</span>`
-  
-        cell.addEventListener("click", function () {
+        // cell.innerHTML += ` <i class="material-icons small">delete</i> <img class="ic" src="img/box-open-solid.svg"></img> <span class="badge">${object.objetos.length}</span>`
+        var x = document.createElement("SPAN");
+        x.innerHTML=  `<i class="material-icons small">delete</i> <img class="ic" src="img/box-open-solid.svg"></img> <span class="badge">${object.objetos.length}</span>`
+        cell.appendChild(x);
+        x.addEventListener("click", function () {
           let nc = object.nombre;
           let index = pj.inventario.navegar(nav).objetos.indexOf(object);
+
           nav.push(index);
+          console.log('Contenedor:'+object.nombre);
+          let thisnav=nav;
+          document.getElementById('breadcrumb').innerHTML+=`<a onclick="alert('[${thisnav}]');eval('nav=[${thisnav}]');ir()" class="breadcrumb">${object.nombre}</a>`
           console.log(nav);
           cargarContenedor(object);
           // editar(object);
@@ -141,23 +147,23 @@ function tablaStats(idTabla = "statsTable") {
       // cell.innerHTML += ` <span class="badge badge-dark" style="background: linear-gradient(315deg, #b8d0e0 0%, #a6afb9 54%,  #b8d0e0 80% );">${object.ctd}</span>`
   
     }
-    // if (object instanceof Pociones && key === "nombre") {
+    if (object instanceof Pociones && key === "nombre") {
   
-    //   let index = object.efectos.search(/\(/g);
-    //   let s = object.efectos.substring(index, object.efectos.length)
-    //   cell.innerHTML = `<i class="fas fa-flask" ></i> ` + cell.innerHTML;
-    //   cell.innerHTML += ` <span class="badge " style="color:blue;" >${s}</span>`;
-    //   var ht = new Hammer(cell);
-    //   ht.on("press tap", function (ev) {
-    //     console.log(ev);
-    //     if (ev.type == "tap")
-    //       console.log("TAP");
-    //     else
-    //       object.tomar();
-    //   });
-    //   // cell.innerHTML += ` <span class="badge badge-dark" style="background: linear-gradient(315deg, #b8d0e0 0%, #a6afb9 54%,  #b8d0e0 80% );">${object.ctd}</span>`
+      let index = object.efectos.search(/\(/g);
+      let s = object.efectos.substring(index, object.efectos.length)
+      cell.innerHTML = `<i class="fas fa-flask" ></i> ` + cell.innerHTML;
+      cell.innerHTML += ` <span class="badge " style="color:blue;" >${s}</span>`;
+      var ht = new Hammer(cell);
+      ht.on("press tap", function (ev) {
+        console.log(ev);
+        if (ev.type == "tap")
+          console.log("TAP");
+        else
+          object.tomar();
+      });
+      // cell.innerHTML += ` <span class="badge badge-dark" style="background: linear-gradient(315deg, #b8d0e0 0%, #a6afb9 54%,  #b8d0e0 80% );">${object.ctd}</span>`
   
-    // }
+    }
   
     if (object instanceof Objetos && key === "nombre") {
       if (object[key] == "mo") cell.innerHTML += ` <span class="badge badge-dark gold" >${object.ctd}</span>`;
@@ -219,19 +225,16 @@ function tablaStats(idTabla = "statsTable") {
   
     
   
-    // if (object instanceof Pociones) {
-    //   objetoActual = object;
-    //   console.log("me meto en pociones");
-    //   cell.addEventListener("dbclick", function () {
-    //     console.log("Voy a tomar");
-    //     object.tomar();
-    //   });
-    // }
-  
-  
+    if (object instanceof Pociones) {
+      objetoActual = object;
+      console.log("me meto en pociones");
+      cell.addEventListener("dbclick", function () {
+        console.log("Voy a tomar");
+        object.tomar();
+      });
+    }
   
     if (object instanceof Habilidad) {
-      console.log(key);
       if (key === "xp") { //si doy un click en xp +1
         cell.addEventListener("click", function () {
           console.log('lo incremento y guardo' );
@@ -349,8 +352,9 @@ function tablaStats(idTabla = "statsTable") {
     }
   }
 
+  var tab;
   function tabActiva(params) {
-    
+    tab=$(".active").attr('href');
       console.log("Active Tab:"+$(".active").attr('id'));
       console.log("Active Tab Div:"+$(".active").attr('href'));
      
@@ -382,6 +386,11 @@ $('select').change(function (e) {
 //para tabla habilidades
 $('#columnas').change( function (e) {
   tablaHabilidades();
+});
+
+//para tabla habilidades
+$('#colInventario').change( function (e) {
+  cargarContenedor();
 });
 
 
@@ -424,6 +433,10 @@ function dark() {
   // $("#cabeceraInfo").css("color", "red");
   // $(":input").css("color", "white");
   // $('#tabla').DataTable();
+  $("#tabs-swipe-demo").toggleClass("dark");
+
+//los iconos invertidos pero a la segunda no funciona
+ $('.ic').toggleClass("invert");
 
 }
 
@@ -432,40 +445,14 @@ function dark() {
 
 var selected = [];
 var copiado = [];
-
-function descuento() {
-  //TODO: DESCUENTO
-  $('#descuento').modal('open');
-  $('#rg-descuento').change(function () {
-    console.log(this.value);
-  });
-
-  $('#quitarDescuento').one("click", function () {
-    selected.forEach(element => {
-      element.quitarDescuento();
-      element.guardar();
-    });
-  });
-
-  // $('#descuentoOk').one("click", function () {
-  //   nombreLista = $("#nombreLista").val();
-  //   let d = $("#sl-descuento").val();
-  //   // console.log(d);
-  //   selected.forEach(element => {
-  //     let des;
-  //     if (d === "ud") { des = new Descuento(+$('#rg-descuento').val(), 1); }
-  //     else des = Descuento.oferta(d);
-  //     element.descuento = des;
-  //     // console.log(des);
-  //     console.log(`${element.nombre} => ${element.total}`);
-  //     element.guardar();
-  //   });
-  // });
-
-}
+var nav = [];
 
 
 function checkContexto() {
+  if (selected.length == 1) { //si hay 1 seleccionado
+    // $("#fb-editar").show();
+
+  }
   if (selected.length < 1) { //si no hay seleccionados
     // $("#fb-copiar").hide();
     // $("#fb-cortar").hide();
@@ -637,16 +624,33 @@ function pegar() {
 
 //#endregion
 
+//#region navegacion
 
-function isNumber(value) {
-  if (value instanceof Number)
-    return true
-  else
-    return !isNaN(value);
+
+function atras() {
+  nav.pop();
+  let bc= document.getElementById('breadcrumb');
+  bc.removeChild(bc.lastChild);
+  ir();
 }
 
-console.log("CARGA EL PUTO PERSONAJE:" + pj.nombre);
-    // console.log(nav);
+function ir() {
+
+  console.log("CARGA CONTENEDOR");
+  console.log(pj.inventario.navegar(nav).nombre);
+  cargarContenedor(pj.inventario.navegar(nav));
+
+}
+
+//#endregion navegacion
+
+
+
+
+
+function cargar(params) {
+  console.log("CARGA EL PUTO PERSONAJE:" + pj.nombre);
+    console.log(nav);
     // console.log(pj);
     info();
 
@@ -671,4 +675,6 @@ console.log("CARGA EL PUTO PERSONAJE:" + pj.nombre);
     //   cargarContenedor(contenedorActual);
     // }
     // else
-    // cargarContenedor();
+    cargarContenedor();
+  
+}

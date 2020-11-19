@@ -211,14 +211,14 @@ class Contenedor extends Objeto {
   navegar(indices) {
 
     if (indices.length == 0) {
-      console.log("devuelvo" + this.nombre + " queda: " + indices);
-      console.log(this);
+      // console.log("devuelvo" + this.nombre + " queda: " + indices);
+      // console.log(this);
       return this;
     }
 
     if (this.objetos[indices[0]] instanceof Contenedor) {
       let resto = indices.slice(1);
-      console.log(resto);
+      // console.log(resto);
       return this.objetos[indices[0]].navegar(resto)
     }
   }
@@ -349,6 +349,12 @@ function creaInventario(nombre = "mochila") {
   }
   contenedor.add(bolsa);
 
+  var fal = new Contenedor("faltriquera", 1, 10, 10);
+  for (let i = 0; i < 3; i++) {
+    fal.add(new Objeto("cosa" + i, i, i));
+  }
+
+  contenedor.add(fal);
   var bolsita = new Contenedor("bolsita", 1, 1, 5);
   bolsita.add(new Objeto("anillo", 1, 10));
   bolsita.add(new Objeto("cadena", 1, 20));

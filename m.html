@@ -56,6 +56,7 @@
         .dark {
             background-color: black !important;
             color: white !important;
+            
         }
 
         .dado {
@@ -81,30 +82,43 @@
             background-color: rgba(0, 0, 0, 0);
         }
 
-        img {
+        .ic {
             width: 1.7rem;
-            vertical-align: text-top;
-            transition: .5s ease;
+            vertical-align: middle;
+            transition: .5s ease;           
         }
 
-        img:hover {
+        .icon {
+            width: 1.7rem;
+            vertical-align: middle;
+            transition: .5s ease;           
+        }
+
+        i {
+            vertical-align: middle;
+        }
+
+        .icon:hover {
             opacity: 0.9;
             filter: none;
         }
 
-        img:active {
+        .icon:active {
             -webkit-transform: rotate(360deg);
             transform: rotate(360deg);
         }
 
-        img:active {
+        .icon:active {
             width: 2rem;
             transition: .1s ease;
         }
+        .invert{
+            filter: invert(1);
+        }
 
         .selec {
-      background: linear-gradient(315deg, #b8d0e0 0%, #a6afb9 54%, #b8d0e0 80%);
-    }
+            background: linear-gradient(315deg, #b8d0e0 0%, #a6afb9 54%, #b8d0e0 80%);
+        }
 
         /* .dark-input{
             background-color: black !important; 
@@ -249,24 +263,33 @@
                     <label id="btPF" class="btn btn-light" onclick="pMax(PF)">PF</label>
                     <div class="input-field inline"><input id="iPM" type="number"><label for="iPM">PM</label></div>
                     <label id="btPM" class="btn btn-light" onclick="pMax(PM)">PM</label>
+
                 </div>
 
             </div>
         </form>
     </div>
     <div id="inventario" class="fade">
-        <img id="cuerpo" src="Body.png" alt="Cuerpo" usemap="#bodymap">
-        <map name="bodymap" id="bodymap">
-            <!-- <area shape="circle" coords="243,59,50" alt="Cabeza" onclick="console.log('Hostia en la bocha')"> -->
-            <area shape="circle" coords="243,130,30" alt="cuello" onclick="console.log('Hostia en cuello')">
-            <area shape="circle" coords="242,60,40" alt="cara" title="cara" onclick="console.log('Hostia en cara')">
-            <area shape="circle" coords="243,19,20" alt="craneo" title="craneo"
-                onclick="console.log('Hostia en craneo');">
-            <area shape="circle" coords="243,59,50" alt="" onclick="console.log('Hostia en ')">
-            <!-- <area shape="circle" coords="243,59,314,248" alt="" onclick="console.log('Hostia en pecho')"> -->
-            <area shape="rect" coords="170,158,314,248" alt="pecho" onclick="console.log('Hostia en pecho')">
-            <area shape="rect" coords="94,320,159,410" alt="antebrazo D" onclick="console.log('Hostia en antebrazo D')">
-        </map>
+        <div id="breadcrumb" class="col s12 black"></div>
+        <a class="waves-effect waves-light btn" onclick="atras()"><i class="material-icons left">arrow_back</i>Atrás</a>
+        <select class="selectpicker col s6" id="colInventario" multiple data-live-search="true" data-width="fit"
+            multiple title="Seleccione columnas a mostrar">
+            <option selected>nombre</option>
+            <option selected>peso</option>
+            <option>ctd</option>
+            <option>valor</option>
+            <option>daño</option>
+            <option>pesa</option>
+        </select>
+        <table class="table table-hover">
+            <thead id="hdInv">
+                <!-- <th>Habilidad</th>
+              <th>Tipo</th>
+              <th>Valor</th> -->
+            </thead>
+            <tbody id="tbInv"></tbody>
+        </table>
+    </div>
 
     </div>
 
@@ -293,7 +316,20 @@
 
     </div>
     </div>
-    <div id="test4" class="col s12">Test 4</div>
+    <div id="test4" class="col s12">Test 4
+        <img id="cuerpo" src="Body.png" alt="Cuerpo" usemap="#bodymap">
+        <map name="bodymap" id="bodymap">
+            <!-- <area shape="circle" coords="243,59,50" alt="Cabeza" onclick="console.log('Hostia en la bocha')"> -->
+            <area shape="circle" coords="243,130,30" alt="cuello" onclick="console.log('Hostia en cuello')">
+            <area shape="circle" coords="242,60,40" alt="cara" title="cara" onclick="console.log('Hostia en cara')">
+            <area shape="circle" coords="243,19,20" alt="craneo" title="craneo"
+                onclick="console.log('Hostia en craneo');">
+            <area shape="circle" coords="243,59,50" alt="" onclick="console.log('Hostia en ')">
+            <!-- <area shape="circle" coords="243,59,314,248" alt="" onclick="console.log('Hostia en pecho')"> -->
+            <area shape="rect" coords="170,158,314,248" alt="pecho" onclick="console.log('Hostia en pecho')">
+            <area shape="rect" coords="94,320,159,410" alt="antebrazo D" onclick="console.log('Hostia en antebrazo D')">
+        </map>
+    </div>
 
 
     <ul id="tabs-swipe-demo" class="tabs">
@@ -344,25 +380,26 @@
     </div>
 
 
-     <!-- Modal -->
-     <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalTitle"
-     aria-hidden="true">
-     <div class="modal-dialog" role="document">
-       <div class="modal-content">
-         <div class="modal-header">
-           <h5 class="modal-title" id="editModalTitle">Editar</h5>
-         </div>
-         <div class="modal-body" id="editor">
-           ...
-         </div>
-         <div class="modal-footer">
-           <button type="button" class="btn btn-secondary modal-close">Cerrar</button>
-           <button type="button" class="btn red accent-4 modal-close" onclick="quitarObjeto()">Eliminar</button>
-           <button type="button" class="btn btn-primary blue" onclick="nuevoObjeto()">Nuevo</button>
-         </div>
-       </div>
-     </div>
-   </div>
+    <!-- Modal -->
+    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalTitle"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalTitle">Editar</h5>
+                </div>
+                <div class="modal-body" id="editor">
+                    ...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary modal-close">Cerrar</button>
+                    <button type="button" class="btn red accent-4 modal-close"
+                        onclick="quitarObjeto()">Eliminar</button>
+                    <button type="button" class="btn btn-primary blue" onclick="nuevoObjeto()">Nuevo</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
     <div class="fixed-action-btn">
@@ -371,10 +408,10 @@
         </a>
         <ul>
             <li><a class="btn-floating red"> <i class="material-icons">insert_chart</i></a></li>
-            <li><a class="btn-floating btn-large red"> <img height="28" src="img/sword.svg"></img></a></li>
-            <li><a class="btn-floating btn-large white"> <img height="28" src="img/black-shield.svg"></img></a></li>
-            <li><a class="btn-floating btn-large white"> <img height="28" src="img/blue-shield.svg"></img></a></li>
-            <li><a class="btn-floating btn-large teal"> <img height="28" src="img/magic-wand.svg"></img></a></li>
+            <li><a class="btn-floating btn-large red">      <img class="icon" height="28" src="img/sword.svg"></img></a></li>
+            <li><a class="btn-floating btn-large white">    <img class="icon" height="28" src="img/black-shield.svg"></img></a></li>
+            <li><a class="btn-floating btn-large white">    <img class="icon" height="28" src="img/blue-shield.svg"></img></a></li>
+            <li><a class="btn-floating btn-large teal">     <img class="icon" height="28" src="img/magic-wand.svg"></img></a></li>
             <li><a class="btn-floating btn-large "> <i class="material-icons">publish</i></a></li>
             <li><a class="btn-floating btn-large "> <i class="material-icons">favorite</i></a></li>
             <li><a class="btn-floating btn-large "> <i class="material-icons">attach_file</i></a></li>
@@ -387,6 +424,7 @@
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script> -->
     <script src="js/materialize.min.js"></script>
 
+    <script src='js/utils.js'></script>
     <script src='js/D.js'></script>
     <script src='js/habilidades.js'></script>
     <script src='js/inventario.js'></script>
