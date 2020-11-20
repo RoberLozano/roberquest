@@ -63,6 +63,18 @@ function tablaStats(idTabla = "statsTable") {
       hValor.innerHTML = '<i data-toggle="tooltip"  id="' + pj.getCar(TipoHabilidades[i]) + '" title=' + pj[TipoHabilidades[i]] + '>' + pj.getCar(TipoHabilidades[i]) + '</i>';
   
     }
+    
+    CP.forEach(pt => {
+    //console.log(document.getElementById( pt));
+    document.getElementById( pt).addEventListener('input', (event) => {
+    
+      //pj[pt]
+      var n= parseInt(document.getElementById(pt).innerHTML);
+      console.log(n);
+      // pj.save();
+        pj[pt]=n
+    });
+  });
   }
 
   function actPuntos() {
@@ -75,6 +87,8 @@ function tablaStats(idTabla = "statsTable") {
     $("#iPM").val(pj.getCar(PM));
   
   }
+  
+  
 
   function addObjet2Table(object, tabla) {
     const keys = Object.keys(object);
@@ -372,6 +386,7 @@ function tablaStats(idTabla = "statsTable") {
       // pj.save();
     });
   });
+  
 
   var colAntes, colDespues;
 

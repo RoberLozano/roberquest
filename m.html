@@ -172,9 +172,9 @@
                 <li class="tab dark"><a href="#test4">Test 4</a></li>
 
             </ul>
-            <!-- <a class="btn-floating btn-large halfway-fab waves-effect waves-light teal">
-                <i class="material-icons">add</i>
-              </a> -->
+             <a class="btn-floating btn-large halfway-fab waves-effect waves-light teal" onclick="ls(pj.nombre,pj)">
+                <i class="material-icons">save</i>
+              </a> 
         </div>
     </nav>
 
@@ -233,7 +233,7 @@
                 <div id="cabeceraInfo" class="collapsible-header"><i class="material-icons">info</i>Información</div>
                 <div id="info" class="collapsible-body">
 
-                    <div class="input-field inline"><input id="iNombre" type="text"><label for="iNombre">Nombre</label>
+                    <div class="input-field inline"><input id="iNombre" type="text" onchange="pj.nombre=this.value"><label for="iNombre">Nombre</label>
                     </div>
                     <!-- <label id="btNombre" class="btn btn-light" onclick="$('#iNombre').val(pj.nombre);alert(pj.nombre)">Nombre</label> -->
                     <div class="input-field inline"><input id="iRaza" type="text"><label for="iRaza">Raza</label>

@@ -10,3 +10,14 @@ function roundTo(precision, num) {
       return !isNaN(value);
   }
   
+  function ls(nombre, valor) {
+    // body...
+    if(valor){
+      localStorage.setItem(nombre,JSON.stringify(valor) )
+    }
+    else{
+      return JSON.parse(localStorage.getItem(nombre))
+    }
+  }
+  
+  
