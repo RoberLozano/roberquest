@@ -123,7 +123,8 @@ function tablaStats(idTabla = "statsTable") {
         // cell.innerHTML += `   <button type="button" class="btn btn-secondary btn-sm" onclick="editar();" >Abrir</button>`
         // cell.innerHTML += ` <i class="material-icons small">delete</i> <img class="ic" src="img/box-open-solid.svg"></img> <span class="badge">${object.objetos.length}</span>`
         var x = document.createElement("SPAN");
-        x.innerHTML=  `<i class="material-icons small">delete</i> <img class="ic" src="img/box-open-solid.svg"></img> <span class="badge">${object.objetos.length}</span>`
+        //como la creo en el momento si es fondo enegro invierto colores
+        x.innerHTML=  `<i class="material-icons small">delete</i> <img class="ic ${negro?'invert':''}" src="img/box-open-solid.svg"></img> <span class="badge">${object.objetos.length}</span>`
         cell.appendChild(x);
         x.addEventListener("click", function () {
           let nc = object.nombre;
@@ -147,23 +148,23 @@ function tablaStats(idTabla = "statsTable") {
       // cell.innerHTML += ` <span class="badge badge-dark" style="background: linear-gradient(315deg, #b8d0e0 0%, #a6afb9 54%,  #b8d0e0 80% );">${object.ctd}</span>`
   
     }
-    if (object instanceof Pociones && key === "nombre") {
+    // if (object instanceof Pociones && key === "nombre") {
   
-      let index = object.efectos.search(/\(/g);
-      let s = object.efectos.substring(index, object.efectos.length)
-      cell.innerHTML = `<i class="fas fa-flask" ></i> ` + cell.innerHTML;
-      cell.innerHTML += ` <span class="badge " style="color:blue;" >${s}</span>`;
-      var ht = new Hammer(cell);
-      ht.on("press tap", function (ev) {
-        console.log(ev);
-        if (ev.type == "tap")
-          console.log("TAP");
-        else
-          object.tomar();
-      });
-      // cell.innerHTML += ` <span class="badge badge-dark" style="background: linear-gradient(315deg, #b8d0e0 0%, #a6afb9 54%,  #b8d0e0 80% );">${object.ctd}</span>`
+    //   let index = object.efectos.search(/\(/g);
+    //   let s = object.efectos.substring(index, object.efectos.length)
+    //   cell.innerHTML = `<i class="fas fa-flask" ></i> ` + cell.innerHTML;
+    //   cell.innerHTML += ` <span class="badge " style="color:blue;" >${s}</span>`;
+    //   var ht = new Hammer(cell);
+    //   ht.on("press tap", function (ev) {
+    //     console.log(ev);
+    //     if (ev.type == "tap")
+    //       console.log("TAP");
+    //     else
+    //       object.tomar();
+    //   });
+    //   // cell.innerHTML += ` <span class="badge badge-dark" style="background: linear-gradient(315deg, #b8d0e0 0%, #a6afb9 54%,  #b8d0e0 80% );">${object.ctd}</span>`
   
-    }
+    // }
   
     if (object instanceof Objetos && key === "nombre") {
       if (object[key] == "mo") cell.innerHTML += ` <span class="badge badge-dark gold" >${object.ctd}</span>`;
@@ -423,6 +424,8 @@ $("#buscar").on("keyup", function () {
 });
 
 //DARKMODE
+
+var negro=false;
 function dark() {
   var element = document.body;
   element.classList.toggle("dark");
@@ -437,7 +440,7 @@ function dark() {
 
 //los iconos invertidos pero a la segunda no funciona
  $('.ic').toggleClass("invert");
-
+negro=!negro;
 }
 
 
@@ -645,6 +648,216 @@ function ir() {
 //#endregion navegacion
 
 
+//#region ATACAR
+
+var pnj = {}
+/**
+ * 
+ * @param {String} nombre El nombre del PNJ a cargar
+ * @param {var} pnj La variable donde se guarda el PNJ
+ */
+function cargarPNJ(nombre, id = nombre) {
+  // let ruta = `personajes/${nombre}/`;
+  // // console.log("CARGAR RUTA:" + ruta);
+  // fbActual = database.ref(ruta);
+
+  // // si lo hago así es menos eficiente,
+  // // porque siempre que haya un cambio
+  // // donde sea me, va a cargar el personaje entero
+
+  // fbActual.on('value', function (item) {
+  //   console.log("onvalue PNJ" + item.val().nombre);
+
+  //   pnj[id] = new Humanoide({});
+  //   // pnj = new Animal({});
+  //   pnj[id].setAll(item.val());
+
+  //   console.log(`CARGA EL PNJ: ${pnj[id].nombre} en pnj["${id}"]`);
+
+  // });
+
+  pnj[id] = new Humano({});
+  pnj[id].nombre='Enemigo';
+  guerrero(pnj[id], 10, 'maza', 'arco', 'daga')
+}
+
+var enemigo="Enemigo";
+function atacarModal(habilidad) {
+  console.log("estoy en atacar modal");
+  //inicializa
+  // atPJ();
+  // let enemigo = new Humano();
+  // enemigo.nombre="Enemigo"
+  atP(pj.nombre, "PJ")
+
+  console.log("ENEMIGO es-->" + enemigo);
+  cargarPNJ(enemigo, enemigo);
+  atP(enemigo, "PNJ")
+
+  $("#modalAtacar").modal();
+}
+
+var zoomCuerpo = 1;
+
+function atP(personaje = "Enemigo", rol = "PNJ") {
+  if (rol === "PNJ") console.log("atP-->PNJ");
+  else console.log("atP-->PJ");
+  var datalist = `<datalist id='listaLocalizaciones${personaje}'>`
+  var listaLoc = [];
+  if (rol === "PNJ")
+    pnj[personaje].cuerpo.todosNombres(listaLoc);
+  else
+    pj.cuerpo.todosNombres(listaLoc);
+
+  listaLoc.forEach(l => {
+    datalist += ` <option value="${l}"></option>`
+  });
+  datalist += "</datalist>"
+
+  document.getElementById(`at${rol}`).innerHTML =
+
+    `
+     <div>
+  Habilidad ofensiva:<br>
+  <input-dado id="id${personaje}"></input-dado>
+  <div>
+  Daño: <input id="iDaño${personaje}" type="number"  class="form-control number-input col-2" ondblclick="this.value=Math.round(Math.random() * 15);">
+  <button id="bDañar" type="button" class="btn btn-danger" onclick="
+  dañar('${rol}',document.getElementById('iDaño${personaje}').value,document.getElementById('localizaciones${personaje}').value);
+  console.log(document.getElementById('localizaciones${personaje}').value );
+  atDaños();
+  ">Dañar</button>
+  <input-daño id="daño${personaje}"></input-daño>
+  </div>
+  <br>
+  <input type="radio" id="r-todo${personaje}" name="lugar" value="todo"
+         checked>
+  <label for="huey">Todo</label>
+
+  <input type="radio" id="r-arriba${personaje}" name="lugar" value="arriba">
+  <label for="dewey">Arriba</label>
+
+  <input type="radio" id="r-abajo${personaje}" name="lugar" value="abajo">
+  <label for="louie">Abajo</label>
+</div>
+
+<form class="form-inline">
+   <input id="iDadosLoc${personaje}" type="number" class="form-control number-input col-2" ondblclick="this.value=Math.round(Math.random() * 100);">
+   <input type="text" list="listaLocalizaciones${personaje}" class="text-light bg-dark" 
+  id="localizaciones${personaje}"> ${datalist} <div id="daños${(rol === "PNJ") ? 'PNJ' : 'PJ'}"> <br>DAÑOS<br> </form> </div>
+  <input  id="zoom" type="range" min="0" max="1" step="any" onchange="zoomCuerpo=this.value;atDaños()" style="width: 100%;" >
+  <canvas id="canvas${rol}"  width="500" height="900" style="background-color: black;border:1px solid #d3d3d3;">
+  Your browser does not support the HTML5 canvas tag.</canvas>
+  <div style="display:none;"><img id="cuerpo" src="Body.png" alt="Cuerpo"></div>
+`;
+
+  /* <button id="+" onclick="zoomCuerpo+=0.1;atDaños()">+</button>
+  <button id="-" onclick="zoomCuerpo-=0.1;atDaños()">-</button> */
+
+  // ${(rol === "PJ") ? 'pnj.' + personaje : "pj"}.cuerpo.dañarLocalizacion(this.value,document.getElementById('localizaciones${personaje}').value);
+
+  // console.log(${(rol === "PNJ")?'pnj.'+personaje:"pj"}.cuerpo.darLocalizacion(document.getElementById('localizaciones${personaje}').value).dañar(this.value) );
+
+  $(`#iDadosLoc${personaje}`).change(function () {
+    valor = event.target.value;
+    let medio = 60
+    if (document.getElementById(`r-arriba${personaje}`).checked) {
+      if (valor > medio) valor = Math.trunc(escalar(valor, medio, 100, 1, medio))
+    }
+    else
+      if (document.getElementById(`r-abajo${personaje}`).checked) {
+        if (valor < medio) valor = Math.trunc(escalar(valor, 1, medio, medio, 100))
+      }
+
+    if (rol === "PNJ") { $(`#localizaciones${personaje}`).val(pj.cuerpo.darLocalizacion(valor).nombre) }
+
+    else {
+      $(`#localizaciones${personaje}`).val(pnj[$('#nombreEnemigo').val()].cuerpo.darLocalizacion(valor).nombre) 
+      // $(`#localizaciones${personaje}`).val(pnj[enemigo].cuerpo.darLocalizacion(valor).nombre) 
+      
+    }
+
+
+  });
+
+  if (rol === "PNJ") { document.getElementById(`id${personaje}`).setPersonaje(pnj[personaje]) }
+  else { document.getElementById(`id${personaje}`).setPersonaje(pj); }
+
+}
+
+
+function dañar(p, daño, loc) {
+  console.log("Daño", p, daño);
+  if (p === "PJ") {
+    pnj[$('#nombreEnemigo').val()].cuerpo.dañarLocalizacion(daño, loc)
+  }
+  else {
+    pj.cuerpo.dañarLocalizacion(daño, loc)
+  }
+
+
+}
+
+function atDaños(params) {
+  let todos = [];
+  let string = ""
+  //dibujar
+
+  console.log("atDaños");
+
+  // var canvas = document.getElementById("myCanvas");
+  // var ctx = canvas.getContext("2d");
+  // var img = document.getElementById("cuerpo");
+  // ctx.drawImage(img, 0, 0);
+
+  let canvas = document.getElementById('canvasPNJ');
+  canvas.width = 500 * zoomCuerpo;
+  canvas.height = 900 * zoomCuerpo;
+  pnj[$('#nombreEnemigo').val()].cuerpoDaño("canvasPNJ", zoomCuerpo);
+
+  pnj[$('#nombreEnemigo').val()].cuerpo.todosDaños(todos);
+  todos.forEach(l => {
+    // console.log(l.nombre,l.daño);
+    string += `${l.nombre} :<b>${l.daño}</b>/${l.pg}<br>`
+    // string+=l.nombre+":"+l.daño+"<br>";
+    // if(l.x && l.y){
+    //   console.log("dibujo ",l.nombre,l.x, l.y, l.daño*5);
+    //   ctx.globalAlpha = 0.5
+    //   ctx.beginPath();
+    //   ctx.arc(l.x, l.y, l.daño*5, 0, 2 * Math.PI, false);
+    //   ctx.fillStyle = 'red';
+    //   ctx.fill();
+    // }
+
+  });
+  // string+=`${pnj[$('#nombreEnemigo').val()].getCar("PG")} / ${pnj[$('#nombreEnemigo').val()].getMaxPuntos(PG)}`
+  document.getElementById('dañosPNJ').innerHTML = string;
+
+
+  todos = [];
+  string = ""
+  pj.cuerpo.todosDaños(todos);
+  canvas = document.getElementById('canvasPJ');
+  canvas.width = 500 * zoomCuerpo;
+  canvas.height = 900 * zoomCuerpo;
+  pj.cuerpoDaño("canvasPJ", zoomCuerpo);
+
+
+  todos.forEach(l => {
+    // console.log(l.nombre,l.daño);
+    string += `${l.nombre} :<b>${l.daño}</b>/${l.pg}<br>`
+    // string+=l.nombre+":"+l.daño+"<br>";
+  });
+  document.getElementById('dañosPJ').innerHTML = string;
+
+
+  // document.getElementById('dañosPJ').innerHTML= JSON.stringify(todos);
+  // document.getElementById('dañosPJ').innerHTML= JSON.stringify(pnj[$('#nombreEnemigo').val()].cuerpo.dañadas())
+  // document.getElementById('dañosPNJ').innerHTML= JSON.stringify(pj.cuerpo.dañadas());
+}
+
+
+//#endregion
 
 
 
@@ -678,3 +891,6 @@ function cargar(params) {
     cargarContenedor();
   
 }
+
+
+cargar();

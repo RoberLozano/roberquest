@@ -63,6 +63,8 @@
             width: 3em;
         }
 
+        .tabs-content.carousel .carousel-item { height: 1000px; }
+
         .dropdown-content.select-dropdown>li span {
             background-color: black;
             color: lightgray;
@@ -313,34 +315,6 @@
         </table>
 
         Fecha<input type="date" id="fecha" value="0777-09-13">
-
-    </div>
-    </div>
-    <div id="test4" class="col s12">Test 4
-        <img id="cuerpo" src="Body.png" alt="Cuerpo" usemap="#bodymap">
-        <map name="bodymap" id="bodymap">
-            <!-- <area shape="circle" coords="243,59,50" alt="Cabeza" onclick="console.log('Hostia en la bocha')"> -->
-            <area shape="circle" coords="243,130,30" alt="cuello" onclick="console.log('Hostia en cuello')">
-            <area shape="circle" coords="242,60,40" alt="cara" title="cara" onclick="console.log('Hostia en cara')">
-            <area shape="circle" coords="243,19,20" alt="craneo" title="craneo"
-                onclick="console.log('Hostia en craneo');">
-            <area shape="circle" coords="243,59,50" alt="" onclick="console.log('Hostia en ')">
-            <!-- <area shape="circle" coords="243,59,314,248" alt="" onclick="console.log('Hostia en pecho')"> -->
-            <area shape="rect" coords="170,158,314,248" alt="pecho" onclick="console.log('Hostia en pecho')">
-            <area shape="rect" coords="94,320,159,410" alt="antebrazo D" onclick="console.log('Hostia en antebrazo D')">
-        </map>
-    </div>
-
-
-    <ul id="tabs-swipe-demo" class="tabs">
-        <li class="tab col s3"><a href="#test-swipe-1">Habilidades</a></li>
-        <li class="tab col s3"><a class="active" href="#test-swipe-2">Swipe 2</a></li>
-        <li class="tab col s3"><a href="#test-swipe-3">Swipe 3</a></li>
-    </ul>
-    <div id="test-swipe-1" class="fade">
-        <h2>Habilidades</h2>
-        <input type="datetime-local" id="meeting-time" name="meeting-time" value="0778-06-12T19:30"
-            min="0777-06-07T00:00" max="0779-06-14T00:00">
         <div class="fixed-action-btn">
             <a class="btn-floating btn-large black">
                 <i class="large material-icons">mode_edit</i>
@@ -353,10 +327,80 @@
             </ul>
         </div>
     </div>
-    <div id="test-swipe-2" class="col s12 red">
-        Test 2
     </div>
-    <div id="test-swipe-3" class="col s12 green">Test 3</div>
+    <div id="test4" class="col s12"><h2>Cuerpo</h2>
+        <img id="cuerpo" src="Body.png" alt="Cuerpo" usemap="#bodymap">
+        <map name="bodymap" id="bodymap">
+            <!-- <area shape="circle" coords="243,59,50" alt="Cabeza" onclick="console.log('Hostia en la bocha')"> -->
+            <area shape="circle" coords="243,130,30" alt="cuello" onclick="console.log('Hostia en cuello')">
+            <area shape="circle" coords="242,60,40" alt="cara" title="cara" onclick="console.log('Hostia en cara')">
+            <area shape="circle" coords="243,19,20" alt="craneo" title="craneo"
+                onclick="console.log('Hostia en craneo');">
+            <area shape="circle" coords="243,59,50" alt="" onclick="console.log('Hostia en ')">
+            <!-- <area shape="circle" coords="243,59,314,248" alt="" onclick="console.log('Hostia en pecho')"> -->
+            <area shape="rect" coords="170,158,314,248" alt="pecho" onclick="console.log('Hostia en pecho')">
+            <area shape="rect" coords="94,320,159,410" alt="antebrazo D" onclick="console.log('Hostia en antebrazo D')">
+        </map>
+        <div  class="fixed-action-btn">
+            <a class="btn-floating btn-large black">
+                <i class="large material-icons">favorite</i>
+            </a>
+            <ul>
+                <li><a class="btn-floating red" aria-details="entrenar"><i class="material-icons">fitness_center</i></a>
+                </li>
+                <li><a class="btn-floating green"><i class="material-icons">mode_edit</i></a></li>
+                <li><a class="btn-floating blue"><i class="material-icons">arrow_upward</i></a></li>
+            </ul>
+
+        </div>
+    </div>
+
+
+    <ul id="tabs-swipe-demo" data-width="" class="tabs">
+        <li class="tab col s3"><a href="#test-swipe-1">Habilidades</a></li>
+        <li class="tab col s3"><a class="active" href="#test-swipe-2">Personaje</a></li>
+        <li class="tab col s3"><a href="#test-swipe-3">Enemigo</a></li>
+    </ul>
+    <div id="test-swipe-1" class="fade">
+        <h2>Habilidades</h2>
+        <input type="datetime-local" id="meeting-time" name="meeting-time" value="0778-06-12T19:30"
+            min="0777-06-07T00:00" max="0779-06-14T00:00">
+        <div class="fixed-action-btn">
+            <a class="btn-floating btn-large black">
+                <i class="large material-icons">mode_edit</i>
+            </a>
+            <ul>
+                <li></li>
+                <li><a class="btn-floating red" aria-details="entrenar"><i class="material-icons">fitness_center</i></a>
+                </li>
+                <li><a class="btn-floating green"><i class="material-icons">mode_edit</i></a></li>
+                <li><a class="btn-floating blue"><i class="material-icons">arrow_upward</i></a></li>
+                <li><a class="btn-floating btn-large black"><i class="large material-icons">mode_edit</i></a></li>
+            </ul>
+
+        </div>
+    </div>
+    <div id="test-swipe-2" class="col s12 ">
+        <div id="atPJ"></div>
+        
+    </div>
+    <div id="test-swipe-3" class="col s12 ">
+        <div class="col-md-6">
+            <div class="card-body" >
+              <input type="text" list="listaEnemigos" class="text-light bg-dark h3 " style="font-family: Old Europe" value="Enemigo"
+              id="nombreEnemigo">
+            <datalist id="listaEnemigos">
+              <option value="Personaje">
+              <option value="Enemigo">
+              <option value="Rosssel">
+              <option value="Blanc">
+            </datalist>
+              <p class="card-text"><small class="text-muted">Personaje enemigo al que atacar</small></p>
+              <div id="atPNJ"></div>
+            </div>
+          </div>
+        <div id="atPNJ"></div>
+    </div>
 
     <h2>Medici Text</h2>
     <h5>Friedolin</h5>
@@ -451,6 +495,10 @@
             //     $(this).css("background-color", "black");
             // });
 
+            $('#fabh').floatingActionButton({
+                direction: 'left'
+  });
+
             M.toast({ html: 'Buenos días' })
 
 
@@ -512,6 +560,9 @@
             $('select').css("color", themeColor);
             $(".dropdown-content>li>a").css("color", themeColor);
         }
+
+        //Lo del ataque
+        atacarModal();
 
     </script>
 

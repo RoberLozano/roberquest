@@ -1383,9 +1383,9 @@ function guerrero(personaje, nivel, ...armas) {
   //   if
   // }
 
-  console.log(Object.values(personaje.habilidades).filter(h => (!h.ataque)));
-  console.log(personaje.getHabilidades(h => (!h.ataque)));
-  console.log(personaje.getHabilidades());
+  // console.log(Object.values(personaje.habilidades).filter(h => (!h.ataque)));
+  // console.log(personaje.getHabilidades(h => (!h.ataque)));
+  // console.log(personaje.getHabilidades());
 
 }
 
