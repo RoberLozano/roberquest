@@ -746,9 +746,8 @@ function atP(personaje = "Enemigo", rol = "PNJ") {
     `
     <div>
         Habilidad ofensiva:<br>
-        <div class="input-field inline"> <input-dado id="id${personaje}"></input-dado>
-            <input-arma id="arma${personaje}"></input-arma>
-        </div>
+        <div class="input-field inline"> <input-dado id="id${personaje}"></input-dado></div>
+        <div class="input-field inline"> <input-arma id="arma${personaje}"></input-arma></div>
         <br>
         <form>
             <label>
