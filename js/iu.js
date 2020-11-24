@@ -863,7 +863,9 @@ function atDaños(params) {
 
   });
   // string+=`${pnj[$('#nombreEnemigo').val()].getCar("PG")} / ${pnj[$('#nombreEnemigo').val()].getMaxPuntos(PG)}`
-  document.getElementById('dañosPNJ').innerHTML = string;
+  
+  // Quité los daños
+  // document.getElementById('dañosPNJ').innerHTML = string;
 
 
   todos = [];
