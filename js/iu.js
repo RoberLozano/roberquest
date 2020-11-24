@@ -58,23 +58,24 @@ function tablaStats(idTabla = "statsTable") {
       let hValor = row.insertCell(3);
   
       tipo.innerHTML = '<i data-toggle="tooltip"  id="lb' + CP[i] + '" title=' + CP[i] + '>' + CP[i] + '</i>';
-      cell.innerHTML = '<i data-toggle="tooltip" contenteditable="true"  id="' + CP[i] + '" title=' + pj[CP[i]] + '>' + pj.getCar(CP[i]) + '</i>';
+      // cell.innerHTML = '<i data-toggle="tooltip"  onfocusout="console.log(this.innerHTML)" contenteditable="true"  id="' + CP[i] + '" title=' + pj[CP[i]] + '>' + pj.getCar(CP[i]) + '</i>';
+      cell.innerHTML = `<i data-toggle="tooltip"  onfocusout="pj['${CP[i]}']=parseInt(this.innerHTML); console.log(pj['${CP[i]}']);" contenteditable="true"  id="${CP[i]}" title='${pj[CP[i]]}'>${pj.getCar(CP[i])}</i>`;
       hTipo.innerHTML = '<i data-toggle="tooltip"  id="' + TipoHabilidades[i] + '" title=' + TipoHabilidades[i] + '>' + TipoHabilidades[i] + '</i>';
       hValor.innerHTML = '<i data-toggle="tooltip"  id="' + pj.getCar(TipoHabilidades[i]) + '" title=' + pj[TipoHabilidades[i]] + '>' + pj.getCar(TipoHabilidades[i]) + '</i>';
   
     }
     
-    CP.forEach(pt => {
-    //console.log(document.getElementById( pt));
-    document.getElementById( pt).addEventListener('input', (event) => {
-    
-      //pj[pt]
-      var n= parseInt(document.getElementById(pt).innerHTML);
-      console.log(n);
-      // pj.save();
-        pj[pt]=n
-    });
-  });
+  //   CP.forEach(pt => {
+  //   //console.log(document.getElementById( pt));
+  //   document.getElementById( pt).addEventListener('blur', (event) => {
+  //     console.log("FOCUS LOST");
+  //     // //pj[pt]
+  //     // var n= parseInt(document.getElementById(pt).innerHTML);
+  //     // console.log(n);
+  //     // // pj.save();
+  //     //   pj[pt]=n
+  //   });
+  // });
   }
 
   function actPuntos() {
@@ -709,8 +710,12 @@ function atacarModal(habilidad) {
   cargarPNJ(enemigo, enemigo);
   atP(enemigo, "PNJ")
 
+
   $("#modalAtacar").modal();
+
 }
+
+
 
 var zoomCuerpo = 1;
 
@@ -731,39 +736,52 @@ function atP(personaje = "Enemigo", rol = "PNJ") {
 
   document.getElementById(`at${rol}`).innerHTML =
 
+  // Daño: <input id="iDaño${personaje}" type="number"  class="form-control number-input col-2" ondblclick="this.value=Math.round(Math.random() * 15);">
+  // <button id="bDañar" type="button" class="btn btn-danger" onclick="
+  // dañar('${rol}',document.getElementById('iDaño${personaje}').value,document.getElementById('localizaciones${personaje}').value);
+  // console.log(document.getElementById('localizaciones${personaje}').value );
+  // atDaños();
+  // ">Dañar</button>
+
     `
-     <div>
-  Habilidad ofensiva:<br>
-  <input-dado id="id${personaje}"></input-dado>
-  <div>
-  Daño: <input id="iDaño${personaje}" type="number"  class="form-control number-input col-2" ondblclick="this.value=Math.round(Math.random() * 15);">
-  <button id="bDañar" type="button" class="btn btn-danger" onclick="
-  dañar('${rol}',document.getElementById('iDaño${personaje}').value,document.getElementById('localizaciones${personaje}').value);
-  console.log(document.getElementById('localizaciones${personaje}').value );
-  atDaños();
-  ">Dañar</button>
-  <input-daño id="daño${personaje}"></input-daño>
-  </div>
-  <br>
-  <input type="radio" id="r-todo${personaje}" name="lugar" value="todo"
-         checked>
-  <label for="huey">Todo</label>
-
-  <input type="radio" id="r-arriba${personaje}" name="lugar" value="arriba">
-  <label for="dewey">Arriba</label>
-
-  <input type="radio" id="r-abajo${personaje}" name="lugar" value="abajo">
-  <label for="louie">Abajo</label>
-</div>
-
-<form class="form-inline">
-   <input id="iDadosLoc${personaje}" type="number" class="form-control number-input col-2" ondblclick="this.value=Math.round(Math.random() * 100);">
-   <input type="text" list="listaLocalizaciones${personaje}" class="text-light bg-dark" 
-  id="localizaciones${personaje}"> ${datalist} <div id="daños${(rol === "PNJ") ? 'PNJ' : 'PJ'}"> <br>DAÑOS<br> </form> </div>
-  <input  id="zoom" type="range" min="0" max="1" step="any" onchange="zoomCuerpo=this.value;atDaños()" style="width: 100%;" >
-  <canvas id="canvas${rol}"  width="500" height="900" style="background-color: black;border:1px solid #d3d3d3;">
-  Your browser does not support the HTML5 canvas tag.</canvas>
-  <div style="display:none;"><img id="cuerpo" src="Body.png" alt="Cuerpo"></div>
+    <div>
+        Habilidad ofensiva:<br>
+        <div class="input-field inline"> <input-dado id="id${personaje}"></input-dado>
+            <input-arma id="arma${personaje}"></input-arma>
+        </div>
+        <br>
+        <form>
+            <label>
+                <input type="radio" id="r-todo${personaje}" name="lugar" value="todo" checked>
+                <span>Todo</span>
+            </label>
+            <label>
+                <input type="radio" id="r-arriba${personaje}" name="lugar" value="arriba">
+                <span>Arriba</span>
+            </label>
+            <label>
+                <input type="radio" id="r-abajo${personaje}" name="lugar" value="abajo">
+                <span>Abajo</span>
+            </label>
+        </form>
+        <div>
+            <div class="input-field inline"><input id="iDadosLoc${personaje}" type="number"
+                    ondblclick="this.value=Math.round(Math.random() * 100);">
+                <label for="iDadosLoc${personaje}">Dados</label></div>
+            <div class="input-field inline"> <input type="text" list="listaLocalizaciones${personaje}"
+                    id="localizaciones${personaje}"> ${datalist} </input>
+                <label for="localizaciones${personaje}">Localización</label></div>
+        </div>
+    
+        <div id="daños${(rol === " PNJ") ? 'PNJ' : 'PJ' }"></div>
+    
+        <input id="zoom" type="range" min="0" max="1" step="any" onchange="zoomCuerpo=this.value;atDaños()"
+            style="width: 100%;">
+        <canvas id="canvas${rol}" width="500" height="900" style="background-color: black;border:1px solid #d3d3d3;">
+            Your browser does not support the HTML5 canvas tag.</canvas>
+        <div style="display:none;"><img id="cuerpo" src="Body.png" alt="Cuerpo"></div>
+    
+    </div>
 `;
 
   /* <button id="+" onclick="zoomCuerpo+=0.1;atDaños()">+</button>

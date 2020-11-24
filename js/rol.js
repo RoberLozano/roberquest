@@ -1368,7 +1368,9 @@ function guerrero(personaje, nivel, ...armas) {
   personaje.setHabilidad(new HabilidadMarcial("Esquivar", Agilidad, 25 + (nivel * 5), false));
   personaje.setHabilidad(new HabilidadMarcial("Puñetazo D", Manipulación, 25 + (nivel * 5), true, "Brazo D"));
   armas.forEach(a => {
-    let arma = new Arma(a, 0, 10, "1d8");
+    var d1=new Daño('1d6', 'F')
+    var d2=new Daño('1d8', 'P')
+    let arma = new Arma(a, 0, 10, d1);
     personaje.inventario.add(arma);
     personaje.setHabilidad(new HabilidadMarcial(a, Manipulación, 25 + (nivel * 10), true, "Brazo D", arma));
 

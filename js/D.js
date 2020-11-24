@@ -486,7 +486,7 @@ this.daño.addEventListener('change', (event) => {
 
     // Create some CSS to apply to the shadow dom
     const style = document.createElement('style');
-    console.log(this.style.isConnected);
+    // console.log(this.style.isConnected);
     
     // this.ok= document.createElement('button');
     // this.ok.classList.add("okay");
@@ -599,7 +599,7 @@ class InputArma extends InputDaño{
    * crea un input del arma
    * @param {Arma} arma El arma del input
    */
-  constructor(arma) {
+  constructor(arma = new Arma('Espada',1,100,new Daño('1d10','F'),new Daño('1d8','P'))) {
     // Always call super first in constructor
     super(arma.daño);
     this._arma=arma;
@@ -629,6 +629,7 @@ class InputArma extends InputDaño{
     });
     
   }
+  
   
   lista(id,daños){
     let options="";

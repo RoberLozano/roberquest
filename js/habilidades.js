@@ -816,7 +816,17 @@ class InputDado extends HTMLElement {
   setPersonaje(personaje){
     this.personaje=personaje;
 
-    this.lista("listaHab"+personaje.nombre,this.personaje.getHabilidades())
+    let array = this.personaje.getHabilidades(h => (h instanceof HabilidadMarcial));
+
+    array.sort(function(a , b) {
+      return a.v - b.v;
+  });
+    console.log(array.reverse());
+    // this.lista("listaHab"+personaje.nombre,this.personaje.getHabilidades());
+    this.lista("listaHab"+personaje.nombre,this.personaje.getHabilidades(h => (h instanceof HabilidadMarcial)));
+    this.h=array[0];
+
+
   }
 
   set h(habilidad) {
