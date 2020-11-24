@@ -765,7 +765,7 @@ function atP(personaje = "Enemigo", rol = "PNJ") {
             </label>
         </form>
         <div>
-            <div class="input-field inline"><input id="iDadosLoc${personaje}" type="number"
+            <div class="input-field inline"><input id="iDadosLoc${personaje}" class='dado' type="number"
                     ondblclick="this.value=Math.round(Math.random() * 100);">
                 <label for="iDadosLoc${personaje}">Dados</label></div>
             <div class="input-field inline"> <input type="text" list="listaLocalizaciones${personaje}"
