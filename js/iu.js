@@ -129,6 +129,17 @@ function tablaStats(idTabla = "statsTable") {
   
   }
 
+  function breadcrumb(newNav){
+    var bd=document.getElementById('breadcrumb')
+    let dif= nav.length-newNav.length; 
+    // console.log(nav.length,newNav.length,dif);
+    //quito los nodos finales hasta el que he pulsado
+    spliceChildNodes(bd,nav.length-dif,dif);
+    nav=newNav //la nueva ruta
+    ir()       //voy
+
+  }
+
   function crearEventos(object, cell, key) {
     //si e sun contenedor cargo lso elementos que contiene
     if (object instanceof Contenedor) {
@@ -148,7 +159,8 @@ function tablaStats(idTabla = "statsTable") {
           nav.push(index);
           console.log('Contenedor:'+object.nombre);
           let thisnav=nav;
-          document.getElementById('breadcrumb').innerHTML+=`<a onclick="alert('[${thisnav}]');eval('nav=[${thisnav}]');ir()" class="breadcrumb">${object.nombre}</a>`
+          // document.getElementById('breadcrumb').innerHTML+=`<a onclick="alert('[${thisnav}]');eval('nav=[${thisnav}]');ir()" class="breadcrumb">${object.nombre}</a>`
+          document.getElementById('breadcrumb').innerHTML+=`<a onclick="breadcrumb([${thisnav}])" class="breadcrumb">${object.nombre}</a>`
           console.log(nav);
           cargarContenedor(object);
           // editar(object);
@@ -749,7 +761,7 @@ function atP(personaje = "Enemigo", rol = "PNJ") {
         <div class="input-field inline"> <input-dado id="id${personaje}"></input-dado></div>
         <div class="input-field inline"> <input-arma id="arma${personaje}"></input-arma></div>
         <br>
-        <form>
+        <form class="center-align">
             <label>
                 <input type="radio" id="r-todo${personaje}" name="lugar" value="todo" checked>
                 <span>Todo</span>
@@ -763,7 +775,7 @@ function atP(personaje = "Enemigo", rol = "PNJ") {
                 <span>Abajo</span>
             </label>
         </form>
-        <div>
+        <div class="center-align">
             <div class="input-field inline"><input id="iDadosLoc${personaje}" class='dado' type="number"
                     ondblclick="this.value=Math.round(Math.random() * 100);">
                 <label for="iDadosLoc${personaje}">Dados</label></div>
@@ -863,11 +875,9 @@ function atDaños(params) {
 
   });
   // string+=`${pnj[$('#nombreEnemigo').val()].getCar("PG")} / ${pnj[$('#nombreEnemigo').val()].getMaxPuntos(PG)}`
-  
+
   // Quité los daños
   // document.getElementById('dañosPNJ').innerHTML = string;
-
-
   todos = [];
   string = ""
   pj.cuerpo.todosDaños(todos);

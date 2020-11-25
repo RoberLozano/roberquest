@@ -411,6 +411,9 @@ class Daño extends Dado{
     super(dado);
     this.tipo=tipo;
   }
+  toString(){
+	  return this.dado+this.tipo;
+  }
 }
 
 class InputDaño extends HTMLElement {

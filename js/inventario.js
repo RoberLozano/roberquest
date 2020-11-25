@@ -354,15 +354,16 @@ function creaInventario(nombre = "mochila") {
     fal.add(new Objeto("cosa" + i, i, i));
   }
 
-  contenedor.add(fal);
+
   var bolsita = new Contenedor("bolsita", 1, 1, 5);
   bolsita.add(new Objeto("anillo", 1, 10));
   bolsita.add(new Objeto("cadena", 1, 20));
 
   bolsa.add(bolsita);
+  bolsita.add(fal);
 
   // bolsita.mover(bolsita.sacarIndex(0), bolsa);
-  contenedor.add(new Arma("espada", 1.2, 200));
+  //contenedor.add(new Arma("espada", 1.2, 200));
 
   return contenedor;
 }
