@@ -6,7 +6,7 @@
 class Objeto {
   constructor(nombre, peso = 0, valor = 0) {
     this.clase=this.constructor.name;
-    console.log(this.clase);
+    // console.log(this.clase);
     this.nombre = nombre || "";
     this.peso = peso;
     this.valor = valor;
@@ -372,15 +372,15 @@ class Arma extends Objeto {
   constructor(nombre, peso, valor, ...daños) {
     super(nombre, peso, valor);
     this.daños = daños;
-    console.log(this.daños);
+    // console.log(this.daños);
     if (this.daños)
       this.index = 0
   }
   set daño(valor) {
-    console.log(typeof valor);
+    // console.log(typeof valor);
     if (typeof valor === 'string') {
       this.daños.forEach((d, i) => {
-        console.log(d.dado, i);
+        // console.log(d.dado, i);
         if (d.dado === valor)
           this.index = i;
       });

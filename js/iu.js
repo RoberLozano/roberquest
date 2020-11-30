@@ -255,7 +255,7 @@ function tablaStats(idTabla = "statsTable") {
   
     if (object instanceof Pociones) {
       objetoActual = object;
-      console.log("me meto en pociones");
+      // console.log("me meto en pociones");
       cell.addEventListener("dbclick", function () {
         console.log("Voy a tomar");
         object.tomar();
@@ -782,6 +782,7 @@ function atP(personaje = "Enemigo", rol = "PNJ") {
             <div class="input-field inline"> <input type="text" list="listaLocalizaciones${personaje}"
                     id="localizaciones${personaje}"> ${datalist} </input>
                 <label for="localizaciones${personaje}">Localización</label></div>
+                <i class="material-icons">accessibility</i>
         </div>
     
         <div id="daños${(rol === " PNJ") ? 'PNJ' : 'PJ' }"></div>
@@ -905,7 +906,16 @@ function atDaños(params) {
 
 
 
-function cargar(params) {
+function cargar(objeto) {
+  if(objeto?.clase){
+    // console.log(objeto);
+    // console.log(pj);
+    console.log('**********cargaclase');
+    console.log(`pj=new ${objeto.clase}({});`);
+    eval(`pj=new ${objeto.clase}({});`);
+    pj.setAll(objeto)
+  }
+  
   console.log("CARGA EL PUTO PERSONAJE:" + pj.nombre);
     console.log(nav);
     // console.log(pj);
