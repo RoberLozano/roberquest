@@ -64,3 +64,18 @@ function spliceChildNodes(parent, start, deleteCount /*[, newNode1, newNode2]*/)
 
 	return removedNodes;
 }
+
+function alto() {
+ return window.innerHeight
+|| document.documentElement.clientHeight
+|| document.body.clientHeight;
+
+}
+
+function ancho() {
+  return window.innerWidth
+|| document.documentElement.clientWidth
+|| document.body.clientWidth;
+}
+
+
