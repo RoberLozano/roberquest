@@ -78,6 +78,19 @@
         }
 
 
+        /* .modal.full {                                                                                                      
+      width: 100vw; 
+      max-height: 100vh; 
+      height: 100vh
+  }   */
+
+  .modal.open{
+    width: 100%;
+    max-height: 100%;
+    height: 100%;
+    top: 0 !important;
+}
+
         /* .modal {
             max-height: 100%;
         } */
@@ -518,10 +531,11 @@
     <a class="waves-effect waves-light btn modal-trigger" href="#mCuerpo">Modal</a>
 
     <!-- style="width:100%;height:100%; max-height: 90%;" -->
+    <!-- style="width:100%;height:100%; max-height: 90%;top: 0 !important;" -->
     <!-- Modal Structure -->
-    <div id="mCuerpo" class="modal " style="width:100%;height:100%; max-height: 90%;">
+    <div id="mCuerpo" class="modal">
         <span class="close modal-close">&times;</span>
-        <div class="modal-content black">
+        <div class="modal-content black" >
             <!-- <img id="cuerpo" src="Body.png" alt="Cuerpo"> -->
             <canvas id="canvas" width="500" height="900" style="background-color: black;">
                 Your browser does not support the HTML5 canvas tag.</canvas>

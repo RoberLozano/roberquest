@@ -855,7 +855,7 @@ function cuerpoModal(rol) {
 
   let canvas = document.getElementById('canvas');
   let h = alto();
-  zoomCuerpo = h / 900*0.8;
+  zoomCuerpo = h / 900*0.95;
   canvas.width = 500 * zoomCuerpo;
   canvas.height = 900 * zoomCuerpo;
   p.cuerpoDaño("canvas", zoomCuerpo);
