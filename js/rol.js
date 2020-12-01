@@ -332,6 +332,7 @@ class Animal {
     // this.backup = null
     this.act();
     this.cuerpo = new Localizaciones(this.getMaxPuntos(PG));
+    console.log('cuerpo'+this.getMaxPuntos(PG));
   }
   /**
    *Da la característica más su bonificación
@@ -1020,6 +1021,7 @@ class Humanoide extends Animal {
 
   crearCuerpo() {
     this.cuerpo = new Localizaciones(this.getMaxPuntos(PG));
+    console.log(this.nombre+' cuerpo-> PG:'+this.getMaxPuntos(PG));
     //Menteniendo junta toda la localización
     var cabeza = new Localizacion("Cabeza", 0.333, 1, 9, 0)
     var brazoD = new Localizacion("Brazo D", 0.25, 10, 26, 0)
@@ -1164,6 +1166,7 @@ class Enano extends Humanoide {
     this.nombre = 'Durin';
     this.peso = 77;
     this.haBasicas();
+    this.crearCuerpo();
   }
 
   haBasicas() {

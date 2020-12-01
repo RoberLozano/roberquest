@@ -34,9 +34,10 @@ class Localizaciones {
      * @memberof Localizaciones
      */
     actPG(pg) {
-        console.log("actualizar PG");
+        console.log("actualizar PG:" +pg );
         this.pg = pg;
         this.localizaciones.forEach(loc => {
+            console.log(loc.nombre+":"+pg);
             loc.setPG(pg);
         });
     }
@@ -308,6 +309,12 @@ class Localizacion extends Localizaciones {
     setPG(x) {
         //TODO: dejar en int?
         this.pg = Math.round(x * this.mpg);
+        // this.pg = (x * this.mpg);
+        if(!this.esFinal())
+        this.localizaciones.forEach(loc => {
+            console.log(loc.nombre+":"+this.pg);
+            loc.setPG(this.pg);
+        });
     }
 
     /**

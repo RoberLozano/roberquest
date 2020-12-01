@@ -770,6 +770,8 @@ function atP(personaje = "Enemigo", rol = "PNJ") {
     // atDaños();
     // ">Dañar</button>
 
+ 
+
     `
     <div>
         Habilidad ofensiva:<br>
@@ -819,6 +821,13 @@ function atP(personaje = "Enemigo", rol = "PNJ") {
 
   // console.log(${(rol === "PNJ")?'pnj.'+personaje:"pj"}.cuerpo.darLocalizacion(document.getElementById('localizaciones${personaje}').value).dañar(this.value) );
 
+  document.getElementById(`arma${personaje}`).ok.addEventListener("click", function () {
+console.log('DAÑAR');
+dañar(`${rol}`,document.getElementById(`arma${personaje}`).input.value,document.getElementById(`localizaciones${personaje}`).value);
+        console.log(document.getElementById(`localizaciones${personaje}`).value );
+        atDaños();
+  });
+
   $(`#iDadosLoc${personaje}`).change(function () {
     valor = event.target.value;
     let medio = 60
@@ -849,10 +858,11 @@ function atP(personaje = "Enemigo", rol = "PNJ") {
 function cuerpoModal(rol) {
   let p = null;
   if (rol === "PNJ")
-    p = pnj[personaje];
+    p = pnj[$('#nombreEnemigo').val()]
   else
     p = pj;
 
+    console.log('rol:'+rol);
   let canvas = document.getElementById('canvas');
   let h = alto();
   zoomCuerpo = h / 900*0.95;
