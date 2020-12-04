@@ -210,8 +210,8 @@
         </div>
         <div class="nav-content">
             <ul class="tabs tabs-transparent black">
-                <li class="tab dark"><a href="#personaje">Personaje</a></li>
-                <li class="tab dark"><a class="active" href="#habilidades">Habilidades</a></li>
+                <li class="tab dark"><a class="active" href="#personaje">Personaje</a></li>
+                <li class="tab dark"><a  href="#habilidades">Habilidades</a></li>
                 <li class="tab dark"><a href="#inventario">Inventario</a></li>
                 <li class="tab dark"><a href="#test4">Test 4</a></li>
 
@@ -356,9 +356,11 @@
                     <div class="input-field inline"><input id="iRaza" type="text"><label for="iRaza">Raza</label>
                     </div>
                     <!-- <label id="btRaza" class="btn btn-light" onclick="$('#iRaza').val(pj.clase);alert(pj.clase)">Raza</label> -->
-                    <div class="input-field inline"><input id="iPeso" type="number"><label for="iPeso">Peso</label>
+                    <div class="input-field inline"><input id="iPeso" type="number" onchange="pj.nombre=this.value"><label for="iPeso">Peso</label>
                     </div>
                     <!-- <label id="btPeso" class="btn btn-light" onclick="$('#iPeso').val(pj.peso);alert(pj.peso)">Peso</label> -->
+                    <div class="input-field inline"><input id="iEdad" type="number" onchange="pj.edad=this.value"><label for="iEdad">Edad</label>
+                    </div>
 
 
                 </div>

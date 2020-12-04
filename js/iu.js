@@ -430,6 +430,7 @@ function info(params) {
   $('#iNombre').val(pj.nombre);
   $('#iRaza').val(pj.clase);
   $('#iPeso').val(pj.peso);
+  $('#iEdad').val(pj.edad);
 
 }
 
@@ -741,7 +742,8 @@ function atP(personaje = "Enemigo", rol = "PNJ") {
   var listaLoc = [];
   var p = null;
   if (rol === "PNJ") {
-    p = pnj[personaje]; pj.enemigo=pnj[personaje]; pnj[personaje].enemigo=pj;
+    p = pnj[personaje];
+    //  pj.enemigo=pnj[personaje]; pnj[personaje].enemigo=pj;
   }
 
   else {
@@ -988,6 +990,7 @@ function cargar(objeto) {
   cargarContenedor();
 
 }
+
 
 
 cargar();

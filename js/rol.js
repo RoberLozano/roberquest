@@ -291,6 +291,34 @@ class Bon {
 
 // }
 
+class ArmaNatural {
+  constructor(nombre, daño, localizacion) {
+    this.nombre = nombre
+    this.daño = daño
+    this.localizacion = localizacion
+  }
+
+  set daño(valor) {
+    // console.log(typeof valor);
+    if (typeof valor === 'string') {
+    // var regex = /^(\d+d\d+)?([+|-](\d+|(\d+d\d+)))*[C|P|F]$/;
+    // var re = new RegExp(regex);
+    // console.log(re.test(valor));
+    
+      this._daño = new Daño(valor.substring(0, valor.length - 1), valor.substring(valor.length - 1))
+    }
+    else
+      if (valor instanceof Daño) {
+        //si es daño con el string del dado para que lo busque
+        this._daño = valor
+      }
+
+  }
+  get daño() {
+    return this._daño;
+  }
+}
+
 class Animal {
   constructor(
     {
@@ -332,8 +360,45 @@ class Animal {
     // this.backup = null
     this.act();
     this.cuerpo = new Localizaciones(this.getMaxPuntos(PG));
-    console.log('cuerpo'+this.getMaxPuntos(PG));
+    console.log('cuerpo' + this.getMaxPuntos(PG));
   }
+
+
+  set edad(valor) {
+    // console.log(typeof valor);
+    console.log(valor);
+    if (typeof valor === 'string') {
+      let d=new Date(valor+'T00:00:00')
+      if(d instanceof Date && !isNaN(d)) this.nacimiento = f
+      else
+      this.edad=parseInt(valor)
+      // this.edad=parseFloat(valor)
+    }
+    else
+      if (valor instanceof Date) {
+        //si es daño con el string del dado para que lo busque
+        this.nacimiento = valor
+      }
+      else
+      if (isNumber(valor)) {
+        this.nacimiento=fechaMundo.mod('año',-valor)
+      } else {
+        console.log('Formato inadecuado');
+      }
+
+  }
+  get edad() {
+    if(fechaMundo>this.nacimiento){
+      let a= fechaMundo.getFullYear()-this.nacimiento.getFullYear();
+      let m= fechaMundo.getMonth()-this.nacimiento.getMonth();
+      let d= fechaMundo.getDate()-this.nacimiento.getDate();
+      console.log(a,m,d);
+    }
+    return  (fechaMundo - this.nacimiento)/ (3600000*24*365);
+
+    new Date(700,1,1)
+  }
+
   /**
    *Da la característica más su bonificación
    *
@@ -367,7 +432,7 @@ class Animal {
    * @param {number} fue 
    * @param {number} con 
    */
-  bdR(fue, con) {
+  bdR(fue = this.getCar(FUE), con = this.getCar(CON)) {
     //runequest
     return ((fue + con) - 20) / 5;
   }
@@ -376,7 +441,7 @@ class Animal {
    * Bonificación de daño según mis reglas, sólo teniendo en cuenta la FUE
    * @param {number} fue 
    */
-  bd(fue) {
+  bd(fue = this.getCar(FUE)) {
     return (fue - 10) / 5;
   }
 
@@ -722,6 +787,7 @@ class Animal {
     // let st=JSON.stringify(this)
     // console.log(st);
     // console.log(JSON.parse(st));
+    this.enemigo=null; //referencias cíclicas
     localStorage.setItem(this.nombre, JSON.stringify(this));
   }
 
@@ -780,6 +846,75 @@ class Animal {
   // sanar(tipoPuntos, valor){
   //   this.car[tipoPuntos]+= valor;
   // }
+
+  cuerpoDaño(canvas, scale = 1) {
+
+    canvas = document.getElementById(canvas);
+    var ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+    // var img = document.getElementById("cuerpo");
+    // ctx.drawImage(img, 0, 0, 500 * scale, 900 * scale);
+    let todos = [];
+    console.log("cuerpoDano de " + this.nombre);
+
+    this.cuerpo.todosDaños(todos);
+    console.log(todos);
+    console.log(this.cuerpo);
+    var y = 30;
+    var x = 50;
+    todos.forEach(l => {
+      // console.log(l.nombre,l.daño);
+      // string += `${l.nombre} :<b>${l.daño}</b>/${l.pg}<br>`
+      // string+=l.nombre+":"+l.daño+"<br>";
+      y += 40;
+
+
+      // Texto
+      ctx.globalAlpha = 1
+      ctx.font = (4 * 2 + 20) * scale + 'px Sans-serif';
+      ctx.strokeStyle = 'black';
+      ctx.textAlign = "left"
+      ctx.textBaseline = "bottom";
+      // ctx.textAlign = "end" 
+      ctx.lineWidth = 5;
+      ctx.strokeText(l.nombre + ':' + l.daño + "/" + l.pg, x * scale, y * scale);
+      ctx.fillStyle = l.daño >= 2 * l.pg ? 'red' : l.daño >= l.pg ? 'orange' : 'white';
+      // ctx.fillStyle = 'white';
+      ctx.fillText(l.nombre + ':' + l.daño + "/" + l.pg, x * scale, y * scale);
+
+      //quesito
+      // let cx=x;
+      // let cy=y;
+      // ctx.beginPath();
+      // ctx.moveTo(cx, cy);
+      // ctx.arc(cx, cy, 30, 0, (l.daño/l.pg)*2* Math.PI, false);
+      // ctx.closePath();
+      // ctx.fillStyle = l.daño>=l.pg?'red':'orange';
+      // ctx.strokeStyle = 'black';
+      // ctx.fill();
+      // ctx.stroke();
+
+      // ctx.globalAlpha = 0.77
+      // ctx.beginPath();
+      // ctx.arc(x * scale, y * scale, l.pg * 5 * scale, 0, Math.PI, false);
+      // ctx.fillStyle = "grey";
+      // ctx.fill();
+
+      // ctx.globalAlpha = 1
+      // ctx.font = (l.daño * 2 + 20) * scale + 'px Sans-serif';
+      // ctx.strokeStyle = 'black';
+      // ctx.textAlign = "center"
+      // ctx.textBaseline = "top";
+      // // ctx.textAlign = "end" 
+      // ctx.lineWidth = 5;
+      // ctx.strokeText(l.daño, x * scale, y * scale);
+      // ctx.fillStyle = 'white';
+      // ctx.fillText(l.daño, x * scale, y * scale);
+      ctx.globalAlpha = 1;
+
+
+    });
+  }
 
 }
 //Bonificación en Animal
@@ -941,6 +1076,7 @@ class Dragon extends Animal {
 }
 
 
+
 /**
  * Modifica una fecha.
  * 
@@ -1021,7 +1157,7 @@ class Humanoide extends Animal {
 
   crearCuerpo() {
     this.cuerpo = new Localizaciones(this.getMaxPuntos(PG));
-    console.log(this.nombre+' cuerpo-> PG:'+this.getMaxPuntos(PG));
+    console.log(this.nombre + ' cuerpo-> PG:' + this.getMaxPuntos(PG));
     //Menteniendo junta toda la localización
     var cabeza = new Localizacion("Cabeza", 0.333, 1, 9, 0)
     var brazoD = new Localizacion("Brazo D", 0.25, 10, 26, 0)
@@ -1371,9 +1507,9 @@ function guerrero(personaje, nivel, ...armas) {
   personaje.setHabilidad(new HabilidadMarcial("Esquivar", Agilidad, 25 + (nivel * 5), false));
   personaje.setHabilidad(new HabilidadMarcial("Puñetazo D", Manipulación, 25 + (nivel * 5), true, "Brazo D"));
   armas.forEach(a => {
-    var d1=new Daño('1d6', 'F')
-    var d2=new Daño('1d8', 'P')
-    let arma = new Arma(a, 0, 10, d1,d2);
+    var d1 = new Daño('1d6', 'F')
+    var d2 = new Daño('1d8', 'P')
+    let arma = new Arma(a, 0, 10, d1, d2);
     personaje.inventario.add(arma);
     personaje.setHabilidad(new HabilidadMarcial(a, Manipulación, 25 + (nivel * 10), true, "Brazo D", arma));
 
@@ -1395,3 +1531,9 @@ function guerrero(personaje, nivel, ...armas) {
 }
 
 guerrero(pj, 10, 'espada', 'arco', 'daga')
+
+let armanat = new ArmaNatural("puño","1d3C","Brazo D");
+console.log(armanat);
+console.log(new ArmaNatural("puño","1d3F","Brazo D"));
+console.log(new ArmaNatural("puño","1d3f","Brazo D"));
+console.log(new ArmaNatural("puño","1d  f","Brazo D"));
