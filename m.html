@@ -434,7 +434,7 @@
         </table>
 
         Fecha<input type="date" id="fecha" value="0777-09-13">
-        <div class="fixed-action-btn">
+        <!-- <div class="fixed-action-btn">
             <a class="btn-floating btn-large black">
                 <i class="large material-icons">mode_edit</i>
             </a>
@@ -444,7 +444,7 @@
                 <li><a class="btn-floating green"><i class="material-icons">mode_edit</i></a></li>
                 <li><a class="btn-floating blue"><i class="material-icons">arrow_upward</i></a></li>
             </ul>
-        </div>
+        </div> -->
     </div>
     </div>
     <div id="test4" class="col s12">
@@ -483,8 +483,26 @@
     </ul>
     <div id="test-swipe-1" class="fade">
         <h2>Habilidades</h2>
-        <input type="datetime-local" id="meeting-time" name="meeting-time" value="0778-06-12T19:30"
-            min="0777-06-07T00:00" max="0779-06-14T00:00">
+        <!-- <input type="datetime-local" id="meeting-time" name="meeting-time" value="0778-06-12T19:30"
+            min="0777-06-07T00:00" max="0779-06-14T00:00"> -->
+            <div class="row">
+                <select class="selectpicker col s6" id="columnasMarcial" multiple data-live-search="true" data-width="fit" multiple
+                    title="Seleccione columnas a mostrar">
+                    <option selected>nombre</option>
+                    <option>xp</option>
+                    <option>tipo</option>
+                    <option selected>valor</option>
+                </select>
+            </div>
+            <table class="table table-hover">
+                <thead id="header">
+                    <!-- <th>Habilidad</th>
+                  <th>Tipo</th>
+                  <th>Valor</th> -->
+                </thead>
+                <tbody id="tbHabMarciales"></tbody>
+            </table>
+    
         <div class="fixed-action-btn">
             <a class="btn-floating btn-large black">
                 <i class="large material-icons">mode_edit</i>

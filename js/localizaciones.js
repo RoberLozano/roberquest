@@ -37,7 +37,7 @@ class Localizaciones {
         console.log("actualizar PG:" +pg );
         this.pg = pg;
         this.localizaciones.forEach(loc => {
-            console.log(loc.nombre+":"+pg);
+            // console.log(loc.nombre+":"+pg);
             loc.setPG(pg);
         });
     }
@@ -312,7 +312,7 @@ class Localizacion extends Localizaciones {
         // this.pg = (x * this.mpg);
         if(!this.esFinal())
         this.localizaciones.forEach(loc => {
-            console.log(loc.nombre+":"+this.pg);
+            // console.log(loc.nombre+":"+this.pg);
             loc.setPG(this.pg);
         });
     }

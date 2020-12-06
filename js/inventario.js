@@ -420,6 +420,8 @@ class Arma extends Objeto {
     console.log(this.daños[this.index]);
   }
 
+  toString(){ return this.nombre}
+
 }
 
 

@@ -45,6 +45,24 @@ function tablaHabilidades() {
     objetoTabla(hab, "tbHab", visibles)
   };
 }
+
+function tablaHabilidadesMarciales() {
+  var visibles = $("#columnasMarcial").val();
+  // visibles.push(v);
+  clear("tbHabMarciales");
+  //header
+  console.log(visibles);
+  createHeader(visibles);
+  var hm= pj.getHabilidades(h => (h instanceof HabilidadMarcial))
+  console.log(hm);
+  for (habilidad of hm) {
+    
+    // let hab = pj.getHabilidad(habilidad);
+    console.log(habilidad);
+    objetoTabla(habilidad, "tbHabMarciales", visibles)
+  };
+}
+
 //Poblar con datos
 function tablaStats(idTabla = "statsTable") {
   var table = document.getElementById(idTabla);
@@ -270,7 +288,10 @@ function crearEventos(object, cell, key) {
         // object.xp++;
         object.addXP(1);
         // object.save();
+        if (tabActiva()==='#habilidades')
         tablaHabilidades()
+        else
+        tablaHabilidadesMarciales() //que actualice también lo otro
       });
     }
 
@@ -385,12 +406,16 @@ function tabActiva(params) {
   tab = $(".active").attr('href');
   console.log("Active Tab:" + $(".active").attr('id'));
   console.log("Active Tab Div:" + $(".active").attr('href'));
-
+  return tab;
 }
 
 function pMax(puntos) {
   let valor = pj.getMaxPuntos(puntos);
+  const e = new Event("change");
+  let t= document.getElementById("i" + puntos);
   $("#i" + puntos).val(valor);
+  t.dispatchEvent(e);
+  $("#i" + puntos).focus();
 }
 
 PUNTOS.forEach(pt => {
@@ -415,6 +440,11 @@ $('select').change(function (e) {
 //para tabla habilidades
 $('#columnas').change(function (e) {
   tablaHabilidades();
+});
+
+//para tabla habilidades
+$('#columnasMarcial').change(function (e) {
+  tablaHabilidadesMarciales();
 });
 
 //para tabla habilidades
@@ -450,6 +480,12 @@ $("#buscar").on("keyup", function () {
   $("#tbHab tr").filter(function () {
     $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
   });
+
+  //que filtre tambien las Marciales
+  $("#tbHabMarciales tr").filter(function () {
+    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+  });
+
 });
 
 //DARKMODE
@@ -846,8 +882,8 @@ dañar(`${rol}`,document.getElementById(`arma${personaje}`).input.value,document
     else {
       $(`#localizaciones${personaje}`).val(pnj[$('#nombreEnemigo').val()].cuerpo.darLocalizacion(valor).nombre)
       // $(`#localizaciones${personaje}`).val(pnj[enemigo].cuerpo.darLocalizacion(valor).nombre) 
-
     }
+    $(`#localizaciones${personaje}`).focus();
 
 
   });
@@ -968,6 +1004,7 @@ function cargar(objeto) {
 
   // makeTable("", pj);
   tablaHabilidades();
+  tablaHabilidadesMarciales()
   tablaStats();
   actPuntos();
 
