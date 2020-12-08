@@ -53,10 +53,10 @@ function tablaHabilidadesMarciales() {
   //header
   console.log(visibles);
   createHeader(visibles);
-  var hm= pj.getHabilidades(h => (h instanceof HabilidadMarcial))
+  var hm = pj.getHabilidades(h => (h instanceof HabilidadMarcial))
   console.log(hm);
   for (habilidad of hm) {
-    
+
     // let hab = pj.getHabilidad(habilidad);
     console.log(habilidad);
     objetoTabla(habilidad, "tbHabMarciales", visibles)
@@ -288,10 +288,10 @@ function crearEventos(object, cell, key) {
         // object.xp++;
         object.addXP(1);
         // object.save();
-        if (tabActiva()==='#habilidades')
-        tablaHabilidades()
+        if (tabActiva() === '#habilidades')
+          tablaHabilidades()
         else
-        tablaHabilidadesMarciales() //que actualice también lo otro
+          tablaHabilidadesMarciales() //que actualice también lo otro
       });
     }
 
@@ -412,7 +412,7 @@ function tabActiva(params) {
 function pMax(puntos) {
   let valor = pj.getMaxPuntos(puntos);
   const e = new Event("change");
-  let t= document.getElementById("i" + puntos);
+  let t = document.getElementById("i" + puntos);
   $("#i" + puntos).val(valor);
   t.dispatchEvent(e);
   $("#i" + puntos).focus();
@@ -759,7 +759,7 @@ function atacarModal(habilidad) {
   atP(pj.nombre, "PJ")
 
   console.log("ENEMIGO es-->" + enemigo);
-  
+
   atP(enemigo, "PNJ")
 
 
@@ -808,12 +808,12 @@ function atP(personaje = "Enemigo", rol = "PNJ") {
     // atDaños();
     // ">Dañar</button>
 
- 
+
 
     `
     <div>
         Habilidad ofensiva:<br>
-        <div class="input-field inline"> <input-dado id="id${personaje}"></input-dado></div>
+        <div class="input-field inline"> <input-habilidad id="id${personaje}"></input-habilidad></div>
         <div class="input-field inline"> <input-arma id="arma${personaje}"></input-arma></div>
         <br>
         <form class="center-align">
@@ -831,9 +831,15 @@ function atP(personaje = "Enemigo", rol = "PNJ") {
             </label>
         </form>
         <div class="center-align">
-            <div class="input-field inline"><input id="iDadosLoc${personaje}" class='dado' type="number"
-                    ondblclick="this.value=Math.round(Math.random() * 100);">
-                <label for="iDadosLoc${personaje}">Dados</label></div>
+            <div class="input-field inline">
+            
+            <input id="iDadosLoc${personaje}" class='dado' type="number" min="1" max="100"
+                    ondblclick="this.value=Math.round(Math.random() * 100);
+                    this.dispatchEvent(new Event('change'));">
+                <label for="iDadosLoc${personaje}">Dados</label>
+                <input-tirada>
+                </div>
+                
             <div class="input-field inline"> <input type="text" list="listaLocalizaciones${personaje}"
                     id="localizaciones${personaje}"> ${datalist} </input>
                 <label for="localizaciones${personaje}">Localización</label></div>
@@ -860,10 +866,10 @@ function atP(personaje = "Enemigo", rol = "PNJ") {
   // console.log(${(rol === "PNJ")?'pnj.'+personaje:"pj"}.cuerpo.darLocalizacion(document.getElementById('localizaciones${personaje}').value).dañar(this.value) );
 
   document.getElementById(`arma${personaje}`).ok.addEventListener("click", function () {
-console.log('DAÑAR');
-dañar(`${rol}`,document.getElementById(`arma${personaje}`).input.value,document.getElementById(`localizaciones${personaje}`).value);
-        console.log(document.getElementById(`localizaciones${personaje}`).value );
-        atDaños();
+    console.log('DAÑAR');
+    dañar(`${rol}`, document.getElementById(`arma${personaje}`).input.value, document.getElementById(`localizaciones${personaje}`).value);
+    console.log(document.getElementById(`localizaciones${personaje}`).value);
+    atDaños();
   });
 
   $(`#iDadosLoc${personaje}`).change(function () {
@@ -900,10 +906,10 @@ function cuerpoModal(rol) {
   else
     p = pj;
 
-    console.log('rol:'+rol);
+  console.log('rol:' + rol);
   let canvas = document.getElementById('canvas');
   let h = alto();
-  zoomCuerpo = h / 900*0.95;
+  zoomCuerpo = h / 900 * 0.95;
   canvas.width = 500 * zoomCuerpo;
   canvas.height = 900 * zoomCuerpo;
   p.cuerpoDaño("canvas", zoomCuerpo);

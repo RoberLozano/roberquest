@@ -654,7 +654,110 @@ class InputArma extends InputDaño{
   }
 }
 
+class InputTirada extends HTMLElement{
+	constructor() {
+		// Always call super first in constructor
+		super();
+		this.shadow = this.attachShadow({ mode: 'open' });
+	
+		this.wrapper = document.createElement('span');
+		this.wrapper.setAttribute('class', 'wrapper');
+	
+
+	
+		this.icon = document.createElement('span');
+		this.icon.setAttribute('class', 'icon');
+		this.icon.addEventListener('click', (event) => {
+		  this.input.value = new Dado('1d100').tirar()
+		//   this.act(this.input);
+		  
+		});
+	
+	
+	
+		this.input = document.createElement('input');
+		this.input.setAttribute("type", "number");
+		// this.input.setAttribute("value", "100");
+		this.input.setAttribute("placeholder", "100");
+		this.input.setAttribute('min', '0');
+		this.input.setAttribute('max', '100');
+		this.input.style.width = "2.3em";
+		this.input.style.textAlign = "center";
+	
+	
+		// this.input.addEventListener('change', (event) => {	  
+		// });
+	
+		// Take attribute content and put it inside the info span
+		// Insert icon
+		let imgUrl;
+		if (this.hasAttribute('img')) {
+		  imgUrl = this.getAttribute('img');
+		} else {
+		  imgUrl = 'img/10_sided_die.svg';
+		}
+	
+		const img = document.createElement('img');
+		img.src = imgUrl;
+		this.icon.appendChild(img);
+	
+		// Create some CSS to apply to the shadow dom
+		const style = document.createElement('style');
+		// console.log(this.style.isConnected);
+		
+		// this.ok= document.createElement('button');
+		// this.ok.classList.add("okay");
+	
+	
+		style.textContent = `
+			  .wrapper {
+				position: relative;
+			  }
+			  *{
+				font-size: 100%;
+				border-style: none;
+			  }
+			  img {
+				width: 1.7rem;
+				vertical-align: text-top; 
+				transition: .5s ease;
+			  }
+			  img:hover{
+				opacity: 0.9;
+				filter: none;
+			  }
+			  img:active {
+				-webkit-transform: rotate(360deg);
+						transform: rotate(360deg);
+			  }
+			  img:active {
+				width: 2rem;
+				transition: .1s ease;
+			  }
+
+			  .icon {
+				position: relative;
+				/* Adjust these values accordingly */
+				vertical-align: middle;  
+			  }
+			`;
+	
+		// Attach the created elements to the shadow dom
+	
+		// this.shadow.innerHTML=""
+		this.shadow.appendChild(style);
+		console.log(style.isConnected);
+		this.shadow.appendChild(this.wrapper);
+		this.wrapper.appendChild(this.icon);
+		this.wrapper.appendChild(this.input);
+		
+	
+		// Create a shadow root
+	  }
+}
+
 customElements.define('input-daño', InputDaño);
+customElements.define('input-tirada', InputTirada);
 customElements.define('input-arma', InputArma);
 
 

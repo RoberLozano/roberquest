@@ -430,7 +430,7 @@ class MyCounter extends HTMLElement {
 
     this.dado = this.shadowRoot.getElementById('dado');
 
-    this.inputDados = this.shadowRoot.getElementById('iDados');
+    this.InputHabilidads = this.shadowRoot.getElementById('iDados');
     //   this.buttonDec = this.shadowRoot.getElementById('dec');
     //   this.spanValue = this.shadowRoot.getElementById('dado');
 
@@ -454,7 +454,7 @@ class MyCounter extends HTMLElement {
   }
 
   rd() {
-    this.inputDados.value = Math.round(Math.random() * 100);
+    this.InputHabilidads.value = Math.round(Math.random() * 100);
   }
 
   connectedCallback() {
@@ -637,7 +637,7 @@ class InputHab extends HTMLElement {
   }
 }
 
-class InputDado extends HTMLElement {
+class InputHabilidad extends HTMLElement {
   constructor(hab = new Habilidad("Habilidad", "Agilidad", 77)) {
     // Always call super first in constructor
     super();
@@ -878,7 +878,7 @@ class InputDado extends HTMLElement {
 
 // Define the new element
 
-customElements.define('input-dado', InputDado);
+customElements.define('input-habilidad', InputHabilidad);
 customElements.define('my-counter', MyCounter);
 
 // export {Habilidad, BonHabilidad}; 

@@ -888,7 +888,7 @@ function atP(personaje = "Enemigo", rol = "PNJ") {
     `
      <div>
   Habilidad ofensiva:<br>
-  <input-dado id="id${personaje}"></input-dado>
+  <input-habilidad id="id${personaje}"></input-habilidad>
   <br> <br>
   <form class="form-inline">
   Daño: <input id="iDaño${personaje}" type="number"  class="form-control number-input col-2" ondblclick="this.value=Math.round(Math.random() * 15);">
