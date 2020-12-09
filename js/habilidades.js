@@ -738,7 +738,8 @@ class InputHabilidad extends HTMLElement {
     this.ok= document.createElement('img');
     
     this.ok.src = this.habilidad.ataque?'img/sword.svg':'img/shield.svg';
-    // this.ok.src = 'img/check.svg';
+    //  this.ok.src = 'img/check.svg';
+    // if (this.habilidad instanceof HabilidadMarcial) this.ok.src = this.habilidad.ataque?'img/sword.svg':'img/shield.svg';
     this.ok.addEventListener('click', (event) => {
       this.habilidad.xpTirada(this.input.value)
     });

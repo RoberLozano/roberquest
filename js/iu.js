@@ -301,7 +301,10 @@ function crearEventos(object, cell, key) {
         editar(object);
         //y lo muestro
         // $("#editModal").modal();
-        $("#editModal").modal('open');
+        // $("#editModal").modal('open');
+        document.getElementById('ihModal').h=object;
+        $("#modal").modal('open');
+
         // sel(object, cell); //selecciona o deselecciona si ya lo está
         // console.log(objeto);
       });
