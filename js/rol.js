@@ -847,6 +847,7 @@ class Animal {
   //   this.car[tipoPuntos]+= valor;
   // }
 
+  
   cuerpoDaño(canvas, scale = 1) {
 
     canvas = document.getElementById(canvas);
@@ -1057,21 +1058,103 @@ class Dragon extends Animal {
   }
 
   crearCuerpo() {
+    this.imagen='img/Dragon.jpg';
     this.cuerpo = new Localizaciones(this.getMaxPuntos(PG));
 
     //Puntos de armadura
     let pa = 12;
 
-    var cabeza = new Localizacion("Cola", 0.25, 1, 2, pa); this.cuerpo.add(cabeza);
-    cabeza = new Localizacion("Pata Trasera Derecha", 0.333, 3, 4, pa); this.cuerpo.add(cabeza);
-    cabeza = new Localizacion("Pata Trasera Izquierda", 0.333, 5, 6, pa); this.cuerpo.add(cabeza);
+    var cabeza = new Localizacion("Cola", 0.25, 1, 2, pa,320,795); this.cuerpo.add(cabeza);
+    cabeza = new Localizacion("Pata Trasera Derecha", 0.333, 3, 4, pa,230,527); this.cuerpo.add(cabeza);
+    cabeza = new Localizacion("Pata Trasera Izquierda", 0.333, 5, 6, pa,269,660); this.cuerpo.add(cabeza);
     cabeza = new Localizacion("Cuartos Traseros", 0.4, 7, 8, pa); this.cuerpo.add(cabeza);
     cabeza = new Localizacion("Cuartos Delanteros", 0.4, 9, 10, pa); this.cuerpo.add(cabeza);
     cabeza = new Localizacion("Ala Derecha", 0.25, 11, 12, pa); this.cuerpo.add(cabeza);
     cabeza = new Localizacion("Ala Izquierda", 0.25, 13, 14, pa); this.cuerpo.add(cabeza);
     cabeza = new Localizacion("Pata Delantera Derecha", 0.333, 15, 16, pa); this.cuerpo.add(cabeza);
     cabeza = new Localizacion("Pata Delantera Izquierda", 0.333, 17, 18, pa); this.cuerpo.add(cabeza);
-    cabeza = new Localizacion("Cabeza", 0.333, 19, 20, pa); this.cuerpo.add(cabeza);
+    cabeza = new Localizacion("Cabeza", 0.333, 19, 20, pa,350,320); this.cuerpo.add(cabeza);
+  }
+
+  cuerpoDaño(canvas, scale = 1) {
+
+    canvas = document.getElementById(canvas);
+    var ctx = canvas.getContext("2d");
+  
+    // var img = document.getElementById("cuerpo");
+    var img = new Image();
+    img.src = this.imagen;
+
+    let alto=img.height;
+    let ancho=img.width;
+    console.log(alto,ancho);
+    ctx.canvas.width=ancho; ctx.canvas.height=alto;
+
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+    ctx.drawImage(img, 0, 0, ancho * scale, alto * scale);
+
+    let todos = [];
+    console.log("cuerpoDano de " + this.nombre);
+
+    this.cuerpo.todosDaños(todos);
+    console.log(todos);
+    todos.forEach(l => {
+      // console.log(l.nombre,l.daño);
+      // string += `${l.nombre} :<b>${l.daño}</b>/${l.pg}<br>`
+      // string+=l.nombre+":"+l.daño+"<br>";
+      if (l.x && l.y) {
+        console.log("dibujo ", l.nombre, l.x, l.y, l.daño * 5, l.pg);
+        ctx.globalAlpha = 0.5
+        ctx.beginPath();
+        ctx.arc(l.x * scale, l.y * scale, l.daño * 5 * scale, 0, Math.PI, true);
+        // ctx.arc(l.x, l.y, 45, 0, (l.daño/l.pg)*2* Math.PI, false);
+        ctx.fillStyle = l.daño >= l.pg ? 'red' : 'orange';
+        ctx.fill();
+
+        // Texto
+        ctx.globalAlpha = 1
+        ctx.font = (l.daño * 2 + 20) * scale + 'px Sans-serif';
+        ctx.strokeStyle = 'black';
+        ctx.textAlign = "center"
+        ctx.textBaseline = "bottom";
+        // ctx.textAlign = "end" 
+        ctx.lineWidth = 5;
+        ctx.strokeText(l.daño + "/" + l.pg, l.x * scale, l.y * scale);
+        ctx.fillStyle = 'white';
+        ctx.fillText(l.daño + "/" + l.pg, l.x * scale, l.y * scale);
+
+        //quesito
+        // let cx=l.x;
+        // let cy=l.y;
+        // ctx.beginPath();
+        // ctx.moveTo(cx, cy);
+        // ctx.arc(cx, cy, 30, 0, (l.daño/l.pg)*2* Math.PI, false);
+        // ctx.closePath();
+        // ctx.fillStyle = l.daño>=l.pg?'red':'orange';
+        // ctx.strokeStyle = 'black';
+        // ctx.fill();
+        // ctx.stroke();
+
+        ctx.globalAlpha = 0.77
+        ctx.beginPath();
+        ctx.arc(l.x * scale, l.y * scale, l.pa * 5 * scale, 0, Math.PI, false);
+        ctx.fillStyle = "grey";
+        ctx.fill();
+
+        ctx.globalAlpha = 1
+        ctx.font = (l.pa * 2 + 20) * scale + 'px Sans-serif';
+        ctx.strokeStyle = 'black';
+        ctx.textAlign = "center"
+        ctx.textBaseline = "top";
+        // ctx.textAlign = "end" 
+        ctx.lineWidth = 5;
+        ctx.strokeText(l.pa, l.x * scale, l.y * scale);
+        ctx.fillStyle = 'white';
+        ctx.fillText(l.pa, l.x * scale, l.y * scale);
+        ctx.globalAlpha = 1;
+      }
+
+    });
   }
 }
 
@@ -1156,6 +1239,8 @@ class Humanoide extends Animal {
   }
 
   crearCuerpo() {
+    this.imagen='Body.png';
+    // this.imagen='img/Dragon.jpg';
     this.cuerpo = new Localizaciones(this.getMaxPuntos(PG));
     console.log(this.nombre + ' cuerpo-> PG:' + this.getMaxPuntos(PG));
     //Menteniendo junta toda la localización
@@ -1221,9 +1306,22 @@ class Humanoide extends Animal {
 
     canvas = document.getElementById(canvas);
     var ctx = canvas.getContext("2d");
+  
+    
+
+
+    // var img = document.getElementById("cuerpo");
+    var img = new Image();
+    img.src = this.imagen;
+
+    let alto=img.height;
+    let ancho=img.width;
+    console.log(alto,ancho);
+    ctx.canvas.width=ancho; ctx.canvas.height=alto;
+
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-    var img = document.getElementById("cuerpo");
-    ctx.drawImage(img, 0, 0, 500 * scale, 900 * scale);
+
+    ctx.drawImage(img, 0, 0, ancho * scale, alto * scale);
     let todos = [];
     console.log("cuerpoDano de " + this.nombre);
 

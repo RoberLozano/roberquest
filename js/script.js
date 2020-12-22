@@ -1488,6 +1488,18 @@ function cargarPersonaje(nombre) {
   //  a.save();
 
 }
+function monitorizarCuerpo(nombre) {
+  let ruta = `personajes/${nombre}/cuerpo/localizaciones`;
+  console.log('MONITORIZADO CUERPO de '+nombre);
+  var fbCuerpo=  database.ref(ruta);
+  fbCuerpo.on('child_changed', function(data) {
+    console.log(data.key);  // <-- Name of the field/node that was modified
+    console.log(data.val()); // <-- Value of the field/node that was modified
+    console.log("The updated" + data.key + " is " + data.val());
+    console.log(pj.cuerpo.localizaciones[data.key]);
+  });
+  
+}
 
 function cargarPersonajeOnline(nombre){
   try {
@@ -1495,6 +1507,7 @@ function cargarPersonajeOnline(nombre){
   // console.log("CARGAR RUTA:" + ruta);
  
   fbActual = database.ref(ruta);
+  monitorizarCuerpo(nombre);
 
   // si lo hago así es menos eficiente,
   // porque siempre que haya un cambio

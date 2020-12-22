@@ -1,3 +1,24 @@
+var ONLINE=true;
+
+function changeOnline() {
+  if (ONLINE){
+    $('#wifi').html('signal_wifi_off');
+    $('#wifi-bar').html('signal_wifi_off');
+    document.getElementById("cbOnline").checked=false;
+    
+  }
+  else{
+    $('#wifi').html('wifi');
+    $('#wifi-bar').html('wifi');
+    document.getElementById("cbOnline").checked=true;
+
+  }
+  ONLINE=!ONLINE;
+  
+}
+changeOnline();
+
+
 function objetoTabla(object, tabla, visibles) {
   var table = document.getElementById(tabla);
   var row = table.insertRow();
@@ -340,6 +361,72 @@ function crearEventos(object, cell, key) {
       });
     }
   }
+
+}
+
+
+function editarNuevo(clase) {
+  var o = new Gema('gemita',0,0,5,5)
+
+  // eval(`o= new ${clase}()`);
+  editar(o);
+  //y lo muestro
+  $("#editModal").modal('open');
+  
+  
+}
+
+
+function nuevoObjeto() {
+
+  for (k in objetoActual) {
+    // alert(k+'->'+objetoActual[k]);
+    // console.log(x+'->'+objetoActual[x]);
+    var valor = $('#edit' + k).val();
+    if(valor){
+      if (isNumber(valor)) objetoActual[k] = +valor;
+      else objetoActual[k]  = valor;
+    }
+    //   console.log('#edit' + keys[i]);
+    
+    
+  }
+  // console.log(objetoActual);
+  // const keys = Object.keys(objetoActual);
+  // var values = Object.values(objetoActual);
+  // console.log(keys);
+  // console.log(values);
+  
+  // let nuevoObjeto = new objetoActual.constructor();
+
+  // // console.log("Nuevo objeto:" + nuevoObjeto.constructor.name);
+  // // //guardo los valores editados en el objeto
+
+
+  // for (i = 0; i < keys.length; i++) {
+  //   var valor = $('#edit' + keys[i]).val();
+  //   console.log('#edit' + keys[i]);
+  //   if (isNumber(valor)) values[i] = +valor;
+  //   else values[i] = valor;
+  //   nuevoObjeto[keys[i]] = values[i];
+  //   console.log(nuevoObjeto[keys[i]],values[i]);
+  // }
+
+
+  // pj.inventario.navegar(nav).add(nuevoObjeto);
+  // console.log(nuevoObjeto);
+  // console.log("en contenedor");
+  // console.log(pj.inventario.navegar(nav));
+  // try {
+  //   nuevoObjeto.save();
+  // } catch (error) {
+  //   console.log(`El objeto ${nuevoObjeto.nombre} no se puede guardar`);
+  //   console.log(pj);
+  //   console.log(pj.inventario.navegar(nav));
+  //   pj.save();//guardo el personaje entero
+  //   cargarPersonaje();
+  //   // alert();
+  // }
 
 }
 
@@ -994,7 +1081,26 @@ function atDaños(params) {
 
 //#endregion
 
-
+function load() {
+  console.log('LOAD');
+  if (ONLINE) {
+    
+  } else {
+    // console.log(pj);
+    cargar(ls(pj.nombre));
+    // pj.cargarLocal();
+  }
+  
+}
+function save() {
+  if (ONLINE) {
+    
+  } else {
+    // ls(pj.nombre,pj);
+    pj.save(); //tambien carga offline
+  }
+  
+}
 
 function cargar(objeto) {
   if (objeto?.clase) {
@@ -1040,3 +1146,9 @@ function cargar(objeto) {
 
 
 cargar();
+let fm=fechaMundo.toISOString().slice(0, -1)
+alert(fm);
+document.getElementById('fechaMundo').value=fm;
+// document.getElementById('fechaMundo').value="0777-07-07T07:00:01.0"
+
+// $('#fechaMundo').val(fechaMundo.toISOString());

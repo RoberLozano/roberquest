@@ -84,12 +84,16 @@
       height: 100vh
   }   */
 
+
+
   .full.open{
     width: 100%;
     max-height: 100%;
     height: 100%;
     top: 0 !important;
 }
+
+
 
         /* .modal {
             max-height: 100%;
@@ -191,21 +195,22 @@
             <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a> -->
             <ul class="right">
 
-                <li><a onclick="toogle('new')"><i class="material-icons">add</i></a></li>
+                <!-- <li><a onclick="toogle('new')"><i class="material-icons">add</i></a></li> -->
                 <li><a onclick="toogle()"><i class="material-icons">search</i></a></li>
                 <li><a onclick="pantalla()"><i class="material-icons">fullscreen</i></a></li>
+                <li><a onclick="changeOnline()" ><i id="wifi-bar" class="material-icons">wifi</i></a></li>
             </ul>
             <ul id="nav-mobile" class="right hide-on-med-and-down">
                 <li><a href="dados.html">Dados</a></li>
                 <li><a href="diario.html">Diario</a></li>
                 <li><a href="index.html">Principal</a></li>
-                <li> <select>
+                <!-- <li> <select>
                         <option value="" disabled selected>Elige personaje</option>
                         <option value="1">Option 1</option>
                         <option value="2">Option 2</option>
                         <option value="3">Option 3</option>
                     </select>
-                    <label>Personaje</label></li>
+                    <label>Personaje</label></li> -->
             </ul>
         </div>
         <div class="nav-content">
@@ -218,11 +223,12 @@
             </ul>
 
             <a class="btn-floating btn-small halfway-fab waves-effect waves-light red  accent-4"
-                onclick="ls(pj.nombre,pj)">
+                onclick="save()">
                 <i class="material-icons">save</i>
             </a>
             <a class="btn-floating btn-small halfway-fab waves-effect waves-light teal" style=" 
-               margin-right: 50px;" onclick="cargar(ls(pj.nombre))">
+               margin-right: 50px;" onclick="//cargar(ls(pj.nombre));
+               load()">
                 <i class="material-icons">refresh</i>
             </a>
         </div>
@@ -285,24 +291,19 @@
         <li>
             <!-- <select id="listas" class="bootstrap-select" onchange="cargarLista()" data-live-search="true"
             data-style="btn-primary"></select> -->
-        <li> <select>
-                <option value="" disabled selected>Elige personaje</option>
-                <option value="1">Option 1</option>
-                <option value="2">Option 2</option>
-                <option value="3">Option 3</option>
-            </select>
-            <label>Personaje</label></li>
-
-        <!-- <button onclick="cargarLista()">Cargar Lista</button> -->
+            <li><a>
+                <i id='wifi'
+                class="material-icons">wifi</i>Online
+                <span class="switch">
+                    <label>
+                        <input id="cbOnline" type="checkbox" onchange="changeOnline()" checked></input>
+                        <span class="lever"></span>
+                    </label>
+                </span>
+            </a></li>
+            
         </li>
-        <!-- <li><input type="text" class="datepicker"></li>
-        <li> <input type="text" class="timepicker"></li> -->
-        <li><a class="waves-effect" onclick="nuevaLista()">Nueva Lista<i
-                    class="material-icons">add_shopping_cart</i></a>
-        </li>
-        <li><a class="waves-effect" onclick="borrarLista()">Borrar Lista<i
-                    class="material-icons">remove_shopping_cart</i></a></li>
-
+        <li> <a><input class="form-control" type="datetime-local" id="fechaMundo" onblur="alert(this.value)" ></a> </li>
         <li>
             <div class="divider"></div>
         </li>
@@ -567,8 +568,8 @@
 
     <div id="modal" class="modal">
         <span class="close modal-close">&times;</span>
-        <div class="modal-content" >
-            <!-- <img id="cuerpo" src="Body.png" alt="Cuerpo"> -->
+        <div class="modal-content center-align " >
+            <!-- <img id="cuerpo" src="img/Dragon.jpg" alt="Cuerpo"> -->
             <input-habilidad id='ihModal'>
         </div>
         <!-- <div class="modal-footer">
@@ -646,6 +647,9 @@
             $('.modal').modal();
             $('select').formSelect();
             $('.collapsible').collapsible();
+            // $('.datepicker').datepicker();
+            // $('.timepicker').timepicker();
+           
             // $(".dropdown-content.select-dropdown > li span").addClass('dark')
             // $(".dropdown-content.select-dropdown > li span").css("background-color", "black");
             // $(".dropdown-content.select-dropdown > li span").css("color", "white");
