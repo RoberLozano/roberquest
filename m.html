@@ -693,6 +693,9 @@
         Date.prototype.fecha = function (interval, units) {
             return this.toISOString().substring(0, 10)
         }
+        Date.prototype.fechahora = function (interval, units) {
+            return this.toISOString().slice(0, -1)
+        }
 
         var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
         //para compensar el cambio de juliano a gregoriano que hacen en mobile
@@ -704,8 +707,8 @@
                 var d = new Date(event.target.value)
                 //d.setDate(d.getDate()-4)
                 d = d.mod('dia', -4)
-                console.log(d.fecha())
-                this.value = d.fecha()
+                console.log(d.fechahora())
+                this.value = d.fechahora()
                 //TODO: tal vez actualizar
             });
         }
