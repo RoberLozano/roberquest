@@ -363,13 +363,35 @@ class Animal {
     console.log('cuerpo' + this.getMaxPuntos(PG));
   }
 
+  set nacimiento(valor){
+    if (typeof valor === 'string') {
+      // let d=new Date(valor+'T00:00:00')
+      let d=new Date(valor)
+      if(d instanceof Date && !isNaN(d)) this.nacimiento = d
+      else
+     console.log('error de conversion en nacimiento');
+    }
+    else
+      if (valor instanceof Date) {
+        //si es daño con el string del dado para que lo busque
+        this._nacimiento = valor.fechahora();
+      }
+
+    // console.log('Nacimiento',this.nacimiento);
+
+  }
+
+  get nacimiento(){
+    return  new Date(this._nacimiento);
+  }
 
   set edad(valor) {
     // console.log(typeof valor);
     console.log(valor);
     if (typeof valor === 'string') {
-      let d=new Date(valor+'T00:00:00')
-      if(d instanceof Date && !isNaN(d)) this.nacimiento = f
+      // let d=new Date(valor+'T00:00:00')
+      let d=new Date(valor)
+      if(d instanceof Date && !isNaN(d)) this.nacimiento = d
       else
       this.edad=parseInt(valor)
       // this.edad=parseFloat(valor)

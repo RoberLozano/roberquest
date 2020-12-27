@@ -1,11 +1,114 @@
 <!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+</head>
+<body>
+
+    <label>Parte de Trabajo<input type="text" name="parte" id="parte" value="parte"></label><br>
+    <label>Equipo/pieza/util que se da de baja<input type="text" name="pieza" id="pieza"  ></label><br>
+    <label>Servicio<input type="text" name="servicio" id="servicio" ></label><br>
+    <label>Codigo de Articulo<input type="text" name="coda" id="coda"  ></label><br>
+    <label>Empresa suministradora<input type="text" name="empresa" id="empresa" ></label><br>
+    <label>Técnico que da la baja</label><br>
+    <select name="tecnicos" id="tecnicos">
+         <option>Amparo Martinez Alcarria</option>
+         <option>Manuel Caulin Moreno</option>
+         <option>Luis M. Rubio Marin</option>
+         <option>Juan Bautista Rueda</option>
+         <option>F. Javier Jimenez Garcia</option>
+      </select>
+    <!-- <label>pedido<input type="text" name="pedido" id="pedido"  ></label> -->
+
+    <button onclick="act();download('Texto',texto)">Guardar</button>
+
+
+
 <script>
-                async function load() {
-                let ex= await import('./ex.js');
-                ex.hola();
-                ex.adios();
-            }
+    var fecha;
+    var parte;
+    var pieza;
+    var servicio;
+    var coda;
+    var empresa;
+    var tecnico;
+    var pedido;
+
+    var tecnicos=[
+    "Amparo Martinez Alcarria" ,"Manuel Caulin Moreno", "Luis M. Rubio Marin" ,"Juan Bautista Rueda", "F. Javier Jimenez Garcia"]
+
+    var texto="";
+
+function act() {
+    // fecha=document.getElementById("fecha").value;
+    parte=document.getElementById("parte").value;
+    pieza=document.getElementById("pieza").value;
+    servicio=document.getElementById("servicio").value;
+    coda=document.getElementById("coda").value;
+    empresa=document.getElementById("empresa").value;
+    tecnico=document.getElementById("tecnicos").value;
+    // pedido=document.getElementById("pedido").value;
+
+    texto=`
+
+
+
+
+
+
+
+
+
+
+
+
+Fecha:   ${fecha}
+De:      Servicio de Mantenimiento
+A:       ${servicio}
+Asunto:  Baja de Equipamiento
+
+
+
+
+
+
+
+
+
+
+
+
+Le comunicamos que el equipo/pieza/util '${pieza}' recibido en el Servicio de Mantenimiento para su reparacion con parte de averia ${parte} no se puede reparar por lo que el servicio de ${servicio} si quiere reponerlo/a debera hacer un pedido al Servicio de Suministros.
+
+En el pedido que realice al Servicio de Suministros debe indicar de forma clara el parte del Servicio de Mantenimiento, en este caso es el: ${parte}
+
+
+
+Codigo del Articulo: ${coda}
+
+Empresa suminitradora del articulo: ${empresa}
+`
+    console.log(texto);
+}
+
+function download(filename, text) {
+  var pom = document.createElement('a');
+  pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + 
+
+encodeURIComponent(text));
+  pom.setAttribute('download', filename);
+
+  pom.style.display = 'none';
+  document.body.appendChild(pom);
+
+  pom.click();
+
+  document.body.removeChild(pom);
+}
+
+
+
 </script>
-<button onclick="load()">
-Dale
-</button>
+
+</body>
+</html>

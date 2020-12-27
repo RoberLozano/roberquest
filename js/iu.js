@@ -319,7 +319,7 @@ function crearEventos(object, cell, key) {
     if (key === "nombre") {
       cell.addEventListener("click", function () {
         //modifico el editor modal
-        editar(object);
+        // editar(object);
         //y lo muestro
         // $("#editModal").modal();
         // $("#editModal").modal('open');
@@ -332,8 +332,20 @@ function crearEventos(object, cell, key) {
     }
 
     if (key === "valor") {
+      if(object.subible()<100)
+      cell.innerHTML += `<span class="new badge" data-badge-caption="↑">${object.subible()}</span>`;
       cell.addEventListener("click", function () {
-        entrenar(object);
+        //TODO: Hacer subible
+        if(object.subible()<100) {
+          // object.subir(10);tablaHabilidades();
+          document.getElementById('ctModal').innerHTML= "<input-subir id='ihModal' modal='modal' dado='1d3'></input-subir>"
+        }
+        else
+        //o implementar entrenar
+        document.getElementById('ctModal').innerHTML= "<input-habilidad id='ihModal'>"
+
+        document.getElementById('ihModal').h=object;
+        $("#modal").modal('open');
         //y lo muestro
       });
     }
@@ -1089,6 +1101,8 @@ function load() {
     // console.log(pj);
     cargar(ls(pj.nombre));
     // pj.cargarLocal();
+    alert(`${pj.nombre} cargado, ${sizeJSON(pj)} bytes`)
+    
   }
   
 }
@@ -1147,7 +1161,7 @@ function cargar(objeto) {
 
 cargar();
 let fm=fechaMundo.toISOString().slice(0, -1)
-alert(fm);
+// alert(fm);
 document.getElementById('fechaMundo').value=fm;
 // document.getElementById('fechaMundo').value="0777-07-07T07:00:01.0"
 

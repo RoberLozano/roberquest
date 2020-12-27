@@ -196,9 +196,17 @@ class Habilidad extends XP {
   // }
 
   subir(subida) {
-    this.valor += subida;
-    this.clearXP();
-    if (fechaMundo) this.fecha = fechaMundo;
+    subida = parseInt(subida);
+    if (isNumber(subida)) {
+      this.valor += subida;
+      this.clearXP();
+      if (fechaMundo) this.fecha = fechaMundo;
+    }
+  }
+
+  subible() {
+    return this.getProbabilidad(this.valor, fechaMundo, this.bh);
+
   }
 
   //TODO: Modificar para que no requiera de pj
@@ -265,17 +273,17 @@ class Habilidad extends XP {
 
   xpTirada(t, suerte = []) {
     console.log(t);
-    let tir=this.tirada(t, suerte);
+    let tir = this.tirada(t, suerte);
     console.log(tir);
     switch (tir) {
       case TipoTirada.SUPERCRITICO:
-        this.xp += 4;console.log("Sube SUPERCRITICO");
+        this.xp += 4; console.log("Sube SUPERCRITICO");
         break;
       case TipoTirada.CRITICO:
-        this.xp += 3;console.log("Sube CRITICO");
+        this.xp += 3; console.log("Sube CRITICO");
         break;
       case TipoTirada.ESPECIAL:
-        this.xp += 1;console.log("Sube ESPECIAL");
+        this.xp += 1; console.log("Sube ESPECIAL");
         break;
       default: console.log("NO SUBE NADA");
         break;
@@ -655,7 +663,6 @@ class InputHabilidad extends HTMLElement {
     // this.label.readOnly = true;
     this.label.addEventListener('change', (event) => {
 
-      
       console.log(this.personaje.habilidades[event.target.value]);
       // console.log(pj.habilidades[event.target.value]);
       this.setHabilidad(this.personaje.habilidades[event.target.value])
@@ -671,7 +678,7 @@ class InputHabilidad extends HTMLElement {
     this.porcentaje = document.createElement('input');
     this.porcentaje.setAttribute("id", "porcentaje");
     this.porcentaje.setAttribute("type", "number");
-    this.porcentaje.value=this.habilidad.v;
+    this.porcentaje.value = this.habilidad.v;
     // this.porcentaje.setAttribute("value", this.habilidad.v);
     this.porcentaje.setAttribute('min', '0');
     this.porcentaje.setAttribute('max', '9999');
@@ -699,12 +706,12 @@ class InputHabilidad extends HTMLElement {
     // label.style.width = "700px";
 
 
-
+    //el input del dado de tirada
     this.input = document.createElement('input');
     this.input.setAttribute("type", "number");
     // this.input.setAttribute("value", "100");
     this.input.setAttribute("placeholder", "100");
-    this.input.setAttribute('min', '0');
+    this.input.setAttribute('min', '1');
     this.input.setAttribute('max', '100');
     this.input.style.width = "2.3em";
 
@@ -732,15 +739,16 @@ class InputHabilidad extends HTMLElement {
     // Create some CSS to apply to the shadow dom
     const style = document.createElement('style');
     console.log(this.style.isConnected);
-    
+
     // this.ok= document.createElement('button');
     // this.ok.classList.add("okay");
-    this.ok= document.createElement('img');
-    
-    this.ok.src = this.habilidad.ataque?'img/sword.svg':'img/shield.svg';
+    this.ok = document.createElement('img');
+
+    this.ok.src = this.habilidad.ataque ? 'img/sword.svg' : 'img/shield.svg';
     //  this.ok.src = 'img/check.svg';
     // if (this.habilidad instanceof HabilidadMarcial) this.ok.src = this.habilidad.ataque?'img/sword.svg':'img/shield.svg';
     this.ok.addEventListener('click', (event) => {
+      console.log('Evento de xpTirada');
       this.habilidad.xpTirada(this.input.value)
     });
 
@@ -798,34 +806,34 @@ class InputHabilidad extends HTMLElement {
     this.wrapper.appendChild(this.icon);
     this.wrapper.appendChild(this.input);
     this.wrapper.appendChild(this.ok);
-    
+
 
     // Create a shadow root
   }
 
-  lista(id,habilidades){
-    let options="";
+  lista(id, habilidades) {
+    let options = "";
     habilidades.forEach(h => {
-      options+=`<option value="${h.nombre}"></option>`
-  });
-    this.label.innerHTML= `  <datalist id=${id}>
+      options += `<option value="${h.nombre}"></option>`
+    });
+    this.label.innerHTML = `  <datalist id=${id}>
     ${options}
   </datalist>`
-  this.label.setAttribute("list",id);
+    this.label.setAttribute("list", id);
   }
 
-  setPersonaje(personaje){
-    this.personaje=personaje;
+  setPersonaje(personaje) {
+    this.personaje = personaje;
 
     let array = this.personaje.getHabilidades(h => (h instanceof HabilidadMarcial));
 
-    array.sort(function(a , b) {
+    array.sort(function (a, b) {
       return a.v - b.v;
-  });
+    });
     console.log(array.reverse());
     // this.lista("listaHab"+personaje.nombre,this.personaje.getHabilidades());
-    this.lista("listaHab"+personaje.nombre,this.personaje.getHabilidades(h => (h instanceof HabilidadMarcial)));
-    this.h=array[0];
+    this.lista("listaHab" + personaje.nombre, this.personaje.getHabilidades(h => (h instanceof HabilidadMarcial)));
+    this.h = array[0];
 
 
   }
@@ -841,11 +849,11 @@ class InputHabilidad extends HTMLElement {
   }
 
   setHabilidad(habilidad) {
-    if (habilidad)this.habilidad = habilidad;
+    if (habilidad) this.habilidad = habilidad;
     this.label.setAttribute("value", this.habilidad.nombre);
     this.porcentaje.setAttribute("value", this.habilidad.v);
-    this.porcentaje.value= this.habilidad.v;
-    this.ok.src = this.habilidad.ataque?'img/sword.svg':'img/check.svg';
+    this.porcentaje.value = this.habilidad.v;
+    this.ok.src = this.habilidad.ataque ? 'img/sword.svg' : 'img/check.svg';
   }
 
   act(input) {
@@ -877,9 +885,112 @@ class InputHabilidad extends HTMLElement {
   }
 }
 
+class InputSubirHabilidad extends InputHabilidad {
+
+  constructor(hab = new Habilidad("Habilidad", "Agilidad", 77)) {
+    super(hab);
+    this.porcentaje.value = hab.subible()
+    if (this.hasAttribute('dado')) {
+      let dd = this.getAttribute('dado');
+      this.DADO = new Dado(dd);
+    } else
+      this.DADO = new Dado('1d6');
+
+    this.dado = document.createElement('span');
+    this.dado.setAttribute('class', 'icon');
+    this.dado.addEventListener('click', (event) => {
+      let c = [1, 13]
+      if (c.includes(parseInt(this.input.value))) {
+        this.input.style.color = "blue";
+        this.inputdado.value = this.DADO.dadoMax() + this.DADO.tirar()
+      }
+      else
+        this.inputdado.value = this.DADO.tirar();
+
+      // probarRnd((new Dado('1d6')).tirar,6,1000);
+      // this.act(this.inputdado);
+      // console.log(this.getAttribute('habilidad'));
+      // if(input.value>this.getAttribute('habilidad')) input.style.color="red"
+      // else input.style.color="black"
+    });
+
+    this.inputdado = document.createElement('input');
+    this.inputdado.setAttribute("type", "number");
+    // this.input.setAttribute("value", "100");
+    this.inputdado.setAttribute("placeholder", "6");
+    this.inputdado.setAttribute('min', '0');
+    this.inputdado.setAttribute('max', this.MAX_DADO * 2);
+    this.inputdado.style.width = "1.8em";
+
+    //Imagen del dado de 6
+    const img = document.createElement('img');
+    img.src = 'img/6_sided_die.svg';
+    this.dado.appendChild(img);
+
+    //SOBREESCRIBIR OK para que haga otra cosa el click
+    var new_element = this.ok.cloneNode(true);
+    this.ok.parentNode.replaceChild(new_element, this.ok);
+    this.ok = new_element;
+
+    this.ok.addEventListener('click', (event) => {
+      console.log("SUBIR");
+      this.habilidad.subir(this.inputdado.value);
+      tablaHabilidades();
+      let id;
+      //si se ha definido como modal al darle a ok se cierra
+      if (this.hasAttribute('modal')) {
+        id = this.getAttribute('modal');
+        console.log('MODAL ');
+        $('#' + id).modal('close');
+      }
+      //solo para modal$('#modal').modal('close');
+
+    });
+    this.wrapper.insertBefore(this.dado, this.ok);
+    this.wrapper.insertBefore(this.inputdado, this.ok);
+
+  }
+  //sobrescribir act()
+  act(input) {
+    // let v = this.habilidad.tirada(input.value);
+    let iv = parseInt(input.value)
+    let v = this.habilidad.subible();
+    let sc = [7, 77];
+
+    if (sc.includes(iv)) {
+      // console.log('sube x2');
+      input.style.color = "red";
+      this.inputdado.value = this.DADO.dadoMax() * 2
+    }
+    else
+      if (iv > v) { input.style.color = "green"; }
+      else { input.style.color = "grey"; }
+
+
+  }
+  // override
+  setHabilidad(habilidad) {
+    if (habilidad) this.habilidad = habilidad;
+    this.label.setAttribute("value", this.habilidad.nombre);
+    this.porcentaje.setAttribute("value", this.habilidad.subible());
+    this.porcentaje.value = this.habilidad.subible();
+    this.percent.innerHTML = '⇈⇧⇑'//"<span style='font-size: 20px;'>⇈⇧</span>"
+    this.ok.src = 'img/check.svg';
+  }
+
+  /**Cambia el dado con el que se sube
+   * @param {Strinf} dd el dado como string
+   */
+  setDado(dd) {
+    this.DADO = new Dado(dd);
+  }
+
+}
 // Define the new element
 
 customElements.define('input-habilidad', InputHabilidad);
+customElements.define('input-subir', InputSubirHabilidad);
+
 customElements.define('my-counter', MyCounter);
 
 // export {Habilidad, BonHabilidad}; 
