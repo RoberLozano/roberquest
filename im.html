@@ -106,6 +106,122 @@ encodeURIComponent(text));
   document.body.removeChild(pom);
 }
 
+var mapa = new Map();
+  var o={} //el objeto
+function pruebaSet(veces) {
+
+  let t1;
+  let t0=new Date()
+  for (let index = 0; index < veces; index++) {
+    const element = array[index];
+    miMapa.set(claveCadena, "valor asociado con 'una cadena'")
+  }
+
+  t1=new Date();
+  console.log(t2-t1);
+
+  for (let index = 0; index < veces; index++) {
+    const element = array[index];
+    miMapa.set(claveCadena, "valor asociado con 'una cadena'")
+  }
+
+
+}
+
+function iniO(veces) {
+  console.log('iniO '+veces);
+  let t1;
+  let t0=new Date();
+  for (let index = 0; index < veces; index++) {
+   o['index'+index]=0;
+    // miMapa.set(claveCadena, "valor asociado con 'una cadena'")
+  }
+  t1=new Date();
+  console.log(t1-t0);
+}
+
+function iniMap(veces) {
+  console.log('iniMap '+veces);
+  let t1;
+  let t0= Date.now()
+  for (let index = 0; index < veces; index++) {
+    mapa.set('index'+index, 0)
+  }
+  t1=Date.now()
+  console.log(t1-t0);
+
+}
+
+function incMap(veces) {
+  console.log('incMap '+veces);
+  let t1;
+  let t0= Date.now()
+  for (let index = 0; index < veces; index++) {
+    let i =index;
+    index=Math.trunc((Math.random()*veces));
+    mapa.set('index'+index,mapa.get('index'+index)+1)
+    // console.log(index);
+    index=i;
+  }
+  t1=Date.now()
+  console.log(t1-t0);
+
+}
+
+function incO(veces) {
+  console.log('incO '+veces);
+  let t1;
+  let t0= Date.now()
+  for (let index = 0; index < veces; index++) {
+    let i =index;
+    index=Math.trunc((Math.random()*veces));
+    o['index'+index]++;
+    index=i;
+  }
+  t1=Date.now()
+  console.log(t1-t0);
+
+}
+
+function mm() {
+  console.log('max Mapa');
+  let t1;
+  let t0= Date.now()
+  console.log([...mapa.entries()].reduce((a, e ) => e[1] > a[1] ? e : a))
+  t1=Date.now()
+  console.log('time',t1-t0);
+
+}
+
+function mo() {
+  console.log('max Objeto');
+  let t1;
+  let t0= Date.now()
+  let max=Object.keys(o).reduce((a, b) => o[a] > o[b] ? a : b);
+  console.log(max,o[max]);
+  // console.log(Object.keys(o).reduce((a, b) => o[a] > o[b] ? a : b));
+  // console.log(Math.max(...Array.from(Object.v, o => o.x)))
+  t1=Date.now()
+  console.log('time',t1-t0);
+
+}
+
+/**Muestra lo que tarda en ejecutarse la función f
+ * 
+ * @param {Function} f Función
+ * @param {} a argumentos
+ * @returns {Number} milisegundos de ejecucuón
+ */
+ function time(f,a) {
+  let t;
+  let t0= Date.now()
+  f(a);
+  t=Date.now()-t0
+  console.log(f.name,t);
+  return t;
+}
+
+
 
 
 </script>

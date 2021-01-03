@@ -161,3 +161,18 @@ for (let i = 0; i < veces; i++) {
 console.log(resultados);
   
 }
+
+/**Muestra lo que tarda en ejecutarse la función f
+ * 
+ * @param {Function} f Función
+ * @param {} a argumentos
+ * @returns {Number} milisegundos de ejecucuón
+ */
+function time(f,a) {
+  let t;
+  let t0= Date.now()
+  f(a);
+  t=Date.now()-t0
+  console.log(f.name,t);
+  return t;
+}
