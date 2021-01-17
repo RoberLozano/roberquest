@@ -34,7 +34,7 @@ class Localizaciones {
      * @memberof Localizaciones
      */
     actPG(pg) {
-        console.log("actualizar PG:" +pg );
+        // console.log("actualizar PG:" +pg );
         this.pg = pg;
         this.localizaciones.forEach(loc => {
             // console.log(loc.nombre+":"+pg);
@@ -107,7 +107,7 @@ class Localizaciones {
             this[key] = o[key];
         }
         if(this.localizaciones.length > 0){
-            console.log("entro en las localizaciones de "+this.nombre);
+            // console.log("entro en las localizaciones de "+this.nombre);
         let lt=[] //localizaciones temporales
         for (let l of this.localizaciones) {
             //miro los distintos tipos de objetos por una propiedad única

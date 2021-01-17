@@ -176,3 +176,17 @@ function time(f,a) {
   console.log(f.name,t);
   return t;
 }
+
+/**Devuelve una copia del objeto de su misma clase
+ * 
+ * @param {Object} o El objeto a copiar
+ * @returns la copia del objeto
+ */
+function copiar(o) {
+  let copia;
+  // eval(`copia = new ${o.constructor.name}()`); //elegir uno
+  copia = (Function('return new ' + o.constructor.name))() 
+  for (let key in o) 
+    copia[key] = o[key];
+  return copia;
+}

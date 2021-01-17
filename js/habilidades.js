@@ -108,6 +108,17 @@ class XP {
 }
 
 
+// var TIRADA = {
+//   PIFIA: {name: "PIFIA", value: -1, code: "P"},
+//   FALLO: {name: "FALLO", value: 1, code: "F"},
+//   EXITO: {name: "EXITO", value: 2, code: "N"},
+//   ESPECIAL: {name: "ESPECIAL", value: 3, code: "E"},
+//   CRITICO: {name: "CRITICO", value: 4, code: "C"},
+//   SUPERCRITICO: {name: "SUPERCRITICO", value: 5, code: "SC"},
+
+// };
+
+
 class TipoTirada {
   //TODO: quitar static para que vaya en firefox
   static tirada = ["PIFIA", "FALLO", "EXITO", "ESPECIAL", "CRITICO", "SUPERCRITICO"];
@@ -225,10 +236,11 @@ class Habilidad extends XP {
    */
   get v() { return this.valor + this.bvalor + this.bh }
 
+
   //poner posibles bonificaciones en especialñ y crítico
   get e() { return Math.round(this.v * 0.2) + this.bespecial }
   get c() { return Math.round(this.v * 0.05) + this.bcritico }
-  get p() { return Math.round(this.v * 0.05) + this.bcritico }
+  get p() { return Math.min(100,101-Math.round( (100-this.v) * 0.05)) }
 
 
   /**
@@ -256,7 +268,7 @@ class Habilidad extends XP {
     switch (true) {
       case (t == 7 || t == 77):
         return TipoTirada.SUPERCRITICO;
-      case (t == 100):
+      case (t >=this.p):
         return TipoTirada.PIFIA; //calcular otras pifias
       case (t <= this.c):
         return TipoTirada.CRITICO;
@@ -275,6 +287,10 @@ class Habilidad extends XP {
     console.log(t);
     let tir = this.tirada(t, suerte);
     console.log(tir);
+    this.xpTipoTirada(tir);
+  }
+
+  xpTipoTirada(tir){
     switch (tir) {
       case TipoTirada.SUPERCRITICO:
         this.xp += 4; console.log("Sube SUPERCRITICO");
@@ -288,6 +304,7 @@ class Habilidad extends XP {
       default: console.log("NO SUBE NADA");
         break;
     }
+    
   }
 
 
@@ -350,11 +367,20 @@ class HabilidadMarcial extends Habilidad {
   // //poner posibles bonificaciones en especialñ y crítico
   get e() { return (this.arma?.bonificador) ? Math.round(this.v * 0.2) + this.bespecial + this.arma.bonificador.especial : Math.round(this.v * 0.2) + this.bespecial }
   get c() { return (this.arma?.bonificador) ? Math.round(this.v * 0.05) + this.bcritico + this.arma.bonificador.critico : Math.round(this.v * 0.05) + this.bcritico }
-  get p() { return 100 } //TODO: hacer la formula de pifia
+  //  get p() { return 100 } //TODO: hacer la formula de pifia
 
   // get v(){
   //     if(!this.arma || this.arma.bonificador) return super.v
   // }
+
+
+}
+
+class Tecnica extends HabilidadMarcial{
+    constructor(nombre, tipo, valor,  pf=1, ataque = true, localizacion = null, arma = null) {
+      super(nombre, tipo, valor, ataque, localizacion, arma);
+			this.pf = pf
+  }
 
 
 }

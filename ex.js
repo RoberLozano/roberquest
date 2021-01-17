@@ -1,83 +1,359 @@
-
-    var fecha;
-    var parte;
-    var pieza;
-    var servicio;
-    var coda;
-    var empresa;
-    var tecnico;
-    var pedido;
-
-    var tecnicos=[
-    "Amparo Martinez Alcarria" ,"Manuel Caulin Moreno", "Luis M. Rubio Marin" ,"Juan Bautista Rueda", "F. Javier Jimenez Garcia"]
-
-    var texto="";
-
-function act() {
-    fecha=document.getElementById("fecha").value;
-    parte=document.getElementById("parte").value;
-    pieza=document.getElementById("pieza").value;
-    servicio=document.getElementById("servicio").value;
-    coda=document.getElementById("coda").value;
-    empresa=document.getElementById("empresa").value;
-    tecnico=document.getElementById("tecnico").value;
-    pedido=document.getElementById("pedido").value;
-
-    texto=`
+var ws;//el worksheet
+var pe //perosnaje excel
+var last; //el último personaje;
 
 
+function Upload() {
+  //Reference the FileUpload element.
+  var fileUpload = document.getElementById("fileUpload");
+
+  //Validate whether File is valid Excel file.
+  var regex = /^([a-zA-Z0-9\s_\\.\-:])+(.xls|xlsx|xlsm|)$/;
+  // if (regex.test(fileUpload.value.toLowerCase())) {
+  if (true) {
+
+    if (typeof (FileReader) != "undefined") {
+      var reader = new FileReader();
+
+      //For Browsers other than IE.
+      if (reader.readAsBinaryString) {
+        reader.onload = function (e) {
+          ProcessExcel(e.target.result);
+        };
+        reader.readAsBinaryString(fileUpload.files[0]);
+      } else {
+        //For IE Browser.
+        reader.onload = function (e) {
+          var data = "";
+          var bytes = new Uint8Array(e.target.result);
+          for (var i = 0; i < bytes.byteLength; i++) {
+            data += String.fromCharCode(bytes[i]);
+          }
+          ProcessExcel(data);
+        };
+        reader.readAsArrayBuffer(fileUpload.files[0]);
+      }
+    } else {
+      alert("This browser does not support HTML5.");
+    }
+  } else {
+    alert("Please upload a valid Excel file.");
+  }
+};
+function ProcessExcel(data) {
+  //Read the Excel File data.
+  var workbook = XLSX.read(data, {
+    type: 'binary'
+  });
+
+  //Fetch the name of First Sheet.
+  var firstSheet = workbook.SheetNames[0];
+   console.log(workbook.SheetNames);
+
+  //Read all rows from First Sheet into an JSON array.
+  // var excelRows = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[firstSheet]);
+  ws = workbook.Sheets[firstSheet];
+  // console.log('B1');
+  // console.log(ws['agilidad']);
+
+  // console.log(XLSX.utils.decode_cell('B1'));
+  let s = XLSX.utils.decode_cell('A1');
+  let e = XLSX.utils.decode_cell('B8');
+
+  var range = { s, e };
+  // var range = { s: { c: 0, r: 0 }, e: { c: 0, r: 4 } };
+
+  // for (var R = range.s.r; R <= range.e.r; ++R) {
+  //     for (var C = range.s.c; C <= range.e.c; ++C) {
+  //         var cell_address = { c: C, r: R };
+  //         var data = XLSX.utils.encode_cell(cell_address);
+  //         console.log(ws[data]?.v)
+  //     }
+  // }
+  info();
+ 
+
+
+  // tipo = Manipulación;
+  // ws = workbook.Sheets['Técnicas'];
+  // tecnicas()
+
+  car();
+
+  // h(21, 86, false);
+  // pe.act();
+
+  // tipo = Conocimiento; //idiomas
+  // h(22, 86, false, 'M', 'N', 'O', false);
+
+
+  // ws = workbook.Sheets['Magia'];
+  // gemas();
+
+  // tipo = Magia;
+  // ws = workbook.Sheets['Magia'];
+  // h(5, 45);
+
+  // tipo = Manipulación;
+  // ws = workbook.Sheets['Armas'];
+  // h(2, 11);
+  // ws = workbook.Sheets['Inventario'];
+  // equipo(2, 20)
+
+  // if(last) console.log(diferencia(pe,last));
+
+  // eval(`last=new ${pe.clase}()`)
+  // last.setAll(pe)
+ 
 
 
 
 
+};
+
+function tecnicas(inicio = 2, fin = 38, ceros = false, hab = 'A', pf = 'B', xp = 'C', valor='D', des = 'M', seguir = true) {
+  let habilidad = new Tecnica();
+  //tipo= 'Manipulación'
+
+  for (let i = inicio; i < fin; i += 4) {
+    let nombre = ws[hab + i]?.v;
+    if (!nombre) {
+      if (seguir) continue;
+      else return;
+    }
+    var fatiga=ws[pf + i]?.v;
+    var porcentaje = ws[valor + i]?.v;
+    var exp = ws[xp + i]?.v
+    //si no se admiten 0 en el porcentaje y no tien xp se pasa a otro
+    if (!ceros && !porcentaje && !exp) {
+      continue;
+    }
+    var descripcion = ws[des + i]?.v;
+
+    let f = ws[pf + (i + 1)]?.v;
+    let n = ws[pf + (i + 2)]?.v;
+    let e = ws[pf + (i + 3)]?.v;
+    let c = ws['N' + (i + 1)]?.v;
+    let sc = ws['N' + (i + 2)]?.v;
+
+    console.log(descripcion);
+    console.log(f);
+    console.log(n);
+    console.log(e);
+    console.log(c);
+    console.log(sc);
 
 
+    habilidad = new Tecnica(nombre, tipo, porcentaje, fatiga);
+    if (exp) habilidad.xp = exp;
 
 
-
-
-Fecha:   ${fecha}
-De:      Servicio de Mantenimiento
-A:       ${servicio}
-Asunto:  Baja de Equipamiento
-
-
-
-
-
-
-
-
-
-
-
-
-Le comunicamos que el equipo/pieza/util '${pieza}' recibido en el Servicio de Mantenimiento para su reparacion con parte de averia ${parte} no se puede reparar por lo que el servicio de ${servicio} si quiere reponerlo/a debera hacer un pedido al Servicio de Suministros.
-
-En el pedido que realice al Servicio de Suministros debe indicar de forma clara el parte del Servicio de Mantenimiento, en este caso es el: ${parte}
-
-
-
-Codigo del Articulo: ${coda}
-
-Empresa suminitradora del articulo: ${empresa}
-`
-    console.log(texto);
+    pe.habilidades[nombre] = habilidad;
+    // console.log(ws[nombre + i]?.v, ws[xp + i]?.v, ws[valor + i]?.v);
+    console.log(nombre, fatiga,exp, porcentaje);
+    console.log(habilidad);
+  }
 }
 
-function download(filename, text) {
-  var pom = document.createElement('a');
-  pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + 
 
-encodeURIComponent(text));
-  pom.setAttribute('download', filename);
+function equipo(inicio, fin, n = 'A', p = 'B', c = 'C', seguir = true) {
 
-  pom.style.display = 'none';
-  document.body.appendChild(pom);
+  for (let i = inicio; i < fin; i++) {
+    let nombre = ws[n + i]?.v;
+    if (!nombre) {
+      if (seguir) continue;
+      else return;
+    }
+    let obj;
+    let peso = ws[p + i]?.v;
+    var ctd = parseInt(ws[c + i]?.v);
+    //si no se admiten 0 en el porcentaje y no tien xp se pasa a otro
+    if (nombre.toLowerCase().startsWith("poción")) {
+      console.log('POCION');
+      //TODO
+      if (!ctd) ctd = 1;
+      obj = new Pociones(nombre, peso, 0, ctd)
+      obj.parse(nombre);
+    }
+    else
 
-  pom.click();
+      if (ctd && ctd > 1)
+        obj = new Objetos(nombre, peso, 0, ctd)
+      else
+        obj = new Objeto(nombre, peso)
 
-  document.body.removeChild(pom);
+    pe.inventario.add(obj);
+
+  }
+}
+
+function gemas(params) {
+  for (let i = 8; i < 15; i++) {
+    let nombre = ws['O' + i]?.v;
+    if (!nombre) return;
+    let capacidad = ws['P' + i]?.v;
+    let pm = ws['Q' + i]?.v;
+    var gema = new Gema(nombre, 0.1, 1000 * capacidad, capacidad, pm);
+    console.log(gema);
+  }
+}
+
+// var tipo = Agilidad;
+function h(inicio, fin, ceros = true, hab = 'A', xp = 'B', valor = 'C', seguir = true) {
+  let habilidad = new Habilidad();
+
+  for (let i = inicio; i < fin; i++) {
+    let nombre = ws[hab + i]?.v;
+    if (!nombre) {
+      if (seguir) continue;
+      else return;
+    }
+
+    if (nombre.toUpperCase().startsWith("HABILIDADES DE ")) {       //si empieza por "HABILIDADES DE " sin que importen las mayúsculas
+      nombre = nombre.replace(/habilidades de /gi, "");// guardo solo el tipo de habilidad sin que importen las mayúsculas
+      tipo = nombre.charAt(0).toUpperCase() + nombre.toLowerCase().slice(1);                  // 1 en mayusculas
+      continue;
+    }
+
+    var porcentaje = ws[valor + i]?.v;
+    var exp = ws[xp + i]?.v
+    //si no se admiten 0 en el porcentaje y no tien xp se pasa a otro
+    if (!ceros && !porcentaje && !exp) {
+      continue;
+    }
+
+    habilidad = new Habilidad(nombre, tipo, porcentaje);
+    if (exp) habilidad.xp = exp;
+
+    pe.habilidades[nombre] = habilidad;
+    // console.log(ws[nombre + i]?.v, ws[xp + i]?.v, ws[valor + i]?.v);
+    console.log(nombre, exp, porcentaje);
+    // console.log(habilidad);
+  }
+}
+
+function info(params) {
+  var nombre = ws['B1']?.v
+  var clase = ws['B2']?.v
+  var altura = ws['B3']?.v
+  var peso = ws['I3']?.v
+
+  console.log(nombre);
+  console.log(clase);
+  console.log(altura);
+  console.log(peso);
+  if (clase) {
+    eval(`pe=new ${clase}()`) //un poco más rápida pero menos segura
+    // pe = (Function('return new ' + clase))() //se supone que es más segura
+    //TODO: hacer pruebas de rendimiento;
+    console.log(pe);
+  }
+  else pe = new Humanoide();
+
+  pe.nombre = nombre;
+  pe.clase = clase;
+  pe.altura = altura;
+  pe.peso = peso;
+
+  let f = (ws['K6']?.w + '-' + ws['L6']?.v).split('-'); //fecha nacimiento
+  let fecha_nac = new Date(parseInt(f[2]), parseInt(f[1]) - 1, parseInt(f[0]))
+  console.log(fecha_nac.toLocaleDateString());
+
+
+  f = (ws['K7']?.w + '-' + ws['L7']?.v).split('-'); //fecha nacimiento
+  let fecha = new Date(parseInt(f[2]), parseInt(f[1]) - 1, parseInt(f[0]))
+  console.log(fecha.toLocaleDateString());
+  fechaMundo=fecha;
+  // console.log(fecha.toLocaleString());
+  // console.log(ws['K6']);
+
+
+  //DINERO
+  
+ 
+  
+  let i = buscar('Dinero:', 100, 200) + 1;
+  var mm = ws['B' + i]?.v
+  var mo = ws['B' + (i + 1)]?.v
+  var mp = ws['F' + i]?.v
+  var mb = ws['F' + (i + 1)]?.v
+  console.log(mm, mo, mp, mb);
+  if(mm) pe.inventario.add(new Objetos('mm',0.0007,1000,mm))
+  if(mo) pe.inventario.add(new Objetos('mo',0.002,10,mo))
+  if(mp) pe.inventario.add(new Objetos('mp',0.002,1,mp))
+  if(mb) pe.inventario.add(new Objetos('mb',0.002,0.1,mb))
+
+  i=buscar('banco',110,120)+1;
+  bancos(i,5);
+
+  // console.log(lastBanco.dinero(fecha));
+  console.log(lastBanco.dinero());
+
+  
+
+
+}
+
+function buscar(b, inicio, fin, col = 'A') {
+  for (let i = inicio; i < fin; i++) {
+    let valor = ws[col + i]?.v
+    if (valor == b)
+      return i;
+  }
 }
 
 
+
+function car(n = 10, col = 'E') {
+  let suma = 0
+  for (let i = 0; i < 7; i++) {
+    let car = ws[col + (n + i)]?.v;
+    console.log(CP[i], car);
+    pe.set(CP[i], car,false);
+    suma += car;
+  }
+  console.log('TOTAL:', suma);
+  pe.act();
+}
+
+var lastBanco;
+var lastCredito;
+
+function bancos(inicio,n=10) {
+  console.log('en bancos');
+
+  for (let i=inicio; i < (inicio+n); i++) {
+    console.log( 'A' + i);
+    let nombre = ws['A' + i]?.v;
+    console.log(nombre);
+    if (!nombre) return;
+
+    //fecha
+    let f = (ws['B' + i]?.w + '-' + ws['C' + i]?.v).split('-'); //fecha ingreso
+    console.log(parseInt(f[2]), parseInt(f[1]) - 1, parseInt(f[0]));
+    let fecha = new Date(parseInt(f[2]), parseInt(f[1]) - 1, parseInt(f[0]))
+
+    let interes = ws['D' + i]?.v;
+    let dinero = ws['E' + i]?.v;
+    console.log(nombre,fecha,interes,dinero);
+   if(dinero ){
+      var deposito = new Deposito(nombre,dinero,fecha,interes);
+      // var credito= new Credito(nombre,dinero,fecha,interes);
+      lastBanco=deposito;
+      // lastCredito=credito;
+      console.log(deposito); 
+   }
+     
+  }
+
+  
+  
+}
+function pifias( inicio, fin) {
+  let h = new Habilidad('h','2s',1)
+  for (let i = inicio; i < fin; i++) {
+   h.valor=i;
+   console.log(i,h.p, 100-Math.round((100-i)*0.05) ,Math.ceil((100-i)*0.05),  Math.floor((100-i)/20) );
+
+  }
+}

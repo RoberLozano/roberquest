@@ -360,7 +360,7 @@ class Animal {
     // this.backup = null
     this.act();
     this.cuerpo = new Localizaciones(this.getMaxPuntos(PG));
-    console.log('cuerpo' + this.getMaxPuntos(PG));
+    // console.log('cuerpo' + this.getMaxPuntos(PG));
   }
 
   set nacimiento(valor){
@@ -559,10 +559,11 @@ class Animal {
    * Modifica una característica base y actualiza
    * @param {string} car La caracteristica: FUE,PM, etc...
    * @param {number} valor El nuevo valor
+   * @param {Boolean} actualizar Si se actualiza después de subir, true por defecto
    */
-  set(car, valor) {
+  set(car, valor,actualizar=true) {
     this[car] = valor;
-    this.act();
+    if (actualizar) this.act();
   }
 
   /**
@@ -752,7 +753,7 @@ class Animal {
   }
 
   actTodosBonHab() {
-    console.log("actualizar todos bonificadores");
+    // console.log("actualizar todos bonificadores");
     // console.log(this.habilidades);
     // if(this.habilidades)
 
@@ -1264,7 +1265,7 @@ class Humanoide extends Animal {
     this.imagen='Body.png';
     // this.imagen='img/Dragon.jpg';
     this.cuerpo = new Localizaciones(this.getMaxPuntos(PG));
-    console.log(this.nombre + ' cuerpo-> PG:' + this.getMaxPuntos(PG));
+    // console.log(this.nombre + ' cuerpo-> PG:' + this.getMaxPuntos(PG));
     //Menteniendo junta toda la localización
     var cabeza = new Localizacion("Cabeza", 0.333, 1, 9, 0)
     var brazoD = new Localizacion("Brazo D", 0.25, 10, 26, 0)
@@ -1426,12 +1427,6 @@ class Enano extends Humanoide {
   }
 
   haBasicas() {
-
-
-    "HABILIDADES DE SIGILO"
-    "Deslizarse en Silencio"
-    "Esconderse"
-
 
     this.setHabilidad(new Habilidad("Esquivar", Agilidad, 20));
     this.setHabilidad(new Habilidad("Montar", Agilidad, 20));

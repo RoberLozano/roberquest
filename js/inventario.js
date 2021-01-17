@@ -73,7 +73,7 @@ class Usable extends Objeto {
 }
 
 class Gema extends Usable {
-  constructor(nombre, peso, valor, capacidad, pm = 0) {
+  constructor(nombre='Gema', peso, valor, capacidad, pm = 0) {
     super(nombre, peso, valor);
     this.capacidad = capacidad;
     this.pm = pm;
@@ -101,10 +101,28 @@ class Gema extends Usable {
     return resto;
   }
 
+    /**Rellena la capacidad de la gema por el nombre
+   * 
+   * @param {String} s un String con el nombre que incluye la capacidad
+   */
+  parse(s){
+    s=s.toUpperCase().replace('GEMA', '');
+    if(s.toUpperCase().includes('PM'))s=s.replace('PM', '')
+    s=s.trim()
+    let puntos= parseInt(s);
+
+    if(puntos){
+      this.capacidad=puntos;
+    }
+
+
+  }
+
+
 }
 
 class Pociones extends Objetos {
-  constructor(nombre = "Poción 5 PG", peso = 0.1, valor, efectos = "pj.modificarPuntos(PG,5)", ctd) {
+  constructor(nombre = "Poción", peso = 0.1, valor, ctd, efectos) {
     super(nombre, peso, valor, ctd);
     this.efectos = efectos;
 
@@ -120,6 +138,30 @@ class Pociones extends Objetos {
       --this.ctd;
     // 
     pj.save();
+  }
+
+  /**Rellena efectos de la poción (solo pM,G,F  por ahora)
+   * 
+   * @param {String} s un String con el nombre de la poción que da sus efectos
+   */
+  parse(s){
+    s=s.replace('Poción', '');
+    let p;
+
+    if(s.toUpperCase().includes(' PM')){p='PM'; s=s.replace('PM', '')} 
+    else
+    if(s.toUpperCase().includes(' PG')){p='PG'; s=s.replace('PG', '')} 
+    else
+    if(s.toUpperCase().includes(' PF')){p='PF'; s=s.replace('PF', '')} 
+
+    s=s.trim()
+    let puntos= parseInt(s);
+
+    if(p && puntos){
+      this.efectos = `pj.modificarPuntos(${p}, ${puntos})`
+    }
+
+
   }
 
 }
@@ -424,6 +466,52 @@ class Arma extends Objeto {
 
 }
 
+
+//#region POSESIONES
+class Deposito {
+  constructor(banco,cantidad,fecha,interes,vencimiento) {
+		this.banco = banco
+    this.cantidad = cantidad
+    this.fecha = fecha
+    this.interes = interes
+    this.vencimiento = vencimiento
+  }
+
+  /**
+   * Devuelve el dinero inicial más los intereses a la fecha
+   * @param {Date} fecha fecha a la que devuelve el dinero
+   */
+  dinero(fecha=fechaMundo){
+    console.log(fecha,this.fecha);
+    let dias=((fecha-this.fecha)/(1000 * 60 * 60 * 24));
+    var d= this.cantidad* (1+ (this.interes/100 * dias/365))
+    return d;
+  }
+
+  /**
+   * 
+   * @param {Number} diferencia si se mete o se saca dinero
+   * @param {Date} fecha la fecha actual
+   * @param {Number} interes el interés si es distinto
+   */
+  actualizar(diferencia=0,fecha=fechaMundo, interes=this.interes){
+    this.cantidad=Math.round(this.dinero(fecha)+diferencia);
+    this.fecha=fecha;
+    this.interes=interes;
+  }
+}
+
+/**
+ * Un crédito, como el depósito pero con el dinero en negativo
+ */
+class Credito extends Deposito{
+  dinero(fecha=fechaMundo){
+    return -super.dinero(fecha)
+  }
+}
+
+
+////#endregion
 
 // export {Objeto, Objetos, Arma, Contenedor};
 

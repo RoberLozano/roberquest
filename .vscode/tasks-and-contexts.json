@@ -112,9 +112,14 @@
         "a08e11119aefc863a42db70003513594d2824191": {
           "name": "Excel",
           "data": [
-            "c:\\GitHub\\roberquest\\excel.htm",
+            "c:\\GitHub\\roberquest\\.vscode\\tasks-and-contexts.json",
+            "c:\\GitHub\\roberquest\\ex.js",
+            "c:\\GitHub\\roberquest\\js\\rol.js",
+            "c:\\GitHub\\roberquest\\js\\habilidades.js",
+            "c:\\GitHub\\roberquest\\js\\inventario.js",
+            "c:\\GitHub\\roberquest\\js\\utils.js",
             "c:\\GitHub\\roberquest\\importar.html",
-            "c:\\GitHub\\roberquest\\js\\utils.js"
+            "c:\\GitHub\\roberquest\\excel.htm"
           ]
         }
       }
