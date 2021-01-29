@@ -18,21 +18,22 @@
         "b8e88637f23fbe26fa18a139cf76af353b60e507": {
           "name": "Inventario",
           "data": [
+            "c:\\GitHub\\roberquest\\js\\inventario.js",
             "c:\\GitHub\\roberquest\\diana.html",
             "c:\\GitHub\\roberquest\\js\\diana.js",
             "c:\\GitHub\\roberquest\\index.html",
             "c:\\GitHub\\roberquest\\js\\script.js",
             "c:\\GitHub\\roberquest\\importar.html",
-            "c:\\GitHub\\roberquest\\m.html",
-            "c:\\GitHub\\roberquest\\js\\inventario.js"
+            "c:\\GitHub\\roberquest\\m.html"
           ]
         },
         "a73f1345df69647021f401499146a518864ef87a": {
           "name": "Rol",
           "data": [
-            "c:\\GitHub\\roberquest\\js\\script.js",
             "c:\\GitHub\\roberquest\\js\\rol.js",
-            "c:\\GitHub\\roberquest\\importar.html"
+            "d:\\GitHub\\roberquest\\js\\utils.js",
+            "c:\\GitHub\\roberquest\\importar.html",
+            "c:\\GitHub\\roberquest\\js\\script.js"
           ]
         },
         "859fc84a73bdb78bd1612362f1aa93440e66a510": {
@@ -112,14 +113,25 @@
         "a08e11119aefc863a42db70003513594d2824191": {
           "name": "Excel",
           "data": [
-            "c:\\GitHub\\roberquest\\.vscode\\tasks-and-contexts.json",
-            "c:\\GitHub\\roberquest\\ex.js",
+            "d:\\GitHub\\roberquest\\ex.js",
+            "d:\\GitHub\\roberquest\\excel.htm",
+            "d:\\GitHub\\roberquest\\js\\rol.js",
+            "d:\\GitHub\\roberquest\\js\\utils.js",
             "c:\\GitHub\\roberquest\\js\\rol.js",
-            "c:\\GitHub\\roberquest\\js\\habilidades.js",
             "c:\\GitHub\\roberquest\\js\\inventario.js",
+            "c:\\GitHub\\roberquest\\ex.js",
+            "c:\\GitHub\\roberquest\\js\\habilidades.js",
+            "c:\\GitHub\\roberquest\\excel.htm",
+            "c:\\GitHub\\roberquest\\js\\script.js",
+            "c:\\GitHub\\roberquest\\index.html",
             "c:\\GitHub\\roberquest\\js\\utils.js",
-            "c:\\GitHub\\roberquest\\importar.html",
-            "c:\\GitHub\\roberquest\\excel.htm"
+            "c:\\Program Files\\Microsoft VS Code\\resources\\app\\extensions\\node_modules\\typescript\\lib\\lib.dom.d.ts",
+            "c:\\GitHub\\roberquest\\maps\\Roshil.svg",
+            "c:\\GitHub\\roberquest\\Rol.html",
+            "c:\\GitHub\\roberquest\\m.html",
+            "c:\\Users\\Rober\\AppData\\Roaming\\Code\\Workspaces\\1611865405622\\workspace.json",
+            "c:\\Users\\Rober\\Downloads\\chartist\\uplot\\uPlot.iife.min.js",
+            "c:\\GitHub\\roberquest\\js\\Chart.bundle.min.js"
           ]
         }
       }

@@ -301,10 +301,10 @@ class ArmaNatural {
   set daño(valor) {
     // console.log(typeof valor);
     if (typeof valor === 'string') {
-    // var regex = /^(\d+d\d+)?([+|-](\d+|(\d+d\d+)))*[C|P|F]$/;
-    // var re = new RegExp(regex);
-    // console.log(re.test(valor));
-    
+      // var regex = /^(\d+d\d+)?([+|-](\d+|(\d+d\d+)))*[C|P|F]$/;
+      // var re = new RegExp(regex);
+      // console.log(re.test(valor));
+
       this._daño = new Daño(valor.substring(0, valor.length - 1), valor.substring(valor.length - 1))
     }
     else
@@ -363,13 +363,13 @@ class Animal {
     // console.log('cuerpo' + this.getMaxPuntos(PG));
   }
 
-  set nacimiento(valor){
+  set nacimiento(valor) {
     if (typeof valor === 'string') {
       // let d=new Date(valor+'T00:00:00')
-      let d=new Date(valor)
-      if(d instanceof Date && !isNaN(d)) this.nacimiento = d
+      let d = new Date(valor)
+      if (d instanceof Date && !isNaN(d)) this.nacimiento = d
       else
-     console.log('error de conversion en nacimiento');
+        console.log('error de conversion en nacimiento');
     }
     else
       if (valor instanceof Date) {
@@ -381,8 +381,8 @@ class Animal {
 
   }
 
-  get nacimiento(){
-    return  new Date(this._nacimiento);
+  get nacimiento() {
+    return new Date(this._nacimiento);
   }
 
   set edad(valor) {
@@ -390,10 +390,10 @@ class Animal {
     console.log(valor);
     if (typeof valor === 'string') {
       // let d=new Date(valor+'T00:00:00')
-      let d=new Date(valor)
-      if(d instanceof Date && !isNaN(d)) this.nacimiento = d
+      let d = new Date(valor)
+      if (d instanceof Date && !isNaN(d)) this.nacimiento = d
       else
-      this.edad=parseInt(valor)
+        this.edad = parseInt(valor)
       // this.edad=parseFloat(valor)
     }
     else
@@ -402,23 +402,23 @@ class Animal {
         this.nacimiento = valor
       }
       else
-      if (isNumber(valor)) {
-        this.nacimiento=fechaMundo.mod('año',-valor)
-      } else {
-        console.log('Formato inadecuado');
-      }
+        if (isNumber(valor)) {
+          this.nacimiento = fechaMundo.mod('año', -valor)
+        } else {
+          console.log('Formato inadecuado');
+        }
 
   }
   get edad() {
-    if(fechaMundo>this.nacimiento){
-      let a= fechaMundo.getFullYear()-this.nacimiento.getFullYear();
-      let m= fechaMundo.getMonth()-this.nacimiento.getMonth();
-      let d= fechaMundo.getDate()-this.nacimiento.getDate();
-      console.log(a,m,d);
+    if (fechaMundo > this.nacimiento) {
+      let a = fechaMundo.getFullYear() - this.nacimiento.getFullYear();
+      let m = fechaMundo.getMonth() - this.nacimiento.getMonth();
+      let d = fechaMundo.getDate() - this.nacimiento.getDate();
+      console.log(a, m, d);
     }
-    return  (fechaMundo - this.nacimiento)/ (3600000*24*365);
+    return (fechaMundo - this.nacimiento) / (3600000 * 24 * 365);
 
-    new Date(700,1,1)
+    new Date(700, 1, 1)
   }
 
   /**
@@ -487,6 +487,212 @@ class Animal {
     this.PG = Math.round((this.getCar(TAM) + this.getCar(CON)) / 2)
     this.PM = Math.round((this.getCar(INT) + this.getCar(POD)) / 2)
   }
+
+
+  entrenarHabilidad(habilidad, horas) {
+    var h = this.getHabilidad(habilidad);
+    var inicial = h.valor;
+    var bon = h.bh;
+    var subir = inicial - bon;
+    var valor = inicial;
+    let d100 = new D(1, 100)
+    let d = new D(1, 6);
+
+    while (horas >= valor) {
+      horas -= valor;
+      let subida = 0;
+      let dados = d100.norm()
+      function p(v) { return Math.min(100, 101 - Math.round((100 - v) * 0.05)) }
+      let tirada = h.tirada(dados, this.suerte);
+      if (tirada == TipoTirada.SUPERCRITICO)
+        subida = d.max() * 2;
+      else if (dados == 100) subida = d.max() + d.norm();
+      else if (dados >= p(subir)) subida = d.max();
+      else
+        if (dados >= subir)
+          subida = d.norm()
+
+      // console.log(dados + "->" + subida);
+      valor += subida;
+      // console.log("total->" + valor);
+      subir = Math.min(100, valor) - bon;
+
+    }
+    return valor;
+
+  }
+
+  entrenarHabilidadX(habilidad, horas, x = 3) {
+    var h = this.getHabilidad(habilidad);
+    var inicial = h.valor;
+    var valor = inicial;
+
+    while (horas >= valor) {
+      horas -= valor;
+      valor += x;
+    }
+    console.log(valor);
+  }
+
+  simularTiradasMedia(habilidad, veces,repeticiones=1){
+    let total=0
+    for (let index = 0; index < repeticiones; index++) {
+     total+= this.simularTiradasHabilidad(habilidad, veces);
+    }
+    let media=total/repeticiones
+    console.log(`Media de ${repeticiones} repeticiones:  ${media}`);
+
+  }
+
+  simularTiradasHabilidad(habilidad, veces) {
+    var h = new Habilidad()
+    h.setAll(this.getHabilidad(habilidad));
+    let d100 = new D(1, 100)
+    let d = new D(1, 3);
+    function p(v) { return Math.min(100, 101 - Math.round((100 - v) * 0.05)) }
+    let vecessubidas=0;
+    for (let index = 0; index < veces; index++) {
+      // console.log(index);
+      h.xpTirada(d100.norm(), this.suerte);
+
+      h.fecha = 0;
+      let subida = 0;
+      
+      if (h.subible() < 50) {
+        let dados=d100.norm();
+        let tirada = h.tirada(dados, this.suerte);
+        if (tirada == TipoTirada.SUPERCRITICO)
+          subida = d.max() * 2;
+        else if (dados == 100) subida = d.max() + d.norm();
+        else if (dados >= p(h.subible())) subida = d.max();
+        else
+          if (dados >= h.subible())
+            subida = d.norm()
+
+        h.subir(subida);
+        if(subida) vecessubidas++;
+        // console.log(index,subida);
+        
+      }
+
+    }
+    console.log(h.valor,vecessubidas);
+    return h.valor;
+
+  }
+
+  simularTiradasDia(habilidad, veces,dias) {
+    var data=[]
+    var h = new Habilidad()
+    h.setAll(this.getHabilidad(habilidad));
+    let d100 = new D(1, 100)
+    let d = new D(1, 3);
+    function p(v) { return Math.min(100, 101 - Math.round((100 - v) * 0.05)) }
+    let vecessubidas=0;
+    fechaMundo=new Date('0007-07-07');
+    
+    console.log(fechaMundo);
+    data[0]=[];
+    data[1]=[];
+
+    for (let dia = 0; dia < dias; dia++) {
+      
+        for (let index = 0; index < veces; index++) {
+          // console.log(index);
+          h.xpTirada(d100.norm(), this.suerte);
+          let subida = 0;
+          
+          if (h.subible() < 80) {
+            console.log('xp',h.xp);
+            let dados=d100.norm();
+            let tirada = h.tirada(dados, this.suerte);
+            if (tirada == TipoTirada.SUPERCRITICO)
+              subida = d.max() * 2;
+            else if (dados == 100) subida = d.max() + d.norm();
+            else if (dados >= p(h.subible())) subida = d.max();
+            else
+              if (dados >= h.subible())
+                subida = d.norm()
+    
+            h.subir(subida);
+            if(subida) vecessubidas++;
+            // console.log(index,subida);
+            
+          }
+          if(subida){
+            console.log(fechaMundo,h.valor,+subida);
+            data[0].push(fechaMundo/1000);
+            data[1].push(h.valor);
+
+          }
+
+    
+        }
+
+        fechaMundo=fechaMundo.mod('dia',1);
+      
+    }
+
+    console.log(h.valor,vecessubidas);
+    console.log(data);
+    return data;
+    return h.valor;
+
+  }
+
+  simularTiradasSemana(habilidad, veces,semanas) {
+    var h = new Habilidad()
+    h.setAll(this.getHabilidad(habilidad));
+    let d100 = new D(1, 100)
+    let d = new D(1, 3);
+    function p(v) { return Math.min(100, 101 - Math.round((100 - v) * 0.05)) }
+    let vecessubidas=0;
+    fechaMundo=new Date('0007-07-07');
+    console.log(fechaMundo);
+
+    for (let dia = 0; dia < dias; dia+=7) {
+        for (let index = 0; index < veces; index++) {
+          // console.log(index);
+          h.xpTirada(d100.norm(), this.suerte);
+          let subida = 0;
+          
+          if (h.subible() < 80) {
+            console.log('xp',h.xp);
+            let dados=d100.norm();
+            let tirada = h.tirada(dados, this.suerte);
+            if (tirada == TipoTirada.SUPERCRITICO)
+              subida = d.max() * 2;
+            else if (dados == 100) subida = d.max() + d.norm();
+            else if (dados >= p(h.subible())) subida = d.max();
+            else
+              if (dados >= h.subible())
+                subida = d.norm()
+    
+            h.subir(subida);
+            if(subida) vecessubidas++;
+            // console.log(index,subida);
+            
+          }
+          if(subida){
+            console.log(fechaMundo,h.valor,+subida);
+          }
+          
+    
+        }
+
+        fechaMundo=fechaMundo.mod('dia',1);
+      
+    }
+
+    console.log(h.valor,vecessubidas);
+    return h.valor;
+
+  }
+
+
+
+
+
   /**
    * 
    * @param {string} tipo PF,PG,PM
@@ -561,7 +767,7 @@ class Animal {
    * @param {number} valor El nuevo valor
    * @param {Boolean} actualizar Si se actualiza después de subir, true por defecto
    */
-  set(car, valor,actualizar=true) {
+  set(car, valor, actualizar = true) {
     this[car] = valor;
     if (actualizar) this.act();
   }
@@ -601,6 +807,10 @@ class Animal {
 
   getHabilidad(nombre) {
     return this.habilidades[nombre];
+  }
+
+  getClaseHabilidad(clase) {
+    return Object.values(this.habilidades).filter(obj => obj instanceof clase);
   }
 
   /**
@@ -810,7 +1020,7 @@ class Animal {
     // let st=JSON.stringify(this)
     // console.log(st);
     // console.log(JSON.parse(st));
-    this.enemigo=null; //referencias cíclicas
+    this.enemigo = null; //referencias cíclicas
     localStorage.setItem(this.nombre, JSON.stringify(this));
   }
 
@@ -870,7 +1080,7 @@ class Animal {
   //   this.car[tipoPuntos]+= valor;
   // }
 
-  
+
   cuerpoDaño(canvas, scale = 1) {
 
     canvas = document.getElementById(canvas);
@@ -1081,37 +1291,37 @@ class Dragon extends Animal {
   }
 
   crearCuerpo() {
-    this.imagen='img/Dragon.jpg';
+    this.imagen = 'img/Dragon.jpg';
     this.cuerpo = new Localizaciones(this.getMaxPuntos(PG));
 
     //Puntos de armadura
     let pa = 12;
 
-    var cabeza = new Localizacion("Cola", 0.25, 1, 2, pa,320,795); this.cuerpo.add(cabeza);
-    cabeza = new Localizacion("Pata Trasera Derecha", 0.333, 3, 4, pa,230,527); this.cuerpo.add(cabeza);
-    cabeza = new Localizacion("Pata Trasera Izquierda", 0.333, 5, 6, pa,269,660); this.cuerpo.add(cabeza);
+    var cabeza = new Localizacion("Cola", 0.25, 1, 2, pa, 320, 795); this.cuerpo.add(cabeza);
+    cabeza = new Localizacion("Pata Trasera Derecha", 0.333, 3, 4, pa, 230, 527); this.cuerpo.add(cabeza);
+    cabeza = new Localizacion("Pata Trasera Izquierda", 0.333, 5, 6, pa, 269, 660); this.cuerpo.add(cabeza);
     cabeza = new Localizacion("Cuartos Traseros", 0.4, 7, 8, pa); this.cuerpo.add(cabeza);
     cabeza = new Localizacion("Cuartos Delanteros", 0.4, 9, 10, pa); this.cuerpo.add(cabeza);
     cabeza = new Localizacion("Ala Derecha", 0.25, 11, 12, pa); this.cuerpo.add(cabeza);
     cabeza = new Localizacion("Ala Izquierda", 0.25, 13, 14, pa); this.cuerpo.add(cabeza);
     cabeza = new Localizacion("Pata Delantera Derecha", 0.333, 15, 16, pa); this.cuerpo.add(cabeza);
     cabeza = new Localizacion("Pata Delantera Izquierda", 0.333, 17, 18, pa); this.cuerpo.add(cabeza);
-    cabeza = new Localizacion("Cabeza", 0.333, 19, 20, pa,350,320); this.cuerpo.add(cabeza);
+    cabeza = new Localizacion("Cabeza", 0.333, 19, 20, pa, 350, 320); this.cuerpo.add(cabeza);
   }
 
   cuerpoDaño(canvas, scale = 1) {
 
     canvas = document.getElementById(canvas);
     var ctx = canvas.getContext("2d");
-  
+
     // var img = document.getElementById("cuerpo");
     var img = new Image();
     img.src = this.imagen;
 
-    let alto=img.height;
-    let ancho=img.width;
-    console.log(alto,ancho);
-    ctx.canvas.width=ancho; ctx.canvas.height=alto;
+    let alto = img.height;
+    let ancho = img.width;
+    console.log(alto, ancho);
+    ctx.canvas.width = ancho; ctx.canvas.height = alto;
 
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
     ctx.drawImage(img, 0, 0, ancho * scale, alto * scale);
@@ -1262,7 +1472,7 @@ class Humanoide extends Animal {
   }
 
   crearCuerpo() {
-    this.imagen='Body.png';
+    this.imagen = 'Body.png';
     // this.imagen='img/Dragon.jpg';
     this.cuerpo = new Localizaciones(this.getMaxPuntos(PG));
     // console.log(this.nombre + ' cuerpo-> PG:' + this.getMaxPuntos(PG));
@@ -1329,18 +1539,18 @@ class Humanoide extends Animal {
 
     canvas = document.getElementById(canvas);
     var ctx = canvas.getContext("2d");
-  
-    
+
+
 
 
     // var img = document.getElementById("cuerpo");
     var img = new Image();
     img.src = this.imagen;
 
-    let alto=img.height;
-    let ancho=img.width;
-    console.log(alto,ancho);
-    ctx.canvas.width=ancho; ctx.canvas.height=alto;
+    let alto = img.height;
+    let ancho = img.width;
+    console.log(alto, ancho);
+    ctx.canvas.width = ancho; ctx.canvas.height = alto;
 
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
 
@@ -1647,8 +1857,8 @@ function guerrero(personaje, nivel, ...armas) {
 
 guerrero(pj, 10, 'espada', 'arco', 'daga')
 
-let armanat = new ArmaNatural("puño","1d3C","Brazo D");
+let armanat = new ArmaNatural("puño", "1d3C", "Brazo D");
 console.log(armanat);
-console.log(new ArmaNatural("puño","1d3F","Brazo D"));
-console.log(new ArmaNatural("puño","1d3f","Brazo D"));
-console.log(new ArmaNatural("puño","1d  f","Brazo D"));
+console.log(new ArmaNatural("puño", "1d3F", "Brazo D"));
+console.log(new ArmaNatural("puño", "1d3f", "Brazo D"));
+console.log(new ArmaNatural("puño", "1d  f", "Brazo D"));

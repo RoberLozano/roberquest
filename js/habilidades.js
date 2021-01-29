@@ -88,8 +88,8 @@ class XP {
       //los minisegundos son negativos pq es anterior a 1970
       //diferencia en dias
       let diferencia = (-fechaSub.getTime() + fechaAct.getTime()) / 86400000;
-      if (diferencia > 7) {
-        console.log(("Se subio hace más de una semana"));
+      if (diferencia >= 7) {
+        // console.log(("Se subio hace más de una semana"));
         return valor - (this.xp - xpNec) * 5 - bonus;
       }
       else return 100;
@@ -211,7 +211,7 @@ class Habilidad extends XP {
     if (isNumber(subida)) {
       this.valor += subida;
       this.clearXP();
-      if (fechaMundo) this.fecha = fechaMundo;
+      if (fechaMundo&& subida>0) this.fecha = fechaMundo;
     }
   }
 
@@ -284,24 +284,26 @@ class Habilidad extends XP {
   }
 
   xpTirada(t, suerte = []) {
-    console.log(t);
+    // console.log(t);
     let tir = this.tirada(t, suerte);
-    console.log(tir);
-    this.xpTipoTirada(tir);
+    // console.log(tir);
+    this.xpTipoTirada(tir,t);
   }
 
-  xpTipoTirada(tir){
+  xpTipoTirada(tir,dado){
     switch (tir) {
       case TipoTirada.SUPERCRITICO:
-        this.xp += 4; console.log("Sube SUPERCRITICO");
+        this.xp += 4;// console.log("Sube SUPERCRITICO");
         break;
       case TipoTirada.CRITICO:
-        this.xp += 3; console.log("Sube CRITICO");
+        if(dado&&dado<11)
+        this.xp += 3;// console.log("Sube CRITICO");
         break;
       case TipoTirada.ESPECIAL:
-        this.xp += 1; console.log("Sube ESPECIAL");
+        if(dado&&dado<21)
+        this.xp += 1;// console.log("Sube ESPECIAL");
         break;
-      default: console.log("NO SUBE NADA");
+      default: //console.log("NO SUBE NADA");
         break;
     }
     

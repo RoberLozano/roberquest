@@ -759,17 +759,20 @@ function entrenar(habilidad) {
   });
 
   $("#bEntrenar").click(function (event) {
+    dado=$("#iDadosEntrenador").val()
     let d100 = new D(1, 100)
     let d = new D(1, dado)
+    console.log('DADO:');
+    console.log(dado);
     let limite = valor - bon;
     while (horas >= valor) {
       let subida = 0;
       let tirada = d100.norm()
       if (tirada == 7 || tirada == 77)
-        subida = dado + d.norm();//ó dado*2
+        subida = d.max() + d.norm();//ó dado*2
       else
         if (tirada == 100)
-          subida = dado
+          subida = d.max()
         else
           if (tirada >= limite)
             subida = d.norm()

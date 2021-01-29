@@ -7,15 +7,23 @@
 </head>
 
 <body>
-    <input type="file" id="fileUpload" />
+    <input type="file" id="fileUpload" onselect="alert('Cargado');console.log('ficha')" />
     <input type="button" id="upload" value="Cargar" onclick="Upload()" />
+    <input type="button" id="guardar" value="Guardar" onclick="guardar()" />
     <hr />
     <div id="dvExcel">
     </div>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.5/xlsx.full.min.js"></script>
+    <div id="opciones"></div>
+
+    <canvas id="myChart" width="200" height="200"></canvas>
+
+
+    <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.5/xlsx.full.min.js"></script> -->
     <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.5/jszip.js"></script> -->
 
+    <link rel="stylesheet" href="uplot/uPlot.min.css">
     <!-- TODOS LOS SCRIPTS -->
+    <script src="js/xlsx.full.min.js"></script>
     <script src='js/D.js'></script>
     <script src='js/habilidades.js'></script>
     <script src='js/inventario.js'></script>
@@ -25,7 +33,89 @@
     <script src='js/rol.js'></script>
     <script src="ex.js"></script>
     <script src="js/utils.js"></script>
+    <script src="uplot/uPlot.iife.min.js"></script>
+    <script src="js/Chart.bundle.min.js"></script>
 
+    <script>
+        var ctx = document.getElementById('myChart');
+        // var myChart = new Chart(ctx, {
+        //     type: 'bar',
+        //     data: {
+        //         labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        //         datasets: [{
+        //             label: '# of Votes',
+        //             data: [12, 19, 3, 5, 2, 3],
+        //             backgroundColor: [
+        //                 'rgba(255, 99, 132, 0.2)',
+        //                 'rgba(54, 162, 235, 0.2)',
+        //                 'red',
+        //                 'rgba(75, 192, 192, 0.2)',
+        //                 'rgba(153, 102, 255, 0.2)',
+        //                 'rgba(255, 159, 64, 0.2)'
+        //             ],
+        //             borderColor: [
+        //                 'rgba(255, 99, 132, 1)',
+        //                 'rgba(54, 162, 235, 1)',
+        //                 'rgba(255, 206, 86, 1)',
+        //                 'rgba(75, 192, 192, 1)',
+        //                 'rgba(153, 102, 255, 1)',
+        //                 'rgba(255, 159, 64, 1)'
+        //             ],
+        //             borderWidth: 1
+        //         }]
+        //     },
+        //     options: {
+        //         scales: {
+        //             yAxes: [{
+        //                 ticks: {
+        //                     beginAtZero: true
+        //                 }
+        //             }]
+        //         }
+        //     }
+        // });
+
+
+        
+
+        var s1 = {
+  label: 'Intensidad',
+  borderColor: 'blue',
+  data: [
+    { x: '0777-01-06 18:39:30', y: 100 },
+    { x: '0777-01-07 18:39:28', y: 101 },
+    { x: '0777-01-08 18:39:28', y: 121 },
+    { x: '0777-01-09 18:39:28', y: 131 },
+    { x: '0777-01-10 18:39:28', y: 161 },
+    { x: '0777-02-10 18:39:28', y: 181 },
+    { x: '0777-03-10 18:39:28', y: 191 },
+
+  ]
+};
+
+var s2 = {
+  label: 's2',
+  borderColor: 'red',
+  data: [
+    { x: '2017-01-07 18:00:00', y: 90 },
+    { x: '2017-01-08 18:00:00', y: 105 },
+  ]
+};
+
+var ctx = document.getElementById('myChart').getContext('2d');
+var chart = new Chart(ctx, {
+  type: 'line',
+  data: { datasets: [s1] },
+  options: {
+    scales: {
+      xAxes: [{
+        type: 'time',
+      }]
+    }
+  }
+});
+
+    </script>
 
 </body>
 
