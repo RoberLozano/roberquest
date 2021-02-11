@@ -200,7 +200,7 @@ class Localizaciones {
     }
 
     //TESTEO
-    todasLocalizaciones() {
+    todasLocalizacionesTest() {
         //se busca el más bajo y más alto
         let min = Math.min(...this.localizaciones.map(f => f.min))
         let max = Math.max(...this.localizaciones.map(f => f.max))
@@ -214,6 +214,20 @@ class Localizaciones {
         return true;
         // Math.min(...data.map(f=>f.rest) )
     }
+
+/**
+ * Devuelve un array con todas las localizaciones finales
+ */
+    todas(lista){
+        if(!lista) lista =[]
+        if (this.esFinal()) lista.push( this)
+        else this.localizaciones.forEach(l => {
+            l.todas(lista);
+        });
+
+        return lista;
+    }
+
 
     todosNombres(lista,finales=true){
         if(!lista) lista =[]
@@ -321,11 +335,13 @@ class Localizacion extends Localizaciones {
      *Daña la localización
      *
      * @param {number} daño PG de daño
+     * @param {Boolean} armadura si se cuenta la armadura natural, por defecto true
      * @memberof Localizacion
      */
-    dañar(daño) {
+    dañar(daño,armadura=true) {
         //se le resta la armadura natural al daño
-        var d = daño - this.pa;
+        var d = daño;
+        if(armadura) d = daño - this.pa;
         if (d <= 0) return; //Si 0 o negativa sale
         this.daño += d; //si no se suma al daño
     }

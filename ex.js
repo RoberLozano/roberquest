@@ -543,3 +543,13 @@ let tzDate = ts => uPlot.tzDate(new Date(ts * 1e3), 'Europe/London');
   
   let uplot = new uPlot(opts, data, document.body);
 }
+
+var w = cargaLocalObjeto("Wolfstein Einhorn");
+
+var r = cargaLocalObjeto("Rosssel");
+
+var d = new Dragon({nombre:'Dragón', FUE:77})
+console.log(d);
+
+r.cuerpo.dañarLocalizacion(3,7);
+r.cambiaformas(d)

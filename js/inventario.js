@@ -5,7 +5,7 @@
 
 class Objeto {
   constructor(nombre, peso = 0, valor = 0) {
-    this.clase=this.constructor.name;
+    this.clase = this.constructor.name;
     // console.log(this.clase);
     this.nombre = nombre || "";
     this.peso = peso;
@@ -73,7 +73,7 @@ class Usable extends Objeto {
 }
 
 class Gema extends Usable {
-  constructor(nombre='Gema', peso, valor, capacidad, pm = 0) {
+  constructor(nombre = 'Gema', peso, valor, capacidad, pm = 0) {
     super(nombre, peso, valor);
     this.capacidad = capacidad;
     this.pm = pm;
@@ -101,18 +101,18 @@ class Gema extends Usable {
     return resto;
   }
 
-    /**Rellena la capacidad de la gema por el nombre
-   * 
-   * @param {String} s un String con el nombre que incluye la capacidad
-   */
-  parse(s){
-    s=s.toUpperCase().replace('GEMA', '');
-    if(s.toUpperCase().includes('PM'))s=s.replace('PM', '')
-    s=s.trim()
-    let puntos= parseInt(s);
+  /**Rellena la capacidad de la gema por el nombre
+ * 
+ * @param {String} s un String con el nombre que incluye la capacidad
+ */
+  parse(s) {
+    s = s.toUpperCase().replace('GEMA', '');
+    if (s.toUpperCase().includes('PM')) s = s.replace('PM', '')
+    s = s.trim()
+    let puntos = parseInt(s);
 
-    if(puntos){
-      this.capacidad=puntos;
+    if (puntos) {
+      this.capacidad = puntos;
     }
 
 
@@ -144,20 +144,20 @@ class Pociones extends Objetos {
    * 
    * @param {String} s un String con el nombre de la poción que da sus efectos
    */
-  parse(s){
-    s=s.replace('Poción', '');
+  parse(s) {
+    s = s.replace('Poción', '');
     let p;
 
-    if(s.toUpperCase().includes(' PM')){p='PM'; s=s.replace('PM', '')} 
+    if (s.toUpperCase().includes(' PM')) { p = 'PM'; s = s.replace('PM', '') }
     else
-    if(s.toUpperCase().includes(' PG')){p='PG'; s=s.replace('PG', '')} 
-    else
-    if(s.toUpperCase().includes(' PF')){p='PF'; s=s.replace('PF', '')} 
+      if (s.toUpperCase().includes(' PG')) { p = 'PG'; s = s.replace('PG', '') }
+      else
+        if (s.toUpperCase().includes(' PF')) { p = 'PF'; s = s.replace('PF', '') }
 
-    s=s.trim()
-    let puntos= parseInt(s);
+    s = s.trim()
+    let puntos = parseInt(s);
 
-    if(p && puntos){
+    if (p && puntos) {
       this.efectos = `pj.modificarPuntos(${p}, ${puntos})`
     }
 
@@ -187,16 +187,16 @@ class Contenedor extends Objeto {
       let oo;
       if (ob.hasOwnProperty("pm")) { oo = new Gema(); }
       else
-      if (ob.hasOwnProperty("efectos")) { oo = new Pociones(); }
-      else
-      if (ob.hasOwnProperty("capacidad")) { oo = new Gema(); }
-      else
-      if (ob.hasOwnProperty("objetos")) { oo = new Contenedor(); }
-      else
-      if (ob.hasOwnProperty("daño")) { oo = new Arma(); }
-      else
-      if (ob.hasOwnProperty("ctd")) { oo = new Objetos(); }
-      else { oo = new Objeto() }
+        if (ob.hasOwnProperty("efectos")) { oo = new Pociones(); }
+        else
+          if (ob.hasOwnProperty("capacidad")) { oo = new Gema(); }
+          else
+            if (ob.hasOwnProperty("objetos")) { oo = new Contenedor(); }
+            else
+              if (ob.hasOwnProperty("daño")) { oo = new Arma(); }
+              else
+                if (ob.hasOwnProperty("ctd")) { oo = new Objetos(); }
+                else { oo = new Objeto() }
       oo.setAll(ob);
       ot.push(oo);
     }
@@ -313,7 +313,7 @@ class Contenedor extends Objeto {
    * @returns
    * @memberof Contenedor
    */
-  darClaseRecursiva(clase, lista = null, ) {
+  darClaseRecursiva(clase, lista = null,) {
     if (lista === null) var lista = [];
     this.objetos.forEach(element => {
       if (element instanceof Contenedor) {
@@ -428,15 +428,15 @@ class Arma extends Objeto {
       });
     }
     else
-    if (typeof valor === 'number' && valor >= 0 &&
-      valor < this.daños.length) {
-      this.index = valor
-    }
-    else
-    if (valor instanceof Daño) {
-      //si es daño con el string del dado para que lo busque
-      this.daño = valor.dado
-    }
+      if (typeof valor === 'number' && valor >= 0 &&
+        valor < this.daños.length) {
+        this.index = valor
+      }
+      else
+        if (valor instanceof Daño) {
+          //si es daño con el string del dado para que lo busque
+          this.daño = valor.dado
+        }
     // TODO: hacer string y Daño
     this.dañar()
   }
@@ -451,10 +451,10 @@ class Arma extends Objeto {
     // this.valor  = o.valor ;
     this.daños = o.daños;
     //cargar cada daño
-    this.daños=[]
+    this.daños = []
     //TODO: probar
     o.daños?.forEach((d, i) => {
-      let da=new Daño(d.dado,d.tipo)
+      let da = new Daño(d.dado, d.tipo)
       this.daños.push(da)
     });
   }
@@ -462,15 +462,36 @@ class Arma extends Objeto {
     console.log(this.daños[this.index]);
   }
 
-  toString(){ return this.nombre}
+  toString() { return this.nombre }
 
 }
 
+class Munición extends Arma{
+
+}
+
+class ArmaDistancia extends Arma {
+  constructor(nombre, peso, valor, daño, alcance) {
+    super(nombre, peso, valor, daño);
+  }
+
+  utilizar(municion){
+    this.municion = municion;
+  }
+}
+
+class Arco extends ArmaDistancia {
+  constructor(nombre, peso, valor, daño, alcanceRecto,alcance,FUE,
+    bonApuntado=0, bonCritico=0,bonDiana=0,bonLocalización=0) {
+    
+  }
+
+}
 
 //#region POSESIONES
 class Deposito {
-  constructor(banco,cantidad,fecha,interes,vencimiento) {
-		this.banco = banco
+  constructor(banco, cantidad, fecha, interes, vencimiento) {
+    this.banco = banco
     this.cantidad = cantidad
     this.fecha = fecha
     this.interes = interes
@@ -481,10 +502,10 @@ class Deposito {
    * Devuelve el dinero inicial más los intereses a la fecha
    * @param {Date} fecha fecha a la que devuelve el dinero
    */
-  dinero(fecha=fechaMundo){
-    console.log(fecha,this.fecha);
-    let dias=((fecha-this.fecha)/(1000 * 60 * 60 * 24));
-    var d= this.cantidad* (1+ (this.interes/100 * dias/365))
+  dinero(fecha = fechaMundo) {
+    console.log(fecha, this.fecha);
+    let dias = ((fecha - this.fecha) / (1000 * 60 * 60 * 24));
+    var d = this.cantidad * (1 + (this.interes / 100 * dias / 365))
     return d;
   }
 
@@ -494,18 +515,18 @@ class Deposito {
    * @param {Date} fecha la fecha actual
    * @param {Number} interes el interés si es distinto
    */
-  actualizar(diferencia=0,fecha=fechaMundo, interes=this.interes){
-    this.cantidad=Math.round(this.dinero(fecha)+diferencia);
-    this.fecha=fecha;
-    this.interes=interes;
+  actualizar(diferencia = 0, fecha = fechaMundo, interes = this.interes) {
+    this.cantidad = Math.round(this.dinero(fecha) + diferencia);
+    this.fecha = fecha;
+    this.interes = interes;
   }
 }
 
 /**
  * Un crédito, como el depósito pero con el dinero en negativo
  */
-class Credito extends Deposito{
-  dinero(fecha=fechaMundo){
+class Credito extends Deposito {
+  dinero(fecha = fechaMundo) {
     return -super.dinero(fecha)
   }
 }
