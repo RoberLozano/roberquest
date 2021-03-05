@@ -70,6 +70,17 @@ function ProcessExcel(data) {
   //         console.log(ws[data]?.v)
   //     }
   // }
+
+  try {
+    let hoja2 = workbook.Sheets['Hoja2']
+    ws=hoja2;
+    console.log('Hay hoja 2');
+    info()
+    ws = workbook.Sheets[firstSheet];
+  } catch (e) {
+    console.log(e);
+    ws = workbook.Sheets[firstSheet];
+  }
   info();
 
 
@@ -78,30 +89,30 @@ function ProcessExcel(data) {
   // ws = workbook.Sheets['Técnicas'];
   // tecnicas()
 
-  h(21, 86, false);
-  pe.act();
+  // h(21, 86, false);
+  // pe.act();
 
-  tipo = Conocimiento; //idiomas
-  h(22, 86, false, 'M', 'N', 'O', false);
+  // tipo = Conocimiento; //idiomas
+  // h(22, 86, false, 'M', 'N', 'O', false);
 
 
-  ws = workbook.Sheets['Magia'];
-  gemas();
+  // ws = workbook.Sheets['Magia'];
+  // gemas();
 
   tipo = Magia;
   ws = workbook.Sheets['Magia'];
-  h(5, 45);
-  hechizos(23, 37)
+  h(5, 20);
+  hechizos(23, 52)
 
-  tipo = Manipulación;
-  ws = workbook.Sheets['Armas'];
-  h(2, 11);
+  // tipo = Manipulación;
+  // ws = workbook.Sheets['Armas'];
+  // h(2, 11);
 
-  armas(17, 28)
+  // armas(17, 28)
 
 
-  ws = workbook.Sheets['Inventario'];
-  equipo(2, 20)
+  // ws = workbook.Sheets['Inventario'];
+  // equipo(2, 20)
 
   // if(last) console.log(diferencia(pe,last));
 
@@ -315,7 +326,7 @@ function hechizos(inicio, fin, ceros = true, hab = 'A', xp = 'B', valor = 'C', p
 
     var porcentaje = ws[valor + i]?.v;
     var exp = ws[xp + i]?.v
-    var puntosm = [pm + i]?.v
+    var puntosm = ws[pm + i]?.v
 
     //si no se admiten 0 en el porcentaje y no tien xp se pasa a otro
     if (!ceros && !porcentaje && !exp) {
@@ -327,7 +338,7 @@ function hechizos(inicio, fin, ceros = true, hab = 'A', xp = 'B', valor = 'C', p
 
     pe.habilidades[nombre] = habilidad;
     // console.log(ws[nombre + i]?.v, ws[xp + i]?.v, ws[valor + i]?.v);
-    console.log(nombre, exp, porcentaje);
+    console.log(nombre, exp, porcentaje,puntosm);
     // console.log(habilidad);
   }
 }
@@ -343,7 +354,7 @@ function info(params) {
   console.log(altura);
   console.log(peso);
   if (clase) {
-    eval(`pe=new ${clase}()`) //un poco más rápida pero menos segura
+    eval(`pe=new ${clase}({})`) //un poco más rápida pero menos segura
     // pe = (Function('return new ' + clase))() //se supone que es más segura
     //TODO: hacer pruebas de rendimiento;
     console.log(pe);
@@ -403,6 +414,57 @@ function buscar(b, inicio, fin, col = 'A') {
       return i;
   }
 }
+
+
+function IUHechizos(p) {
+  var salida=document.getElementById("salida");
+
+  var nombres = [
+    "Multiconjuro",
+    "Sobrepotencia",
+    "Refuerzo",
+    "Alcance",
+    "Duración",
+    "Intensidad",
+    "Puntería",
+    "Velocidad"
+  ]
+  var habilidades=[]
+
+  p.actTodosBonHab();
+  nombres.forEach(n => {
+    h = p.getHabilidad(n);
+    if (h&& h.valor>0) {
+      habilidades.push(h)
+      var div = document.createElement("div");
+      div.style.display="inline-block" //en linea si cabe entero
+
+      var ia= new InputArte(h);
+      div.appendChild(ia)
+      
+      salida.appendChild(div);
+
+    }
+  });
+
+  var ih= new InputHechizo();
+  var div = document.createElement("div");
+  ih.setPersonaje(p);
+      div.appendChild(ih)
+      salida.appendChild(div);
+      
+  
+  // habilidades.forEach(n => {
+  //   h = p.getHabilidad(n);
+  //   console.log(h);
+  //   // document.getElementById(`ia-${h.nombre}`).setPersonaje(p);
+  //   document.getElementById(`ia-${h.nombre}`).setHabilidad(h);
+  // });
+
+}
+
+
+
 
 
 

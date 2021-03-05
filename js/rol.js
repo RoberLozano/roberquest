@@ -347,6 +347,8 @@ class Animal {
     this.DES = DES
     this.ASP = ASP
 
+    this.fecha= fechaMundo;
+
     this.bonificacion = new Bon({});
 
     this.inventario = creaInventario("Cuerpo");
@@ -419,6 +421,32 @@ class Animal {
     return (fechaMundo - this.nacimiento) / (3600000 * 24 * 365);
 
     new Date(700, 1, 1)
+  }
+
+  /**
+   * Regenera los puntos (PM,PG,PF) durante el tiempo transcurrido
+   */
+  regenerar(fechaActual=fechaMundo){
+    var tiempo=(fechaActual - this.fecha)/1000; //en segundos
+    let s_minuto= 60;
+    let s_hora =3600;
+    var rPM,rPG,rPF;
+    //recupera los PM en un día
+    rPM = this.getMaxPuntos(PM)/(24 * s_hora)
+    //1 PG por día por cada 10 de CON y localización
+    rPG = (this.getCar(CON)/10)/(24 * s_hora)
+    //recupera los pF en una hora
+    rPF = this.getMaxPuntos(PF)/(s_hora)
+
+    //TODO simplificar a 3 decimales
+
+    this.PM= Math.min(this.getMaxPuntos(PM),this.PM+rPM*tiempo)
+    this.PF= Math.min(this.getMaxPuntos(PF),this.PF+rPF*tiempo)
+
+    //esto iría sanando tods las localizaciones a la vez
+    this.PG= Math.min(this.getMaxPuntos(PG),this.PG+rPG*tiempo)
+
+
   }
 
   /**
@@ -945,7 +973,7 @@ class Animal {
     //  let fl= f2.cuerpo.darLocalizacion(l.min);
      let fl= f2.cuerpo.darLocalizacion((l.min+l.max)/2);
 
-    //  console.log(l.nombre+' equivale a '+fl.nombre);
+     console.log(l.nombre+' equivale a '+fl.nombre);
     if(l.daño)
       fl.dañar(fl.pg*(l.daño / l.pg),false);
       // f2.cuerpo.dañarLocalizacion(fl.pg*(l.daño / l.pg),l.min)

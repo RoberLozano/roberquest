@@ -73,15 +73,18 @@ class XP {
 * hacer que calcule la probabilidad correcta de subir de nivel
 * <!-- end-user-doc -->
 */
-  getProbabilidad(valor, fechaAct, bonus = 0) {
+  getProbabilidad(valor, fechaAct, bonus = 0, xpNec = 4) {
     //TODO: hacer que calcule la probabilidad correcta; tal vez pasar a habilidad
     // var bonus=this.tipoBonus;
     //TODO: por si pongo XP distinta para cada raza
     //		int xpNec= this.getPertenece().getAnimal().getXPNecesaria();
-    const xpNec = 4;
+
+    // const xpNec = 4;
     if (this.xp < xpNec) return 100;
 
-    if (this.fecha == 0) return valor - (this.xp - xpNec) * 5 - bonus;
+    // if (this.fecha == 0) return valor - (this.xp - xpNec) * 5 - bonus;
+
+    if (this.fecha == 0) return Math.min(100, valor) - (this.xp - xpNec) * 5 - bonus;
     else {
       var fechaSub
       fechaSub = this.fecha
@@ -90,7 +93,7 @@ class XP {
       let diferencia = (-fechaSub.getTime() + fechaAct.getTime()) / 86400000;
       if (diferencia >= 7) {
         // console.log(("Se subio hace más de una semana"));
-        return valor - (this.xp - xpNec) * 5 - bonus;
+        Math.min(100, valor) - (this.xp - xpNec) * 5 - bonus;
       }
       else return 100;
     }
@@ -211,7 +214,7 @@ class Habilidad extends XP {
     if (isNumber(subida)) {
       this.valor += subida;
       this.clearXP();
-      if (fechaMundo&& subida>0) this.fecha = fechaMundo;
+      if (fechaMundo && subida > 0) this.fecha = fechaMundo;
     }
   }
 
@@ -240,7 +243,7 @@ class Habilidad extends XP {
   //poner posibles bonificaciones en especialñ y crítico
   get e() { return Math.round(this.v * 0.2) + this.bespecial }
   get c() { return Math.round(this.v * 0.05) + this.bcritico }
-  get p() { return Math.min(100,101-Math.round( (100-this.v) * 0.05)) }
+  get p() { return Math.min(100, 101 - Math.round((100 - this.v) * 0.05)) }
 
 
   /**
@@ -268,7 +271,7 @@ class Habilidad extends XP {
     switch (true) {
       case (t == 7 || t == 77):
         return TipoTirada.SUPERCRITICO;
-      case (t >=this.p):
+      case (t >= this.p):
         return TipoTirada.PIFIA; //calcular otras pifias
       case (t <= this.c):
         return TipoTirada.CRITICO;
@@ -287,26 +290,41 @@ class Habilidad extends XP {
     // console.log(t);
     let tir = this.tirada(t, suerte);
     // console.log(tir);
-    this.xpTipoTirada(tir,t);
+    this.xpTipoTirada(tir, +t);
   }
 
-  xpTipoTirada(tir,dado){
+  /**Añade la XP (solo hasta los porcentajes) de la tirada
+   * 
+   * @param {TipoTirada} tir el grado de éxito
+   * @param {Number} dado el numero en 1d100
+   */
+  xpTipoTirada(tir, dado) {
+    console.log(tir, dado);
     switch (tir) {
       case TipoTirada.SUPERCRITICO:
-        this.xp += 4;// console.log("Sube SUPERCRITICO");
+        this.xp += 4;
+        console.log("Sube SUPERCRITICO:" + dado);
         break;
       case TipoTirada.CRITICO:
-        if(dado&&dado<11)
-        this.xp += 3;// console.log("Sube CRITICO");
+        if (dado && dado < 11)
+          { this.xp += 3;
+            console.log("Sube CRITICO:" + dado);
+          }
+        else if (dado && dado < 21)
+          { this.xp += 1;
+            console.log("Sube como ESPECIAL:" + dado);
+          }
         break;
       case TipoTirada.ESPECIAL:
-        if(dado&&dado<21)
-        this.xp += 1;// console.log("Sube ESPECIAL");
+        if (dado && dado < 21) {
+          this.xp += 1;
+          console.log("Sube ESPECIAL:" + dado);
+        }
         break;
-      default: //console.log("NO SUBE NADA");
+      default: console.log("NO SUBE NADA");
         break;
     }
-    
+
   }
 
 
@@ -343,6 +361,7 @@ class Hechizo extends Habilidad {
 
 }
 
+
 class HabilidadMarcial extends Habilidad {
   constructor(nombre, tipo, valor, ataque = true, localizacion = null, arma = null) {
     super(nombre, tipo, valor);
@@ -378,10 +397,10 @@ class HabilidadMarcial extends Habilidad {
 
 }
 
-class Tecnica extends HabilidadMarcial{
-    constructor(nombre, tipo, valor,  pf=1, ataque = true, localizacion = null, arma = null) {
-      super(nombre, tipo, valor, ataque, localizacion, arma);
-			this.pf = pf
+class Tecnica extends HabilidadMarcial {
+  constructor(nombre, tipo, valor, pf = 1, ataque = true, localizacion = null, arma = null) {
+    super(nombre, tipo, valor, ataque, localizacion, arma);
+    this.pf = pf
   }
 
 
@@ -504,174 +523,174 @@ class MyCounter extends HTMLElement {
 
 
 // Create a class for the element
-class InputHab extends HTMLElement {
-  constructor() {
-    // Always call super first in constructor
-    super();
-    this.habilidad = new Habilidad("Habilidad", "Agilidad", 77);
-    this.shadow = this.attachShadow({ mode: 'open' });
+// class InputHab extends HTMLElement {
+//   constructor() {
+//     // Always call super first in constructor
+//     super();
+//     this.habilidad = new Habilidad("Habilidad", "Agilidad", 77);
+//     this.shadow = this.attachShadow({ mode: 'open' });
 
-    // Create a shadow root
-    this.inicializar();
-  }
+//     // Create a shadow root
+//     this.inicializar();
+//   }
 
-  set h(habilidad) {
-    this.habilidad = habilidad;
-    this.inicializar();
-  }
-  get h() {
-    this.inicializar()
-    return this.habilidad;
-  }
+//   set h(habilidad) {
+//     this.habilidad = habilidad;
+//     this.inicializar();
+//   }
+//   get h() {
+//     this.inicializar()
+//     return this.habilidad;
+//   }
 
-  inicializar() {
-
-
-    // Create spans
-    const wrapper = document.createElement('span');
-    wrapper.setAttribute('class', 'wrapper');
-
-    const porcentaje = document.createElement('input');
-    porcentaje.setAttribute("id", "porcentaje");
-    porcentaje.setAttribute("type", "number");
-    porcentaje.setAttribute("value", this.habilidad.v);
-    porcentaje.setAttribute('min', '0');
-    porcentaje.setAttribute('max', '9999');
-    porcentaje.style.width = "3em";
-    porcentaje.style.textAlign = "right";
-    porcentaje.style.borderStyle = "none";
-
-    const percent = document.createElement('span');
-    percent.innerHTML = "<b>% </b>"
-
-    const icon = document.createElement('span');
-    icon.setAttribute('class', 'icon');
-    icon.addEventListener('click', (event) => {
-      input.value = Math.round(Math.random() * 100);
-      this.act(input);
-      // console.log(this.getAttribute('habilidad'));
-      // if(input.value>this.getAttribute('habilidad')) input.style.color="red"
-      // else input.style.color="black"
-    });
-    icon.setAttribute('tabindex', 0);
+//   inicializar() {
 
 
-    // const label = document.createElement('label');
-    // ;
-    // label.setAttribute("for", "porcentaje");
-    // label.appendChild(document.createTextNode(this.habilidad.nombre));
-    // label.style.width = "700px";
+//     // Create spans
+//     const wrapper = document.createElement('span');
+//     wrapper.setAttribute('class', 'wrapper');
+
+//     const porcentaje = document.createElement('input');
+//     porcentaje.setAttribute("id", "porcentaje");
+//     porcentaje.setAttribute("type", "number");
+//     porcentaje.setAttribute("value", this.habilidad.v);
+//     porcentaje.setAttribute('min', '0');
+//     porcentaje.setAttribute('max', '9999');
+//     porcentaje.style.width = "3em";
+//     porcentaje.style.textAlign = "right";
+//     porcentaje.style.borderStyle = "none";
+
+//     const percent = document.createElement('span');
+//     percent.innerHTML = "<b>% </b>"
+
+//     const icon = document.createElement('span');
+//     icon.setAttribute('class', 'icon');
+//     icon.addEventListener('click', (event) => {
+//       input.value = Math.round(Math.random() * 100);
+//       this.act(input);
+//       // console.log(this.getAttribute('habilidad'));
+//       // if(input.value>this.getAttribute('habilidad')) input.style.color="red"
+//       // else input.style.color="black"
+//     });
+//     icon.setAttribute('tabindex', 0);
 
 
-    const label = document.createElement('input');
-    label.setAttribute("type", "text");
-    label.setAttribute("value", this.habilidad.nombre);
-    label.readOnly = true;
-    // input.setAttribute('max', '100');
-    label.style.width = "7em";
+//     // const label = document.createElement('label');
+//     // ;
+//     // label.setAttribute("for", "porcentaje");
+//     // label.appendChild(document.createTextNode(this.habilidad.nombre));
+//     // label.style.width = "700px";
+
+
+//     const label = document.createElement('input');
+//     label.setAttribute("type", "text");
+//     label.setAttribute("value", this.habilidad.nombre);
+//     label.readOnly = true;
+//     // input.setAttribute('max', '100');
+//     label.style.width = "7em";
 
 
 
-    const input = document.createElement('input');
-    input.setAttribute("type", "number");
-    input.setAttribute("value", "100");
-    input.setAttribute('min', '0');
-    input.setAttribute('max', '100');
-    input.style.width = "2.3em";
+//     const input = document.createElement('input');
+//     input.setAttribute("type", "number");
+//     input.setAttribute("value", "100");
+//     input.setAttribute('min', '0');
+//     input.setAttribute('max', '100');
+//     input.style.width = "2.3em";
 
 
-    input.addEventListener('change', (event) => {
-      this.act(input);
-      // console.log(this.getAttribute('habilidad'));
-      // if(input.value>this.getAttribute('habilidad')) input.style.color="red"
-      // else input.style.color="black"
-    });
+//     input.addEventListener('change', (event) => {
+//       this.act(input);
+//       // console.log(this.getAttribute('habilidad'));
+//       // if(input.value>this.getAttribute('habilidad')) input.style.color="red"
+//       // else input.style.color="black"
+//     });
 
-    // Take attribute content and put it inside the info span
-    // Insert icon
-    let imgUrl;
-    if (this.hasAttribute('img')) {
-      imgUrl = this.getAttribute('img');
-    } else {
-      imgUrl = 'img/10_sided_die.svg';
-    }
+//     // Take attribute content and put it inside the info span
+//     // Insert icon
+//     let imgUrl;
+//     if (this.hasAttribute('img')) {
+//       imgUrl = this.getAttribute('img');
+//     } else {
+//       imgUrl = 'img/10_sided_die.svg';
+//     }
 
-    const img = document.createElement('img');
-    img.src = imgUrl;
-    icon.appendChild(img);
+//     const img = document.createElement('img');
+//     img.src = imgUrl;
+//     icon.appendChild(img);
 
-    // Create some CSS to apply to the shadow dom
-    const style = document.createElement('style');
-    console.log(style.isConnected);
+//     // Create some CSS to apply to the shadow dom
+//     const style = document.createElement('style');
+//     // console.log(style.isConnected);
 
-    style.textContent = `
-        .wrapper {
-          position: relative;
-        }
-        *{
-          font-size: 110%;
-          border-style: none;
-        }
-        img {
-          width: 2rem;
-        }
+//     style.textContent = `
+//         .wrapper {
+//           position: relative;
+//         }
+//         *{
+//           font-size: 110%;
+//           border-style: none;
+//         }
+//         img {
+//           width: 2rem;
+//         }
 
-        .icon {
-          position: relative;
-          /* Adjust these values accordingly */
-          vertical-align: middle;
-          
-        }
-      `;
+//         .icon {
+//           position: relative;
+//           /* Adjust these values accordingly */
+//           vertical-align: middle;
 
-    // Attach the created elements to the shadow dom
-    this.icon = icon;
-    this.input = input;
+//         }
+//       `;
 
-    this.shadow.innerHTML = ""
-    this.shadow.appendChild(style);
-    console.log(style.isConnected);
-    this.shadow.appendChild(wrapper);
-    wrapper.appendChild(label);
-    wrapper.appendChild(porcentaje);
-    wrapper.appendChild(percent);
-    wrapper.appendChild(icon);
-    wrapper.appendChild(input);
-  }
+//     // Attach the created elements to the shadow dom
+//     this.icon = icon;
+//     this.input = input;
 
-  setHabilidad(habilidad) {
-    this.habilidad = habilidad;
-    this.inicializar();
-  }
+//     this.shadow.innerHTML = ""
+//     this.shadow.appendChild(style);
+//     // console.log(style.isConnected);
+//     this.shadow.appendChild(wrapper);
+//     wrapper.appendChild(label);
+//     wrapper.appendChild(porcentaje);
+//     wrapper.appendChild(percent);
+//     wrapper.appendChild(icon);
+//     wrapper.appendChild(input);
+//   }
 
-  act(input) {
-    let v = this.habilidad.tirada(input.value);
+//   setHabilidad(habilidad) {
+//     this.habilidad = habilidad;
+//     this.inicializar();
+//   }
 
-    switch (v) {
-      case (TipoTirada.SUPERCRITICO):
-        input.style.color = "red";
-        break;
-      case (TipoTirada.CRITICO):
-        console.log("CRITICO");
-        input.style.color = "red";
-        break;
-      case (TipoTirada.ESPECIAL):
-        console.log("ESPECIAL");
-        input.style.color = "green";
-        break;
-      case (TipoTirada.EXITO):
-        console.log("EXITO");
-        input.style.color = "black";
-        break;
-      case (TipoTirada.FALLO):
-        console.log("FALLO");
-        input.style.color = "grey";
-        break;
-      default:
-        ;
-    }
-  }
-}
+//   act(input) {
+//     let v = this.habilidad.tirada(input.value);
+
+//     switch (v) {
+//       case (TipoTirada.SUPERCRITICO):
+//         input.style.color = "red";
+//         break;
+//       case (TipoTirada.CRITICO):
+//         console.log("CRITICO");
+//         input.style.color = "red";
+//         break;
+//       case (TipoTirada.ESPECIAL):
+//         console.log("ESPECIAL");
+//         input.style.color = "green";
+//         break;
+//       case (TipoTirada.EXITO):
+//         console.log("EXITO");
+//         input.style.color = "black";
+//         break;
+//       case (TipoTirada.FALLO):
+//         console.log("FALLO");
+//         input.style.color = "grey";
+//         break;
+//       default:
+//         ;
+//     }
+//   }
+// }
 
 class InputHabilidad extends HTMLElement {
   constructor(hab = new Habilidad("Habilidad", "Agilidad", 77)) {
@@ -777,7 +796,7 @@ class InputHabilidad extends HTMLElement {
     // if (this.habilidad instanceof HabilidadMarcial) this.ok.src = this.habilidad.ataque?'img/sword.svg':'img/shield.svg';
     this.ok.addEventListener('click', (event) => {
       console.log('Evento de xpTirada');
-      this.habilidad.xpTirada(this.input.value)
+      this.habilidad.xpTirada(this.input.value, this.personaje?.suerte)
     });
 
 
@@ -826,7 +845,7 @@ class InputHabilidad extends HTMLElement {
 
     // this.shadow.innerHTML=""
     this.shadow.appendChild(style);
-    console.log(style.isConnected);
+    // console.log(style.isConnected);
     this.shadow.appendChild(this.wrapper);
     this.wrapper.appendChild(this.label);
     this.wrapper.appendChild(this.porcentaje);
@@ -840,6 +859,7 @@ class InputHabilidad extends HTMLElement {
   }
 
   lista(id, habilidades) {
+    this.label.setAttribute("type", "search");
     let options = "";
     habilidades.forEach(h => {
       options += `<option value="${h.nombre}"></option>`
@@ -885,7 +905,12 @@ class InputHabilidad extends HTMLElement {
   }
 
   act(input) {
-    let v = this.habilidad.tirada(input.value);
+
+    let v;
+    if (this.personaje?.suerte?.length > 0)
+      v = this.habilidad.tirada(input.value, this.personaje.suerte);
+    else
+      v = this.habilidad.tirada(input.value);
 
     switch (v) {
       case (TipoTirada.SUPERCRITICO):
@@ -1014,9 +1039,201 @@ class InputSubirHabilidad extends InputHabilidad {
   }
 
 }
+
+class InputArte extends InputHabilidad {
+  constructor(habilidad) {
+    super(habilidad);
+    this.pm = document.createElement('input');
+    this.pm.setAttribute("id", "pm");
+    this.pm.setAttribute("type", "number");
+    this.pm.value = 0;
+    this.pm.setAttribute('min', '0');
+    this.pm.setAttribute('max', '99');
+    this.pm.style.width = "2em";
+    this.pm.style.textAlign = "right";
+    this.pm.style.color = "blue";
+    this.pm.style.fontWeight = "700";
+
+    this.pm.style.borderStyle = "none";
+
+    // this.wrapper.appendChild();
+    this.wrapper.insertBefore(this.pm, this.icon);
+
+  }
+
+
+  act(input) {
+    super.act(input)
+    // console.log(this.pmGastados());
+    this.intensidad(input)
+  }
+
+  /**
+   * @returns los PM que se gasta con el tipo de tirada
+   */
+  pmGastados() {
+    let v = this.habilidad.tirada(this.input.value);
+    if (+this.pm.value == 0) return 0;
+    switch (v) {
+      case (TipoTirada.SUPERCRITICO):
+        this.pm.color = "red";
+        return +this.pm.value + 5;
+        break;
+      case (TipoTirada.CRITICO):
+        console.log("CRITICO");
+        this.pm.color = "red";
+        return +this.pm.value + 3;
+        break;
+      case (TipoTirada.ESPECIAL):
+        console.log("ESPECIAL");
+        this.pm.color = "green";
+        return +this.pm.value + 1;
+        break;
+      case (TipoTirada.EXITO):
+        return +this.pm.value
+        break;
+      case (TipoTirada.FALLO):
+        console.log("FALLO");
+        this.pm.color = "grey";
+        return 1;
+        break;
+      default:
+        ;
+    }
+  }
+
+  /**
+   * @returns los PM de intensidad del Arte
+   */
+  intensidad(input) {
+    let v;
+    if (this.personaje?.suerte?.length > 0)
+      v = this.habilidad.tirada(input.value, this.personaje.suerte);
+    else
+      v = this.habilidad.tirada(input.value);
+    var pm = +this.pm.value
+    if (pm == 0) return 0;
+    let gastados = 0
+    let intensidad = 0
+    switch (v) {
+      case (TipoTirada.SUPERCRITICO):
+        this.pm.color = "red";
+        intensidad = 5;
+        break;
+      case (TipoTirada.CRITICO):
+        console.log("CRITICO");
+        this.pm.color = "red";
+        intensidad = 3;
+        break;
+      case (TipoTirada.ESPECIAL):
+        console.log("ESPECIAL");
+        this.pm.color = "green";
+        intensidad = 1;
+        break;
+      case (TipoTirada.EXITO):
+        break;
+      case (TipoTirada.FALLO):
+        intensidad = 0
+        return 0;
+        break;
+      default:
+        ;
+    }
+
+    if (intensidad < pm) {
+      gastados = (pm - intensidad)
+      intensidad = pm;
+      this.pm.style.color = 'blue';
+    }
+    else if (intensidad >= pm) {
+      gastados = 0 //o 1?
+      intensidad = pm + (intensidad - pm);
+      this.pm.style.color = 'red'; //pq puedes subir puntos si te interesa no gastas
+
+    }
+
+    console.log('intensidad', intensidad, 'gastados', gastados, 'penalizacion', this.penalizacion());
+    var result = { intensidad: intensidad, gastados: gastados, penalizacion: this.penalizacion() };
+    console.log(result);
+    return intensidad;
+  }
+
+  /**
+   * @returns la penalización al hechizo
+   */
+  penalizacion() {
+    var pm = +this.pm.value
+    if (pm == 0) return 0;
+    let v = this.habilidad.tirada(this.input.value);
+
+    if (v == TipoTirada.EXITO)
+      return pm * 5;
+    else return 0;
+
+  }
+}
+
+class InputHechizo extends InputHabilidad {
+  constructor() {
+    super();
+    this.pm = document.createElement('input');
+    this.pm.setAttribute("id", "pm");
+    this.pm.setAttribute("type", "number");
+    this.pm.value = 0;
+    this.pm.setAttribute('min', '0');
+    this.pm.setAttribute('max', '99');
+    this.pm.style.width = "2em";
+    this.pm.style.textAlign = "right";
+    this.pm.style.color = "blue";
+    this.pm.style.fontWeight = "700";
+
+    this.pm.style.borderStyle = "none";
+
+    // this.wrapper.appendChild();
+    this.wrapper.insertBefore(this.pm, this.icon);
+
+    this.label.style.width = "13em"; //los hechizos son más largos
+
+
+  }
+
+  //override
+  setPersonaje(personaje) {
+    this.personaje = personaje;
+
+    let array = this.personaje.getHabilidades(h => (h instanceof Hechizo));
+
+    array.sort(function (a, b) {
+      return a.v - b.v;
+    });
+    console.log(array.reverse());
+    // this.lista("listaHab"+personaje.nombre,this.personaje.getHabilidades());
+    // this.lista("listaHab" + personaje.nombre, this.personaje.getHabilidades(h => (h instanceof Hechizo)));
+    this.lista("listaHab" + personaje.nombre, array);
+
+    this.h = array[0];
+
+  }
+
+  //override
+  setHabilidad(habilidad) {
+    // super.setHabilidad(habilidad);
+    if (habilidad) this.habilidad = habilidad;
+    this.label.setAttribute("value", this.habilidad.nombre);
+    this.porcentaje.setAttribute("value", this.habilidad.v);
+    this.porcentaje.value = this.habilidad.v;
+    this.ok.src = this.habilidad.ataque ? 'img/sword.svg' : 'img/check.svg';
+    this.pm.value = habilidad.pm;
+  }
+
+}
+
 // Define the new element
 
 customElements.define('input-habilidad', InputHabilidad);
+customElements.define('input-hechizo', InputHechizo);
+
+customElements.define('input-arte', InputArte);
 customElements.define('input-subir', InputSubirHabilidad);
 
 customElements.define('my-counter', MyCounter);
