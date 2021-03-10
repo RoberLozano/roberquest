@@ -423,6 +423,12 @@ class Animal {
     new Date(700, 1, 1)
   }
 
+  //TODO: esto para que haga la trampa Angular
+  set _FUE(value){ this.FUE=value}
+  get _FUE(){this.act();
+    return this.FUE;
+  }
+
   /**
    * Regenera los puntos (PM,PG,PF) durante el tiempo transcurrido
    */

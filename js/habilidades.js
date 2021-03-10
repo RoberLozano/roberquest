@@ -592,7 +592,7 @@ class MyCounter extends HTMLElement {
     this.shadowRoot.innerHTML = `<div id="grupo${this.habilidad.nombre}" class="input-group-prepend">
     <span id="lb${this.habilidad.nombre}" class="input-group-text col-6">${this.habilidad.nombre}: ${this.habilidad.v}%</span>
     <span class="input-group-text dado"  id="dado"> <img src="img/10_sided_die.svg"></img></span>
-    <input id="iDados" type="number" style="width: 2.3em;>
+    <input id="iDados" type="number" style="width: 2.3em;">
     <button id="btOK">OK</button>
   </div>
     `

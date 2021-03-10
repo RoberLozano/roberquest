@@ -28,6 +28,10 @@
         table tr:nth-child(even) {
             background-color: #ffffff;
         }
+
+        input[type=number]{
+            width: 4em;
+        }
     </style>
 </head>
 
@@ -60,9 +64,14 @@
                 <td>Caracteristicas: </td>
                 <td>
                     <table>
+                        <tr hidden>
+                            <td>_FUE</td>
+                            <td><input type="number" ng-model="student._FUE"></td>
+                        </tr>
+
                         <tr ng-repeat="c in CP">
                             <td>{{ c }}</td>
-                            <td>{{ student[c] }}</td>
+                            <td>{{ student[c] }}<input type="number" ng-model="student[c]"></td>
                             <td>{{ TH[$index] }}</td>
                             <td>{{student.getCar(TH[$index]) }}</td>
 
@@ -80,14 +89,16 @@
                             <th ng-click="orden('nombre')">Nombre</th>
                             <th ng-click="orden('valor')">Valor</th>
                             <th ng-click="orden('bh')">Bon</th>
+                            <th ng-click="orden('v')">Total</th>
                         </tr>
                         <tr ng-repeat="subject in student.getHabilidades() | orderBy:miOrden | filter : test">
                             <td>{{ subject.nombre }}</td>
-                            <td>{{ subject.valor }}</td>
+                            <!-- <td>{{ subject.valor }}</td> -->
+                            <td>{{ subject.valor }} <input type="number"
+                                    ng-model="student.getHabilidad(subject.nombre).valor"></td>
                             <td>{{ subject.bh }}</td>
+                            <td>{{ subject.v }}</td>
                         </tr>
-
-   
                     </table>
                 </td>
             </tr>
@@ -95,7 +106,7 @@
 
         <ul>
             <li ng-repeat="(key, value) in student">
-               {{key}} : {{value}}
+                {{key}} : {{value}}
             </li>
         </ul>
 
@@ -121,25 +132,19 @@
             }
         });
 
-
-
-        function sc() {
-            var scope = angular.element(document.getElementById('app')).scope();
-            console.log(scope.student);
-            return scope.student;
-
-        }
-
         function change(field, value) {
             var scope = angular.element(document.getElementById('app')).scope();
             scope.$apply(function () {
                 scope.student[field] = value;
                 // scope.student.act();
-                
                 console.log(scope.student.getCar(field));
             });
 
+        }
 
+        function cargar(nombre) {
+            pj = cargaLocalObjeto(nombre);
+            act();
         }
 
         function act() {
