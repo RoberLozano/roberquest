@@ -416,8 +416,8 @@ function buscar(b, inicio, fin, col = 'A') {
 }
 
 
-function IUHechizos(p) {
-  var salida=document.getElementById("salida");
+function IUHechizos(p,div="salida") {
+  var salida=document.getElementById(div);
 
   var nombres = [
     "Multiconjuro",
@@ -437,7 +437,7 @@ function IUHechizos(p) {
     if (h&& h.valor>0) {
       habilidades.push(h)
       var div = document.createElement("div");
-      div.style.display="inline-block" //en linea si cabe entero
+      // div.style.display="inline-block" //en linea si cabe entero
 
       var ia= new InputArte(h);
       div.appendChild(ia)
@@ -453,7 +453,6 @@ function IUHechizos(p) {
       div.appendChild(ih)
       salida.appendChild(div);
       
-  
   // habilidades.forEach(n => {
   //   h = p.getHabilidad(n);
   //   console.log(h);
@@ -462,9 +461,6 @@ function IUHechizos(p) {
   // });
 
 }
-
-
-
 
 
 
@@ -615,3 +611,22 @@ console.log(d);
 
 r.cuerpo.dañarLocalizacion(3,7);
 r.cambiaformas(d)
+
+// let resultados = [];
+// for (let i = 0; i <= 100; i++)
+// 	resultados[i] = 0;
+
+// for (let i = 0; i <= 100000; i++) {
+// 	// Alex intenta entender qué hago aquí
+// 	resultados[Math.floor(Math.random() * 100 + 1)]++;
+// }
+
+// let resultados2 = [];
+// for (let i = 0; i <= 100; i++)
+// 	resultados2[i] = 0;
+
+// for (let i = 0; i <= 100000; i++) {
+// 	// Alex intenta entender qué hago aquí
+// 	resultados2[Math.round(Math.random() * 100)]++;
+// }
+

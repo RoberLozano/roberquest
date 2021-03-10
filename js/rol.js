@@ -1602,13 +1602,13 @@ class Humanoide extends Animal {
     {
       // nombre = "Humanoide",
       peso = 60, //en kg
-      // FUE = d.tirar(),
-      // CON = d.tirar(),
-      // TAM = d.tirar(),
-      // INT = d.tirar(),
-      // POD = d.tirar(),
-      // DES = d.tirar(),
-      // ASP = d.tirar()
+      FUE = d.tirar(),
+      CON = d.tirar(),
+      TAM = d.tirar(),
+      INT = d.tirar(),
+      POD = d.tirar(),
+      DES = d.tirar(),
+      ASP = d.tirar()
     }
 
   ) {
@@ -1821,7 +1821,7 @@ class Enano extends Humanoide {
 
     this.setHabilidad(new Habilidad("Esquivar", Agilidad, 20));
     this.setHabilidad(new Habilidad("Montar", Agilidad, 20));
-    this.setHabilidad(new Habilidad("Nadar", Agilidad, 20));
+    this.setHabilidad(new Habilidad("Nadar", Agilidad, 5));
     this.setHabilidad(new Habilidad("Remar", Agilidad, 20));
     this.setHabilidad(new Habilidad("Saltar", Agilidad, 20));
     this.setHabilidad(new Habilidad("Trepar", Agilidad, 20));
@@ -1837,14 +1837,14 @@ class Enano extends Humanoide {
 
     this.setHabilidad(new Habilidad("Animal", Conocimiento, 20));
     this.setHabilidad(new Habilidad("Vegetal", Conocimiento, 20));
-    this.setHabilidad(new Habilidad("Mineral", Conocimiento, 20));
+    this.setHabilidad(new Habilidad("Mineral", Conocimiento, 50));
     this.setHabilidad(new Habilidad("Mundo", Conocimiento, 20));
-    this.setHabilidad(new Habilidad("Raza Propia", Conocimiento, 20));
+    this.setHabilidad(new Habilidad("Raza Propia", Conocimiento, 50));
     this.setHabilidad(new Habilidad("Otras Razas", Conocimiento, 20));
     this.setHabilidad(new Habilidad("Leer y escribir", Conocimiento, 20));
     this.setHabilidad(new Habilidad("Navegación", Conocimiento, 20));
-    this.setHabilidad(new Habilidad("Primeros Auxilios", Conocimiento, 20));
-    this.setHabilidad(new Habilidad("Tasación", Conocimiento, 20));
+    this.setHabilidad(new Habilidad("Primeros Auxilios", Conocimiento, 10));
+    this.setHabilidad(new Habilidad("Tasación", Conocimiento, 30));
     this.setHabilidad(new Habilidad("Inventar", Conocimiento, 20));
 
     this.setHabilidad(new Habilidad("Lanzar", Manipulación, 20));
@@ -1871,6 +1871,7 @@ class Enano extends Humanoide {
  */
 // var pj = new Humanoide({});
 var pj = new Enano();
+pj.act();
 
 
 
