@@ -86,12 +86,18 @@
                             <td>{{ subject.valor }}</td>
                             <td>{{ subject.bh }}</td>
                         </tr>
+
+   
                     </table>
                 </td>
             </tr>
         </table>
 
-
+        <ul>
+            <li ng-repeat="(key, value) in student">
+               {{key}} : {{value}}
+            </li>
+        </ul>
 
 
 
