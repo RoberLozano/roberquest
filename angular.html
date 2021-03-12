@@ -69,6 +69,9 @@
                         <tr ng-repeat="c in CP">
                             <td>{{ c }}</td>
                             <td>{{ student[c] }}<input type="number" ng-model="student[c]"></td>
+                            <td><input type="number" ng-model="student.bonificacion[c]"
+                                ng-style="{ 'color': (student.bonificacion[c]>0 ? 'green' : 'red') ,'width': '2.5em'}"></td>
+                            <td>{{student.getCar(c) }}</td>
                             <td>{{ TH[$index] }}</td>
                             <td>{{student.getCar(TH[$index]) }}</td>
 
@@ -93,7 +96,7 @@
                             <!-- <td>{{ subject.valor }}</td> -->
                             <td>{{ subject.valor }} <input type="number"
                                     ng-model="student.getHabilidad(subject.nombre).valor"></td>
-                            <td>{{ subject.bh }}</td>
+                            <td ng-style="{ 'color': (subject.bh>0 ? 'green' : 'red')}">{{ subject.bh }}</td>
                             <td>{{ subject.v }}</td>
                         </tr>
                     </table>
@@ -101,23 +104,18 @@
             </tr>
         </table>
 
+        <p ng-style="{ 'color': (2 ? 'white' : 'red') }" >Hello</p>
+
         <ul>
             <li ng-repeat="(key, value) in student">
                 {{key}} : {{value}}
             </li>
         </ul>
 
+       
 
 
     </div>
-
-        <!-- AngularJS Material Dependencies -->
-        <!-- <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.js"></script> -->
-        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-animate.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-aria.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-messages.min.js"></script>
-
-        <script src="https://gitcdn.xyz/cdn/angular/bower-material/master/angular-material.js"></script>
 
 
     <script src='js/D.js'></script>
