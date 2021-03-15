@@ -1,6 +1,6 @@
 {
   "lock": false,
-  "active": "a08e11119aefc863a42db70003513594d2824191",
+  "active": "54e0c177acca401a573a8c0614f65dee6d9008ce",
   "sets": {
     "default": {
       "source": "default",
@@ -113,17 +113,21 @@
         "a08e11119aefc863a42db70003513594d2824191": {
           "name": "Excel",
           "data": [
-            "c:\\GitHub\\roberquest\\ex.js",
+            "c:\\GitHub\\roberquest\\angular.html",
+            "c:\\GitHub\\roberquest\\m.html",
             "c:\\GitHub\\roberquest\\js\\habilidades.js",
             "c:\\GitHub\\roberquest\\js\\rol.js",
             "c:\\GitHub\\roberquest\\index.html",
             "c:\\GitHub\\roberquest\\excel.htm",
-            "c:\\Program Files\\Microsoft VS Code\\resources\\app\\extensions\\node_modules\\typescript\\lib\\lib.dom.d.ts",
-            "c:\\GitHub\\roberquest\\js\\D.js",
-            "c:\\Program Files\\Microsoft VS Code\\resources\\app\\extensions\\node_modules\\typescript\\lib\\lib.es5.d.ts",
+            "c:\\GitHub\\roberquest\\ex.js"
+          ]
+        },
+        "54e0c177acca401a573a8c0614f65dee6d9008ce": {
+          "name": "angular",
+          "data": [
             "c:\\GitHub\\roberquest\\angular.html",
-            "c:\\GitHub\\roberquest\\js\\utils.js",
-            "c:\\GitHub\\roberquest\\m.html"
+            "c:\\GitHub\\roberquest\\amat.html",
+            "c:\\GitHub\\roberquest\\js\\habilidades.js"
           ]
         }
       }

@@ -1,0 +1,263 @@
+<head>
+    <meta charset='utf-8'>
+    <!-- Angular Material CSS now available via Google CDN; version 1.2.1 used here -->
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.2.2/angular-material.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <style>
+        input,
+        textarea, body, md-content {
+
+            background-color: black;
+            color:aliceblue;
+
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Angular Material Dependencies -->
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-animate.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-aria.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-messages.min.js"></script>
+
+    <!-- Angular Material Javascript now available via Google CDN; version 1.2.1 used here -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.2.2/angular-material.min.js"></script>
+
+
+    <div id='app' ng-app="rolApp" ng-controller="rolController">
+
+
+        <select ng-model="selectedHab" ng-options="x.nombre for x in p.habilidades">
+        </select>
+
+        <md-input-container>
+            <label>Title</label>
+            <input ng-model="p.nombre">
+        </md-input-container>
+
+        <md-datepicker ng-model="ctrl.myDate" md-placeholder="Enter date"
+            input-aria-describedby="datepicker-description" input-aria-labelledby="datepicker-header "></md-datepicker>
+        <input type="datetime-local" id="birthdaytime" name="birthdaytime">
+
+        <md-content>
+            <md-tabs md-dynamic-height md-border-bottom>
+                <md-tab label="one">
+                    <md-content class="md-padding">
+                        <h1 class="md-display-2">Tab One</h1>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla venenatis ante augue.
+                            Phasellus volutpat neque ac dui mattis vulputate. Etiam consequat aliquam cursus. In
+                            sodales pretium ultrices. Maecenas lectus est, sollicitudin consectetur felis nec,
+                            feugiat ultricies mi.</p>
+                    </md-content>
+                </md-tab>
+                <md-tab label="Habilidades">
+                    <md-content class="md-padding">
+                        <md-select id='columnas' ng-model="colHab" placeholder="Visibles" class="md-no-underline"
+                            required md-no-asterisk="false" multiple>
+                            <!-- <md-option value='nombre' selected >Nombre</md-option>
+                    <md-option value='valor'>Valor</md-option>
+                    <md-option value='bh'>Bon</md-option>
+                    <md-option value='v'>Total</md-option> -->
+                            <md-option value='nombre' selected>{{nombre['nombre']}}</md-option>
+                            <md-option value='xp' >{{nombre['xp']}}</md-option>
+                            <md-option value='valor'> {{nombre['valor']}}</md-option>
+                            <md-option value='bh'> {{nombre['bh']}}</md-option>
+                            <md-option value='v'> {{nombre['v']}}</md-option>
+                        </md-select>
+                        <button onclick="document.getElementById('columnas').select;"></button>
+                        <input type="text" ng-model="buscar">
+                        <table>
+                            <tr>
+                                <th ng-repeat='c in colHab' visible='false'>
+                                    {{nombre[c]}}
+                                </th>
+                            </tr>
+                            <tr ng-repeat="subject in p.getHabilidades() | orderBy:miOrden | filter : buscar">
+                                <td ng-repeat='c in colHab'>
+                                    <span ng-if="c==='nombre'">{{subject[c]}}</span>
+
+                                    <input ng-if="c==='xp'" type="number" ng-model="subject[c]"
+                                        ng-style="{ 'color': (subject.subible()<100? 'green' : 'red') ,'width': '2.5em'}">
+
+                                    <input ng-if="c!='nombre'&&c!='xp'" type="number" ng-model="subject[c]"
+                                        ng-style="{'width': '3em'}">
+
+                                </td>
+                                <!-- <td>{{ subject.nombre }}</td>
+                            <td>{{ subject.valor }} <input type="number"
+                                    ng-model="p.getHabilidad(subject.nombre).valor"></td>
+                            <td ng-style="{ 'color': (subject.bh>0 ? 'green' : 'red')}">{{ subject.bh }}</td>
+                            <td>{{ subject.v }}</td> -->
+                            </tr>
+                        </table>
+                    </md-content>
+                </md-tab>
+                <md-tab label="data">
+                    <md-content class="md-padding">
+                        <ul>
+                            <li ng-repeat="(key, value) in p">
+                                {{key}} : {{value}}
+                            </li>
+                        </ul>
+                    </md-content>
+                </md-tab>
+            </md-tabs>
+        </md-content>
+        <section layout="row" layout-sm="column" layout-align="center center" layout-wrap>
+
+
+            <md-input-container>
+                <label>Habilidades</label>
+                <md-select ng-model="habSel" multiple>
+                    <md-option><em>Ninguna</em></md-option>
+                    <md-option ng-repeat="c in p.habilidades" ng-value="c.nombre">
+                        {{c.nombre}}
+                    </md-option>
+                </md-select>
+            </md-input-container>
+
+        </section>
+
+        <!-- <button onclick="change('nombre','Rober')">Rober</button> -->
+
+        <table border="0">
+            <tr>
+                <td>Enter first name:</td>
+                <td><input type="text" ng-model="p.nombre"></td>
+            </tr>
+            <tr>
+                <td>Raza: </td>
+                <td>
+                    <input type="text" ng-model="p.clase">
+                </td>
+            </tr>
+            <tr>
+                <td>Peso: </td>
+                <td>{{p.peso}}</td>
+            </tr>
+            <tr>
+                <td>Caracteristicas: </td>
+                <td>
+                    <table>
+                        <tr hidden>
+                            <td>_FUE</td>
+                            <td><input type="number" ng-model="p._FUE"></td>
+                        </tr>
+
+                        <tr ng-repeat="c in CP">
+                            <td>{{ c }}</td>
+                            <td>{{ p[c] }}<input type="number" ng-model="p[c]"></td>
+                            <td><input type="number" ng-model="p.bonificacion[c]"
+                                    ng-style="{ 'color': (p.bonificacion[c]>0 ? 'green' : 'red') ,'width': '2.5em'}">
+                            </td>
+                            <td>{{p.getCar(c) }}</td>
+                            <td>{{ TH[$index] }}</td>
+                            <td>{{p.getCar(TH[$index]) }}</td>
+
+                        </tr>
+                    </table>
+
+                </td>
+            </tr>
+            <tr>
+                <td>Habilidades:</td>
+
+                <td>
+                    <input type="text" ng-model="test">
+                    <table>
+                        <tr>
+                            <th ng-click="orden('nombre')">Nombre</th>
+                            <th ng-click="orden('valor')">Valor</th>
+                            <th ng-click="orden('bh')">Bon</th>
+                            <th ng-click="orden('v')">Total</th>
+                        </tr>
+                        <tr ng-repeat="subject in p.getHabilidades() | orderBy:miOrden | filter : test">
+                            <td>{{ subject.nombre }}</td>
+                            <!-- <td>{{ subject.valor }}</td> -->
+                            <td>{{ subject.valor }} <input type="number"
+                                    ng-model="p.getHabilidad(subject.nombre).valor"></td>
+                            <td ng-style="{ 'color': (subject.bh>0 ? 'green' : 'red')}">{{ subject.bh }}</td>
+                            <td>{{ subject.v }}</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+
+
+
+    </div>
+
+
+
+    <script src='js/D.js'></script>
+    <script src='js/habilidades.js'></script>
+    <script src='js/inventario.js'></script>
+    <script src='js/localizaciones.js'></script>
+
+    <script src='js/rol.js'></script>
+
+    <script>
+        pj.act();
+        // Include app dependency on ngMaterial
+        var rolApp = angular.module('rolApp', ['ngMaterial', 'ngMessages']);
+        rolApp.controller('rolController', function ($scope) {
+            $scope.p = pj;
+            $scope.CP = CP;
+            $scope.TH = TipoHabilidades;
+            $scope.nombre = {}
+            $scope.nombre['nombre'] = 'Nombre'
+            $scope.nombre['xp'] = 'xp'
+            $scope.nombre['valor'] = 'Valor'
+            $scope.nombre['bh'] = 'Bon'
+            $scope.nombre['v'] = 'Total'
+
+
+            $scope.orden = function (x) {
+                if ($scope.miOrden == x) $scope.miOrden = '-' + x;
+                else $scope.miOrden = x
+                // console.log($scope.miOrden);
+            }
+        });
+
+
+
+        rolApp
+            .config(function ($mdThemingProvider) {
+                $mdThemingProvider.theme('default')
+                    .dark();
+
+            });
+
+        rolApp
+            .config(function ($mdThemingProvider) {
+
+                $mdThemingProvider.theme('default')
+                    .accentPalette('red', {
+                        'default': '600', // by default use shade 400 from the pink palette for primary intentions
+                        'hue-1': '100', // use shade 100 for the <code>md-hue-1</code> class
+                        'hue-2': '600', // use shade 600 for the <code>md-hue-2</code> class
+                        'hue-3': 'A100' // use shade A100 for the <code>md-hue-3</code> class
+                    })
+                    .primaryPalette('red')
+                // If you specify less than all of the keys, it will inherit from the
+                // default shades
+
+
+            });
+
+
+        function act() {
+            var scope = angular.element(document.getElementById('app')).scope();
+            scope.$apply(function () {
+                scope.p = pj;
+                scope.p.act();
+            });
+
+
+        }
+
+    </script>
+</body>
