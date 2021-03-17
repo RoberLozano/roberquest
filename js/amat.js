@@ -281,12 +281,12 @@ rolApp.controller('rolController', function ($scope) {
 
 
 
-rolApp
-    .config(function ($mdThemingProvider) {
-        $mdThemingProvider.theme('default')
-            .dark();
+// rolApp
+//     .config(function ($mdThemingProvider) {
+//         $mdThemingProvider.theme('default')
+//             .dark();
 
-    });
+//     });
 
 rolApp
     .config(function ($mdThemingProvider) {
