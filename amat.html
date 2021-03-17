@@ -5,12 +5,55 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
     <style>
         input,
-        textarea, body, md-content {
+        textarea,
+        body,
+        md-content {
 
             background-color: black;
-            color:aliceblue;
+            color: aliceblue;
 
         }
+
+        .icon-black {
+            filter: invert(100%) sepia(31%) saturate(2878%) hue-rotate(346deg);
+        }
+
+        img {
+            width: 1.7rem;
+            vertical-align: text-top;
+            transition: .5s ease;
+        }
+
+        img:hover {
+            opacity: 0.9;
+            filter: none;
+        }
+
+        img:active {
+            -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+        }
+
+        img:active {
+            /*width: 2rem;*/
+            transition: .1s ease;
+        }
+
+        .button {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+        }
+
+        .button.okay {
+            background: url('img/check.svg');
+
+        }
+
+        /* .icon {
+            position: relative;
+            vertical-align: top;  
+          } */
     </style>
 </head>
 
@@ -34,8 +77,19 @@
 
         <md-input-container>
             <label>Title</label>
-            <input ng-model="p.nombre">
+            <input ng-model="p.nombre" onclick="select()">
         </md-input-container>
+        <div>
+            Habilidades<br>
+            <mi-hab nombre='Esquivar'></mi-hab>
+            <in-habilidad></in-habilidad>
+            <in-habilidad img='img/magic-wand-aqua.svg'></in-habilidad>
+            <in-habilidad></in-habilidad>
+
+        </div>
+
+
+
 
         <md-datepicker ng-model="ctrl.myDate" md-placeholder="Enter date"
             input-aria-describedby="datepicker-description" input-aria-labelledby="datepicker-header "></md-datepicker>
@@ -61,7 +115,7 @@
                     <md-option value='bh'>Bon</md-option>
                     <md-option value='v'>Total</md-option> -->
                             <md-option value='nombre' selected>{{nombre['nombre']}}</md-option>
-                            <md-option value='xp' >{{nombre['xp']}}</md-option>
+                            <md-option value='xp'>{{nombre['xp']}}</md-option>
                             <md-option value='valor'> {{nombre['valor']}}</md-option>
                             <md-option value='bh'> {{nombre['bh']}}</md-option>
                             <md-option value='v'> {{nombre['v']}}</md-option>
@@ -76,7 +130,22 @@
                             </tr>
                             <tr ng-repeat="subject in p.getHabilidades() | orderBy:miOrden | filter : buscar">
                                 <td ng-repeat='c in colHab'>
-                                    <span ng-if="c==='nombre'">{{subject[c]}}</span>
+                                    <span ng-if="c==='nombre'">
+                                        <span ng-switch="subject.constructor.name">
+                                            <span ng-switch-when="Hechizo">
+                                                {{subject[c]}}
+                                            </span>
+                                            <span ng-switch-when="Habilidad">
+                                                {{subject[c]}} <img class='icon-black' src="img/magic-wand.svg"
+                                                    width="16" height="16">
+                                            </span>
+                                            <span ng-switch-when="HabilidadMarcial">
+                                            </span>
+                                            <span ng-switch-default>
+                                                {{subject[c]}}
+                                            </span>
+                                        </span>
+                                    </span>
 
                                     <input ng-if="c==='xp'" type="number" ng-model="subject[c]"
                                         ng-style="{ 'color': (subject.subible()<100? 'green' : 'red') ,'width': '2.5em'}">
@@ -199,65 +268,5 @@
 
     <script src='js/rol.js'></script>
 
-    <script>
-        pj.act();
-        // Include app dependency on ngMaterial
-        var rolApp = angular.module('rolApp', ['ngMaterial', 'ngMessages']);
-        rolApp.controller('rolController', function ($scope) {
-            $scope.p = pj;
-            $scope.CP = CP;
-            $scope.TH = TipoHabilidades;
-            $scope.nombre = {}
-            $scope.nombre['nombre'] = 'Nombre'
-            $scope.nombre['xp'] = 'xp'
-            $scope.nombre['valor'] = 'Valor'
-            $scope.nombre['bh'] = 'Bon'
-            $scope.nombre['v'] = 'Total'
-
-
-            $scope.orden = function (x) {
-                if ($scope.miOrden == x) $scope.miOrden = '-' + x;
-                else $scope.miOrden = x
-                // console.log($scope.miOrden);
-            }
-        });
-
-
-
-        rolApp
-            .config(function ($mdThemingProvider) {
-                $mdThemingProvider.theme('default')
-                    .dark();
-
-            });
-
-        rolApp
-            .config(function ($mdThemingProvider) {
-
-                $mdThemingProvider.theme('default')
-                    .accentPalette('red', {
-                        'default': '600', // by default use shade 400 from the pink palette for primary intentions
-                        'hue-1': '100', // use shade 100 for the <code>md-hue-1</code> class
-                        'hue-2': '600', // use shade 600 for the <code>md-hue-2</code> class
-                        'hue-3': 'A100' // use shade A100 for the <code>md-hue-3</code> class
-                    })
-                    .primaryPalette('red')
-                // If you specify less than all of the keys, it will inherit from the
-                // default shades
-
-
-            });
-
-
-        function act() {
-            var scope = angular.element(document.getElementById('app')).scope();
-            scope.$apply(function () {
-                scope.p = pj;
-                scope.p.act();
-            });
-
-
-        }
-
-    </script>
+    <script src='js/amat.js'></script>
 </body>
