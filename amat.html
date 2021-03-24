@@ -4,7 +4,7 @@
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.2.2/angular-material.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
     <style>
-        /* input,
+        input,
         textarea,
         body,
         md-content {
@@ -16,7 +16,7 @@
 
         .icon-black {
             filter: invert(100%) sepia(31%) saturate(2878%) hue-rotate(346deg);
-        } */
+        }
 
         img {
             width: 1.7rem;
@@ -82,12 +82,20 @@
         <div>
             Habilidades<br>
             <mi-hab nombre='Esquivar'></mi-hab>
-            <in-habilidad></in-habilidad>
-            <in-habilidad img='img/magic-wand-aqua.svg'></in-habilidad>
-            <in-habilidad></in-habilidad>
+            <in-habilidad id="h1" filtro="h.tipo==='Agilidad'"></in-habilidad>
+            <in-habilidad id="h2" clase="Hechizo" img='img/magic-wand-aqua.svg'></in-habilidad>
+            <in-habilidad id="h12" clase="HabilidadMarcial" img='img/shield.svg'></in-habilidad>
+
+            <in-habilidad id="h3" img='img/magic-wand-aqua.svg'></in-habilidad>
+
+            <!-- <in-habilidad>
+                <input list='datalist'></input>
+                <datalist id='datalist'>
+                    <option ng-repeat='h in p.getHabilidades(h=>(h.valor>=10))'>{{h.nombre}}</option>`
+                </datalist>
+            </in-habilidad> -->
 
         </div>
-
 
 
 
@@ -99,21 +107,48 @@
             <md-tabs md-dynamic-height md-border-bottom>
                 <md-tab label="one">
                     <md-content class="md-padding">
-                        <h1 class="md-display-2">Tab One</h1>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla venenatis ante augue.
-                            Phasellus volutpat neque ac dui mattis vulputate. Etiam consequat aliquam cursus. In
-                            sodales pretium ultrices. Maecenas lectus est, sollicitudin consectetur felis nec,
-                            feugiat ultricies mi.</p>
+                        <div  ng-click="atrasInventario()">Atrás</div>
+                        Inventario en {{contenedor.nombre}}
+                        <div ng-repeat="o in contenedor.objetos"  ng-click="abreContenedor(o)">
+                            <md-input-container>
+                                <label>Nombre</label>
+                                <input ng-model="o.nombre" onclick="select()">
+                            </md-input-container>
+                            <md-input-container>
+                                <label>Peso</label>
+                                <input type="number" ng-model="o.peso" onclick="select()">
+                            </md-input-container>
+                            
+                                <!-- <div ng-repeat="oo in o.objetos" ng-if="o.constructor.name ==='Contenedor'">
+                                    <md-input-container>
+                                        <label>Nombre</label>
+                                        <input ng-model="oo.nombre" onclick="select()">
+                                    </md-input-container>
+                                    <md-input-container>
+                                        <label>Peso</label>
+                                        <input type="number" ng-model="oo.peso" onclick="select()">
+                                    </md-input-container>
+                                </div> -->
+                           
+
+                        </div>
+                        <md-input-container>
+                            <label>Total</label>
+                            <input ng-model="p.inventario.pesa" onclick="select()">
+                        </md-input-container>
+
+
+                        <ul>
+                            <li ng-repeat="o in p.inventario.objetos">
+                                {{o.nombre}} : {{o.peso}}
+                            </li>
+                        </ul>
                     </md-content>
                 </md-tab>
                 <md-tab label="Habilidades">
                     <md-content class="md-padding">
                         <md-select id='columnas' ng-model="colHab" placeholder="Visibles" class="md-no-underline"
                             required md-no-asterisk="false" multiple>
-                            <!-- <md-option value='nombre' selected >Nombre</md-option>
-                    <md-option value='valor'>Valor</md-option>
-                    <md-option value='bh'>Bon</md-option>
-                    <md-option value='v'>Total</md-option> -->
                             <md-option value='nombre' selected>{{nombre['nombre']}}</md-option>
                             <md-option value='xp'>{{nombre['xp']}}</md-option>
                             <md-option value='valor'> {{nombre['valor']}}</md-option>
@@ -265,6 +300,7 @@
     <script src='js/habilidades.js'></script>
     <script src='js/inventario.js'></script>
     <script src='js/localizaciones.js'></script>
+    <script src='js/utils.js'></script>
 
     <script src='js/rol.js'></script>
 

@@ -306,14 +306,14 @@ class Habilidad extends XP {
         console.log("Sube SUPERCRITICO:" + dado);
         break;
       case TipoTirada.CRITICO:
-        if (dado && dado < 11)
-          { this.xp += 3;
-            console.log("Sube CRITICO:" + dado);
-          }
-        else if (dado && dado < 21)
-          { this.xp += 1;
-            console.log("Sube como ESPECIAL:" + dado);
-          }
+        if (dado && dado < 11) {
+          this.xp += 3;
+          console.log("Sube CRITICO:" + dado);
+        }
+        else if (dado && dado < 21) {
+          this.xp += 1;
+          console.log("Sube como ESPECIAL:" + dado);
+        }
         break;
       case TipoTirada.ESPECIAL:
         if (dado && dado < 21) {
@@ -328,6 +328,23 @@ class Habilidad extends XP {
   }
 
 
+}
+/**
+ * Permite que se puedan sumar restar o multiplicar el valor total de la habilidad
+ */
+class HabilidadEditable extends Habilidad {
+  get total() {
+    if (total)
+      return this._total
+    else return this.v;
+  }
+  set total(valor) {
+    this._total = Math.round(+valor)
+  }
+  sumar(s) {
+    this._total += s;
+  }
+  multiplicar(m) { this.total *= m; }
 }
 
 class Hechizo extends Habilidad {
@@ -361,17 +378,129 @@ class Hechizo extends Habilidad {
 
 }
 
-class HechizoReal extends Hechizo
-{}
+class HechizoReal extends Hechizo {
+  constructor(hechizo) {
+    super(hechizo.nombre, hechizo.pm, hechizo.valor, hechizo.efecto);
+    this.setAll(hechizo);
 
-class Arte extends Habilidad{
-  constructor(nombre='Intensidad', valor,pm=0,intensidad=0,gastados=0) {
-    super(nombre, "Magia", valor)
-    this.pm = pm;
-    this.intensidad = intensidad;
-    this.gastados = gastados;
+    this.modificadores = {}
   }
 
+  //te copia todas las propiedades de un objeto o
+  setAll(o) {
+    for (let key in o) {
+      this[key] = o[key];
+    }
+  }
+
+  setArte(arte) {
+    this.modificadores[arte.nombre] = arte;
+    arte.hechizo = this;
+  }
+
+    /**
+   * 
+   * @param {TipoTirada} tipoTirada el drado de éxito de la tirada
+   * @returns 0 si no se modifica el hechizo, objeto con intensidad, gastados, penalizacion
+   */
+     act(tipoTirada) {
+
+      var pm = this.pm;
+      let gastados = 0
+      let intensidad = 0
+
+  
+      switch (tipoTirada) {
+        case (TipoTirada.SUPERCRITICO):
+          intensidad = 5;
+          break;
+        case (TipoTirada.CRITICO):
+          intensidad = 3;
+          break;
+        case (TipoTirada.ESPECIAL):
+          intensidad = 1;
+          break;
+        case (TipoTirada.EXITO):
+          break;
+        case (TipoTirada.FALLO):
+          intensidad = 0
+          break;
+        default:
+          ;
+      }
+  
+      // if (intensidad < pm) {
+      //   gastados = (pm - intensidad)
+      //   intensidad = pm;
+      // }
+      // else if (intensidad >= pm) {
+      //   gastados = 0 //o 1?
+      //   intensidad = pm + (intensidad - pm);
+      // }
+  
+      this.intensidad = intensidad;
+      this.gastados = gastados;
+  
+      // if(this.hechizo){
+      //   this.hechizo[this.nombre].intensidad=intensidad;
+      //   this.hechizo[this.nombre].gastados=gastados;
+      //   this.hechizo[this.nombre].penalizacion= penalizacion;
+      // }
+    }
+
+
+  artes() {  
+    this.gastados = 0;
+    this.intensidad = 0;
+    this.penalizacion = 0;
+    for (let a in this.modificadores) {
+      console.log(this.modificadores[a].nombre, this.modificadores[a].gastados, this.modificadores[a].intensidad, this.modificadores[a].penalizacion);
+      this.gastados += this.modificadores[a].gastados
+      this.intensidad += this.modificadores[a].intensidad
+      this.penalizacion += this.modificadores[a].penalizacion
+    }
+
+    console.log(
+      this.nombre,
+      this.gastados,
+      this.intensidad,
+      this.penalizacion,
+    );
+
+  }
+
+
+}
+
+class Arte extends Habilidad {
+
+  constructor(arte){
+    super(arte.nombre, "Magia", arte.valor)
+    this.setAll(arte);
+    this.pm = 0;
+    // this.intensidad = intensidad;
+    // this.gastados = gastados;
+    // this.penalizacion= penalizacion;
+  }
+
+  //te copia todas las propiedades de un objeto o
+  setAll(o) {
+    for (let key in o) {
+      this[key] = o[key];
+    }
+  }
+
+  set pm(value){
+    if(value instanceof Number)
+      this._pm= value
+      else
+      this._pm=parseInt(value);
+
+  }
+
+  get pm(){
+    return this._pm;
+  }
 
   /**
    * @returns {Hechizo} devuelve el hechizo asociado al arte
@@ -384,48 +513,50 @@ class Arte extends Habilidad{
    * @param {HechizoReal} hechizo adjunta un hechizo al arte
    */
   set hechizo(hechizo){
-    if(hechizo instanceof HechizoReal)
-      this.h=hechizo;
+    if (hechizo instanceof HechizoReal)
+      this.h = hechizo;
   }
 
-    /**
-   * @returns la penalización al hechizo
-   */
-     penalizacion() {
-      var pm = +this.pm.value
-      if (pm == 0) return 0;
-      let v = this.habilidad.tirada(this.input.value);
-  
-      if (v == TipoTirada.EXITO)
-        return pm * 5;
-      else return 0;
-  
-    }
+  // /**
+  //  * @returns la penalización al hechizo
+  //  */
+  //    penalizacion() {
+  //     // var pm = +this.pm.value
+  //     var pm = this.pm;
+  //     if (pm == 0) return 0;
+  //     let v = this.habilidad.tirada(this.input.value);
 
-/**
- * 
- * @param {TipoTirada} tipoTirada el drado de éxito de la tirada
- * @returns 0 si no se modifica el hechizo, objeto con intensidad, gastados, penalizacion
- */
+  //     if (v == TipoTirada.EXITO)
+  //       return pm * 5;
+  //     else return 0;
+
+  //   }
+
+  /**
+   * 
+   * @param {TipoTirada} tipoTirada el drado de éxito de la tirada
+   * @returns 0 si no se modifica el hechizo, objeto con intensidad, gastados, penalizacion
+   */
   act(tipoTirada) {
 
     if (this.pm == 0) return 0;
+    var pm = this.pm;
     let gastados = 0
     let intensidad = 0
-    let penalizacion=0
+    let penalizacion = 0
 
     switch (tipoTirada) {
       case (TipoTirada.SUPERCRITICO):
         intensidad = 5;
         break;
-      case (TipoTirada.CRITICO):       
+      case (TipoTirada.CRITICO):
         intensidad = 3;
         break;
-      case (TipoTirada.ESPECIAL):       
+      case (TipoTirada.ESPECIAL):
         intensidad = 1;
         break;
       case (TipoTirada.EXITO):
-        penalizacion= this.pm * 5
+        penalizacion = this.pm * 5
         break;
       case (TipoTirada.FALLO):
         intensidad = 0
@@ -444,15 +575,19 @@ class Arte extends Habilidad{
     }
 
     var result = { intensidad: intensidad, gastados: gastados, penalizacion: penalizacion };
-    if(this.hechizo){
-      this.hechizo[this.nombre].intensidad=intensidad;
-      this.hechizo[this.nombre].gastados=gastados;
-      this.hechizo[this.nombre].penalizacion= penalizacion;
-    }
+    this.intensidad = intensidad;
+    this.gastados = gastados;
+    this.penalizacion = penalizacion;
+
+    // if(this.hechizo){
+    //   this.hechizo[this.nombre].intensidad=intensidad;
+    //   this.hechizo[this.nombre].gastados=gastados;
+    //   this.hechizo[this.nombre].penalizacion= penalizacion;
+    // }
     return result;
   }
 
-  
+
 }
 
 class HabilidadMarcial extends Habilidad {
@@ -498,6 +633,7 @@ class Tecnica extends HabilidadMarcial {
 
 
 }
+
 
 class BonHabilidad {
   constructor(nombre, valor, especial = 0, critico = 0) {
@@ -833,7 +969,7 @@ class InputHabilidad extends HTMLElement {
     this.icon.setAttribute('class', 'icon');
     this.icon.addEventListener('click', (event) => {
 
-      this.input.value =  Math.floor(Math.random() * 100 + 1); //mal
+      this.input.value = Math.floor(Math.random() * 100 + 1); //mal
       // this.input.value = Math.round(Math.random() * 100); //mal
       this.act(this.input);
       // console.log(this.getAttribute('habilidad'));
@@ -1138,6 +1274,7 @@ class InputSubirHabilidad extends InputHabilidad {
 class InputArte extends InputHabilidad {
   constructor(habilidad) {
     super(habilidad);
+    this.setAttribute("id", "ia-"+habilidad.nombre);
     this.pm = document.createElement('input');
     this.pm.setAttribute("id", "pm");
     this.pm.setAttribute("type", "number");
@@ -1156,6 +1293,30 @@ class InputArte extends InputHabilidad {
 
   }
 
+  setPersonaje(personaje) {
+    this.personaje = personaje;
+    var nombres = [
+      "Multiconjuro",
+      "Sobrepotencia",
+      "Refuerzo",
+      "Alcance",
+      "Duración",
+      "Intensidad",
+      "Puntería",
+      "Velocidad"
+    ]
+    let array = this.personaje.getHabilidades(h => nombres.includes(h.nombre));
+
+    array.sort(function (a, b) {
+      return a.v - b.v;
+    });
+    console.log(array.reverse());
+    // this.lista("listaHab"+personaje.nombre,this.personaje.getHabilidades());
+    this.lista("listaHab" + personaje.nombre,array);
+    // this.h = array[0];
+
+
+  }
 
   act(input) {
     super.act(input)
@@ -1266,11 +1427,12 @@ class InputArte extends InputHabilidad {
     else return 0;
 
   }
+  
 }
 
 class InputHechizo extends InputHabilidad {
-  constructor() {
-    super();
+  constructor(habilidad= new Hechizo(Hechizo,7,77)) {
+    super(habilidad);
     this.pm = document.createElement('input');
     this.pm.setAttribute("id", "pm");
     this.pm.setAttribute("type", "number");
@@ -1296,6 +1458,7 @@ class InputHechizo extends InputHabilidad {
   setPersonaje(personaje) {
     this.personaje = personaje;
 
+    // let array = this.personaje.getHabilidades(h => (h instanceof Hechizo));
     let array = this.personaje.getHabilidades(h => (h instanceof Hechizo));
 
     array.sort(function (a, b) {
@@ -1318,7 +1481,7 @@ class InputHechizo extends InputHabilidad {
     this.porcentaje.setAttribute("value", this.habilidad.v);
     this.porcentaje.value = this.habilidad.v;
     this.ok.src = this.habilidad.ataque ? 'img/sword.svg' : 'img/check.svg';
-    this.pm.value = habilidad.pm;
+    this.pm.value = habilidad?.pm?habilidad.pm:0;
   }
 
 }
@@ -1326,12 +1489,59 @@ class InputHechizo extends InputHabilidad {
 // Define the new element
 
 customElements.define('input-habilidad', InputHabilidad);
-// customElements.define('input-hechizo', InputHechizo);
+customElements.define('input-hechizo', InputHechizo);
 
 customElements.define('input-arte', InputArte);
 customElements.define('input-subir', InputSubirHabilidad);
 
-customElements.define('my-counter', MyCounter);
+// customElements.define('my-counter', MyCounter);
+
+
+function IUHechizos(p,div="salida") {
+  var salida=document.getElementById(div);
+
+  var nombres = [
+    "Multiconjuro",
+    "Sobrepotencia",
+    "Refuerzo",
+    "Alcance",
+    "Duración",
+    "Intensidad",
+    "Puntería",
+    "Velocidad"
+  ]
+  var habilidades=[]
+
+  p.actTodosBonHab();
+  nombres.forEach(n => {
+    h = p.getHabilidad(n);
+    if (h&& h.valor>0) {
+      habilidades.push(h)
+      var div = document.createElement("div");
+      // div.style.display="inline-block" //en linea si cabe entero
+
+      var ia= new InputArte(h);
+      div.appendChild(ia)
+      
+      salida.appendChild(div);
+
+    }
+  });
+
+  var ih= new InputHechizo(p.getHabilidad('Volar'));
+  var div = document.createElement("div");
+  ih.setPersonaje(p);
+      div.appendChild(ih)
+      salida.appendChild(div);
+      
+  // habilidades.forEach(n => {
+  //   h = p.getHabilidad(n);
+  //   console.log(h);
+  //   document.getElementById(`ia-${h.nombre}`).setPersonaje(p);
+  //   // document.getElementById(`ia-${h.nombre}`).setHabilidad(h);
+  // });
+
+}
 
 // export {Habilidad, BonHabilidad}; 
 

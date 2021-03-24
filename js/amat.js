@@ -42,10 +42,17 @@ class MiHab extends HTMLElement {
     }
 }
 
-class InHabilidad extends HTMLElement {
+class MatAngHabilidad extends HTMLElement {
     constructor(hab = new Habilidad("Habilidad", "Agilidad", 77)) {
         // Always call super first in constructor
         super();
+
+        //BUSCAR FILTRO
+        this.filtro = this.getAttribute('filtro');
+        this.id = this.getAttribute('id');
+        this.clase = this.getAttribute('clase');
+        // console.log(('filtro',this.filtro))
+
         this.habilidad = hab;
 
         this.wrapper = document.createElement('span');
@@ -54,17 +61,14 @@ class InHabilidad extends HTMLElement {
         this.label = document.createElement('input');
         this.label.setAttribute("type", "text");
 
-        this.label.classList.add("hab");
+        // this.label.classList.add("hab");
         this.label.setAttribute("value", this.habilidad.nombre);
         // this.label.readOnly = true;
         this.label.addEventListener('change', (event) => {
-
+            if(!this.personaje) return;
             console.log(this.personaje.habilidades[event.target.value]);
             // console.log(pj.habilidades[event.target.value]);
             this.setHabilidad(this.personaje.habilidades[event.target.value])
-            // console.log(this.getAttribute('habilidad'));
-            // if(input.value>this.getAttribute('habilidad')) input.style.color="red"
-            // else input.style.color="black"
         });
 
         // input.setAttribute('max', '100');
@@ -88,22 +92,9 @@ class InHabilidad extends HTMLElement {
         this.icon = document.createElement('span');
         this.icon.setAttribute('class', 'icon');
         this.icon.addEventListener('click', (event) => {
-
             this.input.value = Math.floor(Math.random() * 100 + 1); //mal
-            // this.input.value = Math.round(Math.random() * 100); //mal
             this.act(this.input);
-            // console.log(this.getAttribute('habilidad'));
-            // if(input.value>this.getAttribute('habilidad')) input.style.color="red"
-            // else input.style.color="black"
         });
-
-        // const label = document.createElement('label');
-        // ;
-        // label.setAttribute("for", "porcentaje");
-        // label.appendChild(document.createTextNode(this.habilidad.nombre));
-        // label.style.width = "700px";
-
-
         //el input del dado de tirada
         this.mdInputContainer = document.createElement('md-input-container');
         this.mdInputContainer.innerHTML = `
@@ -119,29 +110,18 @@ class InHabilidad extends HTMLElement {
         this.input.style.width = "2.3em";
         this.input.setAttribute("onfocus", "select()");
 
-
-
         this.input.addEventListener('change', (event) => {
             this.act(this.input);
-            // console.log(this.getAttribute('habilidad'));
-            // if(input.value>this.getAttribute('habilidad')) input.style.color="red"
-            // else input.style.color="black"
         });
 
         // this.mdInputContainer.appendChild(document.createElement('label'));
         this.mdInputContainer.appendChild(this.icon);
         this.mdInputContainer.appendChild(this.input);
 
-        // Take attribute content and put it inside the info span
-        // Insert icon
-
         const img = document.createElement('img');
         img.src = 'img/10_sided_die.svg';
         this.icon.appendChild(img);
 
-
-        // this.ok= document.createElement('button');
-        // this.ok.classList.add("okay");
         this.ok = document.createElement('img');
         let imgUrl;
         if (this.hasAttribute('img')) {
@@ -157,7 +137,6 @@ class InHabilidad extends HTMLElement {
             this.habilidad.xpTirada(this.input.value, this.personaje?.suerte)
         });
 
-
         this.appendChild(this.wrapper);
         this.wrapper.appendChild(this.label);
         this.wrapper.appendChild(this.porcentaje);
@@ -167,18 +146,25 @@ class InHabilidad extends HTMLElement {
         this.wrapper.appendChild(this.ok);
 
         this.setPersonaje(pj);
-
     }
 
     lista(id, habilidades) {
 
         this.label.setAttribute("type", "search");
         let options = "";
-        habilidades.forEach(h => {
-            options += `<option value="${h.nombre}"></option>`
-        });
+        // habilidades.forEach(h => {
+        //     // options += `<option value="${h.nombre}"></option>`
+        //    
+        // });
+        if(this.clase)
+        options = ` <option ng-repeat='h in p.getClaseHabilidad("${this.clase}")'>{{h.nombre}}</option>`
+        else
+        options = ` <option ng-repeat='h in p.getHabilidades()'>{{h.nombre}}</option>`
+
+
+
         this.label.innerHTML =
-        `<datalist id=${id}>
+            `<datalist id=${id}>
             ${options}
         </datalist>`
         this.label.setAttribute("list", id);
@@ -186,20 +172,24 @@ class InHabilidad extends HTMLElement {
 
     setPersonaje(personaje) {
         this.personaje = personaje;
-
-        let array = this.personaje.getHabilidades(h => (h instanceof HabilidadMarcial));
-
-        array.sort(function (a, b) {
-            return a.v - b.v;
-        });
-        console.log(array.reverse());
-        // this.lista("listaHab"+personaje.nombre,this.personaje.getHabilidades());
-        // this.lista("listaHab" + personaje.nombre, this.personaje.getHabilidades(h => (h instanceof HabilidadMarcial)));
-        this.lista("listaHab" + personaje.nombre, this.personaje.getHabilidades());
-        this.h = array[0];
-
+        // let array = this.personaje.getHabilidades(h => (h.constructor.name===this.filtro));
+        var array = []
+        // array.sort(function (a, b) {
+        //     return a.v - b.v;
+        // });
+        
+        if (this.filtro)
+            // this.lista("listaHab" + personaje.nombre, this.personaje.getHabilidades(h => (h.constructor.name===this.filtro)));
+            array = this.personaje.getHabilidades(h => (eval(this.filtro))) 
+        else
+            array = this.personaje.getHabilidades()
+            console.log(array.map((task) => task.nombre ));
+            this.lista("listaHab" + this.id, array);
+        // this.h = array[0];
 
     }
+
+    
 
     set h(habilidad) {
         this.setHabilidad(habilidad);
@@ -213,10 +203,20 @@ class InHabilidad extends HTMLElement {
 
     setHabilidad(habilidad) {
         if (habilidad) this.habilidad = habilidad;
+        else return;
+        // this._habilidad= new habilidad.constructor()
+        // this._habilidad.setAll(habilidad);
+        // console.log(this._habilidad);
         this.label.setAttribute("value", this.habilidad.nombre);
         this.porcentaje.setAttribute("value", this.habilidad.v);
         this.porcentaje.value = this.habilidad.v;
+        
         this.ok.src = this.habilidad.ataque ? 'img/sword.svg' : 'img/check.svg';
+    }
+
+    reset(){
+        if (this._habilidad)
+        this.habilidad.valor=this._habilidad.valor
     }
 
     act(input) {
@@ -255,9 +255,11 @@ class InHabilidad extends HTMLElement {
 }
 
 customElements.define('mi-hab', MiHab);
-customElements.define('in-habilidad', InHabilidad);
-
+customElements.define('in-habilidad', MatAngHabilidad);
+guerrero(pj,20);
+pj.setHabilidad(new Hechizo('Volar',6))
 pj.act();
+
 // Include app dependency on ngMaterial
 var rolApp = angular.module('rolApp', ['ngMaterial', 'ngMessages']);
 rolApp.controller('rolController', function ($scope) {
@@ -271,6 +273,24 @@ rolApp.controller('rolController', function ($scope) {
     $scope.nombre['bh'] = 'Bon'
     $scope.nombre['v'] = 'Total'
 
+    $scope.contenedor=pj.inventario;
+    $scope.historialContenedor=[pj.inventario]
+
+
+    $scope.abreContenedor = function (c) {
+        console.log(c);
+        if(c instanceof Contenedor){
+            $scope.contenedor=c;
+            $scope.historialContenedor.push(c);
+        }
+        
+    }
+
+    $scope.atrasInventario= function () {
+        if( $scope.historialContenedor.length>1);
+        $scope.historialContenedor.pop()
+        $scope.contenedor= $scope.historialContenedor[$scope.historialContenedor.length - 1]
+    }
 
     $scope.orden = function (x) {
         if ($scope.miOrden == x) $scope.miOrden = '-' + x;
@@ -281,12 +301,12 @@ rolApp.controller('rolController', function ($scope) {
 
 
 
-// rolApp
-//     .config(function ($mdThemingProvider) {
-//         $mdThemingProvider.theme('default')
-//             .dark();
+rolApp
+    .config(function ($mdThemingProvider) {
+        $mdThemingProvider.theme('default')
+            .dark();
 
-//     });
+    });
 
 rolApp
     .config(function ($mdThemingProvider) {
@@ -315,3 +335,16 @@ function act() {
 
 
 }
+
+// function cargar(nombre) {
+//     let objeto=ls(nombre)
+//     if (objeto?.clase) {
+//         // console.log(objeto);
+//         // console.log(pj);
+//         console.log('**********cargaclase');
+//         console.log(`pj=new ${objeto.clase}({});`);
+//         eval(`pj=new ${objeto.clase}({});`);
+//         pj.setAll(objeto)
+//       }
+    
+// }

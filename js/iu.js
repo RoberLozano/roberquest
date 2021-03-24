@@ -233,11 +233,12 @@ function crearEventos(object, cell, key) {
   // }
 
   if (object instanceof Objetos && key === "nombre") {
-    if (object[key] == "mo") cell.innerHTML += ` <span class="badge badge-dark gold" >${object.ctd}</span>`;
+    if (object[key] == "mo") cell.innerHTML += ` <span class=" badge metal">${object.ctd}</span>`;
+    // cell.innerHTML += ` <span class="badge badge-dark gold" >${object.ctd}</span>`;
     else
-      if (object[key] == "mm") cell.innerHTML += ` <span class="badge metal" >${object.ctd}</span>`;
+      if (object[key] == "mm") cell.innerHTML += ` <span class="badge gold">${object.ctd}</span>`;
       else
-        cell.innerHTML += ` <span class="badge badge-dark"  >${object.ctd}</span>`;
+        cell.innerHTML += ` <span class="circulo dark" >${object.ctd}</span>`;
     // cell.innerHTML += ` <span class="badge badge-dark" style="background: linear-gradient(315deg, #b8d0e0 0%, #a6afb9 54%,  #b8d0e0 80% );">${object.ctd}</span>`
 
   }
@@ -333,7 +334,7 @@ function crearEventos(object, cell, key) {
 
     if (key === "valor") {
       if(object.subible()<100)
-      cell.innerHTML += `<span class="new badge" data-badge-caption="↑">${object.subible()}</span>`;
+      cell.innerHTML += ` <span class="new badge" data-badge-caption="↑" style="min-width: 1rem;">${object.subible()}</span>`;
       cell.addEventListener("click", function () {
         //TODO: Hacer subible
         if(object.subible()<100) {
@@ -363,14 +364,14 @@ function crearEventos(object, cell, key) {
     if (key === "nombre") {
       cell.innerHTML += ` <i class="fas fa-magic"></i><span class="badge " style="color:blue;" >${object.pm}</span>`;
 
-      var ht = new Hammer(cell);
-      ht.on("press tap", function (ev) {
-        console.log(ev);
-        if (ev.type == "tap")
-          console.log("TAP");
-        else
-          hechizos(object); //en toque largo hechizo
-      });
+      // var ht = new Hammer(cell);
+      // ht.on("press tap", function (ev) {
+      //   console.log(ev);
+      //   if (ev.type == "tap")
+      //     console.log("TAP");
+      //   else
+      //     hechizos(object); //en toque largo hechizo
+      // });
     }
   }
 
@@ -1093,13 +1094,14 @@ function atDaños(params) {
 
 //#endregion
 
-function load() {
+function load(nombre) {
+  if (!nombre) nombre=pj.nombre;
   console.log('LOAD');
   if (ONLINE) {
     
   } else {
     // console.log(pj);
-    cargar(ls(pj.nombre));
+    cargar(ls(nombre));
     // pj.cargarLocal();
     alert(`${pj.nombre} cargado, ${sizeJSON(pj)} bytes`)
     
@@ -1166,3 +1168,31 @@ document.getElementById('fechaMundo').value=fm;
 // document.getElementById('fechaMundo').value="0777-07-07T07:00:01.0"
 
 // $('#fechaMundo').val(fechaMundo.toISOString());
+
+load('Rosssel')
+pj.act();
+IUHechizos(pj,'artes')
+
+// var he= pj.habilidades['Volar'];
+// var hechizo = new HechizoReal(he)
+// var inten= pj.habilidades['Intensidad'];
+// var alc= pj.habilidades['Alcance'];
+
+// aInt= new Arte(pj.habilidades['Intensidad'])
+// aAlc= new Arte(pj.habilidades['Alcance'])
+
+// aInt.pm=7
+// aAlc.pm=7
+
+// hechizo.setArte(aInt);
+// hechizo.setArte(aAlc);
+
+// aInt.act(TipoTirada.EXITO)
+// aAlc.act(TipoTirada.ESPECIAL)
+
+
+// hechizo.artes();
+// console.log(aInt.hechizo);
+// console.log(aAlc.hechizo);
+
+

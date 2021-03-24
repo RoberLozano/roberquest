@@ -71,42 +71,42 @@ function ProcessExcel(data) {
   //     }
   // }
 
-  try {
-    let hoja2 = workbook.Sheets['Hoja2']
-    ws=hoja2;
-    console.log('Hay hoja 2');
-    info()
-    ws = workbook.Sheets[firstSheet];
-  } catch (e) {
-    console.log(e);
-    ws = workbook.Sheets[firstSheet];
-  }
+  //HOJA 2
+
+  // try {
+  //   let hoja2 = workbook.Sheets['Hoja2']
+  //   ws=hoja2;
+  //   console.log('Hay hoja 2');
+  //   info()
+  //   ws = workbook.Sheets[firstSheet];
+  // } catch (e) {
+  //   console.log(e);
+  //   ws = workbook.Sheets[firstSheet];
+  // }
   info();
+//HABILIDADES
+  h(21, 86, false);
+  pe.act();
+
+  tipo = Conocimiento; //idiomas
+  h(22, 86, false, 'M', 'N', 'O', false);
+
+  tipo = Manipulación;
+  ws = workbook.Sheets['Técnicas'];
+  tecnicas()
 
 
-
-  // tipo = Manipulación;
-  // ws = workbook.Sheets['Técnicas'];
-  // tecnicas()
-
-  // h(21, 86, false);
-  // pe.act();
-
-  // tipo = Conocimiento; //idiomas
-  // h(22, 86, false, 'M', 'N', 'O', false);
-
-
-  // ws = workbook.Sheets['Magia'];
-  // gemas();
+  ws = workbook.Sheets['Magia'];
+  gemas();
 
   tipo = Magia;
   ws = workbook.Sheets['Magia'];
   h(5, 20);
   hechizos(23, 52)
 
-  // tipo = Manipulación;
-  // ws = workbook.Sheets['Armas'];
-  // h(2, 11);
+  tipo = Manipulación;
+  ws = workbook.Sheets['Armas'];
+  h(2, 11);
 
   // armas(17, 28)
 
@@ -114,10 +114,10 @@ function ProcessExcel(data) {
   // ws = workbook.Sheets['Inventario'];
   // equipo(2, 20)
 
-  // if(last) console.log(diferencia(pe,last));
+  if(last) console.log(diferencia(pe,last));
 
-  // eval(`last=new ${pe.clase}()`)
-  // last.setAll(pe)
+  eval(`last=new ${pe.clase}()`)
+  last.setAll(pe)
 
 
 
@@ -150,12 +150,12 @@ function tecnicas(inicio = 2, fin = 38, ceros = false, hab = 'A', pf = 'B', xp =
     let c = ws['N' + (i + 1)]?.v;
     let sc = ws['N' + (i + 2)]?.v;
 
-    console.log(descripcion);
-    console.log(f);
-    console.log(n);
-    console.log(e);
-    console.log(c);
-    console.log(sc);
+    console.log('descirpcion',descripcion);
+    console.log('fallo',f);
+    console.log('normal',n);
+    console.log('especial',e);
+    console.log('critico',c);
+    console.log('scritico',sc);
 
 
     habilidad = new Tecnica(nombre, tipo, porcentaje, fatiga);
@@ -359,7 +359,7 @@ function info(params) {
     //TODO: hacer pruebas de rendimiento;
     console.log(pe);
   }
-  else pe = new Humanoide();
+  else pe = new Humano();
 
   pe.nombre = nombre;
   pe.clase = clase;

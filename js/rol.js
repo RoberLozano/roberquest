@@ -913,6 +913,9 @@ class Animal {
   }
 
   getClaseHabilidad(clase) {
+    if (typeof clase === "string")
+    return Object.values(this.habilidades).filter(obj => obj.constructor.name=== clase)
+
     return Object.values(this.habilidades).filter(obj => obj instanceof clase);
   }
 
@@ -1602,19 +1605,27 @@ Date.prototype.mod = function (interval, units) {
   return ret;
 }
 
-
+var _3d6=new Dado('3d6');
 class Humanoide extends Animal {
   constructor(
     {
       // nombre = "Humanoide",
       peso = 60, //en kg
-      FUE = d.tirar(),
-      CON = d.tirar(),
-      TAM = d.tirar(),
-      INT = d.tirar(),
-      POD = d.tirar(),
-      DES = d.tirar(),
-      ASP = d.tirar()
+      FUE = _3d6.tirar(),
+      CON = _3d6.tirar(),
+      TAM = _3d6.tirar(),
+      INT = _3d6.tirar(),
+      POD = _3d6.tirar(),
+      DES = _3d6.tirar(),
+      ASP = _3d6.tirar()
+
+      // FUE = 10,
+      // CON = 10,
+      // TAM = 10,
+      // INT = 10,
+      // POD = 10,
+      // DES = 10,
+      // ASP = 10
     }
 
   ) {
@@ -1866,6 +1877,12 @@ class Enano extends Humanoide {
 
     this.setHabilidad(new Habilidad("Deslizarse en Silencio", Sigilo, 20));
     this.setHabilidad(new Habilidad("Esconderse", Sigilo, 20));
+
+    this.setHabilidad(new HabilidadMarcial("Puño",  Manipulación, 50));
+    this.setHabilidad(new HabilidadMarcial("Patada",  Manipulación, 20));
+    this.setHabilidad(new HabilidadMarcial("Mordisco",  Manipulación, 20));
+
+
 
   }
 }

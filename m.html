@@ -86,12 +86,12 @@
 
 
 
-  .full.open{
-    width: 100%;
-    max-height: 100%;
-    height: 100%;
-    top: 0 !important;
-}
+        .full.open {
+            width: 100%;
+            max-height: 100%;
+            height: 100%;
+            top: 0 !important;
+        }
 
 
 
@@ -178,6 +178,42 @@
         h2 {
             font-family: MediciText;
         }
+
+        .gold {
+            background: radial-gradient(ellipse farthest-corner at right bottom, #FEDB37 0%, #FDB931 8%, #9f7928 30%, #8A6E2F 40%, transparent 80%),
+                radial-gradient(ellipse farthest-corner at left top, #FFFFFF 0%, #FFFFAC 8%, #D1B464 25%, #5d4a1f 62.5%, #5d4a1f 100%);
+            color: white !important;
+            display: inline !important;
+            font-weight: bold;
+
+        }
+
+        .selec {
+            background: linear-gradient(315deg, #b8d0e0 0%, #a6afb9 54%, #b8d0e0 80%);
+        }
+
+        .metal {
+            background: linear-gradient(180deg, hsl(0, 0%, 78%) 0%,
+                    hsl(0, 0%, 90%) 47%,
+                    hsl(0, 0%, 78%) 53%,
+                    hsl(0, 0%, 70%)100%);
+                    color: black !important;
+                    font-weight: bold;
+        }
+
+        .circulo {
+    display: inline-block;
+    min-width: 2em; /* em unit */
+    padding: .3em; /* em unit */
+    border-radius: 50%;
+    /* font-size: 75px; */
+    text-align: center;
+    background: #1779ba;
+    /* font-weight: bold; */
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 70%;
+    color: #fefefe;
+}
     </style>
 
 </head>
@@ -198,7 +234,7 @@
                 <!-- <li><a onclick="toogle('new')"><i class="material-icons">add</i></a></li> -->
                 <li><a onclick="toogle()"><i class="material-icons">search</i></a></li>
                 <li><a onclick="pantalla()"><i class="material-icons">fullscreen</i></a></li>
-                <li><a onclick="changeOnline()" ><i id="wifi-bar" class="material-icons">wifi</i></a></li>
+                <li><a onclick="changeOnline()"><i id="wifi-bar" class="material-icons">wifi</i></a></li>
             </ul>
             <ul id="nav-mobile" class="right hide-on-med-and-down">
                 <li><a href="dados.html">Dados</a></li>
@@ -216,14 +252,13 @@
         <div class="nav-content">
             <ul class="tabs tabs-transparent black">
                 <li class="tab dark"><a class="active" href="#personaje">Personaje</a></li>
-                <li class="tab dark"><a  href="#habilidades">Habilidades</a></li>
+                <li class="tab dark"><a href="#habilidades">Habilidades</a></li>
                 <li class="tab dark"><a href="#inventario">Inventario</a></li>
                 <li class="tab dark"><a href="#test4">Test 4</a></li>
 
             </ul>
 
-            <a class="btn-floating btn-small halfway-fab waves-effect waves-light red  accent-4"
-                onclick="save()">
+            <a class="btn-floating btn-small halfway-fab waves-effect waves-light red  accent-4" onclick="save()">
                 <i class="material-icons">save</i>
             </a>
             <a class="btn-floating btn-small halfway-fab waves-effect waves-light teal" style=" 
@@ -291,9 +326,8 @@
         <li>
             <!-- <select id="listas" class="bootstrap-select" onchange="cargarLista()" data-live-search="true"
             data-style="btn-primary"></select> -->
-            <li><a>
-                <i id='wifi'
-                class="material-icons">wifi</i>Online
+        <li><a>
+                <i id='wifi' class="material-icons">wifi</i>Online
                 <span class="switch">
                     <label>
                         <input id="cbOnline" type="checkbox" onchange="changeOnline()" checked></input>
@@ -301,9 +335,9 @@
                     </label>
                 </span>
             </a></li>
-            
+
         </li>
-        <li> <a><input class="form-control" type="datetime-local" id="fechaMundo" onblur="alert(this.value)" ></a> </li>
+        <li> <a><input class="form-control" type="datetime-local" id="fechaMundo" onblur="alert(this.value)"></a> </li>
         <li>
             <div class="divider"></div>
         </li>
@@ -357,10 +391,12 @@
                     <div class="input-field inline"><input id="iRaza" type="text"><label for="iRaza">Raza</label>
                     </div>
                     <!-- <label id="btRaza" class="btn btn-light" onclick="$('#iRaza').val(pj.clase);alert(pj.clase)">Raza</label> -->
-                    <div class="input-field inline"><input id="iPeso" type="number" onchange="pj.nombre=this.value"><label for="iPeso">Peso</label>
+                    <div class="input-field inline"><input id="iPeso" type="number"
+                            onchange="pj.nombre=this.value"><label for="iPeso">Peso</label>
                     </div>
                     <!-- <label id="btPeso" class="btn btn-light" onclick="$('#iPeso').val(pj.peso);alert(pj.peso)">Peso</label> -->
-                    <div class="input-field inline"><input id="iEdad" type="number" onchange="pj.edad=this.value"><label for="iEdad">Edad</label>
+                    <div class="input-field inline"><input id="iEdad" type="number" onchange="pj.edad=this.value"><label
+                            for="iEdad">Edad</label>
                     </div>
 
 
@@ -481,29 +517,30 @@
         <li class="tab col s3"><a href="#test-swipe-1">Habilidades</a></li>
         <li class="tab col s3"><a class="active" href="#test-swipe-2">Personaje</a></li>
         <li class="tab col s3"><a href="#test-swipe-3">Enemigo</a></li>
+        <li class="tab col s3"><a href="#swMagia">Magia</a></li>
     </ul>
     <div id="test-swipe-1" class="fade">
         <h2>Habilidades</h2>
         <!-- <input type="datetime-local" id="meeting-time" name="meeting-time" value="0778-06-12T19:30"
             min="0777-06-07T00:00" max="0779-06-14T00:00"> -->
-            <div class="row">
-                <select class="selectpicker col s6" id="columnasMarcial" multiple data-live-search="true" data-width="fit" multiple
-                    title="Seleccione columnas a mostrar">
-                    <option selected>nombre</option>
-                    <option>xp</option>
-                    <option>tipo</option>
-                    <option selected>valor</option>
-                </select>
-            </div>
-            <table class="table table-hover">
-                <thead id="header">
-                    <!-- <th>Habilidad</th>
+        <div class="row">
+            <select class="selectpicker col s6" id="columnasMarcial" multiple data-live-search="true" data-width="fit"
+                multiple title="Seleccione columnas a mostrar">
+                <option selected>nombre</option>
+                <option>xp</option>
+                <option>tipo</option>
+                <option selected>valor</option>
+            </select>
+        </div>
+        <table class="table table-hover">
+            <thead id="header">
+                <!-- <th>Habilidad</th>
                   <th>Tipo</th>
                   <th>Valor</th> -->
-                </thead>
-                <tbody id="tbHabMarciales"></tbody>
-            </table>
-    
+            </thead>
+            <tbody id="tbHabMarciales"></tbody>
+        </table>
+
         <div class="fixed-action-btn">
             <a class="btn-floating btn-large black">
                 <i class="large material-icons">mode_edit</i>
@@ -521,7 +558,6 @@
     </div>
     <div id="test-swipe-2" class="col s12 ">
         <div id="atPJ"></div>
-
     </div>
     <div id="test-swipe-3" class="col s12 ">
         <div class="col-md-6">
@@ -541,10 +577,20 @@
         <div id="atPNJ"></div>
     </div>
 
-    <h2>Medici Text</h2>
+    <div id="swMagia" class="col s12 ">
+        <div class="card-body">
+            <div id="artes"></div>
+
+            <p class="card-text"><small class="text-muted">Personaje enemigo al que atacar</small></p>
+            <div id="atPNJ"></div>
+        </div>
+    </div>
+
+
+    <!-- <h2>Medici Text</h2>
     <h5>Friedolin</h5>
     <div>
-    </div>
+    </div> -->
 
 
 
@@ -556,7 +602,7 @@
     <!-- Modal Structure -->
     <div id="mCuerpo" class="modal full">
         <span class="close modal-close">&times;</span>
-        <div class="modal-content black" >
+        <div class="modal-content black">
             <!-- <img id="cuerpo" src="Body.png" alt="Cuerpo"> -->
             <canvas id="canvas" width="500" height="900" style="background-color: black;">
                 Your browser does not support the HTML5 canvas tag.</canvas>
@@ -568,16 +614,16 @@
 
     <div id="modal" class="modal">
         <span class="close modal-close">&times;</span>
-        <div  class="modal-content center-align " id="ctModal">
+        <div class="modal-content center-align " id="ctModal">
             <!-- <img id="cuerpo" src="img/Dragon.jpg" alt="Cuerpo"> -->
             <input-habilidad id='ihModal'>
-            <!-- <input-subir id='ihModal'> -->
-            
+                <!-- <input-subir id='ihModal'> -->
+
         </div>
         <!-- <div class="modal-footer">
             <a href="" class="modal-close waves-effect waves-green btn-flat">Cerrar</a>
         </div> -->
-        
+
     </div>
 
 
@@ -651,7 +697,7 @@
             $('.collapsible').collapsible();
             // $('.datepicker').datepicker();
             // $('.timepicker').timepicker();
-           
+
             // $(".dropdown-content.select-dropdown > li span").addClass('dark')
             // $(".dropdown-content.select-dropdown > li span").css("background-color", "black");
             // $(".dropdown-content.select-dropdown > li span").css("color", "white");
