@@ -15,7 +15,20 @@
         }
 
         .icon-black {
-            filter: invert(100%) sepia(31%) saturate(2878%) hue-rotate(346deg);
+            filter: invert(100%);
+        }
+
+        .icon-black:hover {
+            /* red */
+            /* -webkit-filter: invert(100%) grayscale(100%) brightness(40%) sepia(100%) hue-rotate(-50deg) saturate(400%) contrast(2);
+            filter: invert(100%) grayscale(100%) brightness(20%) sepia(100%) hue-rotate(-50deg) saturate(700%) contrast(0.8); */
+
+            transform: rotate(90deg);
+
+
+            -webkit-filter: grayscale(100%) brightness(40%) sepia(100%) hue-rotate(50deg) saturate(1000%) contrast(0.8);
+            filter: invert(100%) grayscale(100%) brightness(40%) sepia(100%) hue-rotate(50deg) saturate(1000%) contrast(0.8);
+
         }
 
         img {
@@ -75,6 +88,10 @@
         <select ng-model="selectedHab" ng-options="x.nombre for x in p.habilidades">
         </select>
 
+        <md-button class="md-fab md-primary" aria-label="Use Android">
+            <md-icon md-svg-src="img/blue-shield.svg"></md-icon>
+        </md-button>
+
         <md-input-container>
             <label>Title</label>
             <input ng-model="p.nombre" onclick="select()">
@@ -107,9 +124,11 @@
             <md-tabs md-dynamic-height md-border-bottom>
                 <md-tab label="one">
                     <md-content class="md-padding">
-                        <div  ng-click="atrasInventario()">Atrás</div>
+                        <div ng-click="atrasInventario()">Atrás</div>
                         Inventario en {{contenedor.nombre}}
-                        <div ng-repeat="o in contenedor.objetos"  ng-click="abreContenedor(o)">
+                        <div ng-repeat="o in contenedor.objetos">
+                            <span ng-if="esContenedor(o)" ng-click="abreContenedor(o)"> <img class='icon-black'
+                                    src="img/box-open-solid.svg" width="16" height="16"></span>
                             <md-input-container>
                                 <label>Nombre</label>
                                 <input ng-model="o.nombre" onclick="select()">
@@ -118,8 +137,8 @@
                                 <label>Peso</label>
                                 <input type="number" ng-model="o.peso" onclick="select()">
                             </md-input-container>
-                            
-                                <!-- <div ng-repeat="oo in o.objetos" ng-if="o.constructor.name ==='Contenedor'">
+
+                            <!-- <div ng-repeat="oo in o.objetos" ng-if="o.constructor.name ==='Contenedor'">
                                     <md-input-container>
                                         <label>Nombre</label>
                                         <input ng-model="oo.nombre" onclick="select()">
@@ -129,20 +148,14 @@
                                         <input type="number" ng-model="oo.peso" onclick="select()">
                                     </md-input-container>
                                 </div> -->
-                           
 
                         </div>
                         <md-input-container>
                             <label>Total</label>
-                            <input ng-model="p.inventario.pesa" onclick="select()">
+                            <input ng-model="contenedor.pesa">
                         </md-input-container>
 
 
-                        <ul>
-                            <li ng-repeat="o in p.inventario.objetos">
-                                {{o.nombre}} : {{o.peso}}
-                            </li>
-                        </ul>
                     </md-content>
                 </md-tab>
                 <md-tab label="Habilidades">

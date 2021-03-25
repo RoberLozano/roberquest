@@ -272,7 +272,7 @@ rolApp.controller('rolController', function ($scope) {
     $scope.nombre['valor'] = 'Valor'
     $scope.nombre['bh'] = 'Bon'
     $scope.nombre['v'] = 'Total'
-
+    $scope.i_shield='img/shield.svg'
     $scope.contenedor=pj.inventario;
     $scope.historialContenedor=[pj.inventario]
 
@@ -282,12 +282,17 @@ rolApp.controller('rolController', function ($scope) {
         if(c instanceof Contenedor){
             $scope.contenedor=c;
             $scope.historialContenedor.push(c);
-        }
-        
+        } 
     }
 
+    $scope.esContenedor = function (c) {
+    return (c instanceof Contenedor)
+    }
+
+
+
     $scope.atrasInventario= function () {
-        if( $scope.historialContenedor.length>1);
+        if( $scope.historialContenedor.length<=1) return;
         $scope.historialContenedor.pop()
         $scope.contenedor= $scope.historialContenedor[$scope.historialContenedor.length - 1]
     }
