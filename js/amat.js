@@ -254,8 +254,44 @@ class MatAngHabilidad extends HTMLElement {
     }
 }
 
+//Input de clase
+class MatInputCustom extends HTMLElement{
+    constructor(clase, lista){
+      super();
+      let i= 'input';
+      var html='';
+
+      var scope = angular.element(document.getElementById('app')).scope();
+      scope.$apply(function () {
+          scope.clase = clase; 
+      });
+  
+  
+      for (let key in clase){
+        if (lista?.includes(key)|| !lista){
+          console.log( typeof clase[key]);
+          // if (clase[key] instanceof Number) {
+          if (typeof clase[key]==='number') {
+            html+= `<${i} type='number' value='${clase[key]}'>`
+          } else {
+            html+= `${key}<${i}  value='${clase[key]}'>`
+            console.log('por hacer...');
+          }
+        }
+      }
+  
+      var div=document.createElement('div');
+      div.innerHTML= html;
+      this.appendChild(div);
+  
+    }
+  }
+
 customElements.define('mi-hab', MiHab);
 customElements.define('in-habilidad', MatAngHabilidad);
+customElements.define('in-mat-custom', MatInputCustom);
+
+
 guerrero(pj,20);
 pj.setHabilidad(new Hechizo('Volar',6))
 pj.act();
@@ -275,6 +311,8 @@ rolApp.controller('rolController', function ($scope) {
     $scope.i_shield='img/shield.svg'
     $scope.contenedor=pj.inventario;
     $scope.historialContenedor=[pj.inventario]
+    $scope.fecha=fechaMundo;
+
 
 
     $scope.abreContenedor = function (c) {
@@ -340,6 +378,8 @@ function act() {
 
 
 }
+
+
 
 // function cargar(nombre) {
 //     let objeto=ls(nombre)

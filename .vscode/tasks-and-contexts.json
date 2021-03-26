@@ -79,9 +79,9 @@
         "c63ae6dd4fc9f9dda66970e827d13f7c73fe841c": {
           "name": "M",
           "data": [
-            "c:\\GitHub\\roberquest\\m.html",
-            "c:\\GitHub\\roberquest\\js\\iu.js",
-            "c:\\GitHub\\roberquest\\js\\habilidades.js"
+            "c:\\GitHub\\roberquest\\ex.js",
+            "c:\\GitHub\\roberquest\\js\\habilidades.js",
+            "c:\\GitHub\\roberquest\\m.html"
           ]
         },
         "519707b8c767c58edf9a8a8c4fb9daa7fe9341bd": {
@@ -113,7 +113,7 @@
         "a08e11119aefc863a42db70003513594d2824191": {
           "name": "Excel",
           "data": [
-            "c:\\GitHub\\roberquest\\js\\habilidades.js",
+            "c:\\GitHub\\roberquest\\js\\amat.js",
             "c:\\GitHub\\roberquest\\js\\rol.js",
             "c:\\GitHub\\roberquest\\excel.htm"
           ]
@@ -121,15 +121,8 @@
         "54e0c177acca401a573a8c0614f65dee6d9008ce": {
           "name": "angular",
           "data": [
-            "c:\\GitHub\\roberquest\\amat.html",
-            "c:\\GitHub\\roberquest\\js\\utils.js",
-            "c:\\GitHub\\roberquest\\js\\rol.js",
             "c:\\GitHub\\roberquest\\js\\amat.js",
-            "c:\\GitHub\\roberquest\\js\\habilidades.js",
-            "c:\\GitHub\\roberquest\\angular.html",
-            "c:\\GitHub\\roberquest\\js\\iu.js",
-            "c:\\Program Files\\Microsoft VS Code\\resources\\app\\extensions\\node_modules\\typescript\\lib\\lib.dom.d.ts",
-            "c:\\GitHub\\roberquest\\img\\box-open-solid.svg"
+            "c:\\GitHub\\roberquest\\amat.html"
           ]
         }
       }

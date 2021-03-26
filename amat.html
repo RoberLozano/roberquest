@@ -63,6 +63,10 @@
 
         }
 
+        ::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+}
+
         /* .icon {
             position: relative;
             vertical-align: top;  
@@ -116,9 +120,10 @@
 
 
 
-        <md-datepicker ng-model="ctrl.myDate" md-placeholder="Enter date"
-            input-aria-describedby="datepicker-description" input-aria-labelledby="datepicker-header "></md-datepicker>
-        <input type="datetime-local" id="birthdaytime" name="birthdaytime">
+        <md-datepicker ng-model="fecha" md-placeholder="Enter date"
+            input-aria-describedby="datepicker-description" input-aria-labelledby="datepicker-header " value=></md-datepicker>
+        <input type="datetime-local" ng-model="fecha" id="birthdaytime" name="birthdaytime">
+        <input type=datetime-local  ng-model="fecha" value="2013-10-24T20:36:00" step="1">
 
         <md-content>
             <md-tabs md-dynamic-height md-border-bottom>

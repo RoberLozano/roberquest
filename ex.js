@@ -612,6 +612,24 @@ console.log(d);
 r.cuerpo.dañarLocalizacion(3,7);
 r.cambiaformas(d)
 
+var salida=document.getElementById('inputs');
+
+class C1 {
+    constructor(a,b,c,d) {
+			this.a = a
+      this.b = b
+      this.c = c
+      this.d = d
+
+  }
+}
+
+var c1 = new C1(1,'2',3,'Rober');
+var ic= new InputCustom(c1,['a','b','d']);
+var ic2= new InputCustom(c1);
+salida.appendChild(ic);
+salida.appendChild(ic2);
+
 // let resultados = [];
 // for (let i = 0; i <= 100; i++)
 // 	resultados[i] = 0;
