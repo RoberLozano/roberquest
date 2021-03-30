@@ -113,16 +113,25 @@
         "a08e11119aefc863a42db70003513594d2824191": {
           "name": "Excel",
           "data": [
+            "c:\\GitHub\\roberquest\\excel.htm",
             "c:\\GitHub\\roberquest\\js\\amat.js",
-            "c:\\GitHub\\roberquest\\js\\rol.js",
-            "c:\\GitHub\\roberquest\\excel.htm"
+            "c:\\GitHub\\roberquest\\js\\rol.js"
           ]
         },
         "54e0c177acca401a573a8c0614f65dee6d9008ce": {
           "name": "angular",
           "data": [
             "c:\\GitHub\\roberquest\\js\\amat.js",
-            "c:\\GitHub\\roberquest\\amat.html"
+            "c:\\GitHub\\roberquest\\amat.html",
+            "c:\\GitHub\\roberquest\\js\\iu.js",
+            "c:\\GitHub\\roberquest\\js\\utils.js",
+            "c:\\Program Files\\Microsoft VS Code\\resources\\app\\extensions\\node_modules\\typescript\\lib\\lib.es5.d.ts",
+            "c:\\Program Files\\Microsoft VS Code\\resources\\app\\extensions\\node_modules\\typescript\\lib\\lib.dom.d.ts",
+            "c:\\GitHub\\roberquest\\angularjs\\angular.min.js",
+            "c:\\GitHub\\roberquest\\angularjs\\angular-animate.min.js",
+            "c:\\GitHub\\roberquest\\angularjs\\angular-messages.min.js",
+            "c:\\GitHub\\roberquest\\angularjs\\angular-aria.min.js",
+            "c:\\GitHub\\roberquest\\angularjs\\angular-material.min.js"
           ]
         }
       }

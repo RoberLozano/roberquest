@@ -9,10 +9,15 @@ function isNumber(value) {
   else
     return !isNaN(value);
 }
-
+/**Guarda o consulta un objeto en LocalStorage con JSON
+ * 
+ * @param {String} nombre Nombre del objeto
+ * @param {Object|null} valor El valor a guardar del objero o nada para que lo devuelva
+ * @returns El objeto guardado si no se ha indicado valor
+ */
 function ls(nombre, valor) {
-  // body...
   if (valor) {
+    console.log( JSON.stringify(valor));
     localStorage.setItem(nombre, JSON.stringify(valor))
   }
   else {

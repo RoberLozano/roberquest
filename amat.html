@@ -1,8 +1,8 @@
 <head>
     <meta charset='utf-8'>
     <!-- Angular Material CSS now available via Google CDN; version 1.2.1 used here -->
-    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.2.2/angular-material.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <link rel="stylesheet" href="angularjs/angular-material.min.css">
+    <script src="angularjs/angular.min.js"></script>
     <style>
         input,
         textarea,
@@ -78,35 +78,51 @@
 
     <!-- Angular Material Dependencies -->
 
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-animate.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-aria.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-messages.min.js"></script>
+    <script src="angularjs/angular-animate.min.js"></script>
+    <script src="angularjs/angular-aria.min.js"></script>
+    <script src="angularjs/angular-messages.min.js"></script>
 
     <!-- Angular Material Javascript now available via Google CDN; version 1.2.1 used here -->
-    <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.2.2/angular-material.min.js"></script>
+    <script src="angularjs/angular-material.min.js"></script>
 
 
     <div id='app' ng-app="rolApp" ng-controller="rolController">
 
 
-        <select ng-model="selectedHab" ng-options="x.nombre for x in p.habilidades">
-        </select>
+        <!-- <select ng-model="sel.pj" ng-options="x for x in listaPersonajes" ng-change="cargar(sel.pj)">
+        </select> -->
+        
+            <label> Personaje
+         <input type="text" list="dataList" ng-model="sel.pj" ng-change="cargar(sel.pj)">
+            </label>
+            <datalist id="dataList">
+              <option ng-repeat="x in listaPersonajes" value="{{x}}"></option>
+            </datalist>
+            
 
-        <md-button class="md-fab md-primary" aria-label="Use Android">
-            <md-icon md-svg-src="img/blue-shield.svg"></md-icon>
+        <!-- <md-select ng-model="sel.pj" ng-options="x for x in listaPersonajes" ng-change="cargar(sel.pj)">
+        </md-select> -->
+
+        <md-select ng-model="sel.pj" ng-change="cargar(sel.pj)"  placeholder="Personaje a cargar" class="md-no-underline">
+            <md-option ng-repeat="nombre in listaPersonajes" ng-value="nombre" >
+              {{nombre}}
+            </md-option>
+          </md-select>
+
+        <!-- <md-button class="md-fab md-primary" aria-label="Use Android">
+            <img src="img/magic-wand.svg">
         </md-button>
 
         <md-input-container>
             <label>Title</label>
             <input ng-model="p.nombre" onclick="select()">
-        </md-input-container>
+        </md-input-container> -->
         <div>
             Habilidades<br>
             <mi-hab nombre='Esquivar'></mi-hab>
             <in-habilidad id="h1" filtro="h.tipo==='Agilidad'"></in-habilidad>
             <in-habilidad id="h2" clase="Hechizo" img='img/magic-wand-aqua.svg'></in-habilidad>
             <in-habilidad id="h12" clase="HabilidadMarcial" img='img/shield.svg'></in-habilidad>
-
             <in-habilidad id="h3" img='img/magic-wand-aqua.svg'></in-habilidad>
 
             <!-- <in-habilidad>
@@ -118,12 +134,10 @@
 
         </div>
 
-
-
-        <md-datepicker ng-model="fecha" md-placeholder="Enter date"
+        <!-- <md-datepicker ng-model="fecha" md-placeholder="Enter date"
             input-aria-describedby="datepicker-description" input-aria-labelledby="datepicker-header " value=></md-datepicker>
-        <input type="datetime-local" ng-model="fecha" id="birthdaytime" name="birthdaytime">
-        <input type=datetime-local  ng-model="fecha" value="2013-10-24T20:36:00" step="1">
+        <input type="datetime-local" ng-model="fecha" id="birthdaytime" name="birthdaytime"> -->
+        <input type=datetime-local  ng-model="fecha"  step="1">
 
         <md-content>
             <md-tabs md-dynamic-height md-border-bottom>
@@ -159,25 +173,22 @@
                             <label>Total</label>
                             <input ng-model="contenedor.pesa">
                         </md-input-container>
-
-
                     </md-content>
                 </md-tab>
                 <md-tab label="Habilidades">
                     <md-content class="md-padding">
                         <md-select id='columnas' ng-model="colHab" placeholder="Visibles" class="md-no-underline"
-                            required md-no-asterisk="false" multiple>
+                            required md-no-asterisk="false" multiple style=" font-variant: small-caps">
                             <md-option value='nombre' selected>{{nombre['nombre']}}</md-option>
-                            <md-option value='xp'>{{nombre['xp']}}</md-option>
-                            <md-option value='valor'> {{nombre['valor']}}</md-option>
-                            <md-option value='bh'> {{nombre['bh']}}</md-option>
-                            <md-option value='v'> {{nombre['v']}}</md-option>
+                            <md-option value='xp' selected>{{nombre['xp']}}</md-option>
+                            <md-option value='valor' selected> {{nombre['valor']}}</md-option>
+                            <md-option value='bh' selected> {{nombre['bh']}}</md-option>
+                            <md-option value='v' selected> {{nombre['v']}}</md-option>
                         </md-select>
-                        <button onclick="document.getElementById('columnas').select;"></button>
                         <input type="text" ng-model="buscar">
                         <table>
                             <tr>
-                                <th ng-repeat='c in colHab' visible='false'>
+                                <th ng-repeat='c in colHab' visible='false' style=" font-variant: small-caps">
                                     {{nombre[c]}}
                                 </th>
                             </tr>
@@ -186,13 +197,15 @@
                                     <span ng-if="c==='nombre'">
                                         <span ng-switch="subject.constructor.name">
                                             <span ng-switch-when="Hechizo">
-                                                {{subject[c]}}
+                                                {{subject[c]}} <img class='icon-black' src="img/magic-wand.svg"
+                                                width="16" height="16">
                                             </span>
                                             <span ng-switch-when="Habilidad">
-                                                {{subject[c]}} <img class='icon-black' src="img/magic-wand.svg"
-                                                    width="16" height="16">
+                                                {{subject[c]}} 
                                             </span>
                                             <span ng-switch-when="HabilidadMarcial">
+                                                {{subject[c]}}  <img class='icon-black' src="img/sword.svg"
+                                                width="16" height="16">
                                             </span>
                                             <span ng-switch-default>
                                                 {{subject[c]}}
@@ -214,6 +227,19 @@
                             <td>{{ subject.v }}</td> -->
                             </tr>
                         </table>
+                    </md-content>
+                </md-tab>
+                <md-tab label="Magia">
+                    <md-content class="md-padding">
+                        
+                        <in-habilidad id="in-hechizo" clase="Hechizo" img='img/magic-wand-aqua.svg'></in-habilidad>
+                        <in-habilidad id="magias" filtro="h.tipo==='Magia'"></in-habilidad>
+                    </md-content>
+                </md-tab>
+                <md-tab label="Habilidades Mat">
+                    <md-content class="md-padding" ng-repeat="x in p.habilidades">
+                        {{x.nombre}} <br>
+                            <mi-hab nombre="{{x.nombre}}" > </mi-hab>    
                     </md-content>
                 </md-tab>
                 <md-tab label="data">
@@ -309,8 +335,13 @@
         </table>
 
 
+       
 
     </div>
+    <md-button class="md-fab md-fab-bottom-right" aria-label="Add a category">
+        <md-icon>add</md-icon>
+      </md-button>
+    <button class="md-fab md-fab-bottom-right docs-scroll-fab md-button md-ink-ripple scrolling" type="button" ng-transclude="" docs-scroll-class="scrolling"  aria-label="Back to Top"></button>
 
 
 

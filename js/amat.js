@@ -3,6 +3,7 @@ class MiHab extends HTMLElement {
         // If you define a constructor, always call super() first!
         // This is specific to CE and required by the spec.
         super();
+        // if (this.hasAttribute('nombre')) console.log('Nombre de MiHab:',this.getAttribute('nombre'));
 
     }
 
@@ -21,24 +22,71 @@ class MiHab extends HTMLElement {
 
     }
 
-    connectedCallback() {
+    attributeChangedCallback(name, oldValue, newValue) {
+        console.log(name+' cambiado');
+        this.html();
+      }
+
+    html(){
+        console.log('Nuevo html'+this.nombre);
         this.innerHTML =
-            `
-            <md-input-container>
-                <label>${this.nombre}</label>
-                <input type='number' ng-model="p.habilidades['${this.nombre}'].v">
-            </md-input-container>
-            <md-input-container>
-                <label>Dado</label>
-                <span id="dado${this.nombre}"> <img src="img/10_sided_die.svg"></img></span>
-                <input  id="iDado${this.nombre}" type='number' style="width: 2.3em;">
-            </md-input-container>
-            `
+        `nombre <input ng-model="p.getHabilidad('${this.nombre}').nombre">
+        valor <input ng-model="p.habilidades['${this.nombre}'].valor">
+        total <input ng-model="p.habilidades['${this.nombre}'].v">
+       `
+        
+    }
+    connectedCallback() {
+        console.log('CC html'+this.nombre);
+        this.innerHTML =
+            // `<div>
+            // <md-input-container>
+            //     <label>Habilidad</label>
+            //     <input ng-model="p.habilidades['${this.nombre}'].nombre">
+            // </md-input-container>
+            // <md-input-container>
+            //     <label>Valor</label>
+            //     <input type='number' style="width: 4em;" ng-model="p.habilidades['${this.nombre}'].v">
+            // </md-input-container>
+            // </div>
+            // `
 
-        document.getElementById(`dado${this.nombre}`).addEventListener('click', e => {
+            `nombre <input ng-model="p.habilidades['${this.nombre}'].nombre">
+             valor <input ng-model="p.habilidades['${this.nombre}'].valor">
+             total <input ng-model="p.habilidades['${this.nombre}'].v">
+            `
+        //     `<md-content  layout-gt-sm="row" layout-padding>
+        //     <div>
+        //       <md-input-container>
+        //         <label>Habilidad</label>
+        //         <input ng-model="p.habilidades['${this.nombre}'].nombre" style="width: 13em;">
+        //       </md-input-container>
+        
+        //       <md-input-container>
+        //         <label>Valor</label>
+        //         <input ng-model="p.habilidades['${this.nombre}'].valor"  style="width: 4em;" type="number">
+        //       </md-input-container>
 
-            document.getElementById(`iDado${this.nombre}`).value = Math.floor(Math.random() * 100 + 1);
-        });
+        //       <md-input-container>
+        //       <label>Total</label>
+        //       <input ng-model="p.habilidades['${this.nombre}'].v"  style="width: 4em;" type="number">
+        //     </md-input-container>
+
+        //     </div>
+        //   </md-content>`
+
+
+
+        //     `<label>Dado</label>
+        //     <span id="dado${this.nombre}"> <img src="img/10_sided_die.svg"></img></span>
+        //     <input  id="iDado${this.nombre}" type='number' style="width: 2.3em;">
+        // </md-input-container>
+        // `
+
+        // document.getElementById(`dado${this.nombre}`).addEventListener('click', e => {
+
+        //     document.getElementById(`iDado${this.nombre}`).value = Math.floor(Math.random() * 100 + 1);
+        // });
     }
 }
 
@@ -65,7 +113,7 @@ class MatAngHabilidad extends HTMLElement {
         this.label.setAttribute("value", this.habilidad.nombre);
         // this.label.readOnly = true;
         this.label.addEventListener('change', (event) => {
-            if(!this.personaje) return;
+            if (!this.personaje) return;
             console.log(this.personaje.habilidades[event.target.value]);
             // console.log(pj.habilidades[event.target.value]);
             this.setHabilidad(this.personaje.habilidades[event.target.value])
@@ -156,10 +204,10 @@ class MatAngHabilidad extends HTMLElement {
         //     // options += `<option value="${h.nombre}"></option>`
         //    
         // });
-        if(this.clase)
-        options = ` <option ng-repeat='h in p.getClaseHabilidad("${this.clase}")'>{{h.nombre}}</option>`
+        if (this.clase)
+            options = ` <option ng-repeat='h in p.getClaseHabilidad("${this.clase}")'>{{h.nombre}}</option>`
         else
-        options = ` <option ng-repeat='h in p.getHabilidades()'>{{h.nombre}}</option>`
+            options = ` <option ng-repeat='h in p.getHabilidades()'>{{h.nombre}}</option>`
 
 
 
@@ -177,19 +225,19 @@ class MatAngHabilidad extends HTMLElement {
         // array.sort(function (a, b) {
         //     return a.v - b.v;
         // });
-        
+
         if (this.filtro)
             // this.lista("listaHab" + personaje.nombre, this.personaje.getHabilidades(h => (h.constructor.name===this.filtro)));
-            array = this.personaje.getHabilidades(h => (eval(this.filtro))) 
+            array = this.personaje.getHabilidades(h => (eval(this.filtro)))
         else
             array = this.personaje.getHabilidades()
-            console.log(array.map((task) => task.nombre ));
-            this.lista("listaHab" + this.id, array);
+        console.log(array.map((task) => task.nombre));
+        this.lista("listaHab" + this.id, array);
         // this.h = array[0];
 
     }
 
-    
+
 
     set h(habilidad) {
         this.setHabilidad(habilidad);
@@ -210,13 +258,13 @@ class MatAngHabilidad extends HTMLElement {
         this.label.setAttribute("value", this.habilidad.nombre);
         this.porcentaje.setAttribute("value", this.habilidad.v);
         this.porcentaje.value = this.habilidad.v;
-        
-        this.ok.src = this.habilidad.ataque ? 'img/sword.svg' : 'img/check.svg';
+
+        // this.ok.src = this.habilidad.ataque ? 'img/sword.svg' : 'img/check.svg';
     }
 
-    reset(){
+    reset() {
         if (this._habilidad)
-        this.habilidad.valor=this._habilidad.valor
+            this.habilidad.valor = this._habilidad.valor
     }
 
     act(input) {
@@ -255,50 +303,53 @@ class MatAngHabilidad extends HTMLElement {
 }
 
 //Input de clase
-class MatInputCustom extends HTMLElement{
-    constructor(clase, lista){
-      super();
-      let i= 'input';
-      var html='';
+class MatInputCustom extends HTMLElement {
+    constructor(clase, lista) {
+        super();
+        let i = 'input';
+        var html = '';
 
-      var scope = angular.element(document.getElementById('app')).scope();
-      scope.$apply(function () {
-          scope.clase = clase; 
-      });
-  
-  
-      for (let key in clase){
-        if (lista?.includes(key)|| !lista){
-          console.log( typeof clase[key]);
-          // if (clase[key] instanceof Number) {
-          if (typeof clase[key]==='number') {
-            html+= `<${i} type='number' value='${clase[key]}'>`
-          } else {
-            html+= `${key}<${i}  value='${clase[key]}'>`
-            console.log('por hacer...');
-          }
+        var scope = angular.element(document.getElementById('app')).scope();
+        scope.$apply(function () {
+            scope.clase = clase;
+        });
+
+
+        for (let key in clase) {
+            if (lista?.includes(key) || !lista) {
+                console.log(typeof clase[key]);
+                // if (clase[key] instanceof Number) {
+                if (typeof clase[key] === 'number') {
+                    html += `<${i} type='number' value='${clase[key]}'>`
+                } else {
+                    html += `${key}<${i}  value='${clase[key]}'>`
+                    console.log('por hacer...');
+                }
+            }
         }
-      }
-  
-      var div=document.createElement('div');
-      div.innerHTML= html;
-      this.appendChild(div);
-  
+
+        var div = document.createElement('div');
+        div.innerHTML = html;
+        this.appendChild(div);
+
     }
-  }
+}
 
 customElements.define('mi-hab', MiHab);
 customElements.define('in-habilidad', MatAngHabilidad);
 customElements.define('in-mat-custom', MatInputCustom);
 
 
-guerrero(pj,20);
-pj.setHabilidad(new Hechizo('Volar',6))
+guerrero(pj, 20);
+pj.setHabilidad(new Hechizo('Volar', 6))
 pj.act();
 
 // Include app dependency on ngMaterial
 var rolApp = angular.module('rolApp', ['ngMaterial', 'ngMessages']);
 rolApp.controller('rolController', function ($scope) {
+
+    $scope.listaPersonajes = listaPersonajes();
+    console.log($scope.listaPersonajes);
     $scope.p = pj;
     $scope.CP = CP;
     $scope.TH = TipoHabilidades;
@@ -308,31 +359,36 @@ rolApp.controller('rolController', function ($scope) {
     $scope.nombre['valor'] = 'Valor'
     $scope.nombre['bh'] = 'Bon'
     $scope.nombre['v'] = 'Total'
-    $scope.i_shield='img/shield.svg'
-    $scope.contenedor=pj.inventario;
-    $scope.historialContenedor=[pj.inventario]
-    $scope.fecha=fechaMundo;
+    $scope.i_shield = 'img/shield.svg'
+    $scope.contenedor = pj.inventario;
+    $scope.historialContenedor = [pj.inventario]
+    $scope.fecha = fechaMundo;
 
 
+    $scope.cargar = function (c) {
+        console.log('HACE EL CHANGE DE ' + c);
+        load(c)
+        $scope.p = pj;
+    }
 
     $scope.abreContenedor = function (c) {
         console.log(c);
-        if(c instanceof Contenedor){
-            $scope.contenedor=c;
+        if (c instanceof Contenedor) {
+            $scope.contenedor = c;
             $scope.historialContenedor.push(c);
-        } 
+        }
     }
 
     $scope.esContenedor = function (c) {
-    return (c instanceof Contenedor)
+        return (c instanceof Contenedor)
     }
 
 
 
-    $scope.atrasInventario= function () {
-        if( $scope.historialContenedor.length<=1) return;
+    $scope.atrasInventario = function () {
+        if ($scope.historialContenedor.length <= 1) return;
         $scope.historialContenedor.pop()
-        $scope.contenedor= $scope.historialContenedor[$scope.historialContenedor.length - 1]
+        $scope.contenedor = $scope.historialContenedor[$scope.historialContenedor.length - 1]
     }
 
     $scope.orden = function (x) {
@@ -342,54 +398,100 @@ rolApp.controller('rolController', function ($scope) {
     }
 });
 
-
-
-rolApp
-    .config(function ($mdThemingProvider) {
-        $mdThemingProvider.theme('default')
-            .dark();
-
-    });
-
-rolApp
-    .config(function ($mdThemingProvider) {
-
-        $mdThemingProvider.theme('default')
-            .accentPalette('red', {
-                'default': '600', // by default use shade 400 from the pink palette for primary intentions
-                'hue-1': '100', // use shade 100 for the <code>md-hue-1</code> class
-                'hue-2': '600', // use shade 600 for the <code>md-hue-2</code> class
-                'hue-3': 'A100' // use shade A100 for the <code>md-hue-3</code> class
-            })
-            .primaryPalette('red')
-        // If you specify less than all of the keys, it will inherit from the
-        // default shades
-
-
-    });
-
-
 function act() {
     var scope = angular.element(document.getElementById('app')).scope();
     scope.$apply(function () {
         scope.p = pj;
         scope.p.act();
     });
+}
 
+//carga personaje como parametro url
+let s = location.search
+const url = new URL(location);
+const personaje = url.searchParams.get('pj')
+console.log("PERSONAJE url:" + personaje);
+// si lo hay se carga
+if (personaje) {
+    load(personaje);
+}
+var ONLINE = false;
+
+/**Carga el objeto como el tipo de clase que sea
+ * su propiedad .clase
+ * 
+ * @param {Object} objeto 
+ */
+function cargar(objeto) {
+    if (objeto?.clase) {
+        console.log(`pj=new ${objeto.clase}({});`);
+        eval(`pj=new ${objeto.clase}({});`);
+        pj.setAll(objeto);
+        return true; //lo carga bien?
+    }
+    // console.log("CARGA EL PUTO PERSONAJE:" + pj.nombre);
+}
+
+/**Carga on/off line el nombre del PJ
+ * 
+ * @param {string} nombre 
+ */
+function load(nombre) {
+    if (!nombre) nombre = pj.nombre;
+    console.log('LOAD');
+    if (ONLINE) {
+
+    } else {
+        if (cargar(ls(nombre))) {
+            alert(`${pj.nombre} cargado, ${sizeJSON(pj)} bytes`)
+            listaPersonajes(pj.nombre);
+
+        }
+    }
+}
+
+function listaPersonajes(personaje) {
+    if (personaje) {
+        var mySet = []
+        let set = ls('personajes');
+        console.log(set);
+        if (set) { mySet = new Set(set) }
+        mySet.add(personaje);
+        console.log(mySet);
+        ls('personajes', Array.from(mySet))
+
+    }
+    else {
+        return ls('personajes');
+    }
+}
+
+dark();
+
+function dark(params) {
+    rolApp
+        .config(function ($mdThemingProvider) {
+            $mdThemingProvider.theme('default')
+                .dark();
+
+        });
+
+    rolApp
+        .config(function ($mdThemingProvider) {
+
+            $mdThemingProvider.theme('default')
+                .accentPalette('red', {
+                    'default': '600', // by default use shade 400 from the pink palette for primary intentions
+                    'hue-1': '100', // use shade 100 for the <code>md-hue-1</code> class
+                    'hue-2': '600', // use shade 600 for the <code>md-hue-2</code> class
+                    'hue-3': 'A100' // use shade A100 for the <code>md-hue-3</code> class
+                })
+                .primaryPalette('red')
+            // If you specify less than all of the keys, it will inherit from the
+            // default shades
+
+
+        });
 
 }
 
-
-
-// function cargar(nombre) {
-//     let objeto=ls(nombre)
-//     if (objeto?.clase) {
-//         // console.log(objeto);
-//         // console.log(pj);
-//         console.log('**********cargaclase');
-//         console.log(`pj=new ${objeto.clase}({});`);
-//         eval(`pj=new ${objeto.clase}({});`);
-//         pj.setAll(objeto)
-//       }
-    
-// }
