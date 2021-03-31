@@ -30,9 +30,9 @@ class MiHab extends HTMLElement {
     html(){
         console.log('Nuevo html'+this.nombre);
         this.innerHTML =
-        `nombre <input ng-model="p.getHabilidad('${this.nombre}').nombre">
+        `nombre <input ng-model="p.getHabilidad('${this.nombre}').nombre value="p.getHabilidad('${this.nombre}').nombre">
         valor <input ng-model="p.habilidades['${this.nombre}'].valor">
-        total <input ng-model="p.habilidades['${this.nombre}'].v">
+        total <input ng-model="p.habilidades['${this.nombre}'].v" value="p.getHabilidad('${this.nombre}').v">
        `
         
     }
@@ -50,34 +50,36 @@ class MiHab extends HTMLElement {
             // </md-input-container>
             // </div>
             // `
-
-            `nombre <input ng-model="p.habilidades['${this.nombre}'].nombre">
-             valor <input ng-model="p.habilidades['${this.nombre}'].valor">
-             total <input ng-model="p.habilidades['${this.nombre}'].v">
-            `
-        //     `<md-content  layout-gt-sm="row" layout-padding>
-        //     <div>
-        //       <md-input-container>
-        //         <label>Habilidad</label>
-        //         <input ng-model="p.habilidades['${this.nombre}'].nombre" style="width: 13em;">
-        //       </md-input-container>
+            `<md-content  layout-gt-sm="row" layout-padding>
+            <div>
+              <md-input-container>
+                <label>Habilidad</label>
+                <input ng-model="p.habilidades['${this.nombre}'].nombre" style="width: 13em;">
+              </md-input-container>
         
-        //       <md-input-container>
-        //         <label>Valor</label>
-        //         <input ng-model="p.habilidades['${this.nombre}'].valor"  style="width: 4em;" type="number">
-        //       </md-input-container>
+              <md-input-container>
+                <label>Valor</label>
+                <input ng-model="p.habilidades['${this.nombre}'].valor"  style="width: 4em;" type="number">
+              </md-input-container>
 
-        //       <md-input-container>
-        //       <label>Total</label>
-        //       <input ng-model="p.habilidades['${this.nombre}'].v"  style="width: 4em;" type="number">
-        //     </md-input-container>
+              <md-input-container>
+              <label>Total</label>
+              <input ng-model="p.habilidades['${this.nombre}'].v"  style="width: 4em;" type="number">
+            </md-input-container>
 
-        //     </div>
-        //   </md-content>`
+            <md-input-container>
+                 <label>Dado</label>
+                <span id="dado${this.nombre}"> <img src="img/10_sided_die.svg"></img></span>
+                <input  id="iDado${this.nombre}" type='number' style="width: 2.3em;">
+            </md-input-container>
+
+            </div>
+          </md-content>`
 
 
 
-        //     `<label>Dado</label>
+        //   <md-input-container>
+        //      <label>Dado</label>
         //     <span id="dado${this.nombre}"> <img src="img/10_sided_die.svg"></img></span>
         //     <input  id="iDado${this.nombre}" type='number' style="width: 2.3em;">
         // </md-input-container>
@@ -465,8 +467,17 @@ function listaPersonajes(personaje) {
         return ls('personajes');
     }
 }
+function createHab(contenedorId){
+    let html=''
+    pj.getHabilidades().forEach(h => {
+        html+= ` <mi-hab nombre='${h.nombre}'></mi-hab>`
+    });
+    document.getElementById(contenedorId).innerHTML=html;
+}
 
 dark();
+
+// createHab('habContent');
 
 function dark(params) {
     rolApp
