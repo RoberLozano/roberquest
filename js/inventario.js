@@ -3,9 +3,10 @@
 // import { D } from '/D.js';
 
 
-class Objeto {
+class Objeto extends Clase{
   constructor(nombre, peso = 0, valor = 0) {
-    this.clase = this.constructor.name;
+    super()
+    // this.clase = this.constructor.name;
     // console.log(this.clase);
     this.nombre = nombre || "";
     this.peso = peso;
@@ -19,18 +20,18 @@ class Objeto {
     return this.peso
   }
 
-  setAll(o) {
-    // const keys = Object.keys(this);
-    // const oKeys = Object.keys(o);
+  // setAll(o) {
+  //   // const keys = Object.keys(this);
+  //   // const oKeys = Object.keys(o);
 
-    // const values = Object.values(o);
-    for (let key in o) {
-      this[key] = o[key];
-    }
-    // this.nombre = o.nombre;
-    // this.peso =   o.peso ;
-    // this.valor =  o.valor ;
-  }
+  //   // const values = Object.values(o);
+  //   for (let key in o) {
+  //     this[key] = o[key];
+  //   }
+  //   // this.nombre = o.nombre;
+  //   // this.peso =   o.peso ;
+  //   // this.valor =  o.valor ;
+  // }
 
 
 }
@@ -185,18 +186,19 @@ class Contenedor extends Objeto {
       //miro los distintos tipos de objetos por una propiedad única
       //TODO: tal vez poner el tipo de clase en una propiedad
       let oo;
-      if (ob.hasOwnProperty("pm")) { oo = new Gema(); }
-      else
-        if (ob.hasOwnProperty("efectos")) { oo = new Pociones(); }
-        else
-          if (ob.hasOwnProperty("capacidad")) { oo = new Gema(); }
-          else
-            if (ob.hasOwnProperty("objetos")) { oo = new Contenedor(); }
-            else
-              if (ob.hasOwnProperty("daño")) { oo = new Arma(); }
-              else
-                if (ob.hasOwnProperty("ctd")) { oo = new Objetos(); }
-                else { oo = new Objeto() }
+      oo= Clase.convertir(ob);
+      // if (ob.hasOwnProperty("pm")) { oo = new Gema(); }
+      // else
+      //   if (ob.hasOwnProperty("efectos")) { oo = new Pociones(); }
+      //   else
+      //     if (ob.hasOwnProperty("capacidad")) { oo = new Gema(); }
+      //     else
+      //       if (ob.hasOwnProperty("objetos")) { oo = new Contenedor(); }
+      //       else
+      //         if (ob.hasOwnProperty("daño")) { oo = new Arma(); }
+      //         else
+      //           if (ob.hasOwnProperty("ctd")) { oo = new Objetos(); }
+      //           else { oo = new Objeto() }
       oo.setAll(ob);
       ot.push(oo);
     }

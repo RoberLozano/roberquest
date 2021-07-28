@@ -30,6 +30,59 @@
 //     } 
 // }
 
+class Clase {
+  constructor() {
+    this.clase = this.constructor.name;
+  }
+
+  setAll(o) {
+    // if (typeof o === 'string') return o;
+    for (let key in o) {
+      //genérico para sustituir todos los setAll
+      // if (o[key] instanceof Object){
+      if (typeof o[key] === 'object' && o[key] !== null) {
+        if (o[key].clase)
+          this[key] = Clase.convertir(o[key])
+        else
+          for (let k in o[key]) {
+            // console.log('setAll de '+k+'->'+ o[key][k] +' es '+ typeof o[key][k]);
+            // console.log( o[key][k]);
+            if (o[key][k].clase)
+              this[key][k] = Clase.convertir(o[key][k])
+            // probar
+            // console.log('estoy en el set inner de '+k+'->'+ o[key][k]);
+            //  this.setAll( o[key][k]) //??
+          }
+      }
+      else {
+        // console.log('NO es objeto');
+        this[key] = o[key];
+      }
+
+    }
+  }
+  // get clase() {
+  //   return this.constructor.name;
+  // }
+
+  /**Devuelve una copia del objeto de su misma clase
+ * 
+ * @param {Object} o El objeto a copiar
+ * @returns la copia del objeto de la clase this.clase
+ */
+  static convertir(o) {
+    if (!(o.clase)) return o;
+    // console.log('Convierto un '+o.clase);
+    let copia;
+    // eval(`copia = new ${o.constructor.name}()`); //elegir uno
+    eval(`copia = new ${o.clase}()`); //elegir uno
+    // copia = (Function('return new ' + o.clase))()
+    // for (let key in o)
+    //   copia[key] = o[key];
+    copia.setAll(o);
+    return copia;
+  }
+}
 
 //debe haber una variable global pj con el personaje
 /**
@@ -45,7 +98,7 @@ const CRITICO = 3;
 const SUPERCRITICO = 4;
 
 
-class XP {
+class XP extends Clase {
   /**
    * 
    * @param {int} xp 
@@ -61,6 +114,7 @@ class XP {
     , horasEntrenadas = 0
     , desentrenado = 0
   ) {
+    super()
     this.xp = xp
     this.fecha = fecha
     this.fechaXp = fechaXp
@@ -87,13 +141,17 @@ class XP {
     if (this.fecha == 0) return Math.min(100, valor) - (this.xp - xpNec) * 5 - bonus;
     else {
       var fechaSub
-      fechaSub = this.fecha
+      fechaSub = new Date(this.fecha)
+      // fechaSub =  (this.fecha instanceof Date)? this.fecha : new Date(this.fecha)
+
       //los minisegundos son negativos pq es anterior a 1970
       //diferencia en dias
       let diferencia = (-fechaSub.getTime() + fechaAct.getTime()) / 86400000;
+
       if (diferencia >= 7) {
+        // console.log('días',diferencia);
         // console.log(("Se subio hace más de una semana"));
-        Math.min(100, valor) - (this.xp - xpNec) * 5 - bonus;
+        return Math.min(100, valor) - (this.xp - xpNec) * 5 - bonus;
       }
       else return 100;
     }
@@ -168,7 +226,6 @@ class Habilidad extends XP {
     this.bcritico = 0;
     this.bespecial = 0;
   }
-
 
   //te copia todas las propiedades de un objeto o
   setAll(o) {
@@ -328,23 +385,40 @@ class Habilidad extends XP {
   }
 
 
+  /**
+   * Devuelve la habilidad editable
+   * @returns Un objeto HabilidadEditable copia de éste
+   */
+  editable() {
+    let he = new HabilidadEditable();
+    he.setAll(this);
+    return he;
+  }
+
 }
 /**
  * Permite que se puedan sumar restar o multiplicar el valor total de la habilidad
  */
 class HabilidadEditable extends Habilidad {
-  get total() {
-    if (this._total)
-      return this._total
-    else return this.v;
+  get v() {
+    // if (this._total)
+    //   return this._total
+    // else return super.v;
+    return this._total || super.v;
   }
   set total(valor) {
     this._total = Math.round(+valor)
+    // console.log( this._total);
   }
-  sumar(s) {
-    this._total += s;
+  get total() {
+    return this._total || this.v;
   }
-  multiplicar(m) { this.total *= m; }
+  reset() {
+    delete this._total;
+  }
+
+  sumar(s) { this.total += s }
+  multiplicar(m) { this.total *= m }
 }
 
 class Hechizo extends Habilidad {
@@ -356,7 +430,7 @@ class Hechizo extends Habilidad {
    * @typedef Efecto          
    * @param {Efecto} efecto   El efecto
    */
-  constructor(nombre, pm, valor, efecto) {
+  constructor(nombre, pm = 1, valor, efecto = null) {
     super(nombre, "Magia", valor)
     this.pm = pm;
     this.efecto = efecto;
@@ -395,7 +469,7 @@ class HechizoReal extends Hechizo {
   set total(valor) {
     this._total = Math.round(+valor)
   }
-  sumar(s) {this._total += s;}
+  sumar(s) { this._total += s; }
   multiplicar(m) { this.total *= m; }
 
   //OVERRIDES
@@ -404,98 +478,97 @@ class HechizoReal extends Hechizo {
   get c() { return Math.round(this.total * 0.05) + this.bcritico }
   get p() { return Math.min(100, 101 - Math.round((100 - this.total) * 0.05)) }
 
-//te copia todas las propiedades de un objeto o
-setAll(o) {
-  for (let key in o) 
-    this[key] = o[key];
-}
-
-setArte(arte) {
-  this.artes[arte.nombre] = arte;
-  arte.hechizo = this;
-}
-
-/**
-* 
-* @param {TipoTirada} tipoTirada el grado de éxito de la tirada
-* @returns 0 si no se modifica el hechizo, objeto con intensidad, gastados, penalizacion
-*/
-act(tipoTirada) {
-
-  var pm = this.pm;
-  let gastados = 0
-  let intensidad = 0
-
-
-  switch (tipoTirada) {
-    case (TipoTirada.SUPERCRITICO):
-      intensidad = 5;
-      break;
-    case (TipoTirada.CRITICO):
-      intensidad = 3;
-      break;
-    case (TipoTirada.ESPECIAL):
-      intensidad = 1;
-      break;
-    case (TipoTirada.EXITO):
-      break;
-    case (TipoTirada.FALLO):
-      intensidad = 0
-      break;
-    default:
-      ;
+  //te copia todas las propiedades de un objeto o
+  setAll(o) {
+    for (let key in o)
+      this[key] = o[key];
   }
 
-  // if (intensidad < pm) {
-  //   gastados = (pm - intensidad)
-  //   intensidad = pm;
-  // }
-  // else if (intensidad >= pm) {
-  //   gastados = 0 //o 1?
-  //   intensidad = pm + (intensidad - pm);
-  // }
-
-  this.intensidad = intensidad;
-  this.gastados = gastados;
-
-  // if(this.hechizo){
-  //   this.hechizo[this.nombre].intensidad=intensidad;
-  //   this.hechizo[this.nombre].gastados=gastados;
-  //   this.hechizo[this.nombre].penalizacion= penalizacion;
-  // }
-}
-
-
-artes() {
-  this.gastados = 0;
-  this.intensidad = 0;
-  this.penalizacion = 0;
-  for (let a in this.artes) {
-    console.log(this.artes[a].nombre, this.artes[a].gastados, this.artes[a].intensidad, this.artes[a].penalizacion);
-    this.gastados += this.artes[a].gastados
-    this.intensidad += this.artes[a].intensidad
-    this.penalizacion += this.artes[a].penalizacion
+  setArte(arte) {
+    this.artes[arte.nombre] = arte;
+    arte.hechizo = this;
   }
 
-  console.log(
-    this.nombre,
-    this.gastados,
-    this.intensidad,
-    this.penalizacion,
-  );
+  /**
+  * 
+  * @param {TipoTirada} tipoTirada el grado de éxito de la tirada
+  * @returns 0 si no se modifica el hechizo, objeto con intensidad, gastados, penalizacion
+  */
+  act(tipoTirada) {
 
-}
-  
+    var pm = this.pm;
+    let gastados = 0
+    let intensidad = 0
 
 
+    switch (tipoTirada) {
+      case (TipoTirada.SUPERCRITICO):
+        intensidad = 5;
+        break;
+      case (TipoTirada.CRITICO):
+        intensidad = 3;
+        break;
+      case (TipoTirada.ESPECIAL):
+        intensidad = 1;
+        break;
+      case (TipoTirada.EXITO):
+        break;
+      case (TipoTirada.FALLO):
+        intensidad = 0
+        break;
+      default:
+        ;
+    }
+
+    // if (intensidad < pm) {
+    //   gastados = (pm - intensidad)
+    //   intensidad = pm;
+    // }
+    // else if (intensidad >= pm) {
+    //   gastados = 0 //o 1?
+    //   intensidad = pm + (intensidad - pm);
+    // }
+
+    this.intensidad = intensidad;
+    this.gastados = gastados;
+
+    // if(this.hechizo){
+    //   this.hechizo[this.nombre].intensidad=intensidad;
+    //   this.hechizo[this.nombre].gastados=gastados;
+    //   this.hechizo[this.nombre].penalizacion= penalizacion;
+    // }
+  }
+
+  artes() {
+    this.gastados = 0;
+    this.intensidad = 0;
+    this.penalizacion = 0;
+    for (let a in this.artes) {
+      console.log(this.artes[a].nombre, this.artes[a].gastados, this.artes[a].intensidad, this.artes[a].penalizacion);
+      this.gastados += this.artes[a].gastados
+      this.intensidad += this.artes[a].intensidad
+      this.penalizacion += this.artes[a].penalizacion
+    }
+
+    console.log(
+      this.nombre,
+      this.gastados,
+      this.intensidad,
+      this.penalizacion,
+    );
+
+  }
 
 }
 
 class Arte extends Habilidad {
 
   constructor(arte) {
-    super(arte.nombre, "Magia", arte.valor)
+    super(arte?.nombre, "Magia", arte?.valor)
     this.setAll(arte);
+    //sobreescribe clase
+    this.clase = this.constructor.name;
+
     this.pm = 0;
     // this.intensidad = intensidad;
     // this.gastados = gastados;
@@ -771,10 +844,11 @@ class MyCounter extends HTMLElement {
 
 
 class InputHabilidad extends HTMLElement {
-  constructor(hab = new Habilidad("Habilidad", "Agilidad", 77)) {
+  constructor(hab = new HabilidadEditable("Habilidad", "Agilidad", 77), black = false) {
     // Always call super first in constructor
     super();
-    this.habilidad = hab;
+    //Habilidad editable
+    this.habilidad = hab.editable();
     this.shadow = this.attachShadow({ mode: 'open' });
 
     this.wrapper = document.createElement('span');
@@ -810,6 +884,14 @@ class InputHabilidad extends HTMLElement {
     this.porcentaje.style.width = "3em";
     this.porcentaje.style.textAlign = "right";
     this.porcentaje.style.borderStyle = "none";
+
+    //Porcentaje editable
+    this.porcentaje.addEventListener('change', (event) => {
+      console.log('cambiado a' + this.porcentaje.value);
+      this.habilidad.total = this.porcentaje.value;
+      // if(input.value>this.getAttribute('habilidad')) input.style.color="red"
+      // else input.style.color="black"
+    });
 
     this.percent = document.createElement('span');
     this.percent.innerHTML = "<b>% </b>"
@@ -879,7 +961,14 @@ class InputHabilidad extends HTMLElement {
       this.habilidad.xpTirada(this.input.value, this.personaje?.suerte)
     });
 
-
+    var styleblack = ''
+    if (black)
+      styleblack = `input,
+    textarea,
+    body{
+        background-color: black;
+        color: aliceblue;
+    }`;
     style.textContent = `
           .wrapper {
             position: relative;
@@ -919,6 +1008,8 @@ class InputHabilidad extends HTMLElement {
             /* Adjust these values accordingly */
             vertical-align: top;  
           }
+          ${styleblack}
+
         `;
 
     // Attach the created elements to the shadow dom
@@ -977,13 +1068,21 @@ class InputHabilidad extends HTMLElement {
   }
 
   setHabilidad(habilidad) {
-    if (habilidad) this.habilidad = habilidad;
+    if (habilidad) //this.habilidad = habilidad;
+      this.habilidad = new HabilidadEditable(habilidad.nombre, habilidad.tipo, habilidad.valor)
+    //pongo todo lo de habilidad en editable
+    this.habilidad.setAll(habilidad);
     this.label.setAttribute("value", this.habilidad.nombre);
     this.porcentaje.setAttribute("value", this.habilidad.v);
     this.porcentaje.value = this.habilidad.v;
     this.ok.src = this.habilidad.ataque ? 'img/sword.svg' : 'img/check.svg';
   }
 
+  /**
+   * 
+   * @param {} input El input con el valor de los dados
+   * @returns {TipoTirada} el grado de éxito de la tirada;
+   */
   act(input) {
 
     let v;
@@ -1006,7 +1105,7 @@ class InputHabilidad extends HTMLElement {
         break;
       case (TipoTirada.EXITO):
         console.log("EXITO");
-        input.style.color = "black";
+        input.style.color = "inherit";
         break;
       case (TipoTirada.FALLO):
         console.log("FALLO");
@@ -1015,6 +1114,8 @@ class InputHabilidad extends HTMLElement {
       default:
         ;
     }
+
+    return v;
   }
 }
 
@@ -1121,8 +1222,8 @@ class InputSubirHabilidad extends InputHabilidad {
 }
 
 class InputArte extends InputHabilidad {
-  constructor(habilidad) {
-    super(habilidad);
+  constructor(habilidad, black = false) {
+    super(habilidad, black);
     this.setAttribute("id", "ia-" + habilidad.nombre);
     this.pm = document.createElement('input');
     this.pm.setAttribute("id", "pm");
@@ -1139,6 +1240,10 @@ class InputArte extends InputHabilidad {
 
     // this.wrapper.appendChild();
     this.wrapper.insertBefore(this.pm, this.icon);
+
+    this.intensidad = 0
+    this.gastados = 0
+    this.penalizacion = 0
 
   }
 
@@ -1170,47 +1275,47 @@ class InputArte extends InputHabilidad {
   act(input) {
     super.act(input)
     // console.log(this.pmGastados());
-    this.intensidad(input)
+    this.calcularIntensidad(input)
   }
 
   /**
    * @returns los PM que se gasta con el tipo de tirada
    */
-  pmGastados() {
-    let v = this.habilidad.tirada(this.input.value);
-    if (+this.pm.value == 0) return 0;
-    switch (v) {
-      case (TipoTirada.SUPERCRITICO):
-        this.pm.color = "red";
-        return +this.pm.value + 5;
-        break;
-      case (TipoTirada.CRITICO):
-        console.log("CRITICO");
-        this.pm.color = "red";
-        return +this.pm.value + 3;
-        break;
-      case (TipoTirada.ESPECIAL):
-        console.log("ESPECIAL");
-        this.pm.color = "green";
-        return +this.pm.value + 1;
-        break;
-      case (TipoTirada.EXITO):
-        return +this.pm.value
-        break;
-      case (TipoTirada.FALLO):
-        console.log("FALLO");
-        this.pm.color = "grey";
-        return 1;
-        break;
-      default:
-        ;
-    }
-  }
+  // pmGastados() {
+  //   let v = this.habilidad.tirada(this.input.value);
+  //   if (+this.pm.value == 0) return 0;
+  //   switch (v) {
+  //     case (TipoTirada.SUPERCRITICO):
+  //       this.pm.color = "red";
+  //       return +this.pm.value + 5;
+  //       break;
+  //     case (TipoTirada.CRITICO):
+  //       console.log("CRITICO");
+  //       this.pm.color = "red";
+  //       return +this.pm.value + 3;
+  //       break;
+  //     case (TipoTirada.ESPECIAL):
+  //       console.log("ESPECIAL");
+  //       this.pm.color = "green";
+  //       return +this.pm.value + 1;
+  //       break;
+  //     case (TipoTirada.EXITO):
+  //       return +this.pm.value
+  //       break;
+  //     case (TipoTirada.FALLO):
+  //       console.log("FALLO");
+  //       this.pm.color = "grey";
+  //       return 1;
+  //       break;
+  //     default:
+  //       ;
+  //   }
+  // }
 
   /**
    * @returns los PM de intensidad del Arte
    */
-  intensidad(input) {
+  calcularIntensidad(input) {
     let v;
     if (this.personaje?.suerte?.length > 0)
       v = this.habilidad.tirada(input.value, this.personaje.suerte);
@@ -1257,16 +1362,21 @@ class InputArte extends InputHabilidad {
 
     }
 
-    console.log('intensidad', intensidad, 'gastados', gastados, 'penalizacion', this.penalizacion());
-    var result = { intensidad: intensidad, gastados: gastados, penalizacion: this.penalizacion() };
-    console.log(result);
+    this.intensidad = intensidad;
+    this.gastados = gastados;
+    this.penalizacion = this.calcularPenalizacion()
+    console.log(
+      'intensidad', this.intensidad,
+      'gastados', this.gastados,
+      'penalizacion', this.penalizacion);
+
     return intensidad;
   }
 
   /**
    * @returns la penalización al hechizo
    */
-  penalizacion() {
+  calcularPenalizacion() {
     var pm = +this.pm.value
     if (pm == 0) return 0;
     let v = this.habilidad.tirada(this.input.value);
@@ -1280,8 +1390,8 @@ class InputArte extends InputHabilidad {
 }
 
 class InputHechizo extends InputHabilidad {
-  constructor(habilidad = new Hechizo(Hechizo, 7, 77)) {
-    super(habilidad);
+  constructor(habilidad = new Hechizo(Hechizo, 7, 77), black) {
+    super(habilidad, black);
     this.pm = document.createElement('input');
     this.pm.setAttribute("id", "pm");
     this.pm.setAttribute("type", "number");
@@ -1300,8 +1410,32 @@ class InputHechizo extends InputHabilidad {
 
     this.label.style.width = "13em"; //los hechizos son más largos
 
+    this.artes = {}
+
+    this.ok.addEventListener('click', (event) => {
+      console.log(`Hechizo ${this.h.nombre} realizado`);
+      this.lanzarHechizo();
+      this.habilidad.xpTirada(this.input.value, this.personaje?.suerte)
+      actPuntos();
+    });
 
   }
+
+  // set hechizo(h) {
+  //   if (typeof h === 'string') {
+  //     if (this.personaje) {
+  //       console.log(`${this.personaje.nombre} con el Hechizo ${h.nombre}`);
+  //       console.log(this.personaje.getHabilidad(h.nombre));
+  //     } else console.log(`Personaje no especificado`);
+  //   }
+  //   if (h instanceof Hechizo) {
+  //     this._hechizo = new HechizoReal(h);
+  //   }
+
+  // }
+  // get hechizo() {
+  //   return this._hechizo;
+  // }
 
   //override
   setPersonaje(personaje) {
@@ -1324,42 +1458,384 @@ class InputHechizo extends InputHabilidad {
 
   //override
   setHabilidad(habilidad) {
-    // super.setHabilidad(habilidad);
-    if (habilidad) this.habilidad = habilidad;
-    this.label.setAttribute("value", this.habilidad.nombre);
-    this.porcentaje.setAttribute("value", this.habilidad.v);
-    this.porcentaje.value = this.habilidad.v;
-    this.ok.src = this.habilidad.ataque ? 'img/sword.svg' : 'img/check.svg';
+    super.setHabilidad(habilidad);
+    // if (habilidad) this.habilidad = habilidad;
+    // this.label.setAttribute("value", this.habilidad.nombre);
+    // this.porcentaje.setAttribute("value", this.habilidad.v);
+    // this.porcentaje.value = this.habilidad.v;
+    // this.ok.src = this.habilidad.ataque ? 'img/sword.svg' : 'img/check.svg';
     this.pm.value = habilidad?.pm ? habilidad.pm : 0;
   }
+
+  setArte(arte) {
+    if (!arte) return;
+    console.log(arte);
+    this.artes[arte.h.nombre] = arte;
+    console.log(this.artes);
+    // arte.hechizo = this;
+  }
+
+  delArte(arte) {
+    if (!arte) return;
+    console.log('Borra ' + arte.h.nombre);
+    // this.artes[arte.h.nombre] = null;
+    delete this.artes[arte.h.nombre];
+    console.log(this.artes);
+
+  }
+
+  /**
+  * 
+  * @param {TipoTirada} tipoTirada el grado de éxito de la tirada
+  * @returns 0 si no se modifica el hechizo, objeto con intensidad, gastados, penalizacion
+  */
+  act(tipoTirada) {
+    tipoTirada = super.act(this.input);
+
+    var pm = +this.pm.value;
+    let gastados = 0
+    let intensidad = 0
+
+    switch (tipoTirada) {
+      case (TipoTirada.SUPERCRITICO):
+        intensidad = 5;
+        gastados = 1;
+        console.log('hechizo SP, gasta 1');
+        break;
+      case (TipoTirada.CRITICO):
+        intensidad = 3;
+        gastados = Math.max(pm - 1, 1);
+        break;
+      case (TipoTirada.ESPECIAL):
+        intensidad = 1;
+        break;
+      case (TipoTirada.EXITO):
+        gastados = pm;
+        break;
+      case (TipoTirada.FALLO):
+        intensidad = 0
+        gastados = 1;
+        console.log('hechizo fallido, gasta 1');
+        return;
+        break;
+      default:
+        ;
+    }
+
+    // if (intensidad < pm) {
+    //   gastados = (pm - intensidad)
+    //   intensidad = pm;
+    // }
+    // else if (intensidad >= pm) {
+    //   gastados = 0 //o 1?
+    //   intensidad = pm + (intensidad - pm);
+    // }
+    this.gastados = gastados;
+    this.actArtes()
+    // this.intensidad += intensidad;
+    // this.gastados = gastados;
+
+
+  }
+
+  actArtes() {
+    // console.log(this.artes);
+    // this.gastados = 0;
+    this.intensidad = 0;
+    this.penalizacion = 0;
+    let info = '';
+    for (let a in this.artes) {
+      console.log(this.artes[a].h.nombre, this.artes[a].gastados, this.artes[a].intensidad, this.artes[a].penalizacion);
+      if (this.artes[a].intensidad > 0)
+        info += `<br>${this.artes[a].h.nombre} de ${this.artes[a].intensidad} gasta ${this.artes[a].gastados}PM y penaliza ${this.artes[a].penalizacion}`
+      // console.log(this.artes[a].h.nombre)
+      this.gastados += +this.artes[a].gastados
+      // this.intensidad += this.artes[a].intensidad
+      this.penalizacion += this.artes[a].penalizacion
+    }
+
+    // console.log(
+    //   this.h.nombre,
+    //   this.gastados,
+    //   this.intensidad,
+    //   this.penalizacion,
+    // );
+    this.h.reset();
+    this.h.sumar(-this.penalizacion);
+    this.porcentaje.value = this.h.total;
+
+    console.log(
+      this.h.nombre, 'gasta',
+      this.gastados,
+      'penaliza',
+      this.penalizacion,
+    );
+
+    // toast(`${this.h.nombre} gasta ${this.gastados}PM y penaliza ${this.penalizacion}`+info);
+    alert(`${this.h.nombre} gasta ${this.gastados}PM y penaliza ${this.penalizacion}` + info);
+
+  }
+
+  lanzarHechizo() {
+    //actualizar??
+    this.act();
+    toast(`${this.h.nombre} realizado, gasta ${this.gastados}PM ` + info);
+    if (this.personaje) {
+      this.personaje.PM -= this.gastados;
+      this.personaje.save();
+    }
+  }
+
 
 }
 
 //Input de clase
-class InputCustom extends HTMLElement{
-  constructor(clase, lista){
+class InputCustom extends HTMLElement {
+  constructor(clase, lista) {
     super();
-    let i= 'input';
-    var html='';
+    let i = 'input';
 
-    for (let key in clase){
-      if (lista?.includes(key)|| !lista){
-        console.log( typeof clase[key]);
-        // if (clase[key] instanceof Number) {
-        if (typeof clase[key]==='number') {
-          html+= `<${i} type='number' value='${clase[key]}'>`
-        } else {
-          html+= `${key}<${i}  value='${clase[key]}'>`
-          console.log('por hacer...');
-        }
-      }
-    }
+    var html = '';
 
-    var div=document.createElement('div');
-    div.innerHTML= html;
-    this.appendChild(div);
+    var tabla = document.createElement('table');
+
+    // for (let key in clase) {
+    //   if (lista?.includes(key) || !lista) {
+    //     var fila = document.createElement('tr');
+    //     console.log(typeof clase[key]);
+    //     console.log(clase[key].constructor.name);
+    //     var tipo = clase[key].constructor.name
+    //     html += `<tr>`
+
+    //     let id = "ic-" + key
+
+    //     // switch (tipo) {
+    //     //   case 'Number':
+    //     //     html += `<td>${key}</td> <td><${i} id="${id}" type='number' value='${clase[key]}'></td>`
+    //     //     break;
+    //     //   case 'String':
+    //     //     // html += `${key}<${i}  value='${clase[key]}'><br>`
+    //     //     html += `<td>${key}</td> <td><${i} id="${id}" type='text' value='${clase[key]}'></td>`
+    //     //     break;
+    //     //   case 'Date':
+    //     //     // html += `${key}<input type="datetime-local" 
+    //     //     // value=${clase[key].fechahoraLocal()}></input><br>`
+    //     //     html += `<td>${key}</td> <td> <input id="${id}" type="datetime-local" id="${id}"
+    //     //     value=${clase[key].fechahoraLocal()}></input></td>`
+    //     //     break;
+
+    //     //   default:
+    //     //     // html += `${key}<${i}  value='${clase[key]}'><br>`
+    //     //     html += `<td>${key}</td> <td><${i} id="${id}" value='${clase[key]}'></td>`
+    //     //     break;
+    //     // }
+
+    //     //component
+    //     var c;
+
+    //     switch (tipo) {
+    //       case 'Number':
+    //         c = document.createElement('input');
+    //         c.setAttribute("type", "number");
+    //         c.setAttribute("value", clase[key]);
+    //         c.addEventListener('change', (event) => {
+    //           clase[key]=+event.target.value; //para que sea número
+    //           console.log(clase[key]);
+    //               });
+    //         break;
+    //       case 'String':
+    //         c = document.createElement('input');
+    //         c.setAttribute("type", "text");
+    //         c.setAttribute("value", clase[key]);
+    //         c.addEventListener('change', (event) => {
+    //           clase[key]=event.target.value;
+    //           console.log(clase[key]);
+    //               });
+    //         break;
+    //       case 'Date':
+    //         c = document.createElement('input');
+    //         c.setAttribute("type", "datetime-local");
+    //         c.setAttribute("value", clase[key].fechahoraLocal());
+    //         c.addEventListener('change', (event) => {
+    //           clase[key]=new Date(event.target.value);
+    //           console.log(clase[key]);
+    //               });
+    //         break;
+
+    //       default:
+    //         // html += `${key}<${i}  value='${clase[key]}'><br>`
+    //         c = document.createElement('input');
+    //         c.setAttribute("value", clase[key]);
+    //     }
+
+    //     tabla.appendChild(fila)
+    //     // this.appendChild(c);
+
+    //     html += `</tr>`
+
+    //     let label=document.createElement('td');
+    //     label.innerText=key;
+    //     fila.appendChild(label)
+    //     fila.appendChild(document.createElement('td').appendChild(c));
+    //     tabla.appendChild(fila);
+    //   }
+
+    // }
+    this.reset ={}
+    this.appendChild(this.tablear('root',clase, lista));
+    // html = `<table>${html}</table>`
+
+    // var div = document.createElement('div');
+    // div.innerHTML = html;
+    // this.appendChild(div);
+
+    //ahora los changes
+    // for (let key in clase) {
+    //   if (lista?.includes(key) || !lista) {
+    //     let id = "ic-" + key
+    //     document.getElementById(id).addEventListener('change', (event) => {
+    //       clase[key]=event.target.value;
+    //       console.log(clase[key]);
+    //     });
+    //   }
+    // }
+
 
   }
+
+  /**
+   * 
+   * @param {Object} o el objeto del cual obtener la tabla
+   * @returns La tabla 
+   */
+  tablear(id,clase, lista) {
+    var tabla = document.createElement('table');
+    // var c;
+    for (let key in clase) {
+      if (lista?.includes(key) || !lista && clase[key]) {
+        var fila = document.createElement('tr');
+        // if(clase[key] instanceof Object)
+
+        console.log(typeof clase[key], key, clase[key]);
+        // console.log(clase[key].constructor.name);
+        var tipo = clase[key].constructor.name
+        //component
+        var c;
+        var ta; //tabla anidada
+        var isObject = false;
+
+        switch (tipo) {
+          case 'Number':
+            c = document.createElement('input');
+            c.setAttribute("type", "number");
+            c.setAttribute("value", clase[key]);
+            c.addEventListener('change', (event) => {
+              clase[key] = +event.target.value; //para que sea número
+              console.log(clase[key]);
+            });
+            break;
+          case 'String':
+            c = document.createElement('input');
+            c.setAttribute("type", "text");
+            c.setAttribute("value", clase[key]);
+            c.addEventListener('change', (event) => {
+              clase[key] = event.target.value;
+              console.log(clase[key]);
+            });
+            break;
+          case 'Date':
+            c = document.createElement('input');
+            c.setAttribute("type", "datetime-local");
+            try {
+              c.setAttribute("value", clase[key].fechahoraLocal());
+            } catch (error) {
+              console.error('FAllo con fechas');
+            }
+
+            c.addEventListener('change', (event) => {
+              clase[key] = new Date(event.target.value);
+              console.log(clase[key]);
+            });
+            break;
+          // case 'Object':
+          //   c=this.tablear( clase[key])
+          //   break;
+
+          default:
+            // html += `${key}<${i}  value='${clase[key]}'><br>`
+            if (typeof clase[key] === 'object') {
+              console.log('Tableo ' + id+key);
+              ta = this.tablear(id+key,clase[key])
+              ta.id = id+key;
+              // c = ta;
+              isObject = true;
+            }
+            else {
+              c = document.createElement('input');
+              c.setAttribute("value", clase[key]);
+            }
+
+        }
+        this.reset[id+key]=clase[key]
+        tabla.appendChild(fila)
+        // this.appendChild(c);
+
+        let label = document.createElement('td');
+        if (isObject) { //si es objeto que colapse la tabla
+          let b = document.createElement('span');
+          // let b= document.createElement('button');
+          b.innerHTML = "&#9650";
+          label.innerText = key;
+          label.id=ta.id;
+          label.appendChild(b)
+          b.addEventListener('click', (event) => {
+            let next=document.getElementById(label.id).nextSibling;
+            // console.log(ta);
+            // next=ta.nextSibling;
+            console.log(next);
+            
+            next.hidden = !next.hidden
+            next.hidden ? b.innerHTML = "&#9660;" : b.innerHTML = "&#9650"; // ▼ ▲
+
+            // ta.hidden = !ta.hidden
+            //  c.hidden?b.innerHTML =" +  &#9650;":b.innerHTML =" -  &#9660" ;
+            // ta.hidden ? b.innerHTML = "&#9660;" : b.innerHTML = "&#9650"; // ▼ ▲
+            //  c.hidden?b.innerHTML ="&#9662;":b.innerHTML ="&#9652" ; //▾ ▴
+          });
+          fila.appendChild(label)
+          fila.appendChild(document.createElement('td').appendChild(ta));
+        }
+        else {
+          label.innerText = key;
+          let b = document.createElement('span');
+          // let b= document.createElement('button');
+          b.innerHTML = "&#11176";
+          label.appendChild(b)
+          b.addEventListener('click', (event) => {
+            console.log(event.target);
+            console.log(event.target.parentNode.nextSibling);
+            // c.setAttribute("value", this.reset[key]);
+            event.target.parentNode.nextSibling.setAttribute("value", this.reset[id+key]);
+            event.target.parentNode.nextSibling.value=this.reset[id+key];
+
+            console.log(this.reset[id+key]);
+          });
+
+          fila.appendChild(label)
+          fila.appendChild(document.createElement('td').appendChild(c));
+
+        }
+        
+
+
+        tabla.appendChild(fila);
+      }
+
+    }
+    return (tabla);
+
+  }
+
 }
 
 // Define the new element
@@ -1373,6 +1849,7 @@ customElements.define('input-subir', InputSubirHabilidad);
 
 // customElements.define('my-counter', MyCounter);
 
+var hechizo;
 
 function IUHechizos(p, div = "salida") {
   var salida = document.getElementById(div);
@@ -1402,42 +1879,80 @@ function IUHechizos(p, div = "salida") {
     }
   });
 
+  console.log(nombres);
+
+
   //MATERIAL CSS
-  let html = `<select class="selectpicker col s6" id="selArtes" multiple data-live-search="true" data-width="fit"
-  multiple title="Seleccione artes a mostrar">
+  // let html = `<select class="selectpicker col s6" id="selArtes" multiple data-live-search="true" data-width="fit"
+  // multiple title="Seleccione artes a mostrar">
+  //   ${options}
+  // </select>`;
+
+  //ANGULAR MATERIAL
+  let html = `<select id="selArtes" multiple>
     ${options}
   </select>`;
+
+
   salida.innerHTML = html;
 
-  $('#selArtes').change(function (e) {
-    var op = document.getElementById('selArtes').options;
-    for (let index = 0; index < op.length; index++) {
-      op[index].value;
-      visibilidad("ia-" + op[index].value, op[index].selected);
-    }
-  });
+  var ih = new InputHechizo(p.getHabilidad('Volar'));
+  var div = document.createElement("div");
+  ih.setPersonaje(p);
+  hechizo = ih;
+  div.appendChild(ih)
+  salida.appendChild(div);
 
+  var objArtes = {}
+  // $('#selArtes').change(function (e) {
+  //   var op = document.getElementById('selArtes').options;
+  //   for (let index = 0; index < op.length; index++) {
+  //     visibilidad("ia-" + op[index].value, op[index].selected);
+  //     if(op[index].selected){
+  //       hechizo.setArte(objArtes[op[index].value])
+  //     }
+  //     else
+  //     hechizo.delArte(objArtes[op[index].value])
+  //   }
+  // });
+
+  document.getElementById('selArtes').addEventListener('change', cambios)
+
+  //inicializa artes
   habilidades.forEach(h => {
     if (h && h.valor > 0) {
       var div = document.createElement("div");
       // div.style.display="inline-block" //en linea si cabe entero
       var ia = new InputArte(h);
       ia.hidden = true;
+      ia.ok.addEventListener('click', (event) => {
+        console.log(`Aplicar desde ${ia.h.nombre} a Hechizo ${hechizo.h.nombre}`);
+        hechizo.actArtes();
+      });
+      objArtes[h.nombre] = ia;
       div.appendChild(ia)
       salida.appendChild(div);
 
     }
   });
 
+  function cambios() {
+    console.log('Cambios');
+    var op = document.getElementById('selArtes').options;
+    for (let index = 0; index < op.length; index++) {
+      visibilidad("ia-" + op[index].value, op[index].selected);
+      if (op[index].selected) {
+        hechizo.setArte(objArtes[op[index].value])
+      }
+      else
+        hechizo.delArte(objArtes[op[index].value])
+    }
+
+  }
   function visibilidad(id, visible) {
     document.getElementById(id).hidden = !visible;
   }
 
-  var ih = new InputHechizo(p.getHabilidad('Volar'));
-  var div = document.createElement("div");
-  ih.setPersonaje(p);
-  div.appendChild(ih)
-  salida.appendChild(div);
 
   // habilidades.forEach(n => {
   //   h = p.getHabilidad(n);

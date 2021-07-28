@@ -1520,8 +1520,10 @@ function cargarPersonajeOnline(nombre){
 
     let nuevo=item.val();
     if (nuevo.clase){
-      pj =  new Humanoide({});
+      // pj =  new Humanoide({});
+      pj= Clase.convertir(item.val())
     }
+    else
     pj = new Humanoide({});
     // pj = new Animal({});
     pj.setAll(item.val());

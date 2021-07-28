@@ -34,7 +34,17 @@ class MiHab extends HTMLElement {
         valor <input ng-model="p.habilidades['${this.nombre}'].valor">
         total <input ng-model="p.habilidades['${this.nombre}'].v" value="p.getHabilidad('${this.nombre}').v">
        `
-        
+    //    var scope = angular.element(document.getElementById('app')).scope();
+    //    scope.$apply(function () {
+    //     //    if(scope.mishab===undefined)   scope.mishab={}
+
+    //        scope.mishab = scope.mishab || {};
+    //        let h= p.getHabilidad(this.nombre);
+    //        console.log(h);
+    //        scope.mishab[this.nombre]= new HabilidadEditable();
+    //        scope.mishab[this.nombre].setAll(h);
+    //        console.log( scope.mishab[this.nombre]);
+    //    });
     }
     connectedCallback() {
         console.log('CC html'+this.nombre);
@@ -75,6 +85,8 @@ class MiHab extends HTMLElement {
 
             </div>
           </md-content>`
+
+          
 
 
 
@@ -207,9 +219,9 @@ class MatAngHabilidad extends HTMLElement {
         //    
         // });
         if (this.clase)
-            options = ` <option ng-repeat='h in p.getClaseHabilidad("${this.clase}")'>{{h.nombre}}</option>`
+            options = `<option ng-repeat='h in p.getClaseHabilidad("${this.clase}")'>{{h.nombre}}</option>`
         else
-            options = ` <option ng-repeat='h in p.getHabilidades()'>{{h.nombre}}</option>`
+            options = `<option ng-repeat='h in p.getHabilidades()'>{{h.nombre}}</option>`
 
 
 
@@ -233,7 +245,7 @@ class MatAngHabilidad extends HTMLElement {
             array = this.personaje.getHabilidades(h => (eval(this.filtro)))
         else
             array = this.personaje.getHabilidades()
-        console.log(array.map((task) => task.nombre));
+        // console.log(array.map((task) => task.nombre));
         this.lista("listaHab" + this.id, array);
         // this.h = array[0];
 
@@ -348,7 +360,7 @@ pj.act();
 
 // Include app dependency on ngMaterial
 var rolApp = angular.module('rolApp', ['ngMaterial', 'ngMessages']);
-rolApp.controller('rolController', function ($scope) {
+rolApp.controller('rolController', function ($scope, $mdSidenav) {
 
     $scope.listaPersonajes = listaPersonajes();
     console.log($scope.listaPersonajes);
@@ -364,13 +376,31 @@ rolApp.controller('rolController', function ($scope) {
     $scope.i_shield = 'img/shield.svg'
     $scope.contenedor = pj.inventario;
     $scope.historialContenedor = [pj.inventario]
-    $scope.fecha = fechaMundo;
+    $scope.fecha = pj.fecha;
+
+    //sidenav
+
+    $scope.toggleLeft = buildToggler('left');
+
+    function buildToggler(componentId) {
+      return function() {
+        $mdSidenav(componentId).toggle();
+      };
+    }
 
 
     $scope.cargar = function (c) {
         console.log('HACE EL CHANGE DE ' + c);
         load(c)
         $scope.p = pj;
+        $scope.listaPersonajes = listaPersonajes();
+    }
+
+    $scope.guardar = function (c) {
+        console.log('GUARDA ' + c);
+        ls(pj.nombre, pj);
+        $scope.p = pj;
+        $scope.listaPersonajes = listaPersonajes();
     }
 
     $scope.abreContenedor = function (c) {
@@ -398,15 +428,36 @@ rolApp.controller('rolController', function ($scope) {
         else $scope.miOrden = x
         // console.log($scope.miOrden);
     }
+    $scope.arteCambiado= function (){
+        console.log($scope.artSel);
+        $scope.artSel
+        $scope.artSel.forEach(a => {
+            document.getElementById("ia-"+a).hidden = false;
+        });
+       
+    }
 });
 
-function act() {
+function act(fecha) {
     var scope = angular.element(document.getElementById('app')).scope();
-    scope.$apply(function () {
+    scope.$apply(function (fecha) {
         scope.p = pj;
+        // if(fecha) scope.fecha=fecha;
+        fechaMundo=scope.fecha
+        console.log(fechaMundo);
         scope.p.act();
     });
 }
+
+/**
+ * 
+ * @returns el scope de la app
+ */
+function scp() {
+    var scope = angular.element(document.getElementById('app')).scope();
+    return scope;
+}
+
 
 //carga personaje como parametro url
 let s = location.search
@@ -425,12 +476,20 @@ var ONLINE = false;
  * @param {Object} objeto 
  */
 function cargar(objeto) {
+    // if (objeto?.clase) {
+    //     console.log(`pj=new ${objeto.clase}({});`);
+    //     eval(`pj=new ${objeto.clase}({});`);
+    //     pj.setAll(objeto);
+    //     return true; //lo carga bien?
+    // }
+
     if (objeto?.clase) {
-        console.log(`pj=new ${objeto.clase}({});`);
-        eval(`pj=new ${objeto.clase}({});`);
-        pj.setAll(objeto);
+        console.log(`Con clase`);
+        pj=Clase.convertir(objeto);
         return true; //lo carga bien?
     }
+
+
     // console.log("CARGA EL PUTO PERSONAJE:" + pj.nombre);
 }
 
@@ -454,7 +513,7 @@ function load(nombre) {
 
 function listaPersonajes(personaje) {
     if (personaje) {
-        var mySet = []
+        var mySet = new Set()
         let set = ls('personajes');
         console.log(set);
         if (set) { mySet = new Set(set) }
@@ -475,9 +534,138 @@ function createHab(contenedorId){
     document.getElementById(contenedorId).innerHTML=html;
 }
 
+
+
 dark();
 
+var salida = document.getElementById("salida");
+c1= new XP(5,new Date(),new Date(),8);
+var car = {type:"Fiat", model:"500", color:"white", precio:8_000, xp: c1};
+// var ic= new InputCustom(c1);
+var ic= new InputCustom(car);
+salida.appendChild(ic);
+
+function IUHechizosMat(p, div = "salida") {
+    var salida = document.getElementById(div);
+    var options = ''
+    // salida.appendChild(selector);
+    var div = document.createElement("div");
+  
+    var nombres = [
+      "Intensidad",
+      "Multiconjuro",
+      "Sobrepotencia",
+      "Refuerzo",
+      "Alcance",
+      "Duración",
+      "Puntería",
+      "Velocidad"
+    ]
+    var habilidades = []
+  
+    p.actTodosBonHab();
+  
+    nombres.forEach(n => {
+      h = p.getHabilidad(n);
+      if (h && h.valor > 0) {
+        habilidades.push(h)
+        options += `<option >${n}</option>`
+      }
+    });
+  
+    console.log(nombres);
+  
+   
+    //MATERIAL CSS
+    // let html = `<select class="selectpicker col s6" id="selArtes" multiple data-live-search="true" data-width="fit"
+    // multiple title="Seleccione artes a mostrar">
+    //   ${options}
+    // </select>`;
+  
+    // ANGULAR MATERIAL
+    let html = `<select id="selArtes" multiple>
+      ${options}
+    </select>`;
+
+    // let html=''
+
+
+//     let html = `<md-input-container>
+//     <label>Items</label>
+//     <md-select id='selArtes'>
+//       ${options}
+//     </md-select>
+//   </md-input-container>`
+
+    // let html = `<md-select  placeholder="Artes" id="selArtes" class="md-no-underline" multiple>
+    // ${options}
+    // </md-select>`
+  
+  
+   
+    salida.innerHTML = html;
+
+  
+    var ih = new InputHechizo(p.getHabilidad('Volar'),true);
+    var div = document.createElement("div");
+    ih.setPersonaje(p);
+    hechizo=ih;
+    div.appendChild(ih)
+    salida.appendChild(div);
+  
+    var objArtes={}
+
+    document.getElementById('selArtes').addEventListener('change',cambios)
+   
+    //inicializa artes
+    habilidades.forEach(h => {
+      if (h && h.valor > 0) {
+        var div = document.createElement("div");
+        // div.style.display="inline-block" //en linea si cabe entero
+        var ia = new InputArte(h,true);
+        ia.hidden = true;
+        ia.ok.addEventListener('click', (event) => {
+          console.log(`Aplicar desde ${ia.h.nombre} a Hechizo ${hechizo.h.nombre}`);
+          hechizo.actArtes();
+        });
+        objArtes[h.nombre]=ia;
+        div.appendChild(ia)
+        salida.appendChild(div);
+  
+      }
+    });
+  
+    function cambios() {
+      console.log('Cambios');
+      var op = document.getElementById('selArtes').options;
+      for (let index = 0; index < op.length; index++) {
+        visibilidad("ia-" + op[index].value, op[index].selected);
+        if(op[index].selected){
+          hechizo.setArte(objArtes[op[index].value])
+        }
+        else
+        hechizo.delArte(objArtes[op[index].value])
+      }
+      
+    }
+    function visibilidad(id, visible) {
+      document.getElementById(id).hidden = !visible;
+    }
+  
+  
+    // habilidades.forEach(n => {
+    //   h = p.getHabilidad(n);
+    //   console.log(h);
+    //   document.getElementById(`ia-${h.nombre}`).setPersonaje(p);
+    //   // document.getElementById(`ia-${h.nombre}`).setHabilidad(h);
+    // });
+  
+  }
+
+
+
 // createHab('habContent');
+
 
 function dark(params) {
     rolApp

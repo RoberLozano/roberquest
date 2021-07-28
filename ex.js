@@ -84,7 +84,7 @@ function ProcessExcel(data) {
   //   ws = workbook.Sheets[firstSheet];
   // }
   info();
-//HABILIDADES
+  //HABILIDADES
   h(21, 86, false);
   pe.act();
 
@@ -101,7 +101,7 @@ function ProcessExcel(data) {
 
   tipo = Magia;
   ws = workbook.Sheets['Magia'];
-  h(5, 20);
+  artes(5, 20);
   hechizos(23, 52)
 
   tipo = Manipulación;
@@ -114,7 +114,7 @@ function ProcessExcel(data) {
   // ws = workbook.Sheets['Inventario'];
   // equipo(2, 20)
 
-  if(last) console.log(diferencia(pe,last));
+  if (last) console.log(diferencia(pe, last));
 
   eval(`last=new ${pe.clase}()`)
   last.setAll(pe)
@@ -150,12 +150,12 @@ function tecnicas(inicio = 2, fin = 38, ceros = false, hab = 'A', pf = 'B', xp =
     let c = ws['N' + (i + 1)]?.v;
     let sc = ws['N' + (i + 2)]?.v;
 
-    console.log('descirpcion',descripcion);
-    console.log('fallo',f);
-    console.log('normal',n);
-    console.log('especial',e);
-    console.log('critico',c);
-    console.log('scritico',sc);
+    console.log('descirpcion', descripcion);
+    console.log('fallo', f);
+    console.log('normal', n);
+    console.log('especial', e);
+    console.log('critico', c);
+    console.log('scritico', sc);
 
 
     habilidad = new Tecnica(nombre, tipo, porcentaje, fatiga);
@@ -232,8 +232,8 @@ function armas(inicio, fin, n = 'A', p = 'D', seguir = true) {
   }
 }
 
-function arcos(inicio=34, fin=41,seguir = true, n = 'A', no='B', fue='C',
-recto = 'D',max='E', daño='J',bonAp='M', crit='T', diana='U', loc='V' ) {
+function arcos(inicio = 34, fin = 41, seguir = true, n = 'A', no = 'B', fue = 'C',
+  recto = 'D', max = 'E', daño = 'J', bonAp = 'M', crit = 'T', diana = 'U', loc = 'V') {
 
   for (let i = inicio; i <= fin; i++) {
     let nombre = ws[n + i]?.v;
@@ -306,8 +306,38 @@ function h(inicio, fin, ceros = true, hab = 'A', xp = 'B', valor = 'C', seguir =
     habilidad = new Habilidad(nombre, tipo, porcentaje);
     if (exp) habilidad.xp = exp;
     let f = fecha(i, fechaSubida)
+    if (f) habilidad.fecha = f;
 
     pe.habilidades[nombre] = habilidad;
+    // console.log(ws[nombre + i]?.v, ws[xp + i]?.v, ws[valor + i]?.v);
+    console.log(nombre, exp, porcentaje);
+    // console.log(habilidad);
+  }
+}
+
+function artes(inicio, fin, ceros = true, hab = 'A', xp = 'B', valor = 'C', seguir = true, fechaSubida = 'L') {
+  let habilidad = new Habilidad();
+
+  for (let i = inicio; i < fin; i++) {
+    let nombre = ws[hab + i]?.v;
+    if (!nombre) {
+      if (seguir) continue;
+      else return;
+    }
+
+    var porcentaje = ws[valor + i]?.v;
+    var exp = ws[xp + i]?.v
+    //si no se admiten 0 en el porcentaje y no tien xp se pasa a otro
+    if (!ceros && !porcentaje && !exp) {
+      continue;
+    }
+
+    habilidad = new Habilidad(nombre, tipo, porcentaje);
+    if (exp) habilidad.xp = exp;
+    let f = fecha(i, fechaSubida)
+    if (f) habilidad.fecha = f;
+
+    pe.habilidades[nombre] = new Arte(habilidad);
     // console.log(ws[nombre + i]?.v, ws[xp + i]?.v, ws[valor + i]?.v);
     console.log(nombre, exp, porcentaje);
     // console.log(habilidad);
@@ -338,7 +368,7 @@ function hechizos(inicio, fin, ceros = true, hab = 'A', xp = 'B', valor = 'C', p
 
     pe.habilidades[nombre] = habilidad;
     // console.log(ws[nombre + i]?.v, ws[xp + i]?.v, ws[valor + i]?.v);
-    console.log(nombre, exp, porcentaje,puntosm);
+    console.log(nombre, exp, porcentaje, puntosm);
     // console.log(habilidad);
   }
 }
@@ -416,8 +446,8 @@ function buscar(b, inicio, fin, col = 'A') {
 }
 
 
-function IUHechizos(p,div="salida") {
-  var salida=document.getElementById(div);
+function IUHechizos(p, div = "salida") {
+  var salida = document.getElementById(div);
 
   var nombres = [
     "Multiconjuro",
@@ -429,30 +459,30 @@ function IUHechizos(p,div="salida") {
     "Puntería",
     "Velocidad"
   ]
-  var habilidades=[]
+  var habilidades = []
 
   p.actTodosBonHab();
   nombres.forEach(n => {
     h = p.getHabilidad(n);
-    if (h&& h.valor>0) {
+    if (h && h.valor > 0) {
       habilidades.push(h)
       var div = document.createElement("div");
       // div.style.display="inline-block" //en linea si cabe entero
 
-      var ia= new InputArte(h);
+      var ia = new InputArte(h);
       div.appendChild(ia)
-      
+
       salida.appendChild(div);
 
     }
   });
 
-  var ih= new InputHechizo();
+  var ih = new InputHechizo();
   var div = document.createElement("div");
   ih.setPersonaje(p);
-      div.appendChild(ih)
-      salida.appendChild(div);
-      
+  div.appendChild(ih)
+  salida.appendChild(div);
+
   // habilidades.forEach(n => {
   //   h = p.getHabilidad(n);
   //   console.log(h);
@@ -525,7 +555,11 @@ function fecha(i, fecha) {
 }
 
 function guardar() {
-  ls(pe.nombre,pe);
+  ls(pe.nombre, pe);
+  var salida = document.getElementById('inputs');
+  var ic = new InputCustom(pe);
+  salida.appendChild(ic);
+
 }
 
 function pifias(inicio, fin) {
@@ -537,13 +571,13 @@ function pifias(inicio, fin) {
   }
 }
 
-function plot(dias=300){
+function plot(dias = 300) {
 
   let fmt = uPlot.fmtDate("{YYYY}-{MM}-{DD}");
-let tzDate = ts => uPlot.tzDate(new Date(ts * 1e3), 'Europe/London');
+  let tzDate = ts => uPlot.tzDate(new Date(ts * 1e3), 'Europe/London');
 
   let opts = {
-    title: `Subida en ${dias} días` ,
+    title: `Subida en ${dias} días`,
     id: "chart1",
     class: "my-chart",
     width: 800,
@@ -552,83 +586,86 @@ let tzDate = ts => uPlot.tzDate(new Date(ts * 1e3), 'Europe/London');
     series: [
       {
         label: "Fecha",
-        value: (self, rawValue) => new Date(rawValue*1000).fecha()},
+        value: (self, rawValue) => new Date(rawValue * 1000).fecha()
+      },
       {
         // initial toggled state (optional)
         show: true,
-  
+
         spanGaps: false,
-  
+
         // in-legend display
         label: "Intensidad",
-        value: (self, rawValue) =>  rawValue+"%",
-  
+        value: (self, rawValue) => rawValue + "%",
+
         // series style
         stroke: "red",
         width: 1,
- 
+
       }
     ],
     axes: [
       {
-      //	size: 30,
+        //	size: 30,
         label: "X Axis Label",
         labelSize: 20,
         values: [
           // tick incr  default       year                        month   day                  hour   min               sec  mode 
-          [3600*24*365,"{YYYY}",      null,                       null, null,                  null, null,              null, 1],
-          [3600*24*28, "{MMM}",       "\n{YYYY}",                 null, null,                  null, null,              null, 1],
-          [3600*24,    "{D}/{M}",     "\n{YYYY}",                 null, null,                  null, null,              null, 1],
-          [3600,       "{HH}",        "\n{D}/{M}/{YY}",           null, "\n{D}/{M}",           null, null,              null, 1],
-          [60,         "{HH}:{mm}",   "\n{D}/{M}/{YY}",           null, "\n{D}/{M}",           null, null,              null, 1],
-          [1,          ":{ss}",       "\n{D}/{M}/{YY} {HH}:{mm}", null, "\n{D}/{M} {HH}:{mm}", null, "\n{HH}:{mm}",     null, 1],
-          [0.001,      ":{ss}.{fff}", "\n{D}/{M}/{YY} {HH}:{mm}", null, "\n{D}/{M} {HH}:{mm}", null, "\n{HH}:{mm}",     null, 1],
-                    ]},
+          [3600 * 24 * 365, "{YYYY}", null, null, null, null, null, null, 1],
+          [3600 * 24 * 28, "{MMM}", "\n{YYYY}", null, null, null, null, null, 1],
+          [3600 * 24, "{D}/{M}", "\n{YYYY}", null, null, null, null, null, 1],
+          [3600, "{HH}", "\n{D}/{M}/{YY}", null, "\n{D}/{M}", null, null, null, 1],
+          [60, "{HH}:{mm}", "\n{D}/{M}/{YY}", null, "\n{D}/{M}", null, null, null, 1],
+          [1, ":{ss}", "\n{D}/{M}/{YY} {HH}:{mm}", null, "\n{D}/{M} {HH}:{mm}", null, "\n{HH}:{mm}", null, 1],
+          [0.001, ":{ss}.{fff}", "\n{D}/{M}/{YY} {HH}:{mm}", null, "\n{D}/{M} {HH}:{mm}", null, "\n{HH}:{mm}", null, 1],
+        ]
+      },
       ,
       {
         space: 50,
-      //	size: 40,
+        //	size: 40,
         side: 1,
         label: "Y Axis Label",
-      //	labelSize: 20,
+        //	labelSize: 20,
         stroke: "red",
         class: "foo",
       }
     ],
   };
 
-  let data =pe.simularTiradasDia('Intensidad',10,dias)
-  
+  let data = pe.simularTiradasDia('Intensidad', 10, dias)
+
   let uplot = new uPlot(opts, data, document.body);
 }
 
-var w = cargaLocalObjeto("Wolfstein Einhorn");
+// var w = cargaLocalObjeto("Wolfstein Einhorn");
 
-var r = cargaLocalObjeto("Rosssel");
+//CAMBIAFORMAS
+// var r = cargaLocalObjeto("Rosssel");
 
-var d = new Dragon({nombre:'Dragón', FUE:77})
-console.log(d);
+// var d = new Dragon({nombre:'Dragón', FUE:77})
+// console.log(d);
 
-r.cuerpo.dañarLocalizacion(3,7);
-r.cambiaformas(d)
+// r.cuerpo.dañarLocalizacion(3,7);
+// r.cambiaformas(d)
 
-var salida=document.getElementById('inputs');
 
-class C1 {
-    constructor(a,b,c,d) {
-			this.a = a
-      this.b = b
-      this.c = c
-      this.d = d
 
-  }
-}
+// class C1 {
+//     constructor(a,b,c,d) {
+// 			this.a = a
+//       this.b = b
+//       this.c = c
+//       this.d = d
 
-var c1 = new C1(1,'2',3,'Rober');
-var ic= new InputCustom(c1,['a','b','d']);
-var ic2= new InputCustom(c1);
-salida.appendChild(ic);
-salida.appendChild(ic2);
+//   }
+// }
+
+// var c1 = new C1(1,'2',3,'Rober');
+// var ic= new InputCustom(c1,['a','b','d']);
+// var ic2= new InputCustom(d);
+// salida.appendChild(ic);
+// salida.appendChild(ic2);
 
 // let resultados = [];
 // for (let i = 0; i <= 100; i++)

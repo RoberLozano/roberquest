@@ -319,7 +319,7 @@ class ArmaNatural {
   }
 }
 
-class Animal {
+class Animal extends Clase {
   constructor(
     {
       nombre = "Anónimo",
@@ -335,7 +335,8 @@ class Animal {
     }
 
   ) {
-    this.clase = this.constructor.name;
+    super();
+    // this.clase = this.constructor.name;
     this.car = {}
     this.nombre = nombre
     this.peso = peso
@@ -913,8 +914,9 @@ class Animal {
   }
 
   getClaseHabilidad(clase) {
-    if (typeof clase === "string")
-    return Object.values(this.habilidades).filter(obj => obj.constructor.name=== clase)
+    if (typeof clase === "string"){
+      return Object.values(this.habilidades).filter(obj => obj.constructor.name=== clase)
+    }
 
     return Object.values(this.habilidades).filter(obj => obj instanceof clase);
   }
@@ -1010,53 +1012,53 @@ class Animal {
    * o no, si tiene las mismas propiedades
    * @param {*} o El objeto del cual se copia todo
    */
-  setAll(o) {
-    for (let key in o) {
-      this[key] = o[key];
-      // console.log(this[key]);
+  // setAll(o) {
+  //   for (let key in o) {
+  //     this[key] = o[key];
+  //     // console.log(this[key]);
 
-      //TODO: Parece que va
-      if (key == "cuerpo") {
-        this.cuerpo = new Localizaciones();
-        this.cuerpo.setAll(o[key]);
-
-
-      }
-
-      if (key == "inventario") {
-        this.inventario = new Contenedor();
-        this.inventario.setAll(o[key]);
-      }
+  //     //TODO: Parece que va
+  //     if (key == "cuerpo") {
+  //       this.cuerpo = new Localizaciones();
+  //       this.cuerpo.setAll(o[key]);
 
 
-      //TODO: Parece que va
-      if (key == "efectos") {
-        this.efectos = [];
-        o["efectos"].forEach(element => {
-          let e = new Efecto()
-          e.setAll(element);
-          this.addEfecto(e);
-        });
+  //     }
 
-      }
+  //     if (key == "inventario") {
+  //       this.inventario = new Contenedor();
+  //       this.inventario.setAll(o[key]);
+  //     }
 
-      //TODO: Parece que va
-      if (key == "habilidades") {
-        // this.habilidades = {}
-        for (let k in o[key]) {
-          // console.log("setAll habilidades"+k);
-          let h = new Habilidad();
-          if (o[key][k].hasOwnProperty("pm")) { h = new Hechizo() }
-          if (o[key][k].hasOwnProperty("arma")) { h = new HabilidadMarcial() }
-          h.setAll(o[key][k])
-          // console.log(h);
-          this.habilidades[h.nombre] = h;
-        }
 
-      }
+  //     //TODO: Parece que va
+  //     if (key == "efectos") {
+  //       this.efectos = [];
+  //       o["efectos"].forEach(element => {
+  //         let e = new Efecto()
+  //         e.setAll(element);
+  //         this.addEfecto(e);
+  //       });
 
-    }
-  }
+  //     }
+
+  //     //TODO: Parece que va
+  //     if (key == "habilidades") {
+  //       // this.habilidades = {}
+  //       for (let k in o[key]) {
+  //         // console.log("setAll habilidades"+k);
+  //         let h = new Habilidad();
+  //         if (o[key][k].hasOwnProperty("pm")) { h = new Hechizo() }
+  //         if (o[key][k].hasOwnProperty("arma")) { h = new HabilidadMarcial() }
+  //         h.setAll(o[key][k])
+  //         // console.log(h);
+  //         this.habilidades[h.nombre] = h;
+  //       }
+
+  //     }
+
+  //   }
+  // }
 
   print() {
     for (let key in this) {
@@ -1114,6 +1116,9 @@ class Animal {
     // if(oldManipulación !=this.Manipulación) actBonHab(Manipulación);
     // if(oldPercepción !=this.Percepción) actBonHab(Percepción);
     // if(oldSigilo !=this.Sigilo) actBonHab(Sigilo);
+    if(!this.PF) this.PF=this.getMaxPuntos(PF)
+    if(!this.PM) this.PM=this.getMaxPuntos(PM)
+
     this.actTodosBonHab();
     this.cuerpo?.actPG(this.getMaxPuntos(PG));
 
@@ -2042,8 +2047,8 @@ function cargaLocalObjeto(nombre) {
 
   if (clase) {
     var o;
-    eval(`o=new ${clase}({})`) //un poco más rápida pero menos segura
-    // pe = (Function('return new ' + clase))() //se supone que es más segura
+    // eval(`o=new ${clase}({})`) //un poco más rápida pero menos segura
+    o = (Function('return new ' + clase))() //se supone que es más segura
     //TODO: hacer pruebas de rendimiento;
     o.setAll(obj)
     console.log(o);
@@ -2063,6 +2068,7 @@ function guerrero(personaje, nivel, ...armas) {
     personaje.inventario.add(arma);
     personaje.setHabilidad(new HabilidadMarcial(a, Manipulación, 25 + (nivel * 10), true, "Brazo D", arma));
 
+    personaje.setHabilidad(new Tecnica('MAtalobos',Manipulación,30,3,true))
 
     personaje.act();
   });
@@ -2080,7 +2086,7 @@ function guerrero(personaje, nivel, ...armas) {
 
 }
 
-// guerrero(pj, 10, 'espada', 'arco', 'daga')
+guerrero(pj, 10, 'espada', 'arco', 'daga')
 
 // let armanat = new ArmaNatural("puño", "1d3C", "Brazo D");
 // console.log(armanat);

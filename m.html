@@ -347,7 +347,7 @@
         <li><a href="index.html">Escritorio<i class="material-icons">desktop_windowsh</i></a></li>
         <li><a class="waves-effect" href="dados.html">Dados<i><img class="icon" src="img/10_sided_die.svg" height="24"
                         width="24" /></i></a></li>
-        <li><a class="waves-effect" id="hablarLista" onclick="hablar(true)">Dictar lista (con y)<i
+        <li><a class="waves-effect" id="dictar" onclick="hablar(true)">Dictar comando<i
                     class="material-icons">mic</i></a></li>
         <!-- <li><a>
             Label
@@ -686,6 +686,9 @@
 
     <script src='js/rol.js'></script>
     <script src="js/iu.js"></script>
+
+    <!-- Script de reconocimiento de voz del rol -->
+    <script src="js/voz-rol.js"></script>
     <script>
         $(document).ready(function () {
             $('.sidenav').sidenav();

@@ -14,8 +14,6 @@
 
         }
 
-
-
         input {
             border: 0;
             outline: 0;
@@ -24,8 +22,8 @@
 
         input:focus {
             outline: none !important;
-              /* border-bottom: 2px solid red;   */
-            box-shadow:inset 0 0 10px red,0 0 10px red;
+            /* border-bottom: 2px solid red;   */
+            box-shadow: inset 0 0 10px red, 0 0 10px red;
         }
 
         .icon-black {
@@ -77,6 +75,12 @@
 
         }
 
+        .n3 {
+            text-align: right;
+            width: 3em;
+        }
+
+        /* invierte el color del icono calendario */
         ::-webkit-calendar-picker-indicator {
             filter: invert(1);
         }
@@ -101,6 +105,50 @@
 
 
     <div id='app' ng-app="rolApp" ng-controller="rolController">
+
+        <md-toolbar class="md-hue-2">
+            <div class="md-toolbar-tools">
+                <md-button class="md-icon-button" aria-label="Settings" ng-click="toggleLeft()">
+                    <img src="img/icons/menu.svg"></img>
+                </md-button>
+
+                <h2 flex md-truncate>Angular Roberquest</h2>
+                <input type="datetime-local"  ng-model="fecha" id="barFecha">
+
+                <md-button class="md-icon-button" aria-label="Favorite">
+                    <img src="img/check.svg" onclick=""></img>
+            </div>
+        </md-toolbar>
+
+        <md-sidenav class="md-sidenav-left" md-component-id="left" md-whiteframe="4">
+
+            <md-toolbar class="md-theme-indigo">
+                <h1 class="md-toolbar-tools">Disabled Backdrop</h1>
+            </md-toolbar>
+
+            <md-content layout-margin="">
+                <p>
+                    Puto sidenav.
+                </p>
+                <input type="file" name="inputfile" id="inputfile">
+                <md-button onclick="pjUpload('inputfile')" class="md-accent">
+                    Cargar archivo
+                </md-button>
+                <md-button onclick="download(pj.nombre+'.json',JSON.stringify(pj))" class="md-accent">
+                    Guardar en archivo
+                </md-button>
+                <md-button onclick="ls(pj.nombre,pj)" class="md-accent">
+                    Guardar local
+                </md-button>
+                <md-button ng-click="guardar()" class="md-accent">
+                    Guardar personaje                </md-button>
+                <md-button ng-click="toggleLeft()" class="md-accent">
+                    Close this Sidenav
+                </md-button>
+            </md-content>
+
+        </md-sidenav>
+
 
 
         <!-- <select ng-model="sel.pj" ng-options="x for x in listaPersonajes" ng-change="cargar(sel.pj)">
@@ -132,7 +180,7 @@
             <label>Title</label>
             <input ng-model="p.nombre" onclick="select()">
         </md-input-container> -->
-        <div>
+        <div hidden >
             Habilidades<br>
             <mi-hab nombre='Esquivar'></mi-hab>
             <in-habilidad id="h1" filtro="h.tipo==='Agilidad'"></in-habilidad>
@@ -152,7 +200,7 @@
         <!-- <md-datepicker ng-model="fecha" md-placeholder="Enter date"
             input-aria-describedby="datepicker-description" input-aria-labelledby="datepicker-header " value=></md-datepicker>
         <input type="datetime-local" ng-model="fecha" id="birthdaytime" name="birthdaytime"> -->
-        <input type=datetime-local ng-model="fecha" step="1">
+        <input type=datetime-local  id="dtFecha" ng-model="fecha" step="1" onchange="act()">
 
         <md-content>
             <md-tabs md-dynamic-height md-border-bottom>
@@ -246,9 +294,15 @@
                 </md-tab>
                 <md-tab label="Magia">
                     <md-content class="md-padding">
-
-                        <in-habilidad id="in-hechizo" clase="Hechizo" img='img/magic-wand-aqua.svg'></in-habilidad>
-                        <in-habilidad id="magias" filtro="h.tipo==='Magia'"></in-habilidad>
+                        <md-input-container>
+                            <label>Habilidades</label>
+                            <md-select ng-model="artSel" ng-change="arteCambiado()" multiple >
+                                <md-option ng-repeat="c in p.getClaseHabilidad('Arte')" ng-value="c.nombre">
+                                    {{c.nombre}}
+                                </md-option>
+                            </md-select>
+                        </md-input-container>
+                        <div id='magia'></div>
                     </md-content>
                 </md-tab>
                 <md-tab label="Habilidades Mat">
@@ -310,18 +364,30 @@
 
                         <tr ng-repeat="c in CP">
                             <td>{{ c }}</td>
-                            <td>{{ p[c] }}<input type="number" ng-model="p[c]"></td>
+                            <td><input type="number" class='n3' ng-model="p[c]"></td>
                             <td><input type="number" ng-model="p.bonificacion[c]"
                                     ng-style="{ 'color': (p.bonificacion[c]>0 ? 'green' : 'red') ,'width': '2.5em'}">
                             </td>
                             <td>{{p.getCar(c) }}</td>
-                            <td>{{ TH[$index] }}</td>
-                            <td>{{p.getCar(TH[$index]) }}</td>
+                            <td style="text-align:right">{{ TH[$index] }}</td>
+                            <td ng-style="{ 'color': (p.getCar(TH[$index])>0 ? 'green' : 'red')}">{{p.getCar(TH[$index]) }}</td>
 
                         </tr>
                     </table>
 
                 </td>
+            </tr>
+            <tr><td>Puntos</td>
+                <td><table>
+                    <td>PG</td>
+                    <td><input type="number" class='n3' ng-model="p.cuerpo.pg"></td>
+                    <td>PF</td>
+                    <td><input type="number" class='n3' ng-model="p.PF"></td>
+                    <td>PM</td>
+                    <td><input type="number" class='n3' ng-model="p.PM"></td>
+                </table></td>
+
+      
             </tr>
             <tr>
                 <td>Habilidades:</td>
@@ -345,7 +411,8 @@
                                     style="width: 4em;"></td>
                             <td ng-style="{ 'color': (subject.bh>0 ? 'green' : 'red')}">{{ subject.bh }}</td>
                             <td>{{ subject.v }}</td>
-                            <td ng-if='p.getHabilidad(subject.nombre).subible()<100'><small>{{subject.subible()}}&#129045;</small></td>
+                            <td ng-if='p.getHabilidad(subject.nombre).subible()<100'>
+                                <small>{{subject.subible()}}&#129045;</small></td>
                         </tr>
                     </table>
                 </td>
@@ -356,13 +423,7 @@
 
 
     </div>
-    <md-button class="md-fab md-fab-bottom-right" aria-label="Add a category">
-        <md-icon>add</md-icon>
-    </md-button>
-    <button class="md-fab md-fab-bottom-right docs-scroll-fab md-button md-ink-ripple scrolling" type="button"
-        ng-transclude="" docs-scroll-class="scrolling" aria-label="Back to Top"></button>
-
-
+    <div id='salida'></div>
 
     <script src='js/D.js'></script>
     <script src='js/habilidades.js'></script>
