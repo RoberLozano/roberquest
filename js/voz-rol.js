@@ -8,16 +8,16 @@ var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEv
 // var colors = [ 'aqua' , 'azure' , 'beige', 'bisque', 'black', 'blue', 'brown', 'chocolate', 'coral', 'crimson', 'cyan', 'fuchsia', 'ghostwhite', 'gold', 'goldenrod', 'gray', 'green', 'indigo', 'ivory', 'khaki', 'lavender', 'lime', 'linen', 'magenta', 'maroon', 'moccasin', 'navy', 'olive', 'orange', 'orchid', 'peru', 'pink', 'plum', 'purple', 'red', 'salmon', 'sienna', 'silver', 'snow', 'tan', 'teal', 'thistle', 'tomato', 'turquoise', 'violet', 'white', 'yellow'];
 
 
-var STOP = "detener dictado";
+var regSTOP = /parar|detener|acabar|terminar|stop|finalizar|fin dictado/gi
 
-var colors = ['Skasendor', 'Rosssel', 'esca', 'sendor', 'agua', 'azul', 'beis', 'negro', 'blanco', 'blue', 'marron', 'chocolate', 'coral', 'escarlata', 'rojo', 'verde']
-var grammar = '#JSGF V1.0; grammar colors; public <color> = ' + colors.join(' | ') + ' ;'
+// var colors = ['Skasendor', 'Rosssel', 'esca', 'sendor', 'agua', 'azul', 'beis', 'negro', 'blanco', 'blue', 'marron', 'chocolate', 'coral', 'escarlata', 'rojo', 'verde']
+// var grammar = '#JSGF V1.0; grammar colors; public <color> = ' + colors.join(' | ') + ' ;'
 
 var resultado = "";
 var recognition = new SpeechRecognition();
-var speechRecognitionList = new SpeechGrammarList();
-speechRecognitionList.addFromString(grammar, 1);
-recognition.grammars = speechRecognitionList;
+// var speechRecognitionList = new SpeechGrammarList();
+// speechRecognitionList.addFromString(grammar, 1);
+// recognition.grammars = speechRecognitionList;
 
 
 //true para que escuche todo el tiempo
@@ -54,7 +54,7 @@ function hablar() {
 
     recognition.start();
     console.log('Preparado para escuchar');
-    console.log(`Diga '${STOP}' para detener la escucha`);
+    console.log(`Diga '${regSTOP}' para detener la escucha`);
 
 
     boton.style.color = "green";
@@ -88,10 +88,11 @@ recognition.onresult = function (event) {
     //   console.log(time);
 
     if (last.confidence < 0.5) console.log(event.results[event.results.length - 1]);
-
     lastTime = time;
 
-    if (last.transcript.includes(STOP)) {
+    var td = regSTOP.test(last.transcript);
+    // if (last.transcript.includes(STOP)) {
+    if (td) {
         console.log('DETENER');
         recognition.stop();
     }
@@ -122,7 +123,7 @@ recognition.onerror = function (event) {
 var synth = window.speechSynthesis;
 
 function speak(texto) {
-    console.log(synth.getVoices());
+    // console.log(synth.getVoices());
     if (synth.speaking) {
         console.error('speechSynthesis.speaking');
         return;
@@ -137,7 +138,7 @@ function speak(texto) {
         console.error('SpeechSynthesisUtterance.onerror');
     }
 
-    // utterThis.voice = synth.getVoices()[0];
+    // utterThis.voice = synth.getVoices()[7];
     // utterThis.pitch = 1.3
     // utterThis.rate = 1.3
     synth.speak(utterThis);
@@ -152,12 +153,26 @@ function voz(dictado) {
     var expresion = /localización (\d*)/i;
     var hallado = dictado.match(expresion);
 
-    console.log(hallado);
+    // console.log(hallado);
     if (hallado)
         localizacion(hallado[1])
     // if (dictado.includes('localización')){
     //     dictado.
     // }
+
+    var erPuntos = /puntos de (golpe|vida|magia|fatiga|resistencia)/i;
+    var p=dictado.match(erPuntos);
+    if(p){
+        console.log(p);
+        puntos(p[1])
+    }
+
+    // var h=dictado.match(/habilidad (w+)/i);
+    var h=dictado.match(/habilidad/i);
+    if(h){
+        console.log(h);
+        // console.log(h[1]);
+    }
 
 }
 
@@ -184,4 +199,30 @@ function localizacion(valor) {
     speak(l)
 }
 
+function puntos(tipo) {
+    var p;
+    switch (tipo) {
+        case 'golpe':
+        case 'vida':
+        case 'salud':
+            p = 'PG'
+            break;
+        case 'magia':
+            p = 'PM'
+            break;
+        case 'fatiga':
+            p = 'PF'
+            break;
+
+        default:
+            break;
+    }
+    console.log(p,pj.getCar(p));
+    speak(pj.getCar(p) + ' puntos de' + tipo)
+
+}
+
+function habilidad(nombre) {
+    
+}
 //#endregion
