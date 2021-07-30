@@ -577,17 +577,46 @@ function toogle(id = "buscador") {
   }
 }
 
-//BUSCAR
-$("#buscar").on("keyup", function () {
-  var value = $(this).val().toLowerCase();
+function iuBuscar(id = "buscador") {
+  let x = document.getElementById(id);
+    x.style.display = "block";
+}
+
+function iniciarBusqueda(texto) {
   $("#tbHab tr").filter(function () {
-    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    $(this).toggle($(this).text().toLowerCase().indexOf(texto) > -1)
   });
 
   //que filtre tambien las Marciales
   $("#tbHabMarciales tr").filter(function () {
-    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    $(this).toggle($(this).text().toLowerCase().indexOf(texto) > -1)
   });
+
+  //que filtre también el inventario
+  $("#tbInv tr").filter(function () {
+    $(this).toggle($(this).text().toLowerCase().indexOf(texto) > -1)
+  });
+  
+}
+
+//BUSCAR
+$("#buscar").on("keyup", function () {
+  var value = $(this).val().toLowerCase();
+  iniciarBusqueda(value);
+  // $("#tbHab tr").filter(function () {
+  //   $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+  // });
+
+  // //que filtre tambien las Marciales
+  // $("#tbHabMarciales tr").filter(function () {
+  //   $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+  // });
+
+  // //que filtre también el inventario
+  // $("#tbInv tr").filter(function () {
+  //   $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+  // });
+
 
 });
 

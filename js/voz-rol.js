@@ -160,7 +160,8 @@ function voz(dictado) {
     //     dictado.
     // }
 
-    var erPuntos = /puntos de (golpe|vida|magia|fatiga|resistencia)/i;
+    // var erPuntos = /puntos de (golpe|vida|magia|fatiga|resistencia)/i;
+    var erPuntos = /puntos de (.*)/i;
     var p=dictado.match(erPuntos);
     if(p){
         console.log(p);
@@ -174,9 +175,21 @@ function voz(dictado) {
         // console.log(h[1]);
     }
 
+    var b=dictado.match(/buscar (.*)/i);
+    if(b){
+        console.log(b);
+        buscar(b[1])
+    }
+
 }
 
-function buscarHabilidad(habilidad) {
+function buscar(busqueda) {
+    // se muestra el buscador
+    iuBuscar();
+    // $("#buscar").val(busqueda)
+    document.getElementById('buscar').value=busqueda; 
+
+    iniciarBusqueda(busqueda)
 
 }
 
@@ -215,6 +228,7 @@ function puntos(tipo) {
             break;
 
         default:
+            p=tipo.substring(0,3).toUpperCase()
             break;
     }
     console.log(p,pj.getCar(p));
