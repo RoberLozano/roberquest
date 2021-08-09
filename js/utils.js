@@ -301,6 +301,11 @@ function upload(fileInputId,personaje) {
 
 };
 
+function mayuscula(string) {
+  return string[0].toUpperCase() + string.slice(1);
+  
+}
+
 /** Elimina los diacríticos de un texto (excepto la ñ)
  * 
  * @param {String} texto el texto que normalizar
@@ -312,6 +317,7 @@ function upload(fileInputId,personaje) {
          .replace(/([^n\u0300-\u036f]|n(?!\u0303(?![\u0300-\u036f])))[\u0300-\u036f]+/gi,"$1")
          .normalize();
 }
+
 //#region similitud de cadenas
 //similitud de cadenas
 

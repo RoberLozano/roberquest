@@ -43,6 +43,7 @@ var hablado;
 function hablar() {
 
     boton = document.getElementById("dictar");
+    boton = document.getElementById("mic");
     //   hablado = document.getElementById("hablado");
     if (boton.style.color == "green") //ya esta escuchando y se para
     {
@@ -169,10 +170,11 @@ function voz(dictado) {
     }
 
     // var h=dictado.match(/habilidad (w+)/i);
-    var h=dictado.match(/habilidad/i);
+    var h=dictado.match(/habilidad (.*)/i);
     if(h){
         console.log(h);
         // console.log(h[1]);
+        habilidad(h[1]);
     }
 
     var b=dictado.match(/buscar (.*)/i);
@@ -188,9 +190,7 @@ function buscar(busqueda) {
     iuBuscar();
     // $("#buscar").val(busqueda)
     document.getElementById('buscar').value=busqueda; 
-
     iniciarBusqueda(busqueda)
-
 }
 
 function localizacion(valor) {
@@ -237,6 +237,11 @@ function puntos(tipo) {
 }
 
 function habilidad(nombre) {
-    
+    try {
+       var h= pj.getHabilidad(mayuscula(nombre));
+       speak (`${h.nombre} ${h.v}%`)
+    } catch (error) {
+        
+    }
 }
 //#endregion
