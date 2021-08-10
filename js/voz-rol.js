@@ -39,28 +39,43 @@ var hablando=false;
 //   console.log('Ready to receive a color command.');
 // }
 
+var escuchando=false;
+function escuchar() {
+    boton = document.getElementById("dictar");
+    mic = document.getElementById("mic");
+    boton.style.color = "green";
+
+    mic.classList.remove("red");
+    mic.classList.add("green");
+    console.log('Preparado para escuchar');
+    console.log(`Diga '${regSTOP}' para detener la escucha`);
+    escuchando=true;
+    recognition.start();
+    
+}
+
+
 /**Funcion que inicializa el dictado
  * 
  */
 function hablar() {
 
-    boton = document.getElementById("dictar");
-    boton = document.getElementById("mic");
+
     //   hablado = document.getElementById("hablado");
-    if (boton.style.color == "green") //ya esta escuchando y se para
+    if (escuchando) //ya esta escuchando y se para
     {
         recognition.stop();
         console.log('Dictado parado');
         return;
     }
     console.log('Botón de hablar pulsado');
+    escuchar();
 
-    recognition.start();
-    console.log('Preparado para escuchar');
-    console.log(`Diga '${regSTOP}' para detener la escucha`);
+    
 
 
-    boton.style.color = "green";
+
+ 
 
 }
 
@@ -85,6 +100,11 @@ recognition.onresult = function (event) {
 
     // console.log('Confidence: ' + last.confidence);
     var time = Date.now();
+    boton.style.color = "green";
+    console.log(mic);
+    mic.classList.remove("red");
+    mic.classList.add("green");
+
 
     // if((time-lastTime)<713){//si es el eco del anterior salimos (vamos con 300 ms)
     //     console.log("repetido");
@@ -109,17 +129,26 @@ recognition.onresult = function (event) {
 
 recognition.onspeechend = function () {
     // recognition.stop();
+    console.log('recognition.onspeechend');
     boton.style.color = "";
+    mic.classList.remove("green");
+    mic.classList.add("red");
+    escuchando=false;
 }
 
 recognition.onnomatch = function (event) {
     console.log("No reconoce lo dicho");
     boton.style.color = "red";
+    mic.classList.remove("green");
+    mic.classList.add("red");
 }
 
 recognition.onerror = function (event) {
     console.log('Error occurred in recognition: ' + event.error);
     boton.style.color = "red";
+    mic.classList.remove("green");
+    mic.classList.add("red");
+    escuchando=false;
 
 }
 
@@ -143,7 +172,8 @@ function speak(texto) {
     var utterThis = new SpeechSynthesisUtterance(texto);
     utterThis.onend = function (event) {
         console.log('SpeechSynthesisUtterance.onend');
-        recognition.start()
+        // recognition.start()
+        escuchar()
         hablando=false;
         console.log('TERMINA DE HABLAR');
     }
