@@ -1,6 +1,6 @@
 {
   "lock": false,
-  "active": "a08e11119aefc863a42db70003513594d2824191",
+  "active": "80b56954153ad37a0cf5f79d28eff6bc38c17023",
   "sets": {
     "default": {
       "source": "default",
@@ -113,23 +113,7 @@
         "a08e11119aefc863a42db70003513594d2824191": {
           "name": "Excel",
           "data": [
-            "c:\\GitHub\\roberquest\\js\\habilidades.js",
-            "c:\\GitHub\\roberquest\\ex.js",
-            "c:\\GitHub\\roberquest\\js\\amat.js",
-            "c:\\GitHub\\roberquest\\index.html",
-            "c:\\GitHub\\roberquest\\excel.htm",
-            "c:\\GitHub\\roberquest\\js\\utils.js",
-            "c:\\Program Files\\Microsoft VS Code\\resources\\app\\extensions\\node_modules\\typescript\\lib\\lib.dom.d.ts",
-            "c:\\GitHub\\roberquest\\.gitignore",
-            "c:\\GitHub\\roberquest\\mobile.html",
-            "c:\\GitHub\\roberquest\\js\\voz-rol.js",
-            "c:\\GitHub\\roberquest\\m.html",
-            "c:\\GitHub\\roberquest\\js.html",
-            "c:\\GitHub\\roberquest\\js\\rol.js",
-            "c:\\GitHub\\roberquest\\js\\iu.js",
-            "c:\\GitHub\\roberquest\\js\\script.js",
-            "c:\\GitHub\\roberquest\\js\\localizaciones.js",
-            "c:\\GitHub\\roberquest\\rol\\localizaciones.js"
+            "c:\\GitHub\\roberquest\\js\\voz-rol.js"
           ]
         },
         "54e0c177acca401a573a8c0614f65dee6d9008ce": {
@@ -139,6 +123,13 @@
             "c:\\GitHub\\roberquest\\js\\utils.js",
             "c:\\GitHub\\roberquest\\js\\amat.js",
             "c:\\GitHub\\roberquest\\amat.html"
+          ]
+        },
+        "80b56954153ad37a0cf5f79d28eff6bc38c17023": {
+          "name": " voz",
+          "data": [
+            "c:\\GitHub\\roberquest\\js\\voz-rol.js",
+            "c:\\GitHub\\roberquest\\m.html"
           ]
         }
       }

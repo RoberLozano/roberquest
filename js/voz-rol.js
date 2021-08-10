@@ -32,6 +32,8 @@ var y = false;
 var boton;
 var hablado;
 
+// si está hablando para que no procese lo escuchado
+var hablando=false;
 // document.body.onclick = function() {
 //   recognition.start();
 //   console.log('Ready to receive a color command.');
@@ -84,8 +86,12 @@ recognition.onresult = function (event) {
     // console.log('Confidence: ' + last.confidence);
     var time = Date.now();
 
+    // if((time-lastTime)<713){//si es el eco del anterior salimos (vamos con 300 ms)
+    //     console.log("repetido");
+    //      return;
+    //     } 
     console.log(`${last.transcript}  (${last.confidence}) [${time}]`);
-    voz(last.transcript);
+    if(!hablando)voz(last.transcript);
     //   console.log(time);
 
     if (last.confidence < 0.5) console.log(event.results[event.results.length - 1]);
@@ -125,6 +131,7 @@ var synth = window.speechSynthesis;
 
 function speak(texto) {
     // console.log(synth.getVoices());
+    hablando=true;
     if (synth.speaking) {
         console.error('speechSynthesis.speaking');
         return;
@@ -133,6 +140,7 @@ function speak(texto) {
     var utterThis = new SpeechSynthesisUtterance(texto);
     utterThis.onend = function (event) {
         console.log('SpeechSynthesisUtterance.onend');
+        hablando=false
     }
 
     utterThis.onerror = function (event) {
