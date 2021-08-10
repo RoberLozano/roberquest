@@ -129,7 +129,11 @@
           "name": " voz",
           "data": [
             "c:\\GitHub\\roberquest\\js\\voz-rol.js",
-            "c:\\GitHub\\roberquest\\m.html"
+            "c:\\GitHub\\roberquest\\m.html",
+            "c:\\Program Files\\Microsoft VS Code\\resources\\app\\extensions\\node_modules\\typescript\\lib\\lib.dom.d.ts",
+            "c:\\GitHub\\roberquest\\js\\speechRec.js",
+            "c:\\GitHub\\roberquest\\js\\utils.js",
+            "c:\\GitHub\\roberquest\\speech.html"
           ]
         }
       }

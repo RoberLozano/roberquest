@@ -91,6 +91,7 @@ recognition.onresult = function (event) {
     //      return;
     //     } 
     console.log(`${last.transcript}  (${last.confidence}) [${time}]`);
+   
     if(!hablando)voz(last.transcript);
     //   console.log(time);
 
@@ -107,7 +108,7 @@ recognition.onresult = function (event) {
 }
 
 recognition.onspeechend = function () {
-    recognition.stop();
+    // recognition.stop();
     boton.style.color = "";
 }
 
@@ -131,7 +132,9 @@ var synth = window.speechSynthesis;
 
 function speak(texto) {
     // console.log(synth.getVoices());
+    recognition.stop()
     hablando=true;
+    console.log('EMPIEZA A HABLAR');
     if (synth.speaking) {
         console.error('speechSynthesis.speaking');
         return;
@@ -140,7 +143,9 @@ function speak(texto) {
     var utterThis = new SpeechSynthesisUtterance(texto);
     utterThis.onend = function (event) {
         console.log('SpeechSynthesisUtterance.onend');
-        hablando=false
+        recognition.start()
+        hablando=false;
+        console.log('TERMINA DE HABLAR');
     }
 
     utterThis.onerror = function (event) {
