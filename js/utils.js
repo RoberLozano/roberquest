@@ -318,6 +318,14 @@ function mayuscula(string) {
          .normalize();
 }
 
+function conNumeros(texto) {
+  return texto.replace(' uno',  ' 1')
+              .replace(' una',  ' 1')
+              .replace(' un',   ' 1')
+              .replace(' dos',  ' 2')
+              .replace(' tres', ' 3');
+}
+
 //#region similitud de cadenas
 //similitud de cadenas
 

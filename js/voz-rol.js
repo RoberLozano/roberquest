@@ -194,6 +194,8 @@ function speak(texto) {
 
 function voz(dictado) {
     // if(dictado.)
+
+    dictado=conNumeros(dictado)
     var expresion = /localización (\d*)/i;
     var hallado = dictado.match(expresion);
 
@@ -226,7 +228,8 @@ function voz(dictado) {
         buscar(b[1])
     }
 
-    var av=dictado.match(/avanzar (\d+) (segundo|minuto|hora|día|mes|año)s*/i);
+
+    var av=dictado.match(/avanzar (\d+) (segundo|minuto|hora|día|semana|mes|año)s*/i);
     if(av){
         console.log(av);
         avanzar(av[2],av[1])
