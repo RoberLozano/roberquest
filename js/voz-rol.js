@@ -226,6 +226,13 @@ function voz(dictado) {
         buscar(b[1])
     }
 
+    var av=dictado.match(/avanzar (\d+) (segundo|minuto|hora|día|mes|año)s*/i);
+    if(av){
+        console.log(av);
+        avanzar(av[2],av[1])
+    }
+
+
 }
 
 function buscar(busqueda) {
@@ -286,5 +293,10 @@ function habilidad(nombre) {
     } catch (error) {
         
     }
+}
+function avanzar(periodo,n) {
+    // fechaMundo.mod(periodo,+n)
+    periodo=periodo.replace('día','dia') //tal vez problema con í, ñapa
+    console.log(fechaMundo.mod(periodo,+n));
 }
 //#endregion

@@ -92,16 +92,16 @@ function ancho() {
 */
 Date.prototype.mod = function (interval, units) {
   var ret = new Date(this.valueOf()); //don't change original date
-
+    console.log(interval);
   switch (interval.toLowerCase()) {
     case 'año': ret.setFullYear(ret.getFullYear() + units); break;
     case 'mes': ret.setMonth(ret.getMonth() + units); break;
     case 'semana': ret.setDate(ret.getDate() + 7 * units); break;
-    case 'dia': ret.setDate(ret.getDate() + units); break;
+    case 'dia': ret.setDate(ret.getDate() + units);console.log('en día'); break;
     case 'hora': ret.setTime(ret.getTime() + units * 3600000); break;
     case 'minuto': ret.setTime(ret.getTime() + units * 60000); break;
     case 'segundo': ret.setTime(ret.getTime() + units * 1000); break;
-    default: ret = undefined; break;//en default undefined o pasar la original?
+    default: return ret; break;//en default undefined o pasar la original?
   }
   return ret;
 }
