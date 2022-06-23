@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+  <style>
+    .green {
+      background-color: green;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <v-app>
+      <v-main>
+        <!-- calendario -->
+        <template>
+          <v-row>
+            <v-col cols="12" sm="6" md="4">
+              <v-menu :close-on-content-click="true" :nudge-right="40" transition="scale-transition" offset-y
+                min-width="auto">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-text-field v-model="date" label="Fecha" prepend-icon="mdi-calendar" readonly v-bind="attrs"
+                    v-on="on"></v-text-field>
+                </template>
+                <v-date-picker v-model="date" dark locale='es'></v-date-picker>
+              </v-menu>
+            </v-col>
+
+            <v-spacer></v-spacer>
+          </v-row>
+        </template>
+
+        <!-- hora -->
+
+
+        <!-- grafico -->
+        <!-- <template>
+          <v-card class="mx-auto text-center" dark max-width="600">
+            <v-card-text>
+              <v-sheet>
+                <v-sparkline :value="value" color="white" height="100" padding="24" stroke-linecap="round" line-width=1>
+                  <template v-slot:label="item">
+                    {{ item.value }}%
+                  </template>
+                </v-sparkline>
+              </v-sheet>
+            </v-card-text>
+
+            <v-card-text>
+              <div class="text-h4 font-weight-thin">
+                Subida en {{habilidad}}
+              </div>
+            </v-card-text>
+
+            <v-divider></v-divider>
+
+            <v-card-actions class="justify-center">
+              <v-btn block text>
+                Go to Report
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </template> -->
+
+        <v-autocomplete
+        :items='ct.nombreArtes'
+        deletable-chips
+        multiple
+        small-chips
+        solo
+      ></v-autocomplete>
+
+        <!-- tabla habilidades -->
+        <v-row justify="center">
+          <v-expansion-panels accordion dark>
+            <v-expansion-panel>
+              <v-expansion-panel-header>Habilidades</v-expansion-panel-header>
+              <v-expansion-panel-content>
+                <template>
+                  <v-data-table dense dark hide-default-footer :headers="headers" :items="pj.getHabilidades()"
+                    :custom-sort="subirSort" show-group-by :items-per-page="-1" class="elevation-1" show-expand
+                    :single-expand="singleExpand" :expanded.sync="expanded" :search="search" item-key="nombre"
+                    :mobile-breakpoint=200>
+
+                    <template v-slot:item.xp="props">
+                      <v-edit-dialog :return-value.sync="props.item.xp" large persistent>
+
+                        <td :style="{color: props.item.xp>4?'red':'green'}">{{props.item.xp}}</td>
+                        <template v-slot:input>
+                          <div class="mt-4 text-h6">
+                            Cambiar XP
+                          </div>
+                          <!-- <v-text-field
+                          v-model.number="props.item.xp"
+                          label="Editar"
+                          single-line
+                          counter
+                          autofocus
+                        ></v-text-field> -->
+                          <input type="number" v-model.number="props.item.xp"
+                            :style="{color: props.item.xp>4?'green':'red'}">
+                        </template>
+                      </v-edit-dialog>
+                    </template>
+
+                    <template v-slot:item.v="{ item }">
+                      <!-- <p :style="{color: getColor(item.v)}">{{item.v}}</p> -->
+                      <td :style="{color: item.v>100?'green':(item.v>10?'inherit':'red')}">{{item.v}}</td>
+                    </template>
+
+                    <template v-slot:item.sub="{ item }">
+                      <!-- <p :style="{color: getColor(item.v)}">{{item.v}}</p> -->
+                      <td v-if="item.subible()<100"
+                        :style="{color: item.subible()>=100?'red':(item.subible()>50?'inherit':'green')}">
+                        <b>{{item.subible()}} {{item.subible()>50?'&uarr;':'&#x21C8;'}}</b>
+                      </td>
+                    </template>
+
+                    <template v-slot:top>
+                      <v-toolbar flat>
+                        <v-text-field v-model="search" append-icon="mdi-magnify" label="Buscar" single-line
+                          hide-details></v-text-field>
+                        <v-switch v-if="0 === 1" v-model="singleExpand" label="Single expand" class="mt-2"></v-switch>
+                      </v-toolbar>
+                    </template>
+
+
+                    <template v-slot:expanded-item="{ headers, item }">
+                      <td :colspan="headers.length">
+                        {{item.clase}} de tipo {{item.tipo}} con xp:{{item.xp}} subido por ultima vez {{item.fecha}}
+                      </td>
+                    </template>
+
+                  </v-data-table>
+                </template>
+              </v-expansion-panel-content>
+            </v-expansion-panel>
+          </v-expansion-panels>
+        </v-row>
+
+
+                <!-- tabla inventario  sin: item-key="nombre"  se necesita para el expandable-->
+                <v-row justify="center">
+                  <v-expansion-panels accordion dark>
+                    <v-expansion-panel>
+                      <v-expansion-panel-header>Inventario ({{contenedor.pesa}}kg)</v-expansion-panel-header>
+                      <v-expansion-panel-content>
+                        <template>
+                          <v-data-table dense dark hide-default-footer :headers="headerInventario" :items="contenedor.objetos"
+                            :custom-sort="subirSort" show-group-by :items-per-page="-1" class="elevation-1" show-expand
+                            :single-expand="singleExpand" :expanded.sync="expanded" :search="search" item-key="nombre"
+                            :mobile-breakpoint=200>
+
+                            <template v-slot:item.nombre="{ item }">
+                              <v-edit-dialog
+                                :return-value="item.nombre"
+                              >
+                                {{ item.nombre }}
+                                <v-icon v-if="item.clase == 'Contenedor'"
+                                small
+                                @click="abrir(item)"
+                              >
+                              mdi-delete
+                              </v-icon>
+                                <template v-slot:input>
+                                  <input v-model.lazy="item.nombre" 
+                                  :style="{color: 'white'}"/>
+                                </template>
+                              </v-edit-dialog>
+
+                            </template>
+        
+                            <template v-slot:item.ctd="props">
+                              <v-edit-dialog :return-value.sync="props.item.ctd" large persistent>
+        
+                                <td >{{props.item.ctd}}</td>
+                                <template v-slot:input>
+                                  <div class="mt-4 text-h6">
+                                    Cambiar Cantidad
+                                  </div>
+                                  <v-text-field
+                                  v-model.number="props.item.ctd"
+                                  label="Editar"
+                                  single-line
+                                  counter
+                                  autofocus
+                                ></v-text-field>
+                                  <input type="number" v-model.number="props.item.ctd"
+                                    :style="{color: props.item.ctd>4?'green':'red'}">
+                                </template>
+                              </v-edit-dialog>
+                            </template>
+        
+                            <template v-slot:item.peso="{ item }">
+                              <!-- <p :style="{color: getColor(item.v)}">{{item.v}}</p> -->
+                              <td>{{item.peso}}</td>
+                            </template>
+
+        
+                            <!-- <template v-slot:item.valor="{ item }">
+                    
+                              <td>
+                                <b>{{item.valor}}</b>
+                              </td>
+                            </template> -->
+        
+                            <template v-slot:top>
+                              <v-toolbar flat>
+                                <v-icon v-if="abiertos.length>0" @click="contenedor=pj.inventario;abiertos=[]">mdi-reply-all</v-icon>
+                                <v-icon v-if="abiertos.length>0" @click="anterior">mdi-reply</v-icon>
+                                <li v-for="(item, index) in abiertos">
+                                  <!-- <a>{{ index }} - {{ item.nombre }}</a> -->
+                                  <v-btn  small text @click="abrir(item,index)">{{item.nombre}}</v-btn>\
+                                </li>
+                                <v-btn  small text v-if=contenedor>{{contenedor.nombre}}</v-btn>
+                                <!-- <v-spacer></v-spacer>
+                                <div v-if=contenedor>{{contenedor.nombre}}</div> -->
+                                <v-spacer></v-spacer>
+                                
+
+                                
+                                  <v-icon  @click="verBuscar=!verBuscar">mdi-magnify</v-icon>
+                                <v-switch v-if="0 === 1" v-model="singleExpand" label="Single expand" class="mt-2"></v-switch>
+                              </v-toolbar>
+                              <v-text-field v-if="verBuscar"  v-model="search" append-icon="mdi-magnify" label="Buscar" single-line
+                                  hide-details clearable></v-text-field>
+                            </template>
+        
+        
+                            <template v-slot:expanded-item="{ headerInventario, item }">
+                              <td :colspan="headers.length">
+                                {{item.clase}} {{item.nombre}}  pesa {{item.peso}} y vale {{item.valor}}
+                              </td>
+                            </template>
+        
+                          </v-data-table>
+                        </template>
+                      </v-expansion-panel-content>
+                    </v-expansion-panel>
+                  </v-expansion-panels>
+                </v-row>
+        
+        
+
+
+      </v-main>
+    </v-app>
+  </div>
+
+
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.js"></script>
+
+  <!-- scrips del rol -->
+  <script src='../js/utils.js'></script>
+  <script src='../js/D.js'></script>
+  <script src='../js/habilidades.js'></script>
+  <script src='../js/inventario.js'></script>
+  <script src='../js/localizaciones.js'></script>
+     <script src='../js/armaduras.js'></script>
+  <script src='../js/rol.js'></script>
+
+  <script>
+    // var chaleco = new Pieza(["Pecho", "Abdomen"], 3);
+    // var vestidoDragon = new Armadura(
+    //   [new Pieza(dartodasLocalizaciones(pj, 'Craneo', 'Cara', 'Pie I', 'Pie D', 'Mano I', 'Mano D'), 7),
+    //     chaleco]
+    // );
+
+    new Vue({
+      el: '#app',
+      vuetify: new Vuetify({
+        theme: {
+          dark: true,
+        },
+      }),
+      methods: {
+
+
+        //METODOS DE GUARDAR
+
+        save () {
+          console.log('Data saved')
+      
+      },
+      cancel () {
+        console.log('Dialog closed')
+      },
+      open () {
+        console.log('Dialog closed')
+      },
+      close () {
+        console.log('Dialog closed')
+      },
+
+
+
+
+
+
+        abrir(contenedor, index){
+          if(contenedor instanceof Contenedor){
+            console.log(contenedor);
+
+            if(index|| index==0){
+              this.abiertos.splice(index);
+            }else{
+            this.abiertos.push(this.contenedor)
+            }
+
+            this.contenedor = contenedor;
+            
+          }
+        },
+
+        anterior(contenedor){
+          if(this.abiertos.length>0){
+            this.contenedor=this.abiertos.pop()
+
+          }
+        },
+
+        getColor(v) {
+          if (v > 100) return 'green'
+          else if (v > 50) return 'inherit'
+          else if (v < 10) return 'red'
+          else return ''
+        },
+        subirSort(items, index, isDesc) {
+          items.sort((a, b) => {
+            // console.log(index[0]);
+            if (index[0] === "sub") {
+              // return a.subible() - b.subible()
+              return a.subible() - b.subible()
+            } else {
+              return a[index[0]] < b[index[0]] ? -1 : 1;
+            }
+          });
+
+          if (isDesc[0]) return items.reverse()
+          return items;
+        },
+        act(personaje){
+          this.$data[p]=personaje;
+        }
+      },
+      data: {
+        expanded: [],
+        singleExpand: false,
+        verBuscar:false,
+        search: '',
+        abiertos: [],
+        max25chars: v => v.length <= 25 || 'Nombre largo',
+        headers: [
+          {
+            text: 'Nombre ',
+            align: 'start',
+            groupable: false,
+            value: 'nombre'
+          },
+
+          { text: 'XP', value: 'xp', groupable: false },
+          // { text: 'Categoria', value: 'tipo' },
+          // { text: 'Clase', value: 'clase' },
+          { text: 'Valor', value: 'valor', groupable: false },
+          { text: 'Total', value: 'v', groupable: false },
+          { text: 'Subir', value: 'sub', groupable: false },
+          { text: '', value: 'data-table-expand', groupable: false },
+        ],
+        headerInventario: [
+          {
+            text: 'Nombre ',
+            align: 'start',
+            groupable: false,
+            value: 'nombre'
+          },
+
+          { text: 'Ctd', value: 'ctd', groupable: false },
+          // { text: 'Categoria', value: 'tipo' },
+           { text: 'Clase', value: 'clase' },
+          { text: 'Peso', value: 'peso', groupable: false },
+          { text: 'Valor', value: 'valor', groupable: false },
+          
+        ],
+        p: pj,
+        ct: constante,
+        contenedor: pj.inventario,
+        // picker: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
+        date: '777-07-07',
+        dialog: false,
+        hidden: false,
+        habilidad: 'espada',
+        value: [
+          23,
+          46,
+          75,
+          110,
+          190,
+          210,
+          260,
+        ],
+
+      }
+    })
+
+
+
+  </script>
+</body>
+
+</html>

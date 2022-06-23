@@ -114,10 +114,19 @@ function ProcessExcel(data) {
   // ws = workbook.Sheets['Inventario'];
   // equipo(2, 20)
 
+  pe.act();
+
   if (last) console.log(diferencia(pe, last));
 
   eval(`last=new ${pe.clase}()`)
   last.setAll(pe)
+
+  if (confirm(`¿Quiere guardar '${pe.nombre}' en localStorage? `) == true) {
+   ls(pe.nombre,pe);
+   console.log(`guardado '${pe.nombre}' en localStorage`);
+  } else {
+    console.log('No se ha guardado nada');
+  }
 
 
 

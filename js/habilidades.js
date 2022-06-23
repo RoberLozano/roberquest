@@ -30,6 +30,7 @@
 //     } 
 // }
 
+
 class Clase {
   constructor() {
     this.clase = this.constructor.name;
@@ -89,6 +90,9 @@ class Clase {
  * 
  */
 
+
+var constante={}
+
 //Variables globales
 const PIFIA = -1;
 const FALLO = 0;
@@ -96,6 +100,19 @@ const EXITO = 1;
 const ESPECIAL = 2;
 const CRITICO = 3;
 const SUPERCRITICO = 4;
+
+
+//VARIABLE GLOBAL DONDE METER TODO
+constante.nombreArtes = [
+  "Intensidad",
+  "Multiconjuro",
+  "Sobrepotencia",
+  "Refuerzo",
+  "Alcance",
+  "Duración",
+  "Puntería",
+  "Velocidad"
+]
 
 
 class XP extends Clase {
@@ -788,7 +805,7 @@ class MyCounter extends HTMLElement {
       <div id="grupo${this.habilidad.nombre}" class="input-group-prepend">
         <span id="lb${this.habilidad.nombre}" class="input-group-text col-6">${this.habilidad.nombre}: ${this.habilidad.v}%</span>
         <span class="input-group-text dado"  id="dado"> <img src="img/10_sided_die.svg"></img></span>
-        <input id="iDados" type="number" style="width: 2.3em;>
+        <input id="iDados" type="number" style="width: 2.3em;">
         <button id="btOK">OK</button>
       </div>
         `
@@ -1249,16 +1266,7 @@ class InputArte extends InputHabilidad {
 
   setPersonaje(personaje) {
     this.personaje = personaje;
-    var nombres = [
-      "Intensidad",
-      "Multiconjuro",
-      "Sobrepotencia",
-      "Refuerzo",
-      "Alcance",
-      "Duración",
-      "Puntería",
-      "Velocidad"
-    ]
+    var nombres = constante.nombreArtes;
     let array = this.personaje.getHabilidades(h => nombres.includes(h.nombre));
 
     array.sort(function (a, b) {
@@ -1598,109 +1606,8 @@ class InputCustom extends HTMLElement {
     var html = '';
 
     var tabla = document.createElement('table');
-
-    // for (let key in clase) {
-    //   if (lista?.includes(key) || !lista) {
-    //     var fila = document.createElement('tr');
-    //     console.log(typeof clase[key]);
-    //     console.log(clase[key].constructor.name);
-    //     var tipo = clase[key].constructor.name
-    //     html += `<tr>`
-
-    //     let id = "ic-" + key
-
-    //     // switch (tipo) {
-    //     //   case 'Number':
-    //     //     html += `<td>${key}</td> <td><${i} id="${id}" type='number' value='${clase[key]}'></td>`
-    //     //     break;
-    //     //   case 'String':
-    //     //     // html += `${key}<${i}  value='${clase[key]}'><br>`
-    //     //     html += `<td>${key}</td> <td><${i} id="${id}" type='text' value='${clase[key]}'></td>`
-    //     //     break;
-    //     //   case 'Date':
-    //     //     // html += `${key}<input type="datetime-local" 
-    //     //     // value=${clase[key].fechahoraLocal()}></input><br>`
-    //     //     html += `<td>${key}</td> <td> <input id="${id}" type="datetime-local" id="${id}"
-    //     //     value=${clase[key].fechahoraLocal()}></input></td>`
-    //     //     break;
-
-    //     //   default:
-    //     //     // html += `${key}<${i}  value='${clase[key]}'><br>`
-    //     //     html += `<td>${key}</td> <td><${i} id="${id}" value='${clase[key]}'></td>`
-    //     //     break;
-    //     // }
-
-    //     //component
-    //     var c;
-
-    //     switch (tipo) {
-    //       case 'Number':
-    //         c = document.createElement('input');
-    //         c.setAttribute("type", "number");
-    //         c.setAttribute("value", clase[key]);
-    //         c.addEventListener('change', (event) => {
-    //           clase[key]=+event.target.value; //para que sea número
-    //           console.log(clase[key]);
-    //               });
-    //         break;
-    //       case 'String':
-    //         c = document.createElement('input');
-    //         c.setAttribute("type", "text");
-    //         c.setAttribute("value", clase[key]);
-    //         c.addEventListener('change', (event) => {
-    //           clase[key]=event.target.value;
-    //           console.log(clase[key]);
-    //               });
-    //         break;
-    //       case 'Date':
-    //         c = document.createElement('input');
-    //         c.setAttribute("type", "datetime-local");
-    //         c.setAttribute("value", clase[key].fechahoraLocal());
-    //         c.addEventListener('change', (event) => {
-    //           clase[key]=new Date(event.target.value);
-    //           console.log(clase[key]);
-    //               });
-    //         break;
-
-    //       default:
-    //         // html += `${key}<${i}  value='${clase[key]}'><br>`
-    //         c = document.createElement('input');
-    //         c.setAttribute("value", clase[key]);
-    //     }
-
-    //     tabla.appendChild(fila)
-    //     // this.appendChild(c);
-
-    //     html += `</tr>`
-
-    //     let label=document.createElement('td');
-    //     label.innerText=key;
-    //     fila.appendChild(label)
-    //     fila.appendChild(document.createElement('td').appendChild(c));
-    //     tabla.appendChild(fila);
-    //   }
-
-    // }
     this.reset ={}
     this.appendChild(this.tablear('root',clase, lista));
-    // html = `<table>${html}</table>`
-
-    // var div = document.createElement('div');
-    // div.innerHTML = html;
-    // this.appendChild(div);
-
-    //ahora los changes
-    // for (let key in clase) {
-    //   if (lista?.includes(key) || !lista) {
-    //     let id = "ic-" + key
-    //     document.getElementById(id).addEventListener('change', (event) => {
-    //       clase[key]=event.target.value;
-    //       console.log(clase[key]);
-    //     });
-    //   }
-    // }
-
-
   }
 
   /**
@@ -1826,8 +1733,6 @@ class InputCustom extends HTMLElement {
 
         }
         
-
-
         tabla.appendChild(fila);
       }
 
@@ -1857,16 +1762,7 @@ function IUHechizos(p, div = "salida") {
   // salida.appendChild(selector);
   var div = document.createElement("div");
 
-  var nombres = [
-    "Intensidad",
-    "Multiconjuro",
-    "Sobrepotencia",
-    "Refuerzo",
-    "Alcance",
-    "Duración",
-    "Puntería",
-    "Velocidad"
-  ]
+  var nombres = constante.nombreArtes;
   var habilidades = []
 
   p.actTodosBonHab();

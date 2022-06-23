@@ -76,8 +76,12 @@ class Localizaciones {
                 } //da error si no hago l=loc
                 else
                     if (!loc.esFinal()) {
-                        let ok = loc.darLocalizacion(x); //busca recursiva hasta que sea final
-                        if (ok) l = ok; //si no es undefined es la que se busca
+                        if(loc.nombre == x) l=loc
+                        else{
+                            let ok = loc.darLocalizacion(x); //busca recursiva hasta que sea final
+                            if (ok) l = ok; //si no es undefined es la que se busca
+                        } //hago que dé tambien las no finales!!
+                       
                     }
 
                 //    loc.darLocalizacion(x);
@@ -539,3 +543,19 @@ class Localizacion extends Localizaciones {
 // console.log(humanoide.darLocalizacion(20))
 
 // console.log(humanoide.esFinal());
+
+var removeItemFromArr = ( arr, item ) => {
+    var i = arr.indexOf( item );
+    i !== -1 && arr.splice( i, 1 );
+};
+
+function dartodasLocalizaciones(personaje,...excepciones) {
+    let todas = 
+    personaje.cuerpo.todosNombres();
+    excepciones.forEach(e => {
+        removeItemFromArr(todas,e)
+    });
+    return todas;
+    
+}
+

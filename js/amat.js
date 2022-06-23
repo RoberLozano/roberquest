@@ -360,7 +360,7 @@ pj.act();
 
 // Include app dependency on ngMaterial
 var rolApp = angular.module('rolApp', ['ngMaterial', 'ngMessages']);
-rolApp.controller('rolController', function ($scope, $mdSidenav) {
+rolApp.controller('rolController', function ($scope, $mdSidenav, $mdToast) {
 
     $scope.listaPersonajes = listaPersonajes();
     console.log($scope.listaPersonajes);
@@ -388,6 +388,18 @@ rolApp.controller('rolController', function ($scope, $mdSidenav) {
       };
     }
 
+    //TOAST
+    $scope.toast = function(mensaje,tiempo=2000,posicion='top right') {
+        // $mdToast.showSimple(mensaje);
+        $mdToast.show (
+           $mdToast.simple()
+           .textContent(mensaje)                       
+           .hideDelay(tiempo)
+           .position(posicion)
+        );
+     };
+
+     
 
     $scope.cargar = function (c) {
         console.log('HACE EL CHANGE DE ' + c);
@@ -544,6 +556,8 @@ var car = {type:"Fiat", model:"500", color:"white", precio:8_000, xp: c1};
 // var ic= new InputCustom(c1);
 var ic= new InputCustom(car);
 salida.appendChild(ic);
+// salida.appendChild(new InputCustom(pj))
+
 
 function IUHechizosMat(p, div = "salida") {
     var salida = document.getElementById(div);

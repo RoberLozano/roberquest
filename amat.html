@@ -118,19 +118,27 @@
 
                 <md-button class="md-icon-button" aria-label="Favorite">
                     <img src="img/check.svg" onclick=""></img>
+                </md-button>
             </div>
         </md-toolbar>
 
         <md-sidenav class="md-sidenav-left" md-component-id="left" md-whiteframe="4">
 
             <md-toolbar class="md-theme-indigo">
-                <h1 class="md-toolbar-tools">Disabled Backdrop</h1>
+                <h1 class="md-toolbar-tools">RoberQuest</h1>
             </md-toolbar>
 
             <md-content layout-margin="">
                 <p>
                     Puto sidenav.
                 </p>
+                <md-switch ng-model="online" aria-label="Online">
+                    <!-- <img   ng-src="{(online ? 'img/icons/wifi_black_24dp.svg' : 'img/icons/wifi_off_black_24dp.svg')}"></img> -->
+                    <img ng-src="{{online? 'img/icons/wifi_white_24dp.svg':'img/icons/wifi_off_white_24dp.svg'}}"/>
+                  </md-switch>
+
+                  <md-button class="md-icon-button" aria-label="Settings" ng-click="toggleLeft()">
+                </md-button>
                 <input type="file" name="inputfile" id="inputfile">
                 <md-button onclick="pjUpload('inputfile')" class="md-accent">
                     Cargar archivo
@@ -181,7 +189,7 @@
             <label>Title</label>
             <input ng-model="p.nombre" onclick="select()">
         </md-input-container> -->
-        <div hidden >
+        <div  >
             Habilidades<br>
             <mi-hab nombre='Esquivar'></mi-hab>
             <in-habilidad id="h1" filtro="h.tipo==='Agilidad'"></in-habilidad>
@@ -304,6 +312,8 @@
                             </md-select>
                         </md-input-container>
                         <div id='magia'></div>
+
+                        <md-button ng-click = "toast('¡Hola amigo!')">Saluda</md-button>
                     </md-content>
                 </md-tab>
                 <md-tab label="Habilidades Mat">

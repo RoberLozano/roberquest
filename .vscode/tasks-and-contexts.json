@@ -1,6 +1,6 @@
 {
   "lock": false,
-  "active": "80b56954153ad37a0cf5f79d28eff6bc38c17023",
+  "active": "735f20cd61c1f4c3cfe6189c0f68e9163edc029a",
   "sets": {
     "default": {
       "source": "default",
@@ -9,8 +9,6 @@
         "e7c3800e31ff2e7695b9f5bed95a6de6715dca44": {
           "name": "Menus",
           "data": [
-            "c:\\GitHub\\roberquest\\popup.html",
-            "c:\\GitHub\\roberquest\\js\\habilidades.js",
             "c:\\GitHub\\roberquest\\importar.html",
             "c:\\GitHub\\roberquest\\menus.html"
           ]
@@ -30,9 +28,9 @@
         "a73f1345df69647021f401499146a518864ef87a": {
           "name": "Rol",
           "data": [
-            "c:\\GitHub\\roberquest\\js\\rol.js",
-            "d:\\GitHub\\roberquest\\js\\utils.js",
-            "c:\\GitHub\\roberquest\\importar.html",
+            "c:\\GitHub\\roberquest\\js\\utils.js",
+            "c:\\GitHub\\roberquest\\vue\\vue.html",
+            "c:\\GitHub\\roberquest\\vue\\vuetifi.html",
             "c:\\GitHub\\roberquest\\js\\script.js"
           ]
         },
@@ -87,13 +85,8 @@
         "519707b8c767c58edf9a8a8c4fb9daa7fe9341bd": {
           "name": "Localizaciones",
           "data": [
-            "c:\\GitHub\\roberquest\\js\\rol.js",
-            "c:\\GitHub\\roberquest\\js\\habilidades.js",
-            "c:\\GitHub\\roberquest\\excel.htm",
-            "c:\\GitHub\\roberquest\\js\\armaduras.js",
-            "c:\\GitHub\\roberquest\\m.html",
-            "c:\\GitHub\\roberquest\\js\\iu.js",
-            "c:\\GitHub\\roberquest\\js\\utils.js"
+            "c:\\GitHub\\roberquest\\vue\\vuetifi.html",
+            "c:\\GitHub\\roberquest\\js\\armaduras.js"
           ]
         },
         "58d93743767fa6e0931f6676b51059b69bd9d79a": {
@@ -113,32 +106,40 @@
         "a08e11119aefc863a42db70003513594d2824191": {
           "name": "Excel",
           "data": [
-            "c:\\GitHub\\roberquest\\js\\voz-rol.js"
+            "c:\\GitHub\\roberquest\\ex.js",
+            "c:\\GitHub\\roberquest\\js\\voz-rol.js",
+            "c:\\GitHub\\roberquest\\vue\\vuetifi.html",
+            "c:\\GitHub\\roberquest\\js\\rol.js"
           ]
         },
         "54e0c177acca401a573a8c0614f65dee6d9008ce": {
           "name": "angular",
           "data": [
-            "c:\\GitHub\\roberquest\\js\\habilidades.js",
-            "c:\\GitHub\\roberquest\\js\\utils.js",
-            "c:\\GitHub\\roberquest\\js\\amat.js",
-            "c:\\GitHub\\roberquest\\amat.html"
+            "c:\\GitHub\\roberquest\\amat.html",
+            "c:\\GitHub\\roberquest\\js\\habilidades.js"
           ]
         },
         "80b56954153ad37a0cf5f79d28eff6bc38c17023": {
           "name": " voz",
           "data": [
-            "c:\\GitHub\\roberquest\\js\\voz-rol.js",
-            "c:\\GitHub\\roberquest\\m.html",
-            "c:\\Program Files\\Microsoft VS Code\\resources\\app\\extensions\\node_modules\\typescript\\lib\\lib.dom.d.ts",
-            "c:\\GitHub\\roberquest\\js\\speechRec.js",
+            "c:\\GitHub\\roberquest\\amat.html",
             "c:\\GitHub\\roberquest\\js\\utils.js",
-            "c:\\GitHub\\roberquest\\speech.html",
-            "c:\\GitHub\\roberquest\\js\\iu.js",
             "c:\\GitHub\\roberquest\\js\\habilidades.js",
-            "c:\\GitHub\\roberquest\\js\\rol.js",
-            "c:\\GitHub\\roberquest\\js\\localizaciones.js",
-            "c:\\GitHub\\roberquest\\amat.html"
+            "c:\\GitHub\\roberquest\\js\\voz-rol.js"
+          ]
+        },
+        "735f20cd61c1f4c3cfe6189c0f68e9163edc029a": {
+          "name": "vue",
+          "data": [
+            "c:\\GitHub\\roberquest\\excel.htm",
+            "c:\\GitHub\\roberquest\\vue\\quasar.html",
+            "c:\\GitHub\\roberquest\\vue\\vuetifi.html",
+            "c:\\GitHub\\roberquest\\vue\\vueScript.js",
+            "c:\\GitHub\\roberquest\\vue\\vuesax.html",
+            "c:\\GitHub\\roberquest\\vue\\vue.html",
+            "c:\\GitHub\\roberquest\\vue\\vue.js",
+            "c:\\GitHub\\roberquest\\vue\\primevue.html",
+            "c:\\GitHub\\roberquest\\vue\\element.html"
           ]
         }
       }
