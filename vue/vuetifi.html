@@ -68,13 +68,8 @@
           </v-card>
         </template> -->
 
-        <v-autocomplete
-        :items='ct.nombreArtes'
-        deletable-chips
-        multiple
-        small-chips
-        solo
-      ></v-autocomplete>
+        <v-autocomplete v-model="value" :items="headerInventario" deletable-chips multiple small-chips return-object>
+        </v-autocomplete>
 
         <!-- tabla habilidades -->
         <v-row justify="center">
@@ -145,109 +140,126 @@
         </v-row>
 
 
-                <!-- tabla inventario  sin: item-key="nombre"  se necesita para el expandable-->
-                <v-row justify="center">
-                  <v-expansion-panels accordion dark>
-                    <v-expansion-panel>
-                      <v-expansion-panel-header>Inventario ({{contenedor.pesa}}kg)</v-expansion-panel-header>
-                      <v-expansion-panel-content>
-                        <template>
-                          <v-data-table dense dark hide-default-footer :headers="headerInventario" :items="contenedor.objetos"
-                            :custom-sort="subirSort" show-group-by :items-per-page="-1" class="elevation-1" show-expand
-                            :single-expand="singleExpand" :expanded.sync="expanded" :search="search" item-key="nombre"
-                            :mobile-breakpoint=200>
+        <v-select
+        v-model="value"
+        :items="headerInventario"
+        label="Select Item"
+        multiple
+        return-object
+      >
+        <template v-slot:selection="{ item, index }">
+          <v-chip >
+            <span>{{ item.text }}</span>
+          </v-chip>
+        </template>
+      </v-select>
 
-                            <template v-slot:item.nombre="{ item }">
-                              <v-edit-dialog
-                                :return-value="item.nombre"
-                              >
-                                {{ item.nombre }}
-                                <v-icon v-if="item.clase == 'Contenedor'"
-                                small
-                                @click="abrir(item)"
-                              >
-                              mdi-delete
-                              </v-icon>
-                                <template v-slot:input>
-                                  <input v-model.lazy="item.nombre" 
-                                  :style="{color: 'white'}"/>
-                                </template>
-                              </v-edit-dialog>
+        <!-- tabla inventario  sin: item-key="nombre"  se necesita para el expandable-->
+        <v-row justify="center">
+          <v-expansion-panels accordion dark>
+            <v-expansion-panel>
+              <v-expansion-panel-header>Inventario ({{contenedor.pesa}}kg)</v-expansion-panel-header>
+              <v-expansion-panel-content>
+                <template>
+                  <v-data-table dense dark hide-default-footer :headers="headerInventario" :items="contenedor.objetos"
+                    :custom-sort="subirSort" show-group-by :items-per-page="-1" class="elevation-1" show-expand
+                    :single-expand="singleExpand" :expanded.sync="expanded" :search="search" item-key="nombre"
+                    :mobile-breakpoint=200>
 
-                            </template>
-        
-                            <template v-slot:item.ctd="props">
-                              <v-edit-dialog :return-value.sync="props.item.ctd" large persistent>
-        
-                                <td >{{props.item.ctd}}</td>
-                                <template v-slot:input>
-                                  <div class="mt-4 text-h6">
-                                    Cambiar Cantidad
-                                  </div>
-                                  <v-text-field
-                                  v-model.number="props.item.ctd"
-                                  label="Editar"
-                                  single-line
-                                  counter
-                                  autofocus
-                                ></v-text-field>
-                                  <input type="number" v-model.number="props.item.ctd"
-                                    :style="{color: props.item.ctd>4?'green':'red'}">
-                                </template>
-                              </v-edit-dialog>
-                            </template>
-        
-                            <template v-slot:item.peso="{ item }">
-                              <!-- <p :style="{color: getColor(item.v)}">{{item.v}}</p> -->
-                              <td>{{item.peso}}</td>
-                            </template>
-
-        
-                            <!-- <template v-slot:item.valor="{ item }">
-                    
-                              <td>
-                                <b>{{item.valor}}</b>
-                              </td>
-                            </template> -->
-        
-                            <template v-slot:top>
-                              <v-toolbar flat>
-                                <v-icon v-if="abiertos.length>0" @click="contenedor=pj.inventario;abiertos=[]">mdi-reply-all</v-icon>
-                                <v-icon v-if="abiertos.length>0" @click="anterior">mdi-reply</v-icon>
-                                <li v-for="(item, index) in abiertos">
-                                  <!-- <a>{{ index }} - {{ item.nombre }}</a> -->
-                                  <v-btn  small text @click="abrir(item,index)">{{item.nombre}}</v-btn>\
-                                </li>
-                                <v-btn  small text v-if=contenedor>{{contenedor.nombre}}</v-btn>
-                                <!-- <v-spacer></v-spacer>
-                                <div v-if=contenedor>{{contenedor.nombre}}</div> -->
-                                <v-spacer></v-spacer>
-                                
-
-                                
-                                  <v-icon  @click="verBuscar=!verBuscar">mdi-magnify</v-icon>
-                                <v-switch v-if="0 === 1" v-model="singleExpand" label="Single expand" class="mt-2"></v-switch>
-                              </v-toolbar>
-                              <v-text-field v-if="verBuscar"  v-model="search" append-icon="mdi-magnify" label="Buscar" single-line
-                                  hide-details clearable></v-text-field>
-                            </template>
-        
-        
-                            <template v-slot:expanded-item="{ headerInventario, item }">
-                              <td :colspan="headers.length">
-                                {{item.clase}} {{item.nombre}}  pesa {{item.peso}} y vale {{item.valor}}
-                              </td>
-                            </template>
-        
-                          </v-data-table>
+                    <template v-slot:item.nombre="{ item }">
+                      <v-edit-dialog :return-value="item.nombre">
+                        {{ item.nombre }}
+                        <v-icon v-if="item.clase == 'Contenedor'" small @click="abrir(item)">
+                          mdi-delete
+                        </v-icon>
+                        <template v-slot:input>
+                          <input v-model.lazy="item.nombre" :style="{color: 'white'}" />
                         </template>
-                      </v-expansion-panel-content>
-                    </v-expansion-panel>
-                  </v-expansion-panels>
-                </v-row>
-        
-        
+                      </v-edit-dialog>
 
+                    </template>
+
+                    <template v-slot:item.ctd="props">
+                      <v-edit-dialog :return-value.sync="props.item.ctd" large persistent>
+
+                        <td>{{props.item.ctd}}</td>
+                        <template v-slot:input>
+                          <div class="mt-4 text-h6">
+                            Cambiar Cantidad
+                          </div>
+                          <v-text-field v-model.number="props.item.ctd" label="Editar" single-line counter autofocus>
+                          </v-text-field>
+                          <input type="number" v-model.number="props.item.ctd"
+                            :style="{color: props.item.ctd>4?'green':'red'}">
+                        </template>
+                      </v-edit-dialog>
+                    </template>
+
+                    <template v-slot:item.peso="{ item }">
+                      <!-- <p :style="{color: getColor(item.v)}">{{item.v}}</p> -->
+                      <td>{{item.peso}}</td>
+                    </template>
+
+
+                    <!-- <template v-slot:item.valor="{ item }">
+            
+                      <td>
+                        <b>{{item.valor}}</b>
+                      </td>
+                    </template> -->
+
+                    <template v-slot:top>
+                      <v-toolbar flat>
+                        <v-icon v-if="abiertos.length>0" @click="contenedor=pj.inventario;abiertos=[]">mdi-reply-all
+                        </v-icon>
+                        <v-icon v-if="abiertos.length>0" @click="anterior">mdi-reply</v-icon>
+                        <li v-for="(item, index) in abiertos">
+                          <!-- <a>{{ index }} - {{ item.nombre }}</a> -->
+                          <v-btn small text @click="abrir(item,index)">{{item.nombre}}</v-btn>\
+                        </li>
+                        <v-btn small text v-if=contenedor>{{contenedor.nombre}}</v-btn>
+                        <!-- <v-spacer></v-spacer>
+                        <div v-if=contenedor>{{contenedor.nombre}}</div> -->
+                        <v-spacer></v-spacer>
+
+
+
+                        <v-icon @click="verBuscar=!verBuscar">mdi-magnify</v-icon>
+                        <v-switch v-if="0 === 1" v-model="singleExpand" label="Single expand" class="mt-2"></v-switch>
+                      </v-toolbar>
+                      <v-text-field v-if="verBuscar" v-model="search" append-icon="mdi-magnify" label="Buscar"
+                        single-line hide-details clearable></v-text-field>
+                    </template>
+
+
+                    <template v-slot:expanded-item="{ headerInventario, item }">
+                      <td :colspan="headers.length">
+                        {{item.clase}} {{item.nombre}} pesa {{item.peso}} y vale {{item.valor}}
+                      </td>
+                    </template>
+
+                  </v-data-table>
+                </template>
+              </v-expansion-panel-content>
+            </v-expansion-panel>
+          </v-expansion-panels>
+        </v-row>
+
+
+        <!-- tabla inventario  sin: item-key="nombre"  se necesita para el expandable-->
+        <v-row justify="center">
+          <v-expansion-panels accordion dark>
+            <v-expansion-panel>
+              <v-expansion-panel-header>Inventario ({{contenedor.pesa}}kg)</v-expansion-panel-header>
+              <v-expansion-panel-content>
+                <template>
+                  <v-data-table dense dark hide-default-footer multi-sort :headers="selectedHeaders" :items="contenedor.objetos" class="elevation-1" :items-per-page="-1">
+                  </v-data-table>
+                </template>
+              </v-expansion-panel-content>
+            </v-expansion-panel>
+          </v-expansion-panels>
+        </v-row>
 
       </v-main>
     </v-app>
@@ -264,7 +276,7 @@
   <script src='../js/habilidades.js'></script>
   <script src='../js/inventario.js'></script>
   <script src='../js/localizaciones.js'></script>
-     <script src='../js/armaduras.js'></script>
+  <script src='../js/armaduras.js'></script>
   <script src='../js/rol.js'></script>
 
   <script>
@@ -286,43 +298,43 @@
 
         //METODOS DE GUARDAR
 
-        save () {
+        save() {
           console.log('Data saved')
-      
-      },
-      cancel () {
-        console.log('Dialog closed')
-      },
-      open () {
-        console.log('Dialog closed')
-      },
-      close () {
-        console.log('Dialog closed')
-      },
+
+        },
+        cancel() {
+          console.log('Dialog closed')
+        },
+        open() {
+          console.log('Dialog closed')
+        },
+        close() {
+          console.log('Dialog closed')
+        },
 
 
 
 
 
 
-        abrir(contenedor, index){
-          if(contenedor instanceof Contenedor){
+        abrir(contenedor, index) {
+          if (contenedor instanceof Contenedor) {
             console.log(contenedor);
 
-            if(index|| index==0){
+            if (index || index == 0) {
               this.abiertos.splice(index);
-            }else{
-            this.abiertos.push(this.contenedor)
+            } else {
+              this.abiertos.push(this.contenedor)
             }
 
             this.contenedor = contenedor;
-            
+
           }
         },
 
-        anterior(contenedor){
-          if(this.abiertos.length>0){
-            this.contenedor=this.abiertos.pop()
+        anterior(contenedor) {
+          if (this.abiertos.length > 0) {
+            this.contenedor = this.abiertos.pop()
 
           }
         },
@@ -347,14 +359,26 @@
           if (isDesc[0]) return items.reverse()
           return items;
         },
-        act(personaje){
-          this.$data[p]=personaje;
+        act(personaje) {
+          this.$data[p] = personaje;
         }
+      },
+
+
+      watch: {
+        value(val) {
+          this.selectedHeaders = val;
+          console.log(val);
+        }
+      },
+      created() {
+        this.selectedHeaders = this.headerInventario;
+        console.log(this.selectedHeaders);
       },
       data: {
         expanded: [],
         singleExpand: false,
-        verBuscar:false,
+        verBuscar: false,
         search: '',
         abiertos: [],
         max25chars: v => v.length <= 25 || 'Nombre largo',
@@ -384,10 +408,10 @@
 
           { text: 'Ctd', value: 'ctd', groupable: false },
           // { text: 'Categoria', value: 'tipo' },
-           { text: 'Clase', value: 'clase' },
+          { text: 'Clase', value: 'clase' },
           { text: 'Peso', value: 'peso', groupable: false },
           { text: 'Valor', value: 'valor', groupable: false },
-          
+
         ],
         p: pj,
         ct: constante,
@@ -396,20 +420,16 @@
         date: '777-07-07',
         dialog: false,
         hidden: false,
-        habilidad: 'espada',
-        value: [
-          23,
-          46,
-          75,
-          110,
-          190,
-          210,
-          260,
-        ],
+
+        value: [],
+        selectedHeaders: [],
+
+        //GENERAL,
+        // arrayHeaders:["nombre"],
+        // arrayItems:pj.inventario.objetos,
 
       }
     })
-
 
 
   </script>
