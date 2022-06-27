@@ -464,7 +464,7 @@ class Animal extends Clase {
    * @memberof Animal
    */
   getCar(car) {
-    return this[car] + (this.bonificacion[car]||0);
+    return +this[car] + (+this.bonificacion[car]||0);
   }
   /**
    * Hace una lista de los bonificadores de daño
@@ -1991,6 +1991,7 @@ function de(s) {
   }
   // x+=s.charCodeAt(c));
 
+  console.log(x.toString());
   return x;
 }
 

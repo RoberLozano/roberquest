@@ -18,6 +18,450 @@
   <div id="app">
     <v-app>
       <v-main>
+
+        <template>
+          <v-app-bar dark>
+            <v-app-bar-nav-icon @click="drawer = true"></v-app-bar-nav-icon>
+
+            <v-toolbar-title>Roberquest</v-toolbar-title>
+            <v-spacer></v-spacer>
+
+            <v-btn icon @click="act()">
+              <v-icon>mdi-magnify</v-icon>
+
+            </v-btn>
+
+            <v-btn icon>
+              <v-icon>mdi-heart</v-icon>
+            </v-btn>
+
+            <v-btn icon>
+              <v-icon>mdi-dots-vertical</v-icon>
+            </v-btn>
+
+          </v-app-bar>
+
+
+
+          <v-navigation-drawer v-model="drawer" absolute temporary>
+            <v-list nav>
+              <v-list-item-group v-model="group" active-class="red--text text--accent-4">
+                <v-list-item>
+                  <v-list-item-icon>
+                    <v-icon>mdi-home</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-title>Home</v-list-item-title>
+                </v-list-item>
+
+                <v-list-item>
+                  <v-list-item-icon>
+                    <v-icon>mdi-account</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-title>Account</v-list-item-title>
+                </v-list-item>
+
+
+
+                <v-list-item>
+                  <v-list-item-icon>
+                    <v-icon>mdi-account</v-icon>
+                  </v-list-item-icon>
+
+                  <v-select v-model="nombrePersonaje" :items="ls('personajes')" label="Personaje"
+                    @change="pj= Clase.convertir(ls('Rosssel'));pj.actTodosBonHab();p=pj">
+                  </v-select>
+                </v-list-item>
+
+
+
+              </v-list-item-group>
+            </v-list>
+          </v-navigation-drawer>
+
+
+
+
+          <template>
+            <v-card>
+              <v-tabs color="red accent-4">
+                <v-tab>Personaje</v-tab>
+                <v-tab>Habilidades</v-tab>
+                <v-tab>Inventario</v-tab>
+                <v-tab>Combate</v-tab>
+                <v-tab>Magia</v-tab>
+
+
+                <!-- Personaje -->
+                <v-tab-item>
+                  <v-container fluid>
+                    <h2>Características</h2><br>
+                    <v-row>
+                      <table>
+                        <tr hidden>
+                          <td>_FUE</td>
+                          <td><input type="number" v-model="p._FUE"></td>
+                        </tr>
+
+                        <tr v-for="(c,index) in CP">
+                          <td>{{ c }}</td>
+                          <td><input :style="{ 'color': 'white','width': '3em'}" type="number" v-model="pj[c]"></td>
+
+                          <td><input type="number" v-model="pj.bonificacion[c]"
+                              :style="{ 'color': (pj.bonificacion[c]>0 ? 'green' : 'red') ,'width': '2.5em'}">
+                          </td>
+                          <td>{{pj.getCar(c) }}</td>
+                          <td> </td>
+                          <td>{{TipoHabilidades[index]}}</td>
+                          <td>{{pj.getCar(TipoHabilidades[index])}}</td>
+
+
+                        </tr>
+                      </table>
+                    </v-row>
+                  </v-container>
+                </v-tab-item>
+
+                <!-- Tab Habilidades -->
+                <v-tab-item>
+                  <v-container fluid>
+                    <v-row>
+                      <!-- tabla habilidades -->
+                      <v-row justify="center">
+                        <v-expansion-panels accordion dark>
+                          <v-expansion-panel>
+                            <v-expansion-panel-header>Habilidades</v-expansion-panel-header>
+                            <v-expansion-panel-content>
+                              <template>
+
+                                <v-data-table dense dark hide-default-footer :headers="headers"
+                                  :items="pj.getHabilidades()" :custom-sort="subirSort" show-group-by
+                                  :items-per-page="-1" class="elevation-1" show-expand :single-expand="singleExpand"
+                                  :expanded.sync="expanded" :search="search" item-key="nombre" :mobile-breakpoint=200>
+
+                                  <template v-slot:item.xp="props">
+                                    <v-edit-dialog :return-value.sync="props.item.xp" large persistent>
+
+                                      <td :style="{color: props.item.xp>4?'red':'green'}">{{props.item.xp}}</td>
+                                      <template v-slot:input>
+                                        <div class="mt-4 text-h6">
+                                          Cambiar XP
+                                        </div>
+                                        <input type="number" v-model.number="props.item.xp"
+                                          :style="{color: props.item.xp>4?'green':'red'}">
+                                      </template>
+                                    </v-edit-dialog>
+                                  </template>
+
+                                  <template v-slot:item.v="{ item }">
+                                    <!-- <p :style="{color: getColor(item.v)}">{{item.v}}</p> -->
+                                    <td :style="{color: item.v>100?'green':(item.v>10?'inherit':'red')}">{{item.v}}</td>
+                                  </template>
+
+                                  <template v-slot:item.sub="{ item }">
+                                    <!-- <p :style="{color: getColor(item.v)}">{{item.v}}</p> -->
+                                    <td v-if="item.subible()<100"
+                                      :style="{color: item.subible()>=100?'red':(item.subible()>50?'inherit':'green')}">
+                                      <b>{{item.subible()}} {{item.subible()>50?'&uarr;':'&#x21C8;'}}</b>
+                                    </td>
+                                  </template>
+
+                                  <template v-slot:top>
+                                    <v-toolbar flat>
+                                      <v-text-field v-model="search" append-icon="mdi-magnify" label="Buscar"
+                                        single-line hide-details>
+                                      </v-text-field>
+                                      <v-switch v-if="0 === 1" v-model="singleExpand" label="Single expand"
+                                        class="mt-2"></v-switch>
+                                    </v-toolbar>
+                                  </template>
+
+
+                                  <template v-slot:expanded-item="{ headers, item }">
+                                    <td :colspan="headers.length">
+                                      {{item.clase}} de tipo {{item.tipo}} con xp:{{item.xp}} subido por ultima vez
+                                      {{item.fecha}}
+                                    </td>
+                                  </template>
+
+                                </v-data-table>
+                              </template>
+                            </v-expansion-panel-content>
+                          </v-expansion-panel>
+                        </v-expansion-panels>
+                      </v-row>
+                    </v-row>
+                  </v-container>
+                </v-tab-item>
+
+                <!-- Tab Inventario -->
+                <v-tab-item>
+                  <v-container fluid>
+                    <!-- tabla inventario  sin: item-key="nombre"  se necesita para el expandable-->
+                    <v-row justify="center">
+                      <v-expansion-panels accordion dark>
+                        <v-expansion-panel>
+                          <v-expansion-panel-header>Inventario ({{contenedor.pesa}}kg)</v-expansion-panel-header>
+                          <v-expansion-panel-content>
+                            <template>
+
+                              <v-data-table dense dark hide-default-footer :headers="headerInventario"
+                                :items="contenedor.objetos" :custom-sort="subirSort" show-group-by :items-per-page="-1"
+                                class="elevation-1" show-expand :single-expand="singleExpand" :expanded.sync="expanded"
+                                :search="search" item-key="nombre" :mobile-breakpoint=200>
+
+                                <template v-slot:item.nombre="{ item }">
+                                  <v-edit-dialog :return-value="item.nombre">
+                                    {{ item.nombre }}
+                                    <v-icon v-if="item.clase == 'Contenedor'" small @click="abrir(item)">
+                                      mdi-delete
+                                    </v-icon>
+                                    <template v-slot:input>
+                                      <input v-model.lazy="item.nombre" :style="{color: 'white'}" />
+                                    </template>
+                                  </v-edit-dialog>
+
+                                </template>
+
+                                <template v-slot:item.ctd="props">
+                                  <v-edit-dialog :return-value.sync="props.item.ctd" large persistent>
+
+                                    <td>{{props.item.ctd}}</td>
+                                    <template v-slot:input>
+                                      <div class="mt-4 text-h6">
+                                        Cambiar Cantidad
+                                      </div>
+                                      <v-text-field v-model.number="props.item.ctd" label="Editar" single-line counter
+                                        autofocus>
+                                      </v-text-field>
+                                      <input type="number" v-model.number="props.item.ctd"
+                                        :style="{color: props.item.ctd>4?'green':'red'}">
+                                    </template>
+                                  </v-edit-dialog>
+                                </template>
+
+                                <template v-slot:item.peso="{ item }">
+                                  <!-- <p :style="{color: getColor(item.v)}">{{item.v}}</p> -->
+                                  <td>{{item.peso}}</td>
+                                </template>
+
+
+                                <!-- <template v-slot:item.valor="{ item }">
+                                  
+                                            <td>
+                                              <b>{{item.valor}}</b>
+                                            </td>
+                                          </template> -->
+
+                                <template v-slot:top>
+                                  <v-toolbar flat>
+                                    <v-icon v-if="abiertos.length>0" @click="contenedor=pj.inventario;abiertos=[]">
+                                      mdi-reply-all
+                                    </v-icon>
+                                    <v-icon v-if="abiertos.length>0" @click="anterior">mdi-reply</v-icon>
+                                    <li v-for="(item, index) in abiertos">
+                                      <!-- <a>{{ index }} - {{ item.nombre }}</a> -->
+                                      <v-btn small text @click="abrir(item,index)">{{item.nombre}}</v-btn>\
+                                    </li>
+                                    <v-btn small text v-if=contenedor>{{contenedor.nombre}}</v-btn>
+                                    <!-- <v-spacer></v-spacer>
+                                    <div v-if=contenedor>{{contenedor.nombre}}</div> -->
+                                    <v-spacer></v-spacer>
+
+
+                                    <v-icon @click="verBuscar=!verBuscar">mdi-magnify</v-icon>
+                                    <v-switch v-if="0 === 1" v-model="singleExpand" label="Single expand" class="mt-2">
+                                    </v-switch>
+                                  </v-toolbar>
+                                  <v-text-field v-if="verBuscar" v-model="search" append-icon="mdi-magnify"
+                                    label="Buscar" single-line hide-details clearable></v-text-field>
+                                </template>
+
+
+                                <template v-slot:expanded-item="{ headerInventario, item }">
+                                  <td :colspan="headers.length">
+                                    {{item.clase}} {{item.nombre}} pesa {{item.peso}} y vale {{item.valor}}
+                                  </td>
+                                </template>
+
+                              </v-data-table>
+                            </template>
+                          </v-expansion-panel-content>
+                        </v-expansion-panel>
+                      </v-expansion-panels>
+                    </v-row>
+
+
+                    <!-- tabla inventario  sin: item-key="nombre"  se necesita para el expandable-->
+                    <v-row justify="center">
+                      <v-expansion-panels accordion dark>
+                        <v-expansion-panel>
+                          <v-expansion-panel-header>Inventario ({{contenedor.pesa}}kg)</v-expansion-panel-header>
+                          <v-expansion-panel-content>
+                            <template>
+
+                              <v-autocomplete v-model="value" :items="headerInventario" deletable-chips multiple
+                                small-chips return-object>
+                              </v-autocomplete>
+
+
+                              <v-data-table dense dark hide-default-footer multi-sort :headers="selectedHeaders"
+                                :items="contenedor.objetos" class="elevation-1" :items-per-page="-1">
+                              </v-data-table>
+                            </template>
+                          </v-expansion-panel-content>
+                        </v-expansion-panel>
+                      </v-expansion-panels>
+                    </v-row>
+
+
+                  </v-container>
+                </v-tab-item>
+
+                <!-- Tab Combate -->
+                <v-tab-item>
+                  <v-container fluid>
+                    Habilidades Marciales
+  
+                    <v-autocomplete :items="pj.getClaseHabilidad(HabilidadMarcial)" deletable-chips multiple small-chips return-object
+                    item-text="nombre">
+
+                    <template v-slot:item="{item}">
+                      {{item.nombre}} <v-spacer></v-spacer> <span :style="{color: getColor(item.v)}"> {{item.v}}%</span>
+                    </template>
+                  </v-autocomplete>
+
+                    
+                  <v-autocomplete :items="pj.inventario.darClaseRecursiva(Arma)" deletable-chips multiple small-chips return-object
+                  item-text="nombre">
+                  <template v-slot:item="{item}">
+
+                    <v-list-item-avatar color="indigo" class="text-h6 font-weight-light white--text">
+                      {{ item.peso }}
+                    </v-list-item-avatar>
+                    <v-list-item-content>
+                      <v-list-item-title v-html="item.nombre"></v-list-item-title>
+                      <v-list-item-subtitle v-html="item.daño"></v-list-item-subtitle>
+                    </v-list-item-content>
+
+
+                    <v-list-item-action>
+                      <v-list-item-action-text v-text="item.v+'%'"></v-list-item-action-text>
+
+
+                    </v-list-item-action>
+
+
+                  </template>
+                </v-autocomplete>
+
+                  </v-container>
+                </v-tab-item>
+
+
+                <!-- Tab magia -->
+                <v-tab-item>
+                  <v-container fluid>
+                    <v-row>
+                      <v-autocomplete :items="pj.getClaseHabilidad('Arte')" label="Artes" deletable-chips multiple
+                        small-chips return-object item-text="nombre">
+                      </v-autocomplete>
+                    </v-row>
+
+                    <v-row>
+                      <v-autocomplete v-model="hechizo" :items="pj.getClaseHabilidad('Hechizo')" label="Hechizo"
+                        deletable-chips color="blue-grey lighten-2" small-chips return-object item-text="nombre"
+                        @click="copiarHechizo(hechizo)">
+
+                        <template v-slot:item="{item}">
+
+                          <v-list-item-avatar color="indigo" class="text-h5 font-weight-light white--text">
+                            {{ item.pm }}
+                          </v-list-item-avatar>
+                          <v-list-item-content>
+                            <v-list-item-title v-html="item.nombre +'  '+item.v+'%'"></v-list-item-title>
+                            <v-list-item-subtitle v-html="item.v+'%'">%</v-list-item-subtitle>
+                          </v-list-item-content>
+
+
+                          <v-list-item-action>
+                            <v-list-item-action-text v-text="item.v+'%'"></v-list-item-action-text>
+
+
+                          </v-list-item-action>
+
+
+                        </template>
+                      </v-autocomplete>
+                    </v-row>
+
+
+                    <v-row>
+
+                      <v-autocomplete v-model="hechizo" :items="pj.getClaseHabilidad('Hechizo')"
+                        color="blue-grey lighten-2" label="Select Hechizo" item-text="name" deletable-chips small-chips>
+
+                        <template v-slot:item="data">
+                          <template v-if="typeof data.item !== 'object'">
+                            <v-list-item-content v-text="data.item"></v-list-item-content>
+                          </template>
+                          <template v-else>
+                            <v-list-item-content>
+                              <v-list-item-title v-html="data.item.nombre"></v-list-item-title>
+                              <v-list-item-subtitle v-html="data.item.v+'%'">%</v-list-item-subtitle>
+                            </v-list-item-content>
+                          </template>
+                        </template>
+                      </v-autocomplete>
+
+                    </v-row>
+
+                    <v-row>
+
+                      <template>
+
+                        <v-row>
+                          <v-col cols="12" sm="4">
+                            <v-text-field v-model="hechizo.nombre" color="purple darken-2" label="Nombre" required>
+                            </v-text-field>
+                          </v-col>
+
+
+                          <v-col cols="12" sm="1">
+                            <v-text-field v-model="hechizo.pm" type="number" color="blue darken-2" label="PM" required>
+                            </v-text-field>
+                          </v-col>
+
+
+                          <v-col cols="12" sm="1">
+                            <v-text-field v-model="hechizo.valor" type="number" color="blue darken-2" label="Valor"
+                              required></v-text-field>
+                          </v-col>
+
+
+                          <v-col cols="12" sm="4">
+                            <v-slider v-model="hechizo.v" color="orange" label="Total" hint="Be honest" min="1"
+                              max="300" thumb-label="always"></v-slider>
+                          </v-col>
+
+
+                        </v-row>
+                      </template>
+
+                    </v-row>
+
+
+
+                  </v-container>
+                </v-tab-item>
+
+
+              </v-tabs>
+            </v-card>
+          </template>
+
+
+
+        </template>
         <!-- calendario -->
         <template>
           <v-row>
@@ -28,7 +472,7 @@
                   <v-text-field v-model="date" label="Fecha" prepend-icon="mdi-calendar" readonly v-bind="attrs"
                     v-on="on"></v-text-field>
                 </template>
-                <v-date-picker v-model="date" dark locale='es'></v-date-picker>
+                <v-date-picker v-model="date" dark locale='es'  ></v-date-picker>
               </v-menu>
             </v-col>
 
@@ -68,198 +512,26 @@
           </v-card>
         </template> -->
 
-        <v-autocomplete v-model="value" :items="headerInventario" deletable-chips multiple small-chips return-object>
-        </v-autocomplete>
-
-        <!-- tabla habilidades -->
-        <v-row justify="center">
-          <v-expansion-panels accordion dark>
-            <v-expansion-panel>
-              <v-expansion-panel-header>Habilidades</v-expansion-panel-header>
-              <v-expansion-panel-content>
-                <template>
-                  <v-data-table dense dark hide-default-footer :headers="headers" :items="pj.getHabilidades()"
-                    :custom-sort="subirSort" show-group-by :items-per-page="-1" class="elevation-1" show-expand
-                    :single-expand="singleExpand" :expanded.sync="expanded" :search="search" item-key="nombre"
-                    :mobile-breakpoint=200>
-
-                    <template v-slot:item.xp="props">
-                      <v-edit-dialog :return-value.sync="props.item.xp" large persistent>
-
-                        <td :style="{color: props.item.xp>4?'red':'green'}">{{props.item.xp}}</td>
-                        <template v-slot:input>
-                          <div class="mt-4 text-h6">
-                            Cambiar XP
-                          </div>
-                          <!-- <v-text-field
-                          v-model.number="props.item.xp"
-                          label="Editar"
-                          single-line
-                          counter
-                          autofocus
-                        ></v-text-field> -->
-                          <input type="number" v-model.number="props.item.xp"
-                            :style="{color: props.item.xp>4?'green':'red'}">
-                        </template>
-                      </v-edit-dialog>
-                    </template>
-
-                    <template v-slot:item.v="{ item }">
-                      <!-- <p :style="{color: getColor(item.v)}">{{item.v}}</p> -->
-                      <td :style="{color: item.v>100?'green':(item.v>10?'inherit':'red')}">{{item.v}}</td>
-                    </template>
-
-                    <template v-slot:item.sub="{ item }">
-                      <!-- <p :style="{color: getColor(item.v)}">{{item.v}}</p> -->
-                      <td v-if="item.subible()<100"
-                        :style="{color: item.subible()>=100?'red':(item.subible()>50?'inherit':'green')}">
-                        <b>{{item.subible()}} {{item.subible()>50?'&uarr;':'&#x21C8;'}}</b>
-                      </td>
-                    </template>
-
-                    <template v-slot:top>
-                      <v-toolbar flat>
-                        <v-text-field v-model="search" append-icon="mdi-magnify" label="Buscar" single-line
-                          hide-details></v-text-field>
-                        <v-switch v-if="0 === 1" v-model="singleExpand" label="Single expand" class="mt-2"></v-switch>
-                      </v-toolbar>
-                    </template>
-
-
-                    <template v-slot:expanded-item="{ headers, item }">
-                      <td :colspan="headers.length">
-                        {{item.clase}} de tipo {{item.tipo}} con xp:{{item.xp}} subido por ultima vez {{item.fecha}}
-                      </td>
-                    </template>
-
-                  </v-data-table>
-                </template>
-              </v-expansion-panel-content>
-            </v-expansion-panel>
-          </v-expansion-panels>
-        </v-row>
-
-
-        <v-select
-        v-model="value"
-        :items="headerInventario"
-        label="Select Item"
-        multiple
-        return-object
-      >
-        <template v-slot:selection="{ item, index }">
-          <v-chip >
-            <span>{{ item.text }}</span>
-          </v-chip>
-        </template>
-      </v-select>
-
-        <!-- tabla inventario  sin: item-key="nombre"  se necesita para el expandable-->
-        <v-row justify="center">
-          <v-expansion-panels accordion dark>
-            <v-expansion-panel>
-              <v-expansion-panel-header>Inventario ({{contenedor.pesa}}kg)</v-expansion-panel-header>
-              <v-expansion-panel-content>
-                <template>
-                  <v-data-table dense dark hide-default-footer :headers="headerInventario" :items="contenedor.objetos"
-                    :custom-sort="subirSort" show-group-by :items-per-page="-1" class="elevation-1" show-expand
-                    :single-expand="singleExpand" :expanded.sync="expanded" :search="search" item-key="nombre"
-                    :mobile-breakpoint=200>
-
-                    <template v-slot:item.nombre="{ item }">
-                      <v-edit-dialog :return-value="item.nombre">
-                        {{ item.nombre }}
-                        <v-icon v-if="item.clase == 'Contenedor'" small @click="abrir(item)">
-                          mdi-delete
-                        </v-icon>
-                        <template v-slot:input>
-                          <input v-model.lazy="item.nombre" :style="{color: 'white'}" />
-                        </template>
-                      </v-edit-dialog>
-
-                    </template>
-
-                    <template v-slot:item.ctd="props">
-                      <v-edit-dialog :return-value.sync="props.item.ctd" large persistent>
-
-                        <td>{{props.item.ctd}}</td>
-                        <template v-slot:input>
-                          <div class="mt-4 text-h6">
-                            Cambiar Cantidad
-                          </div>
-                          <v-text-field v-model.number="props.item.ctd" label="Editar" single-line counter autofocus>
-                          </v-text-field>
-                          <input type="number" v-model.number="props.item.ctd"
-                            :style="{color: props.item.ctd>4?'green':'red'}">
-                        </template>
-                      </v-edit-dialog>
-                    </template>
-
-                    <template v-slot:item.peso="{ item }">
-                      <!-- <p :style="{color: getColor(item.v)}">{{item.v}}</p> -->
-                      <td>{{item.peso}}</td>
-                    </template>
-
-
-                    <!-- <template v-slot:item.valor="{ item }">
-            
-                      <td>
-                        <b>{{item.valor}}</b>
-                      </td>
-                    </template> -->
-
-                    <template v-slot:top>
-                      <v-toolbar flat>
-                        <v-icon v-if="abiertos.length>0" @click="contenedor=pj.inventario;abiertos=[]">mdi-reply-all
-                        </v-icon>
-                        <v-icon v-if="abiertos.length>0" @click="anterior">mdi-reply</v-icon>
-                        <li v-for="(item, index) in abiertos">
-                          <!-- <a>{{ index }} - {{ item.nombre }}</a> -->
-                          <v-btn small text @click="abrir(item,index)">{{item.nombre}}</v-btn>\
-                        </li>
-                        <v-btn small text v-if=contenedor>{{contenedor.nombre}}</v-btn>
-                        <!-- <v-spacer></v-spacer>
-                        <div v-if=contenedor>{{contenedor.nombre}}</div> -->
-                        <v-spacer></v-spacer>
 
 
 
-                        <v-icon @click="verBuscar=!verBuscar">mdi-magnify</v-icon>
-                        <v-switch v-if="0 === 1" v-model="singleExpand" label="Single expand" class="mt-2"></v-switch>
-                      </v-toolbar>
-                      <v-text-field v-if="verBuscar" v-model="search" append-icon="mdi-magnify" label="Buscar"
-                        single-line hide-details clearable></v-text-field>
-                    </template>
 
 
-                    <template v-slot:expanded-item="{ headerInventario, item }">
-                      <td :colspan="headers.length">
-                        {{item.clase}} {{item.nombre}} pesa {{item.peso}} y vale {{item.valor}}
-                      </td>
-                    </template>
-
-                  </v-data-table>
-                </template>
-              </v-expansion-panel-content>
-            </v-expansion-panel>
-          </v-expansion-panels>
-        </v-row>
 
 
-        <!-- tabla inventario  sin: item-key="nombre"  se necesita para el expandable-->
-        <v-row justify="center">
-          <v-expansion-panels accordion dark>
-            <v-expansion-panel>
-              <v-expansion-panel-header>Inventario ({{contenedor.pesa}}kg)</v-expansion-panel-header>
-              <v-expansion-panel-content>
-                <template>
-                  <v-data-table dense dark hide-default-footer multi-sort :headers="selectedHeaders" :items="contenedor.objetos" class="elevation-1" :items-per-page="-1">
-                  </v-data-table>
-                </template>
-              </v-expansion-panel-content>
-            </v-expansion-panel>
-          </v-expansion-panels>
-        </v-row>
+
+        <v-select v-model="value" :items="headerInventario" label="Select Item" multiple return-object>
+          <template v-slot:selection="{ item, index }">
+            <v-chip>
+              <span>{{ item.text }}</span>
+            </v-chip>
+          </template>
+        </v-select>
+
+
+
+
+
 
       </v-main>
     </v-app>
@@ -295,7 +567,11 @@
       }),
       methods: {
 
+        act() {
+          pj.act();
+          this.p = pj;
 
+        },
         //METODOS DE GUARDAR
 
         save() {
@@ -315,7 +591,13 @@
 
 
 
+        copiarHechizo(obj) {
 
+          this.copiaHechizo = new Hechizo();
+          this.copiaHechizo.setAll(obj);
+          this.copiaHechizo.valor += 10;
+          console.log(this.copiaHechizo);
+        },
 
         abrir(contenedor, index) {
           if (contenedor instanceof Contenedor) {
@@ -341,8 +623,9 @@
 
         getColor(v) {
           if (v > 100) return 'green'
-          else if (v > 50) return 'inherit'
           else if (v < 10) return 'red'
+          else if (v < 40) return 'orange'
+          else if (v > 50) return 'inherit'
           else return ''
         },
         subirSort(items, index, isDesc) {
@@ -359,9 +642,6 @@
           if (isDesc[0]) return items.reverse()
           return items;
         },
-        act(personaje) {
-          this.$data[p] = personaje;
-        }
       },
 
 
@@ -376,6 +656,11 @@
         console.log(this.selectedHeaders);
       },
       data: {
+
+        //drawer
+        drawer: false,
+        group: null,
+
         expanded: [],
         singleExpand: false,
         verBuscar: false,
@@ -414,12 +699,16 @@
 
         ],
         p: pj,
+        nombrePersonaje: '',
         ct: constante,
         contenedor: pj.inventario,
+        hechizo: new Hechizo('Hechizo'),
         // picker: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
-        date: '777-07-07',
+        date: fechaMundo.fecha(),
         dialog: false,
         hidden: false,
+
+        copiaHechizo: new Hechizo(),
 
         value: [],
         selectedHeaders: [],

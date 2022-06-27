@@ -182,6 +182,9 @@ class Contenedor extends Objeto {
     this.max = o.max;
     // this.objetos= o.objetos ;
     let ot = [];
+try {
+
+
     for (let ob of o.objetos) {
       //miro los distintos tipos de objetos por una propiedad única
       //TODO: tal vez poner el tipo de clase en una propiedad
@@ -202,6 +205,10 @@ class Contenedor extends Objeto {
       oo.setAll(ob);
       ot.push(oo);
     }
+  } catch (error) {
+    console.log(`Error en objetos ${o.nombre}`);
+  }
+
     this.objetos = ot;
 
   }

@@ -311,7 +311,7 @@ class Habilidad extends XP {
    * TODO: utiliza la variable global pj, tal vez deberia hacerlo desde Animal
    * o incluso un map golbal de Animales que se acceda por nombre
    */
-  get v() { return this.valor + this.bvalor + this.bh }
+  get v() { return (+this.valor) + (+this.bvalor) + (+this.bh) }
 
 
   //poner posibles bonificaciones en especialñ y crítico

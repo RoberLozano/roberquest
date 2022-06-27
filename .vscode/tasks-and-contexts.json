@@ -131,15 +131,17 @@
         "735f20cd61c1f4c3cfe6189c0f68e9163edc029a": {
           "name": "vue",
           "data": [
-            "c:\\GitHub\\roberquest\\excel.htm",
-            "c:\\GitHub\\roberquest\\vue\\quasar.html",
+            "c:\\GitHub\\roberquest\\js\\utils.js",
             "c:\\GitHub\\roberquest\\vue\\vuetifi.html",
-            "c:\\GitHub\\roberquest\\vue\\vueScript.js",
-            "c:\\GitHub\\roberquest\\vue\\vuesax.html",
-            "c:\\GitHub\\roberquest\\vue\\vue.html",
-            "c:\\GitHub\\roberquest\\vue\\vue.js",
-            "c:\\GitHub\\roberquest\\vue\\primevue.html",
-            "c:\\GitHub\\roberquest\\vue\\element.html"
+            "c:\\GitHub\\roberquest\\js\\amat.js",
+            "c:\\GitHub\\roberquest\\amat.html",
+            "c:\\GitHub\\roberquest\\js\\rol.js",
+            "c:\\GitHub\\roberquest\\js\\habilidades.js",
+            "c:\\GitHub\\roberquest\\excel.htm",
+            "c:\\GitHub\\roberquest\\js\\inventario.js",
+            "c:\\Program Files\\Microsoft VS Code\\resources\\app\\extensions\\node_modules\\typescript\\lib\\lib.dom.d.ts",
+            "c:\\GitHub\\roberquest\\js\\D.js",
+            "c:\\GitHub\\roberquest\\vue\\arma.html"
           ]
         }
       }
