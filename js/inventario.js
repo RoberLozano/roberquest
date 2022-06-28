@@ -235,10 +235,17 @@ try {
   pesoLibre() {
     return this.max - this.carga;
   }
+
   darObjeto(objeto) {
-    var pos = this.objetos.indexOf(objeto);
+    if (typeof objeto === "string"){
+      return Object.values(this.objetos).filter(obj => obj.nombre=== objeto)
+    }
+    else{
+          var pos = this.objetos.indexOf(objeto);
     console.log("Encontrado en pos:" + pos);
     if (pos > -1) return this.objetos[pos];
+    }
+
 
   }
 
@@ -303,6 +310,11 @@ try {
 
   //     }
 
+  /**
+   * Hace una búsqueda recursiva de los contenedores
+   * @param {Array} lista lista de contenedores, vacio si quiere que devuelva nueva
+   * @returns Array con todos lso contenedores
+   */
   darContenedores(lista = null) {
     if (lista === null) var lista = [];
     if (this instanceof Contenedor) lista.push(this);

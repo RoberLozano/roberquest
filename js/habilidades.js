@@ -1587,7 +1587,7 @@ class InputHechizo extends InputHabilidad {
   lanzarHechizo() {
     //actualizar??
     this.act();
-    toast(`${this.h.nombre} realizado, gasta ${this.gastados}PM ` + info);
+    // toast(`${this.h.nombre} realizado, gasta ${this.gastados}PM ` + info);
     if (this.personaje) {
       this.personaje.PM -= this.gastados;
       this.personaje.save();
