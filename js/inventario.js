@@ -182,7 +182,7 @@ class Contenedor extends Objeto {
     this.max = o.max;
     // this.objetos= o.objetos ;
     let ot = [];
-try {
+
 
 
     for (let ob of o.objetos) {
@@ -205,9 +205,7 @@ try {
       oo.setAll(ob);
       ot.push(oo);
     }
-  } catch (error) {
-    console.log(`Error en objetos ${o.nombre}`);
-  }
+
 
     this.objetos = ot;
 
@@ -471,13 +469,24 @@ class Arma extends Objeto {
     // this.peso   = o.peso ;
     // this.valor  = o.valor ;
     this.daños = o.daños;
+    console.log(o.daños);
     //cargar cada daño
     this.daños = []
-    //TODO: probar
-    o.daños?.forEach((d, i) => {
-      let da = new Daño(d.dado, d.tipo)
+    // TODO: probar
+    o.daños?.forEach(d => {
+      if(d?.dado && d?.tipo){
+      }
+              let da = new Daño(d.dado, d.tipo);
+              
+      console.log(da);
       this.daños.push(da)
+
+      // this.index=0;
     });
+    // o.daños.forEach(element => console.log(element.dado));
+    
+
+
   }
   dañar() {
     console.log(this.daños[this.index]);

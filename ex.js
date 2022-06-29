@@ -106,13 +106,13 @@ function ProcessExcel(data) {
 
   tipo = Manipulación;
   ws = workbook.Sheets['Armas'];
-  h(2, 11);
+  hMarciales(2, 11);
 
-  // armas(17, 28)
+  armas(17, 28)
 
 
-  // ws = workbook.Sheets['Inventario'];
-  // equipo(2, 20)
+  ws = workbook.Sheets['Inventario'];
+  equipo(2, 20)
 
   pe.act();
 
@@ -159,12 +159,12 @@ function tecnicas(inicio = 2, fin = 38, ceros = false, hab = 'A', pf = 'B', xp =
     let c = ws['N' + (i + 1)]?.v;
     let sc = ws['N' + (i + 2)]?.v;
 
-    console.log('descirpcion', descripcion);
-    console.log('fallo', f);
-    console.log('normal', n);
-    console.log('especial', e);
-    console.log('critico', c);
-    console.log('scritico', sc);
+    // console.log('descirpcion', descripcion);
+    // console.log('fallo', f);
+    // console.log('normal', n);
+    // console.log('especial', e);
+    // console.log('critico', c);
+    // console.log('scritico', sc);
 
 
     habilidad = new Tecnica(nombre, tipo, porcentaje, fatiga);
@@ -173,8 +173,8 @@ function tecnicas(inicio = 2, fin = 38, ceros = false, hab = 'A', pf = 'B', xp =
 
     pe.habilidades[nombre] = habilidad;
     // console.log(ws[nombre + i]?.v, ws[xp + i]?.v, ws[valor + i]?.v);
-    console.log(nombre, fatiga, exp, porcentaje);
-    console.log(habilidad);
+    // console.log(nombre, fatiga, exp, porcentaje);
+    // console.log(habilidad);
   }
 }
 
@@ -192,7 +192,7 @@ function equipo(inicio, fin, n = 'A', p = 'B', c = 'C', seguir = true) {
     var ctd = parseInt(ws[c + i]?.v);
     //si no se admiten 0 en el porcentaje y no tien xp se pasa a otro
     if (nombre.toLowerCase().startsWith("poción")) {
-      console.log('POCION');
+      // console.log('POCION');
       //TODO
       if (!ctd) ctd = 1;
       obj = new Pociones(nombre, peso, 0, ctd)
@@ -204,6 +204,8 @@ function equipo(inicio, fin, n = 'A', p = 'B', c = 'C', seguir = true) {
         obj = new Objetos(nombre, peso, 0, ctd)
       else
         obj = new Objeto(nombre, peso)
+
+        // console.log(obj);
 
     pe.inventario.add(obj);
 
@@ -235,7 +237,9 @@ function armas(inicio, fin, n = 'A', p = 'D', seguir = true) {
       daños.push(new Daño(daño, tdaño))
     }
 
-    obj = new Arma(nombre, peso, 0, daños)
+    obj = new Arma(nombre, peso, 0, ...daños)
+    console.log('DAÑOS');
+    console.log(daños);
     pe.inventario.add(obj);
 
   }
@@ -284,7 +288,7 @@ function gemas(params) {
     let capacidad = ws['P' + i]?.v;
     let pm = ws['Q' + i]?.v;
     var gema = new Gema(nombre, 0.1, 1000 * capacidad, capacidad, pm);
-    console.log(gema);
+    // console.log(gema);
   }
 }
 
@@ -313,6 +317,42 @@ function h(inicio, fin, ceros = true, hab = 'A', xp = 'B', valor = 'C', seguir =
     }
 
     habilidad = new Habilidad(nombre, tipo, porcentaje);
+    if (exp) habilidad.xp = exp;
+    let f = fecha(i, fechaSubida)
+    if (f) habilidad.fecha = f;
+
+    pe.habilidades[nombre] = habilidad;
+    // console.log(ws[nombre + i]?.v, ws[xp + i]?.v, ws[valor + i]?.v);
+    console.log(nombre, exp, porcentaje);
+    // console.log(habilidad);
+  }
+}
+
+
+function hMarciales(inicio, fin, ceros = true, hab = 'A', xp = 'B', valor = 'C', seguir = true, fechaSubida = 'L') {
+  let habilidad = new Habilidad();
+
+  for (let i = inicio; i < fin; i++) {
+    let nombre = ws[hab + i]?.v;
+    if (!nombre) {
+      if (seguir) continue;
+      else return;
+    }
+
+    if (nombre.toUpperCase().startsWith("HABILIDADES DE ")) {       //si empieza por "HABILIDADES DE " sin que importen las mayúsculas
+      nombre = nombre.replace(/habilidades de /gi, "");// guardo solo el tipo de habilidad sin que importen las mayúsculas
+      tipo = nombre.charAt(0).toUpperCase() + nombre.toLowerCase().slice(1);                  // 1 en mayusculas
+      continue;
+    }
+
+    var porcentaje = ws[valor + i]?.v;
+    var exp = ws[xp + i]?.v
+    //si no se admiten 0 en el porcentaje y no tien xp se pasa a otro
+    if (!ceros && !porcentaje && !exp) {
+      continue;
+    }
+
+    habilidad = new HabilidadMarcial(nombre, tipo, porcentaje);
     if (exp) habilidad.xp = exp;
     let f = fecha(i, fechaSubida)
     if (f) habilidad.fecha = f;

@@ -142,6 +142,8 @@ class Dado {
 	 * @memberof Dado
 	 */
 	constructor(dado) {
+
+		// if (!dado) return;
 		//console.log("string inicial:"+dado);
 		//TODO: Permitir tambien +-int?
 
@@ -406,10 +408,10 @@ class Dado {
 
 }
 
-class Daño extends Dado {
+class Daño {
 	constructor(dado, tipo) {
 
-		if (!tipo) {
+		if (!tipo && dado) {
 			dado = dado.trim();
 			let s = dado.slice(-1);
 			try {
@@ -419,21 +421,13 @@ class Daño extends Dado {
 
 			}
 		}
-		super(dado);
+		this.dado=dado;
 		this.tipo = tipo;
 	}
 	toString() {
 		return this.dado + this.tipo;
 	}
 
-	//sobreescribe tirar
-
-	/**
- * Una tirada normal de dados
- *
- * @returns {number} el resultado de una tirada normal de dados
- * @memberof Dado
- */
 
 	/**
 	 * Una tirada normal de dados o con tipo
@@ -442,29 +436,25 @@ class Daño extends Dado {
 	 * @memberof Dado
 	 */
 	tirar(tipoTirada) {
+
+		let t = new Dado(this.dado);
 		if (!tipoTirada) {
 
-			let sumatorio = 0;
-			// por cada dado tiro el número de veces
-			for (let i of this.dados)
-				sumatorio += (new D(i.num, i.caras)).norm();
-			//si hay parte entera la sumo
-			if (!isNaN(this.entero)) sumatorio += this.entero;
-			return sumatorio;
+			return t.tirar();
 
 		} else
 			switch (tipoTirada) {
 				case TipoTirada.SUPERCRITICO:
-					return (this.dadoMax() * 2);
+					return (t.dadoMax() * 2);
 					break;
 				case TipoTirada.CRITICO:
-					return (this.dadoMax() + this.tirar());
+					return (t.dadoMax() + t.tirar());
 					break;
 				case TipoTirada.ESPECIAL:
-					return this.dadoMax();
+					return t.dadoMax();
 					break;
 				case TipoTirada.EXITO:
-						return this.tirar();
+						return t.tirar();
 						break;
 				default: return 0;
 					break;

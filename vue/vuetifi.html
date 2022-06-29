@@ -122,7 +122,7 @@
                 </v-tab-item>
 
                 <!-- Tab Habilidades -->
-                <v-tab-item id="tabHabilidades">
+                <v-tab-item>
                   <v-container fluid>
                     <v-row>
                       <!-- tabla habilidades -->
@@ -444,55 +444,6 @@
                     </v-row>
 
                     <v-row>
-                      <v-autocomplete v-model="hechizo" :items="pj.getClaseHabilidad('Hechizo')" label="Hechizo"
-                        deletable-chips color="blue-grey lighten-2" small-chips return-object item-text="nombre"
-                        @click="copiarHechizo(hechizo)">
-
-                        <template v-slot:item="{item}">
-
-                          <v-list-item-avatar color="indigo" class="text-h5 font-weight-light white--text">
-                            {{ item.pm }}
-                          </v-list-item-avatar>
-                          <v-list-item-content>
-                            <v-list-item-title v-html="item.nombre +'  '+item.v+'%'"></v-list-item-title>
-                            <v-list-item-subtitle v-html="item.v+'%'">%</v-list-item-subtitle>
-                          </v-list-item-content>
-
-
-                          <v-list-item-action>
-                            <v-list-item-action-text v-text="item.v+'%'"></v-list-item-action-text>
-
-
-                          </v-list-item-action>
-
-
-                        </template>
-                      </v-autocomplete>
-                    </v-row>
-
-
-                    <v-row>
-
-                      <v-autocomplete v-model="hechizo" :items="pj.getClaseHabilidad('Hechizo')"
-                        color="blue-grey lighten-2" label="Select Hechizo" item-text="name" deletable-chips small-chips>
-
-                        <template v-slot:item="data">
-                          <template v-if="typeof data.item !== 'object'">
-                            <v-list-item-content v-text="data.item"></v-list-item-content>
-                          </template>
-                          <template v-else>
-                            <v-list-item-content>
-                              <v-list-item-title v-html="data.item.nombre"></v-list-item-title>
-                              <v-list-item-subtitle v-html="data.item.v+'%'">%</v-list-item-subtitle>
-                            </v-list-item-content>
-                          </template>
-                        </template>
-                      </v-autocomplete>
-
-
-                    </v-row>
-
-                    <v-row>
                       <div id="dh"> HAz algo</div>
                     </v-row>
 
@@ -502,8 +453,34 @@
 
                         <v-row>
                           <v-col cols="12" sm="4">
-                            <v-text-field v-model="hechizo.nombre" color="purple darken-2" label="Nombre" required>
-                            </v-text-field>
+
+                            <!-- <v-text-field v-model="hechizo.nombre" color="purple darken-2" label="Nombre" required>
+                            </v-text-field> -->
+
+                            <v-autocomplete v-model="hechizo" :items="pj.getClaseHabilidad('Hechizo')" label="Hechizo"
+                            color="blue-grey lighten-2"  return-object item-text="nombre"
+                           @click="copiarHechizo(hechizo)">
+   
+                           <template v-slot:item="{item}">
+   
+                             <v-list-item-avatar color="indigo" class="text-h5 font-weight-light white--text">
+                               {{ item.pm }}
+                             </v-list-item-avatar>
+                             <v-list-item-content>
+                               <v-list-item-title v-html="item.nombre +'  '+item.v+'%'"></v-list-item-title>
+                               <v-list-item-subtitle v-html="item.v+'%'">%</v-list-item-subtitle>
+                             </v-list-item-content>
+   
+   
+                             <v-list-item-action>
+                               <v-list-item-action-text v-text="item.v+'%'"></v-list-item-action-text>
+   
+   
+                             </v-list-item-action>
+   
+   
+                           </template>
+                         </v-autocomplete>
                           </v-col>
 
 

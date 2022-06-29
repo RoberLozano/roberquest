@@ -1,0 +1,44 @@
+{
+	"activeTaskName": "vue magia",
+	"tasks": [
+		{
+			"name": "default",
+			"files": []
+		},
+		{
+			"name": "Excel",
+			"files": [
+				{
+					"filepath": "\\excel.htm",
+					"marks": [
+						42
+					]
+				},
+				{
+					"filepath": "\\ex.js",
+					"marks": [
+						114,
+						214,
+						42
+					]
+				}
+			]
+		},
+		{
+			"name": "vue magia",
+			"files": [
+				{
+					"filepath": "\\vue\\vuetifi.html",
+					"marks": [
+						436,
+						787
+					]
+				}
+			]
+		},
+		{
+			"name": "inventario",
+			"files": []
+		}
+	]
+}

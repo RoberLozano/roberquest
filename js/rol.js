@@ -352,8 +352,9 @@ class Animal extends Clase {
 
     this.bonificacion = new Bon({});
 
-    this.inventario = creaInventario("Cuerpo");
-    // this.inventario = {}
+    // this.inventario = creaInventario("Cuerpo");
+    // this.inventario = new Contenedor(this.nombre)
+    this.inventario = {}
 
     /** Si se le puede sumar o restar a la tirada */
     this.suerte = []
@@ -1349,8 +1350,8 @@ class Caballo extends Animal {
 
     this.bonificacion = new Bon({});
 
-    this.inventario = creaInventario("Cuerpo");
-    // this.inventario = {}
+    // this.inventario = creaInventario("Cuerpo");
+    this.inventario = {}
 
     this.habilidades = {}
     this.efectos = [];
@@ -1423,8 +1424,8 @@ class Dragon extends Animal {
 
     this.bonificacion = new Bon({});
 
-    this.inventario = creaInventario("Cuerpo");
-    // this.inventario = {}
+    // this.inventario = creaInventario("Cuerpo");
+    this.inventario = {}
 
     this.habilidades = {}
     this.efectos = [];
@@ -1651,8 +1652,8 @@ class Humanoide extends Animal {
 
     this.bonificacion = new Bon({});
 
-    this.inventario = creaInventario("Cuerpo");
-    // this.inventario = {}
+    // this.inventario = creaInventario("Cuerpo");
+    this.inventario = new Contenedor("Cuerpo");
 
     this.habilidades = {}
     this.efectos = [];
@@ -2087,7 +2088,23 @@ function guerrero(personaje, nivel, ...armas) {
 
 }
 
-guerrero(pj, 10, 'espada', 'arco', 'daga')
+
+function mago(personaje, nivel=5) {
+
+  personaje.setHabilidad(new HabilidadMarcial("Esquivar", Agilidad, 25 + (nivel * 5), false));
+  personaje.setHabilidad(new HabilidadMarcial("Puñetazo D", Manipulación, 25 + (nivel * 5), true, "Brazo D"));
+
+  personaje.setHabilidad(new Arte(new Habilidad('Intensidad','Magia', 25 + (nivel * 5) )))
+  personaje.setHabilidad( new Hechizo('Bola de fuego',5,25 + (nivel * 5)));
+  personaje.setHabilidad( new Hechizo('Curación',1, Math.round(Math.random()*100) + (nivel * 5)));
+  personaje.setHabilidad( new Hechizo('Escudo',1, Math.round(Math.random()*100) + (nivel * 5)));
+
+}
+
+
+guerrero(pj, 10, 'espada', 'arco', 'daga');
+mago(pj);
+
 
 // let armanat = new ArmaNatural("puño", "1d3C", "Brazo D");
 // console.log(armanat);
