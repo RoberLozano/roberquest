@@ -68,7 +68,7 @@
                   </v-list-item-icon>
 
                   <v-select v-model="nombrePersonaje" :items="ls('personajes')" label="Personaje"
-                    @change="pj= Clase.convertir(ls('Rosssel'));pj.actTodosBonHab();p=pj">
+                    @change="pj= Clase.convertir(ls(nombrePersonaje));pj.actTodosBonHab();p=pj">
                   </v-select>
                 </v-list-item>
 
@@ -122,7 +122,7 @@
                 </v-tab-item>
 
                 <!-- Tab Habilidades -->
-                <v-tab-item>
+                <v-tab-item id="tabHabilidades">
                   <v-container fluid>
                     <v-row>
                       <!-- tabla habilidades -->
@@ -321,61 +321,114 @@
                 <v-tab-item>
                   <v-container fluid>
                     Técnicas
-                    <v-autocomplete :items="pj.getClaseHabilidad(Tecnica)" deletable-chips multiple small-chips return-object
-                    item-text="nombre">
+                    <v-autocomplete :items="pj.getClaseHabilidad(Tecnica)" deletable-chips multiple small-chips
+                      return-object item-text="nombre">
 
-                    <template v-slot:item="{item}">
-                      <v-list-item-avatar color="green" class="text-h6 font-weight-light white--text">
-                        {{ item.pf }}
-                      </v-list-item-avatar>
-                      {{item.nombre}} <v-spacer></v-spacer> <span :style="{color: getColor(item.v)}"> {{item.v}}%</span>
-                    </template>
-                  </v-autocomplete>
+                      <template v-slot:item="{item}">
+                        <v-list-item-avatar color="green" class="text-h6 font-weight-light white--text">
+                          {{ item.pf }}
+                        </v-list-item-avatar>
+                        {{item.nombre}} <v-spacer></v-spacer> <span :style="{color: getColor(item.v)}">
+                          {{item.v}}%</span>
+                      </template>
+                    </v-autocomplete>
 
                     Habilidades Marciales
-                    <v-autocomplete :items="pj.getClaseHabilidad(HabilidadMarcial)" deletable-chips multiple small-chips return-object
-                    item-text="nombre">
+                    <v-autocomplete :items="pj.getClaseHabilidad(HabilidadMarcial)" deletable-chips multiple small-chips
+                      return-object item-text="nombre">
 
-                    <template v-slot:item="{item}">
-                      {{item.nombre}} <v-spacer></v-spacer> <span :style="{color: getColor(item.v)}"> {{item.v}}%</span>
-                    </template>
-                  </v-autocomplete>
+                      <template v-slot:item="{item}">
+                        {{item.nombre}} <v-spacer></v-spacer> <span :style="{color: getColor(item.v)}">
+                          {{item.v}}%</span>
+                      </template>
+                    </v-autocomplete>
 
-                  
-                  <v-text-field v-model="filtro" append-icon="mdi-magnify"
-                  label="Buscar" single-line hide-details clearable></v-text-field>
-                  Filtro
-                  <v-autocomplete :items="pj.getHabilidades(parseStringToFunction(filtro))" deletable-chips multiple small-chips return-object
-                  item-text="nombre">
+                    <v-row>
+                      <v-text-field v-model="filtro" append-icon="mdi-magnify" label="Buscar" single-line hide-details
+                        clearable></v-text-field>
+                      Filtro
+                      <v-autocomplete v-model="habilidadFiltro"
+                        :items="pj.getHabilidades(parseStringToFunction(filtro))" return-object item-text="nombre">
 
-                  <template v-slot:item="{item}">
-                    {{item.nombre}} <v-spacer></v-spacer> <span :style="{color: getColor(item.v)}"> {{item.v}}%</span>
-                  </template>
-                </v-autocomplete>
-                    
-                    Arma
-                  <v-autocomplete :items="pj.inventario.darClaseRecursiva(Arma)" deletable-chips multiple small-chips return-object
-                  item-text="nombre">
-                  <template v-slot:item="{item}">
+                        <template v-slot:item="{item}">
+                          {{item.nombre}} <v-spacer></v-spacer> <span :style="{color: getColor(item.v)}">
+                            {{item.v}}%</span>
+                        </template>
+                      </v-autocomplete>
 
-                    <v-list-item-avatar color="indigo" class="text-h6 font-weight-light white--text">
-                      {{ item.peso }}
-                    </v-list-item-avatar>
-                    <v-list-item-content>
-                      <v-list-item-title v-html="item.nombre"></v-list-item-title>
-                      <v-list-item-subtitle v-html="item.daño"></v-list-item-subtitle>
-                    </v-list-item-content>
+                      <!-- <v-text-field v-model="habilidadFiltro.nombre" label="Nombre">
+                  </v-text-field> -->
+
+                      <!-- <v-text-field v-model="habilidadFiltro.valor" label="valor" >
+                  </v-text-field> -->
+
+                      <v-text-field v-model="habilidadFiltro.v" label="%" size="1">
+                      </v-text-field>
+
+                      <v-text-field v-model="dado" :label="TipoTirada.tirada[habilidadFiltro.tirada(dado)]" size="1"
+                        :color="getColor(dado)" @click="dado=d100.tirar(); iuDaño.dado=arma.daño.tirar(habilidadFiltro.tirada(dado))"
+                        @input="iuDaño.dado=arma.daño.tirar(habilidadFiltro.tirada(dado))">
+
+                      </v-text-field>
+
+                      <!-- <v-text-field v-model="TipoTirada.tirada[habilidadFiltro.tirada(dado)]" label="Tirada" size="1"  >
+                  </v-text-field> -->
+
+                      <v-btn icon color="green"
+                        @click="habilidadFiltro.xpTipoTirada(habilidadFiltro.tirada(dado),dado)">
+                        <v-icon>mdi-check-outline</v-icon>
+                      </v-btn>
+
+                    </v-row>
+
+                    <v-row>
+                      Arma
+                      <v-autocomplete v-model="arma" :items="pj.inventario.darClaseRecursiva(Arma)" 
+                        return-object item-text="nombre">
+                        <template v-slot:item="{item}">
+
+                          <v-list-item-avatar color="indigo" class="text-h6 font-weight-light white--text">
+                            {{ item.peso }}
+                          </v-list-item-avatar>
+                          <v-list-item-content>
+                            <v-list-item-title v-html="item.nombre"></v-list-item-title>
+                            <v-list-item-subtitle v-html="item.daño"></v-list-item-subtitle>
+                          </v-list-item-content>
 
 
-                    <v-list-item-action>
-                      <v-list-item-action-text v-text="item.v+'%'"></v-list-item-action-text>
+                          <v-list-item-action>
+                            <v-list-item-action-text v-text="item.peso+'kg'"></v-list-item-action-text>
 
 
-                    </v-list-item-action>
+                          </v-list-item-action>
 
+                        </template>
+                      </v-autocomplete>
 
-                  </template>
-                </v-autocomplete>
+                      <!-- <v-text-field v-model="arma.daños" label="%" size="1">
+                      </v-text-field> -->
+
+                      <v-select v-model="daño" :items="arma.daños" label="Daño"
+                       return-object 
+                       @change="arma.daño=daño.dado; console.log(arma.daño.dado)"
+                      >
+                      
+                    </v-select>
+
+                      <v-text-field v-model="iuDaño.dado" :label="daño" size="1"
+                        :color="getColor(dado)" @click="iuDaño.dado=arma.daño.tirar()"> 
+
+                      </v-text-field> 
+
+                      <!-- <v-text-field v-model="TipoTirada.tirada[habilidadFiltro.tirada(dado)]" label="Tirada" size="1"  >
+                  </v-text-field> -->
+
+                      <v-btn icon color="green"
+                        @click="habilidadFiltro.xpTipoTirada(habilidadFiltro.tirada(dado),dado)">
+                        <v-icon>mdi-check-outline</v-icon>
+                      </v-btn>
+
+                    </v-row>
 
                   </v-container>
                 </v-tab-item>
@@ -500,7 +553,7 @@
                   <v-text-field v-model="date" label="Fecha" prepend-icon="mdi-calendar" readonly v-bind="attrs"
                     v-on="on"></v-text-field>
                 </template>
-                <v-date-picker v-model="date" dark locale='es'  ></v-date-picker>
+                <v-date-picker v-model="date" dark locale='es'></v-date-picker>
               </v-menu>
             </v-col>
 
@@ -616,17 +669,19 @@
           console.log('Dialog closed')
         },
 
-       parseStringToFunction(func) {
+        parseStringToFunction(func) {
 
-         console.log(func);
-          if (func.length<1) return undefined;
-          if((func.includes("=>"))) 
+          // console.log(func);
+          if (!func || func.length < 1) return undefined;
+          if ((func.includes("=>")))
             return (new Function('return ' + func)());
           else
-            return (new Function('return ' + 'obj=>obj.'+func)());
-},
+            return (new Function('return ' + 'obj=>obj.' + func)());
+        },
 
-
+        tirada() {
+          return this.habilidadFiltro.tirada(this.dado);
+        },
 
         copiarHechizo(obj) {
 
@@ -745,7 +800,14 @@
         dialog: false,
         hidden: false,
 
-        filtro:"",
+        filtro: "",
+        habilidadFiltro: new Habilidad(),
+        arma: new Arma(),
+        daño:[],
+        dado: 100,
+        iuDaño:{dado: 0, daño:[]},
+        dadoDaño:0,
+        d100: new Dado('1d100'),
         copiaHechizo: new Hechizo(),
 
         value: [],

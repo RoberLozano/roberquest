@@ -78,8 +78,8 @@ class D {
 	 * TODO: ¿Sería interesante con negativos?
 	 */
 	bonus(extra) {
-		if (this.num < 1|| extra<1) return this.norm(); //no tiene sentido con dados negativos
-		let total = this.num+extra;
+		if (this.num < 1 || extra < 1) return this.norm(); //no tiene sentido con dados negativos
+		let total = this.num + extra;
 		let arr = [];
 
 		for (let i = 0; i < total; i++) {
@@ -406,103 +406,168 @@ class Dado {
 
 }
 
-class Daño extends Dado{
-  constructor(dado, tipo) {
-    super(dado);
-    this.tipo=tipo;
-  }
-  toString(){
-	  return this.dado+this.tipo;
-  }
+class Daño extends Dado {
+	constructor(dado, tipo) {
+
+		if (!tipo) {
+			dado = dado.trim();
+			let s = dado.slice(-1);
+			try {
+				tipo = s;
+				dado = dado.slice(0, -1)
+			} catch (error) {
+
+			}
+		}
+		super(dado);
+		this.tipo = tipo;
+	}
+	toString() {
+		return this.dado + this.tipo;
+	}
+
+	//sobreescribe tirar
+
+	/**
+ * Una tirada normal de dados
+ *
+ * @returns {number} el resultado de una tirada normal de dados
+ * @memberof Dado
+ */
+
+	/**
+	 * Una tirada normal de dados o con tipo
+	 * @param {TipoTirada||null} tipoTirada el tipò tirada para calcular el daño
+	 * @returns el daño
+	 * @memberof Dado
+	 */
+	tirar(tipoTirada) {
+		if (!tipoTirada) {
+
+			let sumatorio = 0;
+			// por cada dado tiro el número de veces
+			for (let i of this.dados)
+				sumatorio += (new D(i.num, i.caras)).norm();
+			//si hay parte entera la sumo
+			if (!isNaN(this.entero)) sumatorio += this.entero;
+			return sumatorio;
+
+		} else
+			switch (tipoTirada) {
+				case TipoTirada.SUPERCRITICO:
+					return (this.dadoMax() * 2);
+					break;
+				case TipoTirada.CRITICO:
+					return (this.dadoMax() + this.tirar());
+					break;
+				case TipoTirada.ESPECIAL:
+					return this.dadoMax();
+					break;
+				case TipoTirada.EXITO:
+						return this.tirar();
+						break;
+				default: return 0;
+					break;
+			}
+
+		//   let sumatorio = 0;
+		//   // por cada dado tiro el número de veces
+		//   for (let i of this.dados)
+		// 	  sumatorio += (new D(i.num, i.caras)).norm();
+		//   //si hay parte entera la sumo
+		//   if (!isNaN(this.entero)) sumatorio += this.entero;
+		//   return sumatorio;
+
+	}
 }
 
 class InputDaño extends HTMLElement {
-  constructor(daño=new Daño('1d10','F')) {
-    // Always call super first in constructor
-    super();
-    this._daño=daño;
-    this.shadow = this.attachShadow({ mode: 'open' });
+	constructor(daño = new Daño('1d10', 'F')) {
+		// Always call super first in constructor
+		super();
+		this._daño = daño;
+		this.shadow = this.attachShadow({ mode: 'open' });
 
-    this.wrapper = document.createElement('span');
-    this.wrapper.setAttribute('class', 'wrapper');
+		this.wrapper = document.createElement('span');
+		this.wrapper.setAttribute('class', 'wrapper');
 
-    this.daño = document.createElement('input');
-    this.daño.setAttribute("id", "daño");
-    this.daño.setAttribute("type", "text");
-    this.daño.value=this.d.dado;
-    // this.daño.setAttribute("value", this.habilidad.v);
-    
-    this.daño.style.width = "4em";
-    this.daño.style.textAlign = "right";
-    this.daño.style.borderStyle = "none";
+		this.daño = document.createElement('input');
+		this.daño.setAttribute("id", "daño");
+		this.daño.setAttribute("type", "text");
+		this.daño.value = this.d.dado;
+		// this.daño.setAttribute("value", this.habilidad.v);
 
-this.daño.addEventListener('change', (event) => {
-  //console.log(this.daño.value);
-//   this.d= new Daño(this.daño.value,this.d.tipo)
-//       this.act(this.input);
-      
-    });
+		this.daño.style.width = "4em";
+		this.daño.style.textAlign = "right";
+		this.daño.style.borderStyle = "none";
 
-    this.tipo = document.createElement('span');
-    // this.tipo.innerHTML = ` <b>${this.d.tipo}</b> `;
-    this.tipo.innerHTML = ` | ${this.d.tipo} `;
+		this.daño.addEventListener('change', (event) => {
+			//console.log(this.daño.value);
+			//   this.d= new Daño(this.daño.value,this.d.tipo)
+			//       this.act(this.input);
 
-    this.icon = document.createElement('span');
-    this.icon.setAttribute('class', 'icon');
-    this.icon.addEventListener('click', (event) => {
-      this.input.value = this.d.tirar()
-      this.act(this.input);
-      
-    });
+		});
 
+		this.tipo = document.createElement('span');
+		// this.tipo.innerHTML = ` <b>${this.d.tipo}</b> `;
+		this.tipo.innerHTML = ` | ${this.d.tipo} `;
 
+		this.icon = document.createElement('span');
+		this.icon.setAttribute('class', 'icon');
+		this.icon.addEventListener('click', (event) => {
+			this.input.value = this.d.tirar()
+			this.act(this.input);
 
-    this.input = document.createElement('input');
-    this.input.setAttribute("type", "number");
-    // this.input.setAttribute("value", "100");
-    this.input.setAttribute("placeholder", "100");
-    this.input.setAttribute('min', '0');
-    this.input.setAttribute('max', '100');
-	this.input.style.width = "2.3em";
-	this.input.style.textAlign = "center";
+		});
 
 
-    this.input.addEventListener('change', (event) => {
-      this.act(this.input);
-      // console.log(this.getAttribute('habilidad'));
-    //    if(input.value>=this.d.dadoMax()) input.style.color="red"
-    //    else input.style.color="black"
-    });
 
-    // Take attribute content and put it inside the info span
-    // Insert icon
-    let imgUrl;
-    if (this.hasAttribute('img')) {
-      imgUrl = this.getAttribute('img');
-    } else {
-      imgUrl = 'img/10_sided_die.svg';
-    }
-
-    const img = document.createElement('img');
-    img.src = imgUrl;
-    this.icon.appendChild(img);
-
-    // Create some CSS to apply to the shadow dom
-    const style = document.createElement('style');
-    // console.log(this.style.isConnected);
-    
-    // this.ok= document.createElement('button');
-    // this.ok.classList.add("okay");
-    this.ok= document.createElement('img');
-    
-    this.ok.src ='img/sword.svg';
-    // this.ok.src = 'img/check.svg';
-    this.ok.addEventListener('click', (event) => {
-      //this.habilidad.xpTirada(this.input.value)
-    });
+		this.input = document.createElement('input');
+		this.input.setAttribute("type", "number");
+		// this.input.setAttribute("value", "100");
+		this.input.setAttribute("placeholder", "100");
+		this.input.setAttribute('min', '0');
+		this.input.setAttribute('max', '100');
+		this.input.style.width = "2.3em";
+		this.input.style.textAlign = "center";
 
 
-    style.textContent = `
+		this.input.addEventListener('change', (event) => {
+			this.act(this.input);
+			// console.log(this.getAttribute('habilidad'));
+			//    if(input.value>=this.d.dadoMax()) input.style.color="red"
+			//    else input.style.color="black"
+		});
+
+		// Take attribute content and put it inside the info span
+		// Insert icon
+		let imgUrl;
+		if (this.hasAttribute('img')) {
+			imgUrl = this.getAttribute('img');
+		} else {
+			imgUrl = 'img/10_sided_die.svg';
+		}
+
+		const img = document.createElement('img');
+		img.src = imgUrl;
+		this.icon.appendChild(img);
+
+		// Create some CSS to apply to the shadow dom
+		const style = document.createElement('style');
+		// console.log(this.style.isConnected);
+
+		// this.ok= document.createElement('button');
+		// this.ok.classList.add("okay");
+		this.ok = document.createElement('img');
+
+		this.ok.src = 'img/sword.svg';
+		// this.ok.src = 'img/check.svg';
+		this.ok.addEventListener('click', (event) => {
+			//this.habilidad.xpTirada(this.input.value)
+		});
+
+
+		style.textContent = `
           .wrapper {
             position: relative;
           }
@@ -543,53 +608,53 @@ this.daño.addEventListener('change', (event) => {
           }
         `;
 
-    // Attach the created elements to the shadow dom
+		// Attach the created elements to the shadow dom
 
-    // this.shadow.innerHTML=""
-    this.shadow.appendChild(style);
-    console.log(style.isConnected);
-    this.shadow.appendChild(this.wrapper);
-    this.wrapper.appendChild(this.daño);
-    this.wrapper.appendChild(this.tipo);
-    this.wrapper.appendChild(this.icon);
-    this.wrapper.appendChild(this.input);
-    this.wrapper.appendChild(this.ok);
-    
-
-    // Create a shadow root
-  }
-
-  
-  set d(daño) {
-	this._daño=daño;
-	console.log("SET DAÑO");
-	console.log(daño);
-    // si es string crear nuevo daño
-    // this.label.setAttribute("value", this.habilidad.nombre);
-	 this.daño.setAttribute("value", daño.dado);
-	 this.tipo.innerHTML = ` | ${daño.tipo} `;
-  }
-  get d() {
-    return this._daño;
-  }
+		// this.shadow.innerHTML=""
+		this.shadow.appendChild(style);
+		console.log(style.isConnected);
+		this.shadow.appendChild(this.wrapper);
+		this.wrapper.appendChild(this.daño);
+		this.wrapper.appendChild(this.tipo);
+		this.wrapper.appendChild(this.icon);
+		this.wrapper.appendChild(this.input);
+		this.wrapper.appendChild(this.ok);
 
 
-  act(input) {
-    let v = (input.value);
-    let max=this.d.dadoMax();
- console.log(v);
-    switch (true) {
-      case (v>max):
-        input.style.color = "red";
-        break;
-      case (v==max):
-        input.style.color = "green";
-        break;
-      case (v<max):
-        input.style.color = "black";
-        break;
-    }
-  }
+		// Create a shadow root
+	}
+
+
+	set d(daño) {
+		this._daño = daño;
+		console.log("SET DAÑO");
+		console.log(daño);
+		// si es string crear nuevo daño
+		// this.label.setAttribute("value", this.habilidad.nombre);
+		this.daño.setAttribute("value", daño.dado);
+		this.tipo.innerHTML = ` | ${daño.tipo} `;
+	}
+	get d() {
+		return this._daño;
+	}
+
+
+	act(input) {
+		let v = (input.value);
+		let max = this.d.dadoMax();
+		console.log(v);
+		switch (true) {
+			case (v > max):
+				input.style.color = "red";
+				break;
+			case (v == max):
+				input.style.color = "green";
+				break;
+			case (v < max):
+				input.style.color = "black";
+				break;
+		}
+	}
 }
 
 
@@ -597,84 +662,84 @@ this.daño.addEventListener('change', (event) => {
  * Clase que crea un input del arma
  * @param {Arma} arma El arma del input
  */
-class InputArma extends InputDaño{
-  /**
-   * crea un input del arma
-   * @param {Arma} arma El arma del input
-   */
-  constructor(arma = new Arma('Espada',1,100,new Daño('1d10','F'),new Daño('1d8','P'))) {
-    // Always call super first in constructor
-    super(arma.daño);
-    this._arma=arma;
-    this.txtArma = document.createElement('input');
-    this.txtArma.setAttribute("id", "txtArma");
-    this.txtArma.setAttribute("type", "text");
-    this.txtArma.value=this.arma.nombre;
-    // this.daño.setAttribute("value", this.habilidad.v);
-    
-    this.txtArma.style.width = "7em";
-    this.txtArma.style.textAlign = "right";
-    this.txtArma.style.borderStyle = "none"
-   // this.wrapper.appendChild(this.txtArma)
-    this.wrapper.insertBefore(this.txtArma,this.daño)
-    //this.wrapper.childNodes.push(this.txtArma)
-    console.log(this._arma);
-    this.lista('listaDaño',this._arma.daños)
-    this.daño.addEventListener('click', (event) => {
-      this.daño.value = ''
-      
-    });
-    this.daño.addEventListener('change', (event) => {
-      console.log(this.daño.value);
-	  this.arma.daño=this.daño.value;
-	  this.d=this.arma.daño;
-    
-    });
-    
-  }
-  
-  
-  lista(id,daños){
-    let options="";
-    daños.forEach((d,i) => {
-      options+=`<option value="${d.dado}">${d.tipo}</option>`
-  });
-    this.daño.innerHTML= `  <datalist id=${id}>
+class InputArma extends InputDaño {
+	/**
+	 * crea un input del arma
+	 * @param {Arma} arma El arma del input
+	 */
+	constructor(arma = new Arma('Espada', 1, 100, new Daño('1d10', 'F'), new Daño('1d8', 'P'))) {
+		// Always call super first in constructor
+		super(arma.daño);
+		this._arma = arma;
+		this.txtArma = document.createElement('input');
+		this.txtArma.setAttribute("id", "txtArma");
+		this.txtArma.setAttribute("type", "text");
+		this.txtArma.value = this.arma.nombre;
+		// this.daño.setAttribute("value", this.habilidad.v);
+
+		this.txtArma.style.width = "7em";
+		this.txtArma.style.textAlign = "right";
+		this.txtArma.style.borderStyle = "none"
+		// this.wrapper.appendChild(this.txtArma)
+		this.wrapper.insertBefore(this.txtArma, this.daño)
+		//this.wrapper.childNodes.push(this.txtArma)
+		console.log(this._arma);
+		this.lista('listaDaño', this._arma.daños)
+		this.daño.addEventListener('click', (event) => {
+			this.daño.value = ''
+
+		});
+		this.daño.addEventListener('change', (event) => {
+			console.log(this.daño.value);
+			this.arma.daño = this.daño.value;
+			this.d = this.arma.daño;
+
+		});
+
+	}
+
+
+	lista(id, daños) {
+		let options = "";
+		daños.forEach((d, i) => {
+			options += `<option value="${d.dado}">${d.tipo}</option>`
+		});
+		this.daño.innerHTML = `  <datalist id=${id}>
     ${options}
   </datalist>`
-  this.daño.setAttribute("list",id);
-  }
-  set arma(a){
-    this._arma=a;
-    this._daño=a.daño;
-    act();
-  }
-  get arma(){
-    return this._arma;
-  }
+		this.daño.setAttribute("list", id);
+	}
+	set arma(a) {
+		this._arma = a;
+		this._daño = a.daño;
+		act();
+	}
+	get arma() {
+		return this._arma;
+	}
 }
 
-class InputTirada extends HTMLElement{
+class InputTirada extends HTMLElement {
 	constructor() {
 		// Always call super first in constructor
 		super();
 		this.shadow = this.attachShadow({ mode: 'open' });
-	
+
 		this.wrapper = document.createElement('span');
 		this.wrapper.setAttribute('class', 'wrapper');
-	
 
-	
+
+
 		this.icon = document.createElement('span');
 		this.icon.setAttribute('class', 'icon');
 		this.icon.addEventListener('click', (event) => {
-		  this.input.value = new Dado('1d100').tirar()
-		//   this.act(this.input);
-		  
+			this.input.value = new Dado('1d100').tirar()
+			//   this.act(this.input);
+
 		});
-	
-	
-	
+
+
+
 		this.input = document.createElement('input');
 		this.input.setAttribute("type", "number");
 		// this.input.setAttribute("value", "100");
@@ -683,32 +748,32 @@ class InputTirada extends HTMLElement{
 		this.input.setAttribute('max', '100');
 		this.input.style.width = "2.3em";
 		this.input.style.textAlign = "center";
-	
-	
+
+
 		// this.input.addEventListener('change', (event) => {	  
 		// });
-	
+
 		// Take attribute content and put it inside the info span
 		// Insert icon
 		let imgUrl;
 		if (this.hasAttribute('img')) {
-		  imgUrl = this.getAttribute('img');
+			imgUrl = this.getAttribute('img');
 		} else {
-		  imgUrl = 'img/10_sided_die.svg';
+			imgUrl = 'img/10_sided_die.svg';
 		}
-	
+
 		const img = document.createElement('img');
 		img.src = imgUrl;
 		this.icon.appendChild(img);
-	
+
 		// Create some CSS to apply to the shadow dom
 		const style = document.createElement('style');
 		// console.log(this.style.isConnected);
-		
+
 		// this.ok= document.createElement('button');
 		// this.ok.classList.add("okay");
-	
-	
+
+
 		style.textContent = `
 			  .wrapper {
 				position: relative;
@@ -741,19 +806,19 @@ class InputTirada extends HTMLElement{
 				vertical-align: middle;  
 			  }
 			`;
-	
+
 		// Attach the created elements to the shadow dom
-	
+
 		// this.shadow.innerHTML=""
 		this.shadow.appendChild(style);
 		console.log(style.isConnected);
 		this.shadow.appendChild(this.wrapper);
 		this.wrapper.appendChild(this.icon);
 		this.wrapper.appendChild(this.input);
-		
-	
+
+
 		// Create a shadow root
-	  }
+	}
 }
 
 customElements.define('input-daño', InputDaño);
