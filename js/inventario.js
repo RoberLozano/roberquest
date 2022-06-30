@@ -469,17 +469,18 @@ class Arma extends Objeto {
     // this.peso   = o.peso ;
     // this.valor  = o.valor ;
     this.daños = o.daños;
-    console.log(o.daños);
+    // console.log(o.daños);
     //cargar cada daño
     this.daños = []
     // TODO: probar
     o.daños?.forEach(d => {
       if(d?.dado && d?.tipo){
-      }
-              let da = new Daño(d.dado, d.tipo);
+      let da = new Daño(d.dado, d.tipo);
               
-      console.log(da);
+      // console.log(da);
       this.daños.push(da)
+      }
+
 
       // this.index=0;
     });

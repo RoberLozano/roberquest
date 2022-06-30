@@ -116,10 +116,16 @@ function ProcessExcel(data) {
 
   pe.act();
 
-  if (last) console.log(diferencia(pe, last));
+  //mirar si ya hay uno con ese nombre y las diferencias
+  // if (last) console.log(diferencia(pe, last));
 
-  eval(`last=new ${pe.clase}()`)
-  last.setAll(pe)
+  if (ls(pe.nombre)){
+    last= Clase.convertir(ls(pe.nombre));
+  }
+
+  if (last) console.log(diferencia(last,pe));
+  // eval(`last=new ${pe.clase}()`)
+  // last.setAll(pe)
 
   if (confirm(`¿Quiere guardar '${pe.nombre}' en localStorage? `) == true) {
    ls(pe.nombre,pe);
@@ -447,12 +453,14 @@ function info(params) {
 
   let f = (ws['K6']?.w + '-' + ws['L6']?.v).split('-'); //fecha nacimiento
   let fecha_nac = new Date(parseInt(f[2]), parseInt(f[1]) - 1, parseInt(f[0]))
+  console.log("fecha Nacimiento:");
   console.log(fecha_nac.toLocaleDateString());
 
-
+  pe.nacimiento=fecha_nac;
   f = (ws['K7']?.w + '-' + ws['L7']?.v).split('-'); //fecha actual
   let fecha = new Date(parseInt(f[2]), parseInt(f[1]) - 1, parseInt(f[0]))
   console.log(fecha.toLocaleDateString());
+  pe.fecha=fecha;
   fechaMundo = fecha;
 
   car();
@@ -609,6 +617,19 @@ function guardar() {
   var ic = new InputCustom(pe);
   salida.appendChild(ic);
 
+}
+
+function tablas(personaje) {
+  var salida = document.getElementById('inputs');
+  var ic = new InputCustom(personaje);
+  salida.appendChild(ic);
+  
+}
+
+function limpiarTablas() {
+  var salida = document.getElementById('inputs');
+  salida.innerHTML=""
+  
 }
 
 function pifias(inicio, fin) {

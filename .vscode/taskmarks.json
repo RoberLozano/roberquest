@@ -1,5 +1,5 @@
 {
-	"activeTaskName": "vue magia",
+	"activeTaskName": "inventario",
 	"tasks": [
 		{
 			"name": "default",
@@ -18,7 +18,7 @@
 					"filepath": "\\ex.js",
 					"marks": [
 						114,
-						214,
+						220,
 						42
 					]
 				}
@@ -38,7 +38,22 @@
 		},
 		{
 			"name": "inventario",
-			"files": []
+			"files": [
+				{
+					"filepath": "\\vue\\vuetifi.html",
+					"marks": [
+						195,
+						623,
+						844
+					]
+				},
+				{
+					"filepath": "\\js\\rol.js",
+					"marks": [
+						1654
+					]
+				}
+			]
 		}
 	]
 }

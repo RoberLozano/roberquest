@@ -68,7 +68,7 @@
                   </v-list-item-icon>
 
                   <v-select v-model="nombrePersonaje" :items="ls('personajes')" label="Personaje"
-                    @change="pj= Clase.convertir(ls(nombrePersonaje));pj.actTodosBonHab();p=pj">
+                    @change="pj= Clase.convertir(ls(nombrePersonaje));pj.actTodosBonHab();p=pj; contenedor=pj.inventario">
                   </v-select>
                 </v-list-item>
 
@@ -207,6 +207,7 @@
                               <v-data-table dense dark hide-default-footer :headers="headerInventario"
                                 :items="contenedor.objetos" :custom-sort="subirSort" show-group-by :items-per-page="-1"
                                 class="elevation-1" show-expand :single-expand="singleExpand" :expanded.sync="expanded"
+                                v-model="selected" show-select
                                 :search="search" item-key="nombre" :mobile-breakpoint=200>
 
                                 <template v-slot:item.nombre="{ item }">
@@ -276,10 +277,22 @@
                                     label="Buscar" single-line hide-details clearable></v-text-field>
                                 </template>
 
+                                <!-- footer -->
+                                <template
+                                v-if="selected.length>0"
+                                v-slot:footer
+                              >
+                                <div>
+                                  {{selected.length}} objetos seleccionados, 
+                                  {{selected.reduce((a, b) => a + (b.pesa || 0), 0)}} kgs, 
+                                  {{selected.reduce((a, b) => a + (b.valor || 0), 0)}} mp
+                                  <v-btn @click="sheet = !sheet">Mover</v-btn> <v-btn>Vender</v-btn>
+                                </div>
+                              </template>
 
                                 <template v-slot:expanded-item="{ headerInventario, item }">
                                   <td :colspan="headers.length">
-                                    {{item.clase}} {{item.nombre}} pesa {{item.peso}} y vale {{item.valor}}
+                                    {{item.clase}} {{item.nombre}} pesa {{item.pesa}} y vale {{item.valor}}
                                   </td>
                                 </template>
 
@@ -588,6 +601,44 @@
 
 
 
+        <!-- Bottomsheet -->
+        <v-bottom-sheet
+        v-model="sheet"
+        persistent
+      >
+        <!-- <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            color="green"
+            dark
+            v-bind="attrs"
+            v-on="on"
+          >
+            Open Persistent
+          </v-btn>
+        </template> -->
+        <v-sheet
+          class="text-center"
+          height="200px"
+        >
+          <div class="py-3">
+            Elige donde mover
+            <v-select v-model="contenedorMover"  :items="pj.inventario.darContenedores()" label="contenedor"
+            return-object 
+            @change="selected.forEach(i => {contenedor.mover(i,contenedorMover)});selected=[];sheet = !sheet"
+           >
+           <template v-slot:selection="{ item, index }">
+              {{ item.nombre }}
+          </template>
+
+          <template v-slot:item="{ item}">
+            {{ item.nombre }}
+        </template>
+           
+         </v-select>
+          </div>
+        </v-sheet>
+      </v-bottom-sheet>
+
 
 
 
@@ -776,7 +827,7 @@
         date: fechaMundo.fecha(),
         dialog: false,
         hidden: false,
-
+        selected:[],//inventario selected
         filtro: "",
         habilidadFiltro: new Habilidad(),
         arma: new Arma(),
@@ -789,6 +840,9 @@
 
         value: [],
         selectedHeaders: [],
+
+        sheet:false, //bottom sheet mover
+        contenedorMover:null,
 
         //GENERAL,
         // arrayHeaders:["nombre"],

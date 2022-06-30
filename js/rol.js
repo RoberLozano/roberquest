@@ -348,7 +348,7 @@ class Animal extends Clase {
     this.DES = DES
     this.ASP = ASP
 
-    this.fecha= fechaMundo;
+    // this.fecha= fechaMundo;
 
     this.bonificacion = new Bon({});
 
@@ -1652,8 +1652,8 @@ class Humanoide extends Animal {
 
     this.bonificacion = new Bon({});
 
-    // this.inventario = creaInventario("Cuerpo");
-    this.inventario = new Contenedor("Cuerpo");
+    this.inventario = creaInventario("Cuerpo");
+    // this.inventario = new Contenedor("Cuerpo");
 
     this.habilidades = {}
     this.efectos = [];
