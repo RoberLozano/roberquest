@@ -74,7 +74,7 @@
 
           <template>
             <v-card>
-              <v-tabs color="red accent-4">
+              <v-tabs color="red accent-4" touchless>
                 <v-tab>Personaje</v-tab>
                 <v-tab>Habilidades</v-tab>
                 <v-tab>Inventario</v-tab>
@@ -229,22 +229,20 @@
   <template v-slot:item.ctd="props">
     <v-edit-dialog :return-value.sync="props.item.ctd" large persistent>
 
+
+
       <td>{{props.item.ctd}}</td>
       <template v-slot:input>
-
-        
+              
           <div class="mt-4 text-h6">
             Cambiar Cantidad
           </div>
-
-        
         
           <v-text-field v-model.number="props.item.ctd" label="ctd" class="mt-0 pt-0" hide-details single-line
             type="number" counter autofocus>
           </v-text-field>
         
 
-        
           <v-slider v-model="sliderSeparar" hint="Objetos a separar" :max="props.item.ctd" min="0" thumb-label>
           </v-slider>
           <v-btn icon color="green" @click="contenedor.add(props.item.separar(sliderSeparar)); sliderSeparar=0" >
