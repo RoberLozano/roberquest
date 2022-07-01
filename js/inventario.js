@@ -63,23 +63,6 @@ class Objetos extends Objeto {
     this.ctd += valor;
   }
 
-  /**
-   * 
-   * @param {Number} numero un numero con la cantidad de objetos a separar
-   * @returns {Objetos}
-   */
-  separar(numero){
-    if(numero>0 && numero<this.ctd){
-      var copia=copiar(this)
-      copia.setAll(this);
-      copia.ctd=numero;
-      this.ctd= this.ctd-numero;
-
-      return copia;
-    }
-
-  }
-
 }
 class Usable extends Objeto {
   constructor(nombre, peso, valor) {
