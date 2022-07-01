@@ -129,6 +129,7 @@ function ProcessExcel(data) {
 
   if (confirm(`¿Quiere guardar '${pe.nombre}' en localStorage? `) == true) {
    ls(pe.nombre,pe);
+   listaPersonajes(pe.nombre)
    console.log(`guardado '${pe.nombre}' en localStorage`);
   } else {
     console.log('No se ha guardado nada');

@@ -23,20 +23,11 @@
           <v-app-bar dark>
             <v-app-bar-nav-icon @click="drawer = true"></v-app-bar-nav-icon>
 
-            <v-toolbar-title>Roberquest</v-toolbar-title>
+            <v-toolbar-title>{{nombrePersonaje||'Roberquest'}}</v-toolbar-title>
             <v-spacer></v-spacer>
 
             <v-btn icon @click="act()">
               <v-icon>mdi-magnify</v-icon>
-
-            </v-btn>
-
-            <v-btn icon>
-              <v-icon>mdi-heart</v-icon>
-            </v-btn>
-
-            <v-btn icon>
-              <v-icon>mdi-dots-vertical</v-icon>
             </v-btn>
 
           </v-app-bar>
@@ -213,13 +204,26 @@
                                 <template v-slot:item.nombre="{ item }">
                                   <v-edit-dialog :return-value="item.nombre">
                                     {{ item.nombre }}
-                                    <v-icon v-if="item.clase == 'Contenedor'" small @click="abrir(item)">
-                                      mdi-delete
-                                    </v-icon>
+
+                                    <div style="display: inline" v-if="item.clase == 'Contenedor'" @click="abrir(item)" >
+                                      <v-icon v-if="item.clase == 'Contenedor'" small @click="abrir(item)">
+                                        mdi-delete
+                                      </v-icon>
+                              
+                                    <v-badge 
+                                    :content="item.carga+'/'+item.max"
+                                    :color="interColor(item.carga,item.max,true)"
+                                    inline
+                                  >
+                                  {{item.carga}}/{{item.max}}
+                                  </v-badge>
+                                    <span >{{item.carga}}/{{item.max}}</span>
                                     <template v-slot:input>
                                       <input v-model.lazy="item.nombre" :style="{color: 'white'}" />
                                     </template>
                                   </v-edit-dialog>
+
+                                </div>
 
                                 </template>
 
@@ -286,11 +290,12 @@
                                   {{selected.length}} objetos seleccionados, 
                                   {{selected.reduce((a, b) => a + (b.pesa || 0), 0)}} kgs, 
                                   {{selected.reduce((a, b) => a + (b.valor || 0), 0)}} mp
-                                  <v-btn @click="sheet = !sheet">Mover</v-btn> <v-btn>Vender</v-btn>
+                                  <v-btn @click="sheet = !sheet">Mover</v-btn>
+                                  <v-btn @click="selected.forEach(i => {contenedor.sacar(i)});selected=[];">Tirar</v-btn>
                                 </div>
                               </template>
 
-                                <template v-slot:expanded-item="{ headerInventario, item }">
+                                <template  v-slot:expanded-item="{ headerInventario, item }">
                                   <td :colspan="headers.length">
                                     {{item.clase}} {{item.nombre}} pesa {{item.pesa}} y vale {{item.valor}}
                                   </td>
@@ -308,7 +313,7 @@
                     <v-row justify="center">
                       <v-expansion-panels accordion dark>
                         <v-expansion-panel>
-                          <v-expansion-panel-header>Inventario ({{contenedor.pesa}}kg)</v-expansion-panel-header>
+                          <v-expansion-panel-header>Inventario ({{(contenedor.pesa).toFixed(2)}}kg)</v-expansion-panel-header>
                           <v-expansion-panel-content>
                             <template>
 
@@ -606,16 +611,7 @@
         v-model="sheet"
         persistent
       >
-        <!-- <template v-slot:activator="{ on, attrs }">
-          <v-btn
-            color="green"
-            dark
-            v-bind="attrs"
-            v-on="on"
-          >
-            Open Persistent
-          </v-btn>
-        </template> -->
+
         <v-sheet
           class="text-center"
           height="200px"
@@ -631,7 +627,7 @@
           </template>
 
           <template v-slot:item="{ item}">
-            {{ item.nombre }}
+            {{ item.nombre }}  {{item.carga}} / {{item.max}} kg
         </template>
            
          </v-select>
@@ -739,6 +735,19 @@
             this.contenedor = this.abiertos.pop()
 
           }
+        },
+
+        interColor(min, max, inverso=false){
+          let p=min/max;
+          if(inverso) p=1-p;
+          p=p*100;
+
+          if (p > 78) return 'green'
+          else if (p < 10) return 'red'
+          else if (p < 40) return 'orange'
+          else if (p > 50) return 'inherit'
+          else return ''
+
         },
 
         getColor(v) {

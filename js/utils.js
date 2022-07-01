@@ -244,6 +244,26 @@ function uploadText(fileInputId) {
  
 };
 }
+/**
+ * 
+ * @param {String} personaje nombre del personaje a guardar en la lista, si vacio te devuelve al lista de personajes
+ * @returns lista de personajes
+ */
+function listaPersonajes(personaje) {
+  if (personaje) {
+      var mySet = new Set()
+      let set = ls('personajes');
+      console.log(set);
+      if (set) { mySet = new Set(set) }
+      mySet.add(personaje);
+      console.log(mySet);
+      ls('personajes', Array.from(mySet))
+
+  }
+  else {
+      return ls('personajes');
+  }
+}
 
  async function pjUpload(fileInputId='inputfile'){
   var texto=await uploadText(fileInputId)
