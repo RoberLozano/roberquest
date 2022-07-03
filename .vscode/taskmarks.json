@@ -1,72 +1,42 @@
 {
-	"activeTaskName": "inventario",
+	"activeTaskName": "vue hechizo",
 	"tasks": [
 		{
 			"name": "default",
 			"files": []
 		},
 		{
-			"name": "Excel",
+			"name": "vue",
 			"files": [
 				{
-					"filepath": "\\excel.htm",
+					"filepath": "\\vue\\vuetifi.html",
 					"marks": [
-						42
+						547
 					]
 				},
 				{
-					"filepath": "\\ex.js",
+					"filepath": "\\vuetifi.html",
 					"marks": [
-						114,
-						220,
-						42
+						717
 					]
 				}
 			]
 		},
 		{
-			"name": "vue magia",
+			"name": "vue hechizo",
 			"files": [
 				{
-					"filepath": "\\vue\\vuetifi.html",
+					"filepath": "\\vue.html",
 					"marks": [
-						436,
-						787
-					]
-				}
-			]
-		},
-		{
-			"name": "inventario",
-			"files": [
-				{
-					"filepath": "\\vue\\vuetifi.html",
-					"marks": [
-						195,
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-						638,
-						648
-=======
-						292,
-						618,
-						628
->>>>>>> parent of 15da594 (separar)
-=======
-						640,
-						650
->>>>>>> parent of 18fbd3b (touchless)
-=======
-						640,
-						650
->>>>>>> parent of 18fbd3b (touchless)
+						546,
+						717
 					]
 				},
 				{
-					"filepath": "\\js\\rol.js",
+					"filepath": "\\js\\habilidades.js",
 					"marks": [
-						1654
+						1429,
+						1483
 					]
 				}
 			]

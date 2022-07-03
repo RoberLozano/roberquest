@@ -1134,6 +1134,7 @@ class InputHabilidad extends HTMLElement {
 
     return v;
   }
+
 }
 
 class InputSubirHabilidad extends InputHabilidad {
@@ -1378,6 +1379,8 @@ class InputArte extends InputHabilidad {
       'gastados', this.gastados,
       'penalizacion', this.penalizacion);
 
+    console.log(this);
+
     return intensidad;
   }
 
@@ -1398,7 +1401,7 @@ class InputArte extends InputHabilidad {
 }
 
 class InputHechizo extends InputHabilidad {
-  constructor(habilidad = new Hechizo(Hechizo, 7, 77), black) {
+  constructor(habilidad = new HechizoReal(Hechizo, 7, 77), black) {
     super(habilidad, black);
     this.pm = document.createElement('input');
     this.pm.setAttribute("id", "pm");
@@ -1424,7 +1427,7 @@ class InputHechizo extends InputHabilidad {
       console.log(`Hechizo ${this.h.nombre} realizado`);
       this.lanzarHechizo();
       this.habilidad.xpTirada(this.input.value, this.personaje?.suerte)
-      actPuntos();
+      // actPuntos();
     });
 
   }
@@ -1756,7 +1759,7 @@ customElements.define('input-subir', InputSubirHabilidad);
 
 var hechizo;
 
-function IUHechizos(p, div = "salida") {
+function IUHechizos(p, div = "salida", black=false) {
   var salida = document.getElementById(div);
   var options = ''
   // salida.appendChild(selector);
@@ -1790,9 +1793,11 @@ function IUHechizos(p, div = "salida") {
   </select>`;
 
 
+
+
   salida.innerHTML = html;
 
-  var ih = new InputHechizo(p.getHabilidad('Volar'));
+  var ih = new InputHechizo(p.getHabilidad('Volar'),black);
   var div = document.createElement("div");
   ih.setPersonaje(p);
   hechizo = ih;
@@ -1819,7 +1824,7 @@ function IUHechizos(p, div = "salida") {
     if (h && h.valor > 0) {
       var div = document.createElement("div");
       // div.style.display="inline-block" //en linea si cabe entero
-      var ia = new InputArte(h);
+      var ia = new InputArte(h,black);
       ia.hidden = true;
       ia.ok.addEventListener('click', (event) => {
         console.log(`Aplicar desde ${ia.h.nombre} a Hechizo ${hechizo.h.nombre}`);

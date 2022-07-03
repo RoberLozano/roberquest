@@ -74,14 +74,15 @@
 
           <template>
             <v-card>
-              <v-tabs color="red accent-4">
+              <v-tabs color="red accent-4" show-arrows>
                 <v-tab>Personaje</v-tab>
                 <v-tab>Habilidades</v-tab>
                 <v-tab>Inventario</v-tab>
                 <v-tab>Combate</v-tab>
                 <v-tab>Magia</v-tab>
-
-
+              
+  
+            
                 <!-- Personaje -->
                 <v-tab-item>
                   <v-container fluid>
@@ -125,7 +126,7 @@
                               <template>
 
                                 <v-data-table dense dark hide-default-footer :headers="headers"
-                                  :items="pj.getHabilidades()" :custom-sort="subirSort" show-group-by
+                                  :items="pj.getHabilidades()" :custom-sort="subirSort" multi-sort show-group-by
                                   :items-per-page="-1" class="elevation-1" show-expand :single-expand="singleExpand"
                                   :expanded.sync="expanded" :search="search" item-key="nombre" :mobile-breakpoint=200>
 
@@ -199,7 +200,7 @@
 
                               <v-data-table dense dark hide-default-footer :headers="headerInventario"
                                 :items="contenedor.objetos" :custom-sort="subirSort" show-group-by :items-per-page="-1"
-                                class="elevation-1" show-expand :single-expand="singleExpand" :expanded.sync="expanded"
+                                class="elevation-1"
                                 v-model="selected" show-select :search="search" item-key="nombre"
                                 :mobile-breakpoint=200>
 
@@ -542,13 +543,17 @@
 
                     </v-row>
 
-
+                    <v-row>
+                      <v-btn @click="iuHechizo()">IU</v-btn>
+                      <div id="divHechizo"></div>
+                    </v-row>
 
                   </v-container>
                 </v-tab-item>
+              
+            </v-tabs>
 
-
-              </v-tabs>
+              
             </v-card>
           </template>
 
@@ -608,9 +613,6 @@
 
 
 
-
-
-
         <!-- Bottomsheet -->
         <v-bottom-sheet v-model="sheet" persistent>
 
@@ -636,9 +638,6 @@
           </v-sheet>
         </v-bottom-sheet>
 
-
-
-
       </v-main>
     </v-app>
   </div>
@@ -649,13 +648,13 @@
   <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.js"></script>
 
   <!-- scrips del rol -->
-  <script src='../js/utils.js'></script>
-  <script src='../js/D.js'></script>
-  <script src='../js/habilidades.js'></script>
-  <script src='../js/inventario.js'></script>
-  <script src='../js/localizaciones.js'></script>
-  <script src='../js/armaduras.js'></script>
-  <script src='../js/rol.js'></script>
+  <script src='js/utils.js'></script>
+  <script src='js/D.js'></script>
+  <script src='js/habilidades.js'></script>
+  <script src='js/inventario.js'></script>
+  <script src='js/localizaciones.js'></script>
+  <script src='js/armaduras.js'></script>
+  <script src='js/rol.js'></script>
 
   <script>
     // var chaleco = new Pieza(["Pecho", "Abdomen"], 3);
@@ -716,6 +715,27 @@
           console.log(this.copiaHechizo);
         },
 
+        iuHechizo(){
+        //  let dv= document.getElementById('divHechizo');
+        //  let ih = new InputHechizo(this.copiaHechizo,true);
+
+
+        //  let ia = new InputArte(this.copiaHechizo,true);
+        //  ia.setPersonaje(pj);
+        //  ia.setHabilidad(pj.getHabilidad('Intensidad'));
+
+        //  ih.setPersonaje(pj);
+        //  ih.setHabilidad(this.copiaHechizo);
+        //  ih.setArte(ia);
+        //  dv.appendChild(ia);
+
+        // dv.appendChild(btn);
+        //  dv.appendChild(ih);
+        IUHechizos(pj,'divHechizo',true);
+
+
+        },
+
         abrir(contenedor, index) {
           if (contenedor instanceof Contenedor) {
             console.log(contenedor);
@@ -773,6 +793,8 @@
           return items;
         },
       },
+
+
 
 
       watch: {
