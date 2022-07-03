@@ -2095,6 +2095,8 @@ function mago(personaje, nivel=5) {
   personaje.setHabilidad(new HabilidadMarcial("Puñetazo D", Manipulación, 25 + (nivel * 5), true, "Brazo D"));
 
   personaje.setHabilidad(new Arte(new Habilidad('Intensidad','Magia', 25 + (nivel * 5) )))
+  personaje.setHabilidad(new Arte(new Habilidad('Duración','Magia', 25 + (nivel * 5) )))
+  personaje.setHabilidad(new Arte(new Habilidad('Alcance','Magia', 25 + (nivel * 5) )))
   personaje.setHabilidad( new Hechizo('Bola de fuego',5,25 + (nivel * 5)));
   personaje.setHabilidad( new Hechizo('Curación',1, Math.round(Math.random()*100) + (nivel * 5)));
   personaje.setHabilidad( new Hechizo('Escudo',1, Math.round(Math.random()*100) + (nivel * 5)));
