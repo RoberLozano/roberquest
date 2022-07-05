@@ -3,7 +3,7 @@
 // import { D } from '/D.js';
 
 
-class Objeto extends Clase{
+class Objeto extends Clase {
   constructor(nombre, peso = 0, valor = 0) {
     super()
     // this.clase = this.constructor.name;
@@ -33,6 +33,10 @@ class Objeto extends Clase{
   //   // this.valor =  o.valor ;
   // }
 
+  //para los select de la tabla
+  get id() {
+    return this.nombre + this.ctd + this.peso + this.valor;
+  }
 
 }
 
@@ -68,19 +72,54 @@ class Objetos extends Objeto {
    * @param {Number} numero un numero con la cantidad de objetos a separar
    * @returns {Objetos}
    */
-  separar(numero){
-    if(numero>0 && numero<this.ctd){
-      var copia=copiar(this)
+  separar(numero) {
+    if (numero > 0 && numero < this.ctd) {
+      var copia = copiar(this)
       copia.setAll(this);
-      copia.ctd=numero;
-      this.ctd= this.ctd-numero;
+      copia.ctd = numero;
+      this.ctd = this.ctd - numero;
 
       return copia;
     }
 
   }
 
+  unir(array) {
+    var total=this.ctd ;
+    var no=false;
+    array.forEach(o => {
+      if (o instanceof Objetos && o.ctd > 0 &&
+        this.nombre == o.nombre &&
+        this.peso == o.peso &&
+        this.efectos == o.efectos &&
+        this.valor == o.valor) {
+
+        total+=  +o.ctd;
+
+      }
+      else{
+        console.log('falla '+o.nombre);
+        no=true;
+        return false;
+      } 
+    });
+
+    if (no) return false;
+    var copia = copiar(this)
+    copia.setAll(this);
+    copia.ctd = total;
+    return copia;
+
+
+  }
+
+
+
+
 }
+
+
+
 class Usable extends Objeto {
   constructor(nombre, peso, valor) {
     super(nombre, peso, valor);
@@ -206,7 +245,7 @@ class Contenedor extends Objeto {
       //miro los distintos tipos de objetos por una propiedad única
       //TODO: tal vez poner el tipo de clase en una propiedad
       let oo;
-      oo= Clase.convertir(ob);
+      oo = Clase.convertir(ob);
       // if (ob.hasOwnProperty("pm")) { oo = new Gema(); }
       // else
       //   if (ob.hasOwnProperty("efectos")) { oo = new Pociones(); }
@@ -237,11 +276,16 @@ class Contenedor extends Objeto {
     return c * this.multiplicador;
   }
 
-  add(objeto) {
+  add(objeto,index) {
     // if(this.pesoLibre()>=objeto.pesoTotal)
-    this.objetos.push(objeto);
+    console.log('add',objeto,index);
     // else (console.log("Demasiado peso")); 
+    if( typeof index=== 'number')
+    this.objetos.splice(index, 0, objeto);
+    else
+    this.objetos.push(objeto);
   }
+
 
   get pesa() {
     return this.carga + this.peso;
@@ -252,13 +296,13 @@ class Contenedor extends Objeto {
   }
 
   darObjeto(objeto) {
-    if (typeof objeto === "string"){
-      return Object.values(this.objetos).filter(obj => obj.nombre=== objeto)
+    if (typeof objeto === "string") {
+      return Object.values(this.objetos).filter(obj => obj.nombre === objeto)
     }
-    else{
-          var pos = this.objetos.indexOf(objeto);
-    console.log("Encontrado en pos:" + pos);
-    if (pos > -1) return this.objetos[pos];
+    else {
+      var pos = this.objetos.indexOf(objeto);
+      console.log("Encontrado en pos:" + pos);
+      if (pos > -1) return this.objetos[pos];
     }
 
 
@@ -268,7 +312,8 @@ class Contenedor extends Objeto {
   sacar(objeto) {
     var pos = this.objetos.indexOf(objeto);
     console.log("Encontrado en pos:" + pos);
-    if (pos > -1) this.objetos.splice(pos, 1);
+    if (pos > -1){this.objetos.splice(pos, 1);
+    return objeto;}
   }
   //quita el objeto en la posición 'i' y lo retorna
   sacarIndex(i) {
@@ -312,6 +357,14 @@ class Contenedor extends Objeto {
 
     otroContenedor.add(objeto);
   }
+
+  subir(objeto){
+    let i =this.objetos.indexOf(objeto);
+    this.add(this.sacar(objeto),i-1);
+
+  }
+
+
 
   //  /**
   //   * Se da el contenedor que hay en la ruta especificada
@@ -414,6 +467,13 @@ class Contenedor extends Objeto {
 
 function creaInventario(nombre = "mochila") {
   var contenedor = new Contenedor(nombre, 2, 100, 15);
+
+  //pasta
+
+  contenedor.add(new Objetos("mm", 0.007, 1000, 2));
+  contenedor.add(new Objetos("mo", 0.02, 10, 13));
+  contenedor.add(new Objetos("mp", 0.02, 1, 15));
+  contenedor.add(new Objetos("mb", 0.02, 0.1, 5));
   for (let i = 0; i < 5; i++) {
     contenedor.add(new Objetos("objetos" + i, i, i));
   }
@@ -425,6 +485,7 @@ function creaInventario(nombre = "mochila") {
   for (let i = 0; i < 5; i++) {
     bolsa.add(new Objeto("dentro" + i, i, i));
   }
+
   contenedor.add(bolsa);
 
   var fal = new Contenedor("faltriquera", 1, 10, 10);
@@ -491,18 +552,18 @@ class Arma extends Objeto {
     this.daños = []
     // TODO: probar
     o.daños?.forEach(d => {
-      if(d?.dado && d?.tipo){
-      let da = new Daño(d.dado, d.tipo);
-              
-      // console.log(da);
-      this.daños.push(da)
+      if (d?.dado && d?.tipo) {
+        let da = new Daño(d.dado, d.tipo);
+
+        // console.log(da);
+        this.daños.push(da)
       }
 
 
       // this.index=0;
     });
     // o.daños.forEach(element => console.log(element.dado));
-    
+
 
 
   }
@@ -514,7 +575,7 @@ class Arma extends Objeto {
 
 }
 
-class Munición extends Arma{
+class Munición extends Arma {
 
 }
 
@@ -523,15 +584,15 @@ class ArmaDistancia extends Arma {
     super(nombre, peso, valor, daño);
   }
 
-  utilizar(municion){
+  utilizar(municion) {
     this.municion = municion;
   }
 }
 
 class Arco extends ArmaDistancia {
-  constructor(nombre, peso, valor, daño, alcanceRecto,alcance,FUE,
-    bonApuntado=0, bonCritico=0,bonDiana=0,bonLocalización=0) {
-    
+  constructor(nombre, peso, valor, daño, alcanceRecto, alcance, FUE,
+    bonApuntado = 0, bonCritico = 0, bonDiana = 0, bonLocalización = 0) {
+
   }
 
 }

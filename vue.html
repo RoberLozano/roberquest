@@ -7,9 +7,91 @@
   <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
-  <style>
+
+
+
+  <style scoped>
     .green {
       background-color: green;
+    }
+
+    /* .row td {
+      cursor: pointer;
+    }
+
+    .dataTable {
+      font-size: 12px !important;
+      padding: 0px !important;
+    }
+
+    table.v-table thead th {
+      font-size: 12px;
+    } */
+
+    .padd4 {
+      padding: 4px !important;
+    }
+
+    .padd0 {
+      padding: 0px !important;
+    }
+
+    /** para las flechas de inventario*/
+    .v-toolbar__content {
+      height: 56px;
+      padding-left: 4px !important;
+    }
+
+    .v-btn:not(.v-btn--round).v-size--small {
+      padding: 0px !important;
+    }
+
+    /* para juntarlo todo más en las tablas */
+    .v-data-table .v-data-table__wrapper table tbody tr td,
+    .v-data-table .v-data-table__wrapper table tbody tr th,
+    .v-data-table .v-data-table__wrapper table tfoot tr td,
+    .v-data-table .v-data-table__wrapper table tfoot tr th,
+    .v-data-table .v-data-table__wrapper table thead tr td,
+    .v-data-table .v-data-table__wrapper table thead tr th {
+      padding: 2px !important;
+      transition: height .2s cubic-bezier(.4, 0, .6, 1);
+    }
+
+    /** METALES*/
+    .bronce {
+      background: radial-gradient(ellipse farthest-corner at right bottom, #ca9d48 0%, #af7d65 8%, #cd7f32 30%, #8A6E2F 40%, transparent 80%),
+        radial-gradient(ellipse farthest-corner at left top, #FFFFFF 0%, #FFFFAC 8%, #cc6633 25%, #5d4a1f 62.5%, #5d4a1f 100%);
+
+    }
+
+    .gold {
+      background: radial-gradient(ellipse farthest-corner at right bottom, #d49918 0%, #FDB931 8%, #9f7928 30%, #8A6E2F 40%, transparent 80%),
+        radial-gradient(ellipse farthest-corner at left top, #FFFFFF 0%, #FFFFAC 8%, #D1B464 25%, #5d4a1f 62.5%, #5d4a1f 100%);
+
+    }
+
+    input{
+      color:white !important;
+    }
+
+    /* .selec {
+      background: linear-gradient(315deg, #b8d0e0 0%, #a6afb9 54%, #b8d0e0 80%);
+    } */
+
+    .metal {
+      background: linear-gradient(180deg, hsl(0, 0%, 78%) 0%,
+          hsl(0, 0%, 90%) 47%,
+          hsl(0, 0%, 78%) 53%,
+          hsl(0, 0%, 70%)100%);
+      color: #000;
+    }
+
+    .mithril {
+      background: linear-gradient(180deg, hsl(0, 0%, 78%) 0%,
+          hsl(0, 0%, 90%) 30%,
+          hsl(0, 0%, 78%) 53%,
+          hsl(182, 15%, 32%)100%);
+      color: #000;
     }
   </style>
 </head>
@@ -31,8 +113,6 @@
             </v-btn>
 
           </v-app-bar>
-
-
 
           <v-navigation-drawer v-model="drawer" absolute temporary>
             <v-list nav>
@@ -69,9 +149,6 @@
             </v-list>
           </v-navigation-drawer>
 
-
-
-
           <template>
             <v-card>
               <v-tabs color="red accent-4" show-arrows>
@@ -80,9 +157,7 @@
                 <v-tab>Inventario</v-tab>
                 <v-tab>Combate</v-tab>
                 <v-tab>Magia</v-tab>
-              
-  
-            
+
                 <!-- Personaje -->
                 <v-tab-item>
                   <v-container fluid>
@@ -95,31 +170,33 @@
                         </tr>
 
                         <tr v-for="(c,index) in CP">
-                          <td>{{ c }}</td>
-                          <td><input :style="{ 'color': 'white','width': '3em'}" type="number" v-model="pj[c]"></td>
+                          <td class="padd4">{{ c }}</td>
+                          <td class="padd4"><input :style="{ 'color': 'white','width': '3em'}" type="number"
+                              v-model="pj[c]"></td>
 
-                          <td><input type="number" v-model="pj.bonificacion[c]"
+                          <td class="padd4"><input type="number" v-model="pj.bonificacion[c]"
                               :style="{ 'color': (pj.bonificacion[c]>0 ? 'green' : 'red') ,'width': '2.5em'}">
                           </td>
-                          <td>{{pj.getCar(c) }}</td>
-                          <td> </td>
-                          <td>{{TipoHabilidades[index]}}</td>
-                          <td>{{pj.getCar(TipoHabilidades[index])}}</td>
-
-
+                          <td class="padd4">{{pj.getCar(c) }}</td>
+                          <td class="padd4"> </td>
+                          <td class="padd4">{{TipoHabilidades[index]}}</td>
+                          <td class="padd4">{{pj.getCar(TipoHabilidades[index])}}</td>
                         </tr>
 
                         <tr> </tr>
                       </table>
                     </v-row>
                     <v-row>
-                      <v-col  sm="1"> <v-text-field v-model="pj.PG" type="number" label="PG" size="1">{{pj.PG}}</v-text-field> </v-col>
-                      <v-col  sm="1"> <v-text-field v-model="pj.PF" type="number" label="PF" size="1">{{pj.PF}}</v-text-field> </v-col>
-                      <v-col  sm="1"> <v-text-field v-model="pj.PM" type="number" label="PM" size="1">{{pj.PM}}</v-text-field> </v-col>
-                        
-                        
-                        
-                      
+                      <v-col sm="1">
+                        <v-text-field v-model="pj.PG" type="number" label="PG" size="1">{{pj.PG}}</v-text-field>
+                      </v-col>
+                      <v-col sm="1">
+                        <v-text-field v-model="pj.PF" type="number" label="PF" size="1">{{pj.PF}}</v-text-field>
+                      </v-col>
+                      <v-col sm="1">
+                        <v-text-field v-model="pj.PM" type="number" label="PM" size="1">{{pj.PM}}</v-text-field>
+                      </v-col>
+
 
 
                     </v-row>
@@ -207,14 +284,14 @@
                     <v-row justify="center">
                       <v-expansion-panels accordion dark>
                         <v-expansion-panel>
-                          <v-expansion-panel-header>Inventario ({{contenedor.pesa}}kg)</v-expansion-panel-header>
+                          <v-expansion-panel-header>Inventario {{roundTo(3,contenedor.pesa)}}kg)
+                          </v-expansion-panel-header>
                           <v-expansion-panel-content>
                             <template>
 
                               <v-data-table dense dark hide-default-footer :headers="headerInventario"
                                 :items="contenedor.objetos" :custom-sort="subirSort" show-group-by :items-per-page="-1"
-                                class="elevation-1"
-                                v-model="selected" show-select :search="search" item-key="nombre"
+                                class="elevation-1" v-model="selected" show-select :search="search" item-key="id"
                                 :mobile-breakpoint=200>
 
                                 <template v-slot:item.nombre="{ item }">
@@ -231,13 +308,36 @@
                                       </v-badge>
                                     </div>
 
+                                    <div style="display: inline" v-if="item.nombre == 'mo'">
+                                      <v-badge :content="item.ctd" color="gold" inline>
+                                        <!-- {{item.carga}}/{{item.max}} -->
+                                      </v-badge>
+                                    </div>
+
+                                    <div style="display: inline" v-if="item.nombre == 'mp'">
+                                      <v-badge :content="item.ctd" color="metal" inline>
+                                        <!-- {{item.carga}}/{{item.max}} -->
+                                      </v-badge>
+                                    </div>
+
+                                    <div style="display: inline" v-if="item.nombre == 'mm'">
+                                      <v-badge :content="item.ctd" color="mithril" inline>
+                                        <!-- {{item.carga}}/{{item.max}} -->
+                                      </v-badge>
+                                    </div>
+
+                                    <div style="display: inline" v-if="item.nombre == 'mb'">
+                                      <v-badge :content="item.ctd" color="bronce" inline>
+                                        <!-- {{item.carga}}/{{item.max}} -->
+                                      </v-badge>
+                                    </div>
+
 
                                     <template v-slot:input>
                                       <input v-model.lazy="item.nombre" :style="{color: 'white'}" />
                                     </template>
 
                                   </v-edit-dialog>
-
 
                                 </template>
 
@@ -264,7 +364,7 @@
                                         min="0" thumb-label>
                                       </v-slider>
                                       <v-btn icon color="green"
-                                        @click="contenedor.add(props.item.separar(sliderSeparar)); sliderSeparar=0">
+                                        @click="contenedor.add(props.item.separar(sliderSeparar), contenedor.objetos.indexOf(props.item)+1); sliderSeparar=0">
                                         <v-icon>mdi-check-outline</v-icon>
                                       </v-btn>
 
@@ -276,9 +376,31 @@
                                   </v-edit-dialog>
                                 </template>
 
+                                <template v-slot:item.clase="{ item }">
+                                  <!-- <p :style="{color: getColor(item.v)}">{{item.v}}</p> -->
+                                  <td>
+                                    <v-icon v-if="item.clase == 'Contenedor'" small @click="abrir(item)">
+                                      mdi-delete
+                                    </v-icon>
+                                    <v-icon v-else-if="item.clase == 'Objeto'" small>
+                                      mdi-checkbox-blank-outline
+                                    </v-icon>
+                                    <v-icon v-else-if="item.clase == 'Objetos'" small>
+                                      mdi-checkbox-multiple-blank-outline
+                                    </v-icon>
+
+                                    <v-icon v-else-if="item.clase == 'Pociones'" small @click="item.tomar()">
+                                      mdi-flask
+                                    </v-icon>
+                                    <img v-else-if="item.clase == 'Arma'" small src="img/sword.svg" height="16px"></img>
+
+                                    <span v-else>{{item.clase}}</spam>
+                                  </td>
+                                </template>
+
                                 <template v-slot:item.peso="{ item }">
                                   <!-- <p :style="{color: getColor(item.v)}">{{item.v}}</p> -->
-                                  <td>{{item.peso}}</td>
+                                  <td>{{roundTo(3,item.peso)}}</td>
                                 </template>
 
 
@@ -297,7 +419,7 @@
                                     <v-icon v-if="abiertos.length>0" @click="anterior">mdi-reply</v-icon>
                                     <li v-for="(item, index) in abiertos">
                                       <!-- <a>{{ index }} - {{ item.nombre }}</a> -->
-                                      <v-btn small text @click="abrir(item,index)">{{item.nombre}}</v-btn>\
+                                      <v-btn small text @click="abrir(item,index)">{{item.nombre}}\</v-btn>
                                     </li>
                                     <v-btn small text v-if=contenedor>{{contenedor.nombre}}</v-btn>
                                     <!-- <v-spacer></v-spacer>
@@ -319,9 +441,45 @@
                                     {{selected.length}} objetos seleccionados,
                                     {{selected.reduce((a, b) => a + (b.pesa || 0), 0)}} kgs,
                                     {{selected.reduce((a, b) => a + (b.valor || 0), 0)}} mp
-                                    <v-btn @click="sheet = !sheet">Mover</v-btn>
-                                    <v-btn @click="selected.forEach(i => {contenedor.sacar(i)});selected=[];">Tirar
+                                    <v-btn small @click="sheet = !sheet">Mover</v-btn>
+                                    <v-btn v-if="selected.length==1" small @click="editar(selected[0])">Editar</v-btn>
+                                    <v-btn small @click="selected.forEach(i => {contenedor.sacar(i)});selected=[];">
+                                      Tirar
                                     </v-btn>
+                                    <!-- <v-btn @click="moverItem(contenedor.objetos)">Subir
+                                    </v-btn> -->
+                                    <v-btn small @click="arribaItems()">
+                                      <v-icon>mdi-format-vertical-align-top</v-icon>
+                                    </v-btn>
+                                    <v-btn small
+                                      @click="selected.sort((a, b) => contenedor.objetos.indexOf(a)-contenedor.objetos.indexOf(b)).forEach(element => moverItems(contenedor.objetos,element));">
+                                      <v-icon>mdi-arrow-up-bold</v-icon>
+                                    </v-btn>
+                                    <!-- <v-btn @click="contenedor.objetos.splice(contenedor.objetos.indexOf(selected[0]) -1, 0,
+                                    contenedor.objetos.splice(contenedor.objetos.indexOf(selected[0]), 1)[0])">Subir
+                                    </v-btn> -->
+                                    <!-- <v-btn @click="moverItem(contenedor.objetos,1)">Bajar
+                                   </v-btn> -->
+                                    <!-- <v-btn @click="selected.forEach(ob=>{moverItem2(contenedor.objetos,ob,1)}">Bajar2
+                                  </v-btn> -->
+
+                                    <v-btn small @click="abajoItems()">
+                                      <v-icon>mdi-format-vertical-align-bottom</v-icon>
+                                    </v-btn>
+
+                                    <v-btn small
+                                      @click="selected.sort((a, b) => contenedor.objetos.indexOf(a)-contenedor.objetos.indexOf(b)).reverse().forEach(element => moverItems(contenedor.objetos,element, 1));">
+                                      <v-icon>mdi-arrow-down-bold</v-icon>
+                                    </v-btn>
+
+
+                                    <!-- <v-btn @click="contenedor.objetos.splice(contenedor.objetos.indexOf(selected[0]) + 1, 0,
+                                     contenedor.objetos.splice(contenedor.objetos.indexOf(selected[0]), 1)[0])">Bajar
+                                    </v-btn> -->
+                                    <v-btn small v-if="selected.length>1&&unir(selected)"
+                                      @click="contenedor.add(unir(selected),contenedor.objetos.indexOf(selected[0]));
+                                                                selected.forEach(i => {contenedor.sacar(i)});selected=[];">Unir</v-btn>
+
                                   </div>
                                 </template>
 
@@ -352,9 +510,11 @@
                               </v-autocomplete>
 
 
-                              <v-data-table dense dark hide-default-footer multi-sort :headers="selectedHeaders"
-                                :items="contenedor.objetos" class="elevation-1" :items-per-page="-1">
+                              <v-data-table id="invMover" dense dark hide-default-footer multi-sort
+                                :headers="selectedHeaders" :items="contenedor.objetos" class="elevation-1"
+                                :items-per-page="-1">
                               </v-data-table>
+
                             </template>
                           </v-expansion-panel-content>
                         </v-expansion-panel>
@@ -563,10 +723,10 @@
 
                   </v-container>
                 </v-tab-item>
-              
-            </v-tabs>
 
-              
+              </v-tabs>
+
+
             </v-card>
           </template>
 
@@ -594,6 +754,7 @@
 
         <!-- hora -->
 
+        <div id="editor"></div>
 
         <!-- grafico -->
         <!-- <template>
@@ -623,7 +784,6 @@
             </v-card-actions>
           </v-card>
         </template> -->
-
 
 
         <!-- Bottomsheet -->
@@ -660,6 +820,7 @@
   <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.js"></script>
 
+
   <!-- scrips del rol -->
   <script src='js/utils.js'></script>
   <script src='js/D.js'></script>
@@ -691,7 +852,6 @@
 
         },
         //METODOS DE GUARDAR
-
         save() {
           console.log('Data saved')
 
@@ -705,6 +865,40 @@
         close() {
           console.log('Dialog closed')
         },
+
+        unir(array) {
+          var o = array[0];
+          if (o instanceof Objetos && o.ctd) {
+            return o.unir(array.slice(1));
+          } else return false;
+        },
+
+        // direccion subir -1 , bajar +1
+        moverItems(array, obj, dir = -1) {
+          array.splice(array.indexOf(obj) + dir, 0,
+            array.splice(array.indexOf(obj), 1)[0])
+
+        },
+
+        arribaItems() {
+
+          this.selected.sort((a, b) => this.contenedor.objetos.indexOf(a) - this.contenedor.objetos.indexOf(b)).reverse()
+            .forEach(element => { this.contenedor.sacar(element); this.contenedor.add(element, 0) });
+
+        },
+
+        abajoItems() {
+
+          this.selected.sort((a, b) => this.contenedor.objetos.indexOf(a) - this.contenedor.objetos.indexOf(b))
+            .forEach(element => { this.contenedor.sacar(element); this.contenedor.add(element) });
+
+        },
+
+        // moverItem(array, dir=-1 ) {
+        //   array.splice(array.indexOf(this.selected[0]) +dir, 0,
+        //                             array.splice(array.indexOf(this.selected[0]), 1)[0])
+
+        // },
 
         parseStringToFunction(func) {
 
@@ -728,23 +922,23 @@
           console.log(this.copiaHechizo);
         },
 
-        iuHechizo(){
-        //  let dv= document.getElementById('divHechizo');
-        //  let ih = new InputHechizo(this.copiaHechizo,true);
+        iuHechizo() {
+          //  let dv= document.getElementById('divHechizo');
+          //  let ih = new InputHechizo(this.copiaHechizo,true);
 
 
-        //  let ia = new InputArte(this.copiaHechizo,true);
-        //  ia.setPersonaje(pj);
-        //  ia.setHabilidad(pj.getHabilidad('Intensidad'));
+          //  let ia = new InputArte(this.copiaHechizo,true);
+          //  ia.setPersonaje(pj);
+          //  ia.setHabilidad(pj.getHabilidad('Intensidad'));
 
-        //  ih.setPersonaje(pj);
-        //  ih.setHabilidad(this.copiaHechizo);
-        //  ih.setArte(ia);
-        //  dv.appendChild(ia);
+          //  ih.setPersonaje(pj);
+          //  ih.setHabilidad(this.copiaHechizo);
+          //  ih.setArte(ia);
+          //  dv.appendChild(ia);
 
-        // dv.appendChild(btn);
-        //  dv.appendChild(ih);
-        IUHechizos(pj,'divHechizo',true);
+          // dv.appendChild(btn);
+          //  dv.appendChild(ih);
+          IUHechizos(pj, 'divHechizo', true);
 
 
         },
@@ -791,6 +985,7 @@
           else if (v > 50) return 'inherit'
           else return ''
         },
+
         subirSort(items, index, isDesc) {
           items.sort((a, b) => {
             // console.log(index[0]);
@@ -805,7 +1000,49 @@
           if (isDesc[0]) return items.reverse()
           return items;
         },
+
+
+        editar(objeto) {
+          // console.log("Editar:"+objeto );
+          //   const keys = Object.keys(objeto);
+          //   const values = Object.values(objeto);
+
+          //   var editor = document.getElementById("editor");
+          //   editor.innerHTML = ""; //clear editor
+          //   var id = -1;
+          //   var k = -1
+          //   var v = -1;
+          //   for (i = 0; i < keys.length; i++) {
+          //     if (i == 0) id = values[i];
+          //     k = keys[i];
+          //     v = values[i];
+
+          //     console.log(k + " ->" + v)
+
+          //     editor.innerHTML = editor.innerHTML + ' <b>' + k.toUpperCase() + ':</b>' +
+          //       `<input data-toggle="tooltip"  id="edit${k}" value='${v}'' title="${k}" ><br>`
+          //     // '<input data-toggle="tooltip"  id="edit' + keys[i] + '" value=' + values[i] + ' title=' + keys[i] + ' ><br>';
+          //     //Probar con forms
+
+          //   }
+          //   editor.innerHTML = editor.innerHTML + `<button type="button" class="btn btn-success" onclick="guardarObjeto()">Guardar</button>`
+          var editor = document.getElementById("editor");
+          editor.innerHTML="";
+          editor.appendChild(new InputCustom(objeto));
+        }
+
+
+
+
+
+
       },
+
+
+      //TODO: editar los objetos con el modal
+
+
+
 
 
 
@@ -837,16 +1074,17 @@
             text: 'Nombre ',
             align: 'start',
             groupable: false,
-            value: 'nombre'
+            value: 'nombre',
+            width: "auto"
           },
 
-          { text: 'XP', value: 'xp', groupable: false },
+          { text: 'XP', value: 'xp', groupable: false, width: "8%" },
           // { text: 'Categoria', value: 'tipo' },
           // { text: 'Clase', value: 'clase' },
           { text: 'Valor', value: 'valor', groupable: false },
           { text: 'Total', value: 'v', groupable: false },
           { text: 'Subir', value: 'sub', groupable: false },
-          { text: '', value: 'data-table-expand', groupable: false },
+          { text: '', value: 'data-table-expand', groupable: false, width: "5%" },
         ],
         headerInventario: [
           {
