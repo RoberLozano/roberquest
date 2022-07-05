@@ -11,6 +11,10 @@
 
 
   <style scoped>
+    /* .grad {
+      background-image: linear-gradient(red, yellow, green);
+    } */
+
     .green {
       background-color: green;
     }
@@ -392,6 +396,15 @@
                                     <v-icon v-else-if="item.clase == 'Pociones'" small @click="item.tomar()">
                                       mdi-flask
                                     </v-icon>
+
+                                    <v-icon v-else-if="item.clase == 'Arma'" small>
+                                      mdi-sword
+                                    </v-icon>
+
+                                    <v-icon v-else-if="item.clase == 'Gema'" small
+                                      :color="interpolarColor(item.pm/item.capacidad*100)">
+                                      mdi-diamond
+                                    </v-icon>
                                     <img v-else-if="item.clase == 'Arma'" small src="img/sword.svg" height="16px"></img>
 
                                     <span v-else>{{item.clase}}</spam>
@@ -551,15 +564,19 @@
                       </template>
                     </v-autocomplete>
 
+                    <!-- Habilidad -->
                     <v-row>
                       <v-text-field v-if="ifHabilidadFiltro" v-model="filtro" append-icon="mdi-magnify" label="Buscar"
                         single-line hide-details clearable>
                       </v-text-field>
                       <!-- <v-icon @click="ifHabilidadFiltro=!ifHabilidadFiltro">mdi-filter</v-icon> -->
                       <v-btn icon @click="ifHabilidadFiltro=!ifHabilidadFiltro">
-                        <v-icon v-if="ifHabilidadFiltro">mdi-filter-remove</v-icon>
-                        <v-icon v-else>mdi-filter</v-icon>
+                        <v-icon v-if="ifHabilidadFiltro" :color="filtro?.length>0 ?'green':'red'">mdi-filter-remove
+                        </v-icon>
+                        <v-icon v-else :color="filtro?.length>0 ?'green':'red'">mdi-filter</v-icon>
                       </v-btn>
+                    </v-row>
+                    <v-row>
                       <v-autocomplete v-model="habilidadFiltro"
                         :items="pj.getHabilidades(parseStringToFunction(filtro))" return-object item-text="nombre">
 
@@ -568,7 +585,6 @@
                             {{item.v}}%</span>
                         </template>
                       </v-autocomplete>
-
 
 
                       <!-- <v-text-field v-model="habilidadFiltro.nombre" label="Nombre">
@@ -626,8 +642,8 @@
                       </v-select> -->
 
                       <v-autocomplete size="1" v-model="daño" :items="arma.daños" label="Daño" return-object
-                      @change="arma.daño=daño.dado; console.log(arma.daño.dado)">
-                    </v-autocomplete>
+                        @change="arma.daño=daño.dado; console.log(arma.daño.dado)">
+                      </v-autocomplete>
 
 
 
@@ -970,6 +986,24 @@
           }
         },
 
+        interpolarColor(val, invert = false) {
+
+          if (val > 100) {
+            val = 100;
+          }
+          else if (val < 0) {
+            val = 0;
+          }
+
+          if (!invert) val = 100 - val;
+
+          var r = Math.floor((255 * val) / 100),
+            g = Math.floor((255 * (100 - val)) / 100),
+            b = 0;
+          return "rgb(" + r + "," + g + "," + b + ")"
+        }
+
+        ,
         interColor(min, max, inverso = false) {
           let p = min / max;
           if (inverso) p = 1 - p;

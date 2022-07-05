@@ -2101,6 +2101,10 @@ function mago(personaje, nivel=5) {
   personaje.setHabilidad( new Hechizo('Curación',1, Math.round(Math.random()*100) + (nivel * 5)));
   personaje.setHabilidad( new Hechizo('Escudo',1, Math.round(Math.random()*100) + (nivel * 5)));
 
+  personaje.inventario.add(new Gema('Gema 1',0.001,10000,10,10));
+  personaje.inventario.add(new Gema('Gema 2',0.001,10000,10,5));
+  personaje.inventario.add(new Gema('Gema 3',0.001,10000,10,1));
+
 }
 
 
