@@ -552,11 +552,18 @@
                     </v-autocomplete>
 
                     <v-row>
-                      <v-text-field v-model="filtro" append-icon="mdi-magnify" label="Buscar" single-line hide-details
+                      <v-text-field v-if="ifHabilidadFiltro" v-model="filtro" append-icon="mdi-magnify" label="Buscar" single-line hide-details
                         clearable>
                       </v-text-field>
-                      Filtro
-                      <v-autocomplete v-model="habilidadFiltro"
+                      <!-- <v-icon @click="ifHabilidadFiltro=!ifHabilidadFiltro">mdi-filter</v-icon> -->
+                      <v-btn
+                      icon
+                      @click="ifHabilidadFiltro=!ifHabilidadFiltro"
+                    >
+                      <v-icon v-if="ifHabilidadFiltro">mdi-filter-remove</v-icon>
+                      <v-icon v-else>mdi-filter</v-icon>
+                    </v-btn>
+                      <v-autocomplete  v-model="habilidadFiltro"
                         :items="pj.getHabilidades(parseStringToFunction(filtro))" return-object item-text="nombre">
 
                         <template v-slot:item="{item}">
@@ -564,6 +571,8 @@
                             {{item.v}}%</span>
                         </template>
                       </v-autocomplete>
+
+                      
 
                       <!-- <v-text-field v-model="habilidadFiltro.nombre" label="Nombre">
                   </v-text-field> -->
@@ -593,7 +602,7 @@
 
                     <v-row>
                       Arma
-                      <v-autocomplete v-model="arma" :items="pj.inventario.darClaseRecursiva(Arma)" return-object
+                      <v-autocomplete size="6" v-model="arma" :items="pj.inventario.darClaseRecursiva(Arma)" return-object
                         item-text="nombre">
                         <template v-slot:item="{item}">
 
@@ -618,7 +627,7 @@
                       <!-- <v-text-field v-model="arma.daños" label="%" size="1">
                       </v-text-field> -->
 
-                      <v-select v-model="daño" :items="arma.daños" label="Daño" return-object
+                      <v-select size="2" v-model="daño" :items="arma.daños" label="Daño" return-object
                         @change="arma.daño=daño.dado; console.log(arma.daño.dado)">
 
                       </v-select>
@@ -1113,6 +1122,7 @@
         selected: [],//inventario selected
         filtro: "",
         habilidadFiltro: new Habilidad(),
+        ifHabilidadFiltro: false,
         arma: new Arma(),
         daño: [],
         dado: 100,

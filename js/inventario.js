@@ -33,6 +33,7 @@ class Objeto extends Clase {
   //   // this.valor =  o.valor ;
   // }
 
+
   //para los select de la tabla
   get id() {
     return this.nombre + this.ctd + this.peso + this.valor;
@@ -110,10 +111,7 @@ class Objetos extends Objeto {
     copia.ctd = total;
     return copia;
 
-
   }
-
-
 
 
 }
