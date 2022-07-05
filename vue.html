@@ -70,8 +70,8 @@
 
     }
 
-    input{
-      color:white !important;
+    input {
+      color: white !important;
     }
 
     /* .selec {
@@ -552,18 +552,15 @@
                     </v-autocomplete>
 
                     <v-row>
-                      <v-text-field v-if="ifHabilidadFiltro" v-model="filtro" append-icon="mdi-magnify" label="Buscar" single-line hide-details
-                        clearable>
+                      <v-text-field v-if="ifHabilidadFiltro" v-model="filtro" append-icon="mdi-magnify" label="Buscar"
+                        single-line hide-details clearable>
                       </v-text-field>
                       <!-- <v-icon @click="ifHabilidadFiltro=!ifHabilidadFiltro">mdi-filter</v-icon> -->
-                      <v-btn
-                      icon
-                      @click="ifHabilidadFiltro=!ifHabilidadFiltro"
-                    >
-                      <v-icon v-if="ifHabilidadFiltro">mdi-filter-remove</v-icon>
-                      <v-icon v-else>mdi-filter</v-icon>
-                    </v-btn>
-                      <v-autocomplete  v-model="habilidadFiltro"
+                      <v-btn icon @click="ifHabilidadFiltro=!ifHabilidadFiltro">
+                        <v-icon v-if="ifHabilidadFiltro">mdi-filter-remove</v-icon>
+                        <v-icon v-else>mdi-filter</v-icon>
+                      </v-btn>
+                      <v-autocomplete v-model="habilidadFiltro"
                         :items="pj.getHabilidades(parseStringToFunction(filtro))" return-object item-text="nombre">
 
                         <template v-slot:item="{item}">
@@ -572,7 +569,7 @@
                         </template>
                       </v-autocomplete>
 
-                      
+
 
                       <!-- <v-text-field v-model="habilidadFiltro.nombre" label="Nombre">
                   </v-text-field> -->
@@ -601,9 +598,8 @@
                     </v-row>
 
                     <v-row>
-                      Arma
-                      <v-autocomplete size="6" v-model="arma" :items="pj.inventario.darClaseRecursiva(Arma)" return-object
-                        item-text="nombre">
+                      <v-autocomplete size="6" v-model="arma" label="Arma"
+                        :items="pj.inventario.darClaseRecursiva(Arma)" return-object item-text="nombre">
                         <template v-slot:item="{item}">
 
                           <v-list-item-avatar color="indigo" class="text-h6 font-weight-light white--text">
@@ -617,8 +613,6 @@
 
                           <v-list-item-action>
                             <v-list-item-action-text v-text="item.peso+'kg'"></v-list-item-action-text>
-
-
                           </v-list-item-action>
 
                         </template>
@@ -627,18 +621,20 @@
                       <!-- <v-text-field v-model="arma.daños" label="%" size="1">
                       </v-text-field> -->
 
-                      <v-select size="2" v-model="daño" :items="arma.daños" label="Daño" return-object
+                      <!-- <v-select size="1" v-model="daño" :items="arma.daños" label="Daño" return-object
                         @change="arma.daño=daño.dado; console.log(arma.daño.dado)">
+                      </v-select> -->
 
-                      </v-select>
+                      <v-autocomplete size="1" v-model="daño" :items="arma.daños" label="Daño" return-object
+                      @change="arma.daño=daño.dado; console.log(arma.daño.dado)">
+                    </v-autocomplete>
+
+
 
                       <v-text-field v-model="iuDaño.dado" :label="daño" size="1" :color="getColor(dado)"
                         @click="iuDaño.dado=arma.daño.tirar()">
-
                       </v-text-field>
 
-                      <!-- <v-text-field v-model="TipoTirada.tirada[habilidadFiltro.tirada(dado)]" label="Tirada" size="1"  >
-                  </v-text-field> -->
 
                       <v-btn icon color="green"
                         @click="habilidadFiltro.xpTipoTirada(habilidadFiltro.tirada(dado),dado)">
@@ -1036,7 +1032,7 @@
           //   }
           //   editor.innerHTML = editor.innerHTML + `<button type="button" class="btn btn-success" onclick="guardarObjeto()">Guardar</button>`
           var editor = document.getElementById("editor");
-          editor.innerHTML="";
+          editor.innerHTML = "";
           editor.appendChild(new InputCustom(objeto));
         }
 
