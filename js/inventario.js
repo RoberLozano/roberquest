@@ -86,8 +86,8 @@ class Objetos extends Objeto {
   }
 
   unir(array) {
-    var total=this.ctd ;
-    var no=false;
+    var total = this.ctd;
+    var no = false;
     array.forEach(o => {
       if (o instanceof Objetos && o.ctd > 0 &&
         this.nombre == o.nombre &&
@@ -95,14 +95,14 @@ class Objetos extends Objeto {
         this.efectos == o.efectos &&
         this.valor == o.valor) {
 
-        total+=  +o.ctd;
+        total += +o.ctd;
 
       }
-      else{
-        console.log('falla '+o.nombre);
-        no=true;
+      else {
+        console.log('falla ' + o.nombre);
+        no = true;
         return false;
-      } 
+      }
     });
 
     if (no) return false;
@@ -171,6 +171,12 @@ class Gema extends Usable {
     }
 
 
+  }
+
+  //sobreescribe
+  get id() {
+    // return this.nombre + this.ctd + this.peso + this.valor;
+    return super.id + this.pm + this.capacidad;
   }
 
 
@@ -274,14 +280,14 @@ class Contenedor extends Objeto {
     return c * this.multiplicador;
   }
 
-  add(objeto,index) {
+  add(objeto, index) {
     // if(this.pesoLibre()>=objeto.pesoTotal)
-    console.log('add',objeto,index);
+    console.log('add', objeto, index);
     // else (console.log("Demasiado peso")); 
-    if( typeof index=== 'number')
-    this.objetos.splice(index, 0, objeto);
+    if (typeof index === 'number')
+      this.objetos.splice(index, 0, objeto);
     else
-    this.objetos.push(objeto);
+      this.objetos.push(objeto);
   }
 
 
@@ -310,8 +316,10 @@ class Contenedor extends Objeto {
   sacar(objeto) {
     var pos = this.objetos.indexOf(objeto);
     console.log("Encontrado en pos:" + pos);
-    if (pos > -1){this.objetos.splice(pos, 1);
-    return objeto;}
+    if (pos > -1) {
+      this.objetos.splice(pos, 1);
+      return objeto;
+    }
   }
   //quita el objeto en la posición 'i' y lo retorna
   sacarIndex(i) {
@@ -356,9 +364,9 @@ class Contenedor extends Objeto {
     otroContenedor.add(objeto);
   }
 
-  subir(objeto){
-    let i =this.objetos.indexOf(objeto);
-    this.add(this.sacar(objeto),i-1);
+  subir(objeto) {
+    let i = this.objetos.indexOf(objeto);
+    this.add(this.sacar(objeto), i - 1);
 
   }
 
@@ -573,23 +581,50 @@ class Arma extends Objeto {
 
 }
 
-class Munición extends Arma {
 
-}
 
 class ArmaDistancia extends Arma {
   constructor(nombre, peso, valor, daño, alcance) {
     super(nombre, peso, valor, daño);
+    this.alcance = alcance;
   }
 
   utilizar(municion) {
     this.municion = municion;
   }
+
+  total(propiedad){
+    if (this.municion){
+      return this[propiedad]+(this.municion[propiedad]||0);
+    }
+    else
+    return this[propiedad];
+  }
+}
+
+class Municion extends ArmaDistancia {
+  constructor(nombre, peso, valor, daño, alcanceRecto, alcance,
+    bonApuntado = 0, bonCritico = 0, bonDiana = 0, bonLocalización = 0) {
+    super(nombre, peso, valor, daño, alcance);
+    this.alcanceRecto = alcanceRecto
+    this.alcance = alcance
+    this.bonApuntado = bonApuntado
+    this.bonCritico = bonCritico
+    this.bonDiana = bonDiana
+    this.bonLocalización = bonLocalización
+  }
 }
 
 class Arco extends ArmaDistancia {
-  constructor(nombre, peso, valor, daño, alcanceRecto, alcance, FUE,
-    bonApuntado = 0, bonCritico = 0, bonDiana = 0, bonLocalización = 0) {
+  constructor(nombre, peso, valor, daño, alcanceRecto, alcance, FUE, bonApuntado = 0, bonCritico = 0, bonDiana = 0, bonLocalización = 0) {
+    super(nombre, peso, valor, daño, alcance);
+    this.alcanceRecto = alcanceRecto
+    this.alcance = alcance
+    this.FUE = FUE
+    this.bonApuntado = bonApuntado
+    this.bonCritico = bonCritico
+    this.bonDiana = bonDiana
+    this.bonLocalización = bonLocalización
 
   }
 

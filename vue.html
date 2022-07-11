@@ -288,7 +288,7 @@
                     <v-row justify="center">
                       <v-expansion-panels accordion dark>
                         <v-expansion-panel>
-                          <v-expansion-panel-header>Inventario {{roundTo(3,contenedor.pesa)}}kg)
+                          <v-expansion-panel-header>Inventario {{roundTo(3,contenedor.pesa)}}kg
                           </v-expansion-panel-header>
                           <v-expansion-panel-content>
                             <template>
@@ -308,6 +308,16 @@
                                       </v-icon>
                                       <v-badge :content="item.carga+'/'+item.max + 'kg'"
                                         :color="interColor(item.carga,item.max,true)" inline>
+                                        <!-- {{item.carga}}/{{item.max}} -->
+                                      </v-badge>
+                                    </div>
+
+                                    <div style="display: inline" v-else-if="item.clase == 'Gema'">
+                                      <v-icon small @click="item.pm=item.capacidad"
+                                        :color="interpolarColor(item.pm/item.capacidad*100)">
+                                        mdi-diamond
+                                      </v-icon>
+                                      <v-badge :content="item.pm" color="negro" inline>
                                         <!-- {{item.carga}}/{{item.max}} -->
                                       </v-badge>
                                     </div>
@@ -390,21 +400,26 @@
                                       mdi-checkbox-blank-outline
                                     </v-icon>
                                     <v-icon v-else-if="item.clase == 'Objetos'" small>
-                                      mdi-checkbox-multiple-blank-outline
+                                      mdi-checkbox-multiple-blank-outline mdi-buffer
                                     </v-icon>
 
                                     <v-icon v-else-if="item.clase == 'Pociones'" small @click="item.tomar()">
                                       mdi-flask
                                     </v-icon>
 
-                                    <v-icon v-else-if="item.clase == 'Arma'" small>
+                                    <v-icon v-else-if="item instanceof ArmaDistancia" small>
+                                      mdi-bullseye
+                                    </v-icon>
+
+                                    <v-icon v-else-if="item instanceof Arma" small>
                                       mdi-sword
                                     </v-icon>
 
-                                    <v-icon v-else-if="item.clase == 'Gema'" small
-                                      :color="interpolarColor(item.pm/item.capacidad*100)">
+                                    <v-icon v-else-if="item.clase == 'Gema'" small :style="shadow(item.pm)"
+                                      :color="redGreenColor(item.pm/item.capacidad*100)">{{item.pm}}
                                       mdi-diamond
                                     </v-icon>
+
                                     <img v-else-if="item.clase == 'Arma'" small src="img/sword.svg" height="16px"></img>
 
                                     <span v-else>{{item.clase}}</spam>
@@ -576,88 +591,87 @@
                         <v-icon v-else :color="filtro?.length>0 ?'green':'red'">mdi-filter</v-icon>
                       </v-btn>
                     </v-row>
-                    <v-row>
-                      <v-autocomplete v-model="habilidadFiltro"
-                        :items="pj.getHabilidades(parseStringToFunction(filtro))" return-object item-text="nombre">
-
-                        <template v-slot:item="{item}">
-                          {{item.nombre}} <v-spacer></v-spacer> <span :style="{color: getColor(item.v)}">
-                            {{item.v}}%</span>
-                        </template>
-                      </v-autocomplete>
 
 
-                      <!-- <v-text-field v-model="habilidadFiltro.nombre" label="Nombre">
-                  </v-text-field> -->
+                    <v-layout row wrap class="pa-3">
+                      <v-row>
+                        <v-autocomplete v-model="habilidadFiltro"
+                          :items="pj.getHabilidades(parseStringToFunction(filtro))" return-object item-text="nombre">
 
-                      <!-- <v-text-field v-model="habilidadFiltro.valor" label="valor" >
-                  </v-text-field> -->
-
-                      <v-text-field v-model="habilidadFiltro.v" label="%" size="1">
-                      </v-text-field>
-
-                      <v-text-field v-model="dado" :label="TipoTirada.tirada[habilidadFiltro.tirada(dado)]" size="1"
-                        :color="getColor(dado)"
-                        @click="dado=d100.tirar(); iuDaño.dado=arma.daño.tirar(habilidadFiltro.tirada(dado))"
-                        @input="iuDaño.dado=arma.daño.tirar(habilidadFiltro.tirada(dado))">
-
-                      </v-text-field>
-
-                      <!-- <v-text-field v-model="TipoTirada.tirada[habilidadFiltro.tirada(dado)]" label="Tirada" size="1"  >
-                  </v-text-field> -->
-
-                      <v-btn icon color="green"
-                        @click="habilidadFiltro.xpTipoTirada(habilidadFiltro.tirada(dado),dado)">
-                        <v-icon>mdi-check-outline</v-icon>
-                      </v-btn>
-
-                    </v-row>
-
-                    <v-row>
-                      <v-autocomplete size="6" v-model="arma" label="Arma"
-                        :items="pj.inventario.darClaseRecursiva(Arma)" return-object item-text="nombre">
-                        <template v-slot:item="{item}">
-
-                          <v-list-item-avatar color="indigo" class="text-h6 font-weight-light white--text">
-                            {{ item.peso }}
-                          </v-list-item-avatar>
-                          <v-list-item-content>
-                            <v-list-item-title v-html="item.nombre"></v-list-item-title>
-                            <v-list-item-subtitle v-html="item.daño"></v-list-item-subtitle>
-                          </v-list-item-content>
+                          <template v-slot:item="{item}">
+                            {{item.nombre}} <v-spacer></v-spacer> <span :style="{color: getColor(item.v)}">
+                              {{item.v}}%</span>
+                          </template>
+                        </v-autocomplete>
 
 
-                          <v-list-item-action>
-                            <v-list-item-action-text v-text="item.peso+'kg'"></v-list-item-action-text>
-                          </v-list-item-action>
+                        <div class="d-inline-flex">
+                          <v-text-field v-model="habilidadFiltro.v" label="%" size="1">
+                          </v-text-field>
 
-                        </template>
-                      </v-autocomplete>
+                          <v-text-field v-model="dado" :label="TipoTirada.tirada[habilidadFiltro.tirada(dado)]" size="1"
+                            :color="getColor(dado)"
+                            @click="dado=d100.tirar(); iuDaño.dado=arma.daño.tirar(habilidadFiltro.tirada(dado))"
+                            @input="iuDaño.dado=arma.daño.tirar(habilidadFiltro.tirada(dado))">
 
-                      <!-- <v-text-field v-model="arma.daños" label="%" size="1">
+                          </v-text-field>
+                          <!-- <v-text-field v-model="TipoTirada.tirada[habilidadFiltro.tirada(dado)]" label="Tirada" size="1"  >
+                          </v-text-field> -->
+                          <v-btn icon color="green"
+                            @click="habilidadFiltro.xpTipoTirada(habilidadFiltro.tirada(dado),dado)">
+                            <v-icon>mdi-check-outline</v-icon>
+                          </v-btn>
+                        </div>
+
+                      </v-row>
+
+                      <v-row>
+                        <v-autocomplete size="6" v-model="arma" label="Arma"
+                          :items="pj.inventario.darClaseRecursiva(Arma)" return-object item-text="nombre">
+                          <template v-slot:item="{item}">
+
+                            <v-list-item-avatar color="indigo" class="text-h6 font-weight-light white--text">
+                              {{ item.peso }}
+                            </v-list-item-avatar>
+                            <v-list-item-content>
+                              <v-list-item-title v-html="item.nombre"></v-list-item-title>
+                              <v-list-item-subtitle v-html="item.daño"></v-list-item-subtitle>
+                            </v-list-item-content>
+
+
+                            <v-list-item-action>
+                              <v-list-item-action-text v-text="item.peso+'kg'"></v-list-item-action-text>
+                            </v-list-item-action>
+
+                          </template>
+                        </v-autocomplete>
+
+                        <!-- <v-text-field v-model="arma.daños" label="%" size="1">
                       </v-text-field> -->
 
-                      <!-- <v-select size="1" v-model="daño" :items="arma.daños" label="Daño" return-object
+                        <!-- <v-select size="1" v-model="daño" :items="arma.daños" label="Daño" return-object
                         @change="arma.daño=daño.dado; console.log(arma.daño.dado)">
                       </v-select> -->
 
-                      <v-autocomplete size="1" v-model="daño" :items="arma.daños" label="Daño" return-object
-                        @change="arma.daño=daño.dado; console.log(arma.daño.dado)">
-                      </v-autocomplete>
+                        <div class="d-inline-flex">
+                          <v-autocomplete size="1" v-model="daño" :items="arma.daños" label="Daño" return-object
+                            @change="arma.daño=daño.dado; console.log(arma.daño.dado)">
+                          </v-autocomplete>
+                          <v-text-field v-model="iuDaño.dado" :label="daño" size="1" :color="getColor(dado)"
+                            append-icon="mdi-dice-3"
+                            @click="iuDaño.dado=arma.daño.tirar()"
+                            @click:append="iuDaño.dado=arma.daño.tirar()">
+                            <v-btn slot="append-outer" icon color="green"
+                            @click="habilidadFiltro.xpTipoTirada(habilidadFiltro.tirada(dado),dado)">
+                            <v-icon>mdi-check-outline</v-icon>
+                          </v-btn>
 
+                          </v-text-field>
 
+                        </div>
 
-                      <v-text-field v-model="iuDaño.dado" :label="daño" size="1" :color="getColor(dado)"
-                        @click="iuDaño.dado=arma.daño.tirar()">
-                      </v-text-field>
-
-
-                      <v-btn icon color="green"
-                        @click="habilidadFiltro.xpTipoTirada(habilidadFiltro.tirada(dado),dado)">
-                        <v-icon>mdi-check-outline</v-icon>
-                      </v-btn>
-
-                    </v-row>
+                      </v-row>
+                    </v-layout>
 
                   </v-container>
                 </v-tab-item>
@@ -751,9 +765,8 @@
             </v-card>
           </template>
 
-
-
         </template>
+
         <!-- calendario -->
         <template>
           <v-row>
@@ -776,6 +789,7 @@
         <!-- hora -->
 
         <div id="editor"></div>
+
 
         <!-- grafico -->
         <!-- <template>
@@ -1001,6 +1015,34 @@
             g = Math.floor((255 * (100 - val)) / 100),
             b = 0;
           return "rgb(" + r + "," + g + "," + b + ")"
+        },
+
+        redGreenColor(percent, invert = false) {
+
+          if (percent > 100) { percent = 100; }
+          else if (percent < 0) { percent = 0; }
+
+          if (!invert) percent = 100 - percent;
+
+          var r, g, b;
+
+          if (percent < 50) {
+            // green to yellow
+            r = Math.floor(255 * (percent / 50));
+            g = 255;
+
+          } else {
+            // yellow to red
+            r = 255;
+            g = Math.floor(255 * ((50 - percent % 50) / 50));
+          }
+          b = 0;
+
+          return "rgb(" + r + "," + g + "," + b + ")"
+        },
+
+        shadow(pm, capacidad = 10) {
+          return `text-shadow: 0px 0px ${pm}px ${this.redGreenColor(pm / capacidad * 100)};`
         }
 
         ,

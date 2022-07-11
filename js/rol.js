@@ -2075,6 +2075,12 @@ function guerrero(personaje, nivel, ...armas) {
     personaje.act();
   });
 
+
+ 
+  personaje.inventario.add(new Municion('Flecha voladora',0,0,1,1,2,1,0,0,1));
+  // personaje.inventario.add(new Arco('Arco Largo',2,100,'1d8P',40,13));
+  personaje.inventario.add(new Arco('Arco Largo',2,100,new Daño('1d8', 'P'),40,13));
+
   console.log(personaje.inventario.darClase(Arma));
   // personaje.save();
   console.log(personaje.habilidades);

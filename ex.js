@@ -296,7 +296,10 @@ function gemas(params) {
     let pm = ws['Q' + i]?.v;
     var gema = new Gema(nombre, 0.1, 1000 * capacidad, capacidad, pm);
     // console.log(gema);
+    pe.inventario.add(gema)
   }
+
+  
 }
 
 // var tipo = Agilidad;

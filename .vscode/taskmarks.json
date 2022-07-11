@@ -1,5 +1,5 @@
 {
-	"activeTaskName": "monedas y objetos",
+	"activeTaskName": "excel",
 	"tasks": [
 		{
 			"name": "default",
@@ -56,12 +56,23 @@
 					"filepath": "\\vue.html",
 					"marks": [
 						12,
-						313,
-						403,
-						460,
+						318,
+						407,
+						469,
 						64,
-						869,
-						884
+						932,
+						997
+					]
+				}
+			]
+		},
+		{
+			"name": "excel",
+			"files": [
+				{
+					"filepath": "\\ex.js",
+					"marks": [
+						290
 					]
 				}
 			]

@@ -297,10 +297,20 @@ class Pieza {
 
 //#endregion
 
+//me jode los arrays
 
-Array.prototype.lado = function (lado) {
+// Array.prototype.lado = function (lado) {
+//     let copia = []
+//     this.forEach(element => {
+//         element += " " + lado;
+//         copia.push(element)
+//     });
+//     return copia;
+// }
+
+function lado(array,lado) {
     let copia = []
-    this.forEach(element => {
+    array.forEach(element => {
         element += " " + lado;
         copia.push(element)
     });
@@ -342,7 +352,9 @@ Array.prototype.lado = function (lado) {
 let capucha = ["Craneo", "Cuello"];
 let chaleco = ["Pecho", "Abdomen"];
 let manga = ["Hombro", "Codo", "Brazo Superior", "Antebrazo"];
-manga = manga.lado('I')
+
+// manga = manga.lado('I')
+manga = lado(manga,'I')
 
 let blusa = new Pieza(chaleco);
 
@@ -361,6 +373,6 @@ brazoD = brazoD.concat("Codo D")
 brazoD = brazoD.concat("Mano D")
 
 // chaleco y dos mangas
-todo = brazoD.concat(chaleco, manga, brazoD.lado('I'))
+todo = brazoD.concat(chaleco, manga, lado(brazoD,'I'))
 
 
