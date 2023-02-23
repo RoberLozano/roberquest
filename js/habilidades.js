@@ -72,10 +72,11 @@ class Clase {
  * @returns la copia del objeto de la clase this.clase
  */
   static convertir(o) {
-    if (!(o.clase)) return o;
+    if (!(o?.clase)) return o;
     // console.log('Convierto un '+o.clase);
     let copia;
     // eval(`copia = new ${o.constructor.name}()`); //elegir uno
+
     eval(`copia = new ${o.clase}()`); //elegir uno
     // copia = (Function('return new ' + o.clase))()
     // for (let key in o)

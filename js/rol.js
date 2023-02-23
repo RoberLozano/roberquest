@@ -2137,6 +2137,45 @@ function cargaLocalObjeto(nombre) {
 
 }
 
+function cargarPersonajeOnline(nombre){
+  try {
+    let ruta = `personajes/${nombre}/`;
+  // console.log("CARGAR RUTA:" + ruta);
+ 
+   fbActual = database.ref(ruta);
+
+  // si lo hago así es menos eficiente,
+  // porque siempre que haya un cambio
+  // donde sea me, va a cargar el personaje entero
+  fbActual.on('value', function (item) {
+    console.log("onvalue personaje" + item.val().nombre);
+
+    let nuevo=item.val();
+    if (nuevo.clase){
+      // pj =  new Humanoide({});
+      pj= Clase.convertir(item.val())
+    }
+    else
+    pj = new Humanoide({});
+    // pj = new Animal({});
+    pj.setAll(item.val());
+
+    console.log("CARGA EL PUTO PERSONAJE:" + pj.nombre);
+
+    document.title = pj.nombre;
+
+    console.log(pj);
+
+  });
+  
+  } catch (error) {
+    console.log("ERROR EN CARGA ONLINE");
+    alert("ERROR EN CARGA ONLINE")
+    
+  }
+
+}
+
 function guerrero(personaje, nivel, ...armas) {
 
   personaje.setHabilidad(new HabilidadMarcial("Esquivar", Agilidad, 25 + (nivel * 5), false));

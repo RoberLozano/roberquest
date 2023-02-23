@@ -124,8 +124,16 @@
             <v-toolbar-title>{{nombrePersonaje||'Roberquest'}}</v-toolbar-title>
             <v-spacer></v-spacer>
 
-            <v-btn icon @click="act()">
+            <v-btn id="lupa" icon @click="act()">
               <v-icon>mdi-magnify</v-icon>
+            </v-btn>
+
+            <v-btn id="saveOnline" icon @click="act()">
+              <v-icon>mdi-upload</v-icon>
+            </v-btn>
+
+            <v-btn id="loadOnline" icon @click="act()">
+              <v-icon>mdi-download</v-icon>
             </v-btn>
 
           </v-app-bar>
@@ -142,9 +150,12 @@
 
                 <v-list-item>
                   <v-list-item-icon>
-                    <v-icon>mdi-account</v-icon>
+                    <v-icon>mdi-account</v-icon> <v-icon>mdi-wifi</v-icon>
                   </v-list-item-icon>
-                  <v-list-item-title>Account</v-list-item-title>
+                  
+                  <v-combobox v-model="nombrePersonajeOnline" :items="ls('personajes')" label="Personaje"
+                    @change="cargarOnline(nombrePersonajeOnline);pj.actTodosBonHab();p=pj; contenedor=pj.inventario">
+                  </v-combobox>
                 </v-list-item>
 
 
@@ -191,11 +202,11 @@
                 <!-- Personaje -->
                 <v-tab-item>
                   <v-container fluid>
-                    <h2>Características</h2><br>
+                    <!-- <h2>Características</h2><br> -->
                     <v-tooltip right color="black">
                       <template v-slot:activator="{ on, attrs }">
                         <span v-bind="attrs" v-on="on">
-                          <h2>Características</h2><br>
+                          <h2 id="caracteristicas"  @click="act()">Características</h2><br>
                         </span>
                       </template>
                       <!-- <span>{{pj.getMod(c)}} <b>{{pj.getModTotal(c)}}</b></span> -->
@@ -217,11 +228,11 @@
 
                             <v-tooltip right color="black" :disabled="darTooltip(c).length<1">
                               <template v-slot:activator="{ on, attrs }">
-                                <span v-bind="attrs" v-on="on"> <input type="number" v-model="pj.bonificacion[c]"
+                                <span v-bind="attrs" v-on="on"> <input type="number" v-model="p[c]"
                                     :style="{ 'color': (pj.bonificacion[c]>0 ? 'green' : 'red') ,'width': '2.5em'}"></span>
                               </template>
                               <!-- <span>{{pj.getMod(c)}} <b>{{pj.getModTotal(c)}}</b></span> -->
-                              <span  v-html="darTooltip(c)"></span>
+                              <span v-html="darTooltip(c)"></span>
                             </v-tooltip>
 
 
@@ -1083,7 +1094,10 @@
   <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.js"></script>
 
 
+  <script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
+
   <!-- scrips del rol -->
+  <script src='js/coor.js'></script>
   <script src='js/utils.js'></script>
   <script src='js/D.js'></script>
   <script src='js/habilidades.js'></script>
@@ -1111,6 +1125,7 @@
         act() {
           pj.act();
           this.p = pj;
+          console.log('ACT');
 
         },
         //METODOS DE GUARDAR
@@ -1121,8 +1136,46 @@
         cancel() {
           console.log('Dialog closed')
         },
-        open() {
-          console.log('Dialog closed')
+        cargarOnline(nombre) {
+          try {
+            let ruta = `personajes/${nombre}/`;
+            // console.log("CARGAR RUTA:" + ruta);
+
+            fbActual = database.ref(ruta);
+
+            // si lo hago así es menos eficiente,
+            // porque siempre que haya un cambio
+            // donde sea me, va a cargar el personaje entero
+            fbActual.on('value', function (item) {
+              console.log("onvalue personaje VUE" + item.val().nombre);
+
+              let nuevo = item.val();
+              if (nuevo.clase) {
+                // pj =  new Humanoide({});
+                pj = Clase.convertir(item.val())
+              }
+              else
+                pj = new Humanoide({});
+              // pj = new Animal({});
+              pj.setAll(item.val());
+
+              pj.act();
+              this.p = pj;
+
+              document.title = pj.nombre;
+
+              console.log(pj);
+              document.getElementById('caracteristicas').click()
+              
+
+            });
+
+          } catch (error) {
+            console.log("ERROR EN CARGA ONLINE");
+            alert("ERROR EN CARGA ONLINE")
+
+          }
+
         },
         close() {
           console.log('Dialog closed')
@@ -1199,15 +1252,14 @@
             }
 
           }
-          else
-          {
+          else {
             for (const key in pj.listaMods) {
               let mod = pj.listaMods[key];
               // let color=valor>0?'green':'red';
               let color = pj.getCar(c) > pj[c] ? 'green' : 'red';
               html += `${key}: <b style="color: ${color}">${pj.listaMods[key].efectos}  </b><br>`
             }
-            
+
           }
           return html;
           // return pj.getModTotal(c);
@@ -1443,7 +1495,9 @@
 
         ],
         p: pj,
+
         nombrePersonaje: '',
+        nombrePersonajeOnline: '',
         ct: constante,
         contenedor: pj.inventario,
         hechizo: new Hechizo('Hechizo'),

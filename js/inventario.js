@@ -249,21 +249,29 @@ class Contenedor extends Objeto {
       //miro los distintos tipos de objetos por una propiedad única
       //TODO: tal vez poner el tipo de clase en una propiedad
       let oo;
-      oo = Clase.convertir(ob);
-      // if (ob.hasOwnProperty("pm")) { oo = new Gema(); }
-      // else
-      //   if (ob.hasOwnProperty("efectos")) { oo = new Pociones(); }
-      //   else
-      //     if (ob.hasOwnProperty("capacidad")) { oo = new Gema(); }
-      //     else
-      //       if (ob.hasOwnProperty("objetos")) { oo = new Contenedor(); }
-      //       else
-      //         if (ob.hasOwnProperty("daño")) { oo = new Arma(); }
-      //         else
-      //           if (ob.hasOwnProperty("ctd")) { oo = new Objetos(); }
-      //           else { oo = new Objeto() }
-      oo.setAll(ob);
-      ot.push(oo);
+      console.log(ob);
+      try {
+        oo = Clase.convertir(ob);
+        // if (ob.hasOwnProperty("pm")) { oo = new Gema(); }
+        // else
+        //   if (ob.hasOwnProperty("efectos")) { oo = new Pociones(); }
+        //   else
+        //     if (ob.hasOwnProperty("capacidad")) { oo = new Gema(); }
+        //     else
+        //       if (ob.hasOwnProperty("objetos")) { oo = new Contenedor(); }
+        //       else
+        //         if (ob.hasOwnProperty("daño")) { oo = new Arma(); }
+        //         else
+        //           if (ob.hasOwnProperty("ctd")) { oo = new Objetos(); }
+        //           else { oo = new Objeto() }
+        oo.setAll(ob);
+        ot.push(oo);
+        
+      } catch (error) {
+        console.error(ob);
+        console.error(error);
+      }
+
     }
 
 
