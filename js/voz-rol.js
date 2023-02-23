@@ -23,6 +23,7 @@ var recognition = new SpeechRecognition();
 //true para que escuche todo el tiempo
 recognition.continuous = true;
 recognition.lang = 'es-ES';
+// recognition.lang = 'en-US';
 recognition.interimResults = false;
 recognition.maxAlternatives = 3;
 
@@ -33,13 +34,13 @@ var boton;
 var hablado;
 
 // si está hablando para que no procese lo escuchado
-var hablando=false;
+var hablando = false;
 // document.body.onclick = function() {
 //   recognition.start();
 //   console.log('Ready to receive a color command.');
 // }
 
-var escuchando=false;
+var escuchando = false;
 function escuchar() {
     boton = document.getElementById("dictar");
     mic = document.getElementById("mic");
@@ -49,9 +50,9 @@ function escuchar() {
     mic.classList.add("green");
     console.log('Preparado para escuchar');
     console.log(`Diga '${regSTOP}' para detener la escucha`);
-    escuchando=true;
+    escuchando = true;
     recognition.start();
-    
+
 }
 
 
@@ -71,11 +72,11 @@ function hablar() {
     console.log('Botón de hablar pulsado');
     escuchar();
 
-    
 
 
 
- 
+
+
 
 }
 
@@ -96,6 +97,16 @@ recognition.onresult = function (event) {
     // We then return the transcript property of the SpeechRecognitionAlternative object
     let last = event.results[event.results.length - 1][0];
     let lastArray = event.results[event.results.length - 1];
+
+
+    if (event.results.length > 0) {
+        var result = event.results[0];
+        for (var i = 0; i < result.length; ++i) {
+            var text = result[i].transcript;
+            console.log(text);
+        }
+    }
+
     // console.log(`Tamaño: ${size}`);
 
     // console.log('Confidence: ' + last.confidence);
@@ -111,8 +122,8 @@ recognition.onresult = function (event) {
     //      return;
     //     } 
     console.log(`${last.transcript}  (${last.confidence}) [${time}]`);
-   
-    if(!hablando)voz(last.transcript);
+
+    if (!hablando) voz(last.transcript);
     //   console.log(time);
 
     if (last.confidence < 0.5) console.log(event.results[event.results.length - 1]);
@@ -133,7 +144,7 @@ recognition.onspeechend = function () {
     boton.style.color = "";
     mic.classList.remove("green");
     mic.classList.add("red");
-    escuchando=false;
+    escuchando = false;
 }
 
 recognition.onnomatch = function (event) {
@@ -148,7 +159,7 @@ recognition.onerror = function (event) {
     boton.style.color = "red";
     mic.classList.remove("green");
     mic.classList.add("red");
-    escuchando=false;
+    escuchando = false;
 
 }
 
@@ -162,7 +173,7 @@ var synth = window.speechSynthesis;
 function speak(texto) {
     // console.log(synth.getVoices());
     recognition.stop()
-    hablando=true;
+    hablando = true;
     console.log('EMPIEZA A HABLAR');
     if (synth.speaking) {
         console.error('speechSynthesis.speaking');
@@ -174,7 +185,7 @@ function speak(texto) {
         console.log('SpeechSynthesisUtterance.onend');
         // recognition.start()
         escuchar()
-        hablando=false;
+        hablando = false;
         console.log('TERMINA DE HABLAR');
     }
 
@@ -195,44 +206,55 @@ function speak(texto) {
 function voz(dictado) {
     // if(dictado.)
 
-    dictado=conNumeros(dictado)
-    var expresion = /localización (\d*)/i;
+    // dictado = conNumeros(dictado)
+
+    //Como el puto reconoce los numeros como texto tentgo que cambiar todo
+    // var expresion = /localización (\d*)/i;
+
+    var expresion = /localización (.*)/i;
+
     var hallado = dictado.match(expresion);
 
     // console.log(hallado);
     if (hallado)
-        localizacion(hallado[1])
+        localizacion(textoaNumero(hallado[1]))
     // if (dictado.includes('localización')){
     //     dictado.
     // }
 
     // var erPuntos = /puntos de (golpe|vida|magia|fatiga|resistencia)/i;
-    var erPuntos = /puntos de (.*)/i;
-    var p=dictado.match(erPuntos);
-    if(p){
+    var erPuntos = /[p|j]untos de (.*)/i;
+    var p = dictado.match(erPuntos);
+    if (p) {
         console.log(p);
         puntos(p[1])
     }
 
     // var h=dictado.match(/habilidad (w+)/i);
-    var h=dictado.match(/habilidad (.*)/i);
-    if(h){
+    var h = dictado.match(/habilidad (.*)/i);
+    if (h) {
         console.log(h);
         // console.log(h[1]);
         habilidad(h[1]);
     }
 
-    var b=dictado.match(/buscar (.*)/i);
-    if(b){
+    var b = dictado.match(/buscar (.*)/i);
+    if (b) {
         console.log(b);
         buscar(b[1])
     }
 
 
-    var av=dictado.match(/avanzar (\d+) (segundo|minuto|hora|día|semana|mes|año)s*/i);
-    if(av){
+    var av = dictado.match(/avanzar (\d+) (segundo|minuto|hora|día|semana|mes|año)e*s*/i);
+    if (av) {
         console.log(av);
-        avanzar(av[2],av[1])
+        avanzar(av[2], av[1])
+    }
+
+    var d = dictado.match(/dañar (.*) en (.*)/i);
+    if (d) {
+        console.log(d);
+        daño(textoaNumero(d[1]), d[2]);
     }
 
 
@@ -242,25 +264,26 @@ function buscar(busqueda) {
     // se muestra el buscador
     iuBuscar();
     // $("#buscar").val(busqueda)
-    document.getElementById('buscar').value=busqueda; 
+    document.getElementById('buscar').value = busqueda;
     iniciarBusqueda(busqueda)
 }
 
 function localizacion(valor) {
-    let l = pj.cuerpo.darLocalizacion(valor).nombre
+    console.log('LOCALIZACION:' + valor);
+    let l = pj.cuerpo.darLocalizacion(valor).nombreLargo();
 
     //Reemplazo las abreviaciones
-    var e = / Inf /;
-    l = l.replace(e, " Inferior ");
+    // var e = / Inf /;
+    // l = l.replace(e, " Inferior ");
 
-    e = / Sup /;
-    l = l.replace(e, " Superior ");
+    // e = / Sup /;
+    // l = l.replace(e, " Superior ");
 
-    e = /I$/;
-    l = l.replace(e, "Izquierda");
+    // e = /I$/;
+    // l = l.replace(e, "Izquierda");
 
-    e = /D$/;
-    l = l.replace(e, "Derecha");
+    // e = /D$/;
+    // l = l.replace(e, "Derecha");
 
     speak(l)
 }
@@ -281,25 +304,144 @@ function puntos(tipo) {
             break;
 
         default:
-            p=tipo.substring(0,3).toUpperCase()
+            p = tipo.substring(0, 3).toUpperCase()
             break;
     }
-    console.log(p,pj.getCar(p));
+    console.log(p, pj.getCar(p));
     speak(pj.getCar(p) + ' puntos de' + tipo)
 
 }
 
 function habilidad(nombre) {
     try {
-       var h= pj.getHabilidad(mayuscula(nombre));
-       speak (`${h.nombre} ${h.v}%`)
+        var h = pj.getHabilidad(mayuscula(nombre));
+        speak(`${h.nombre} ${h.v}%`)
     } catch (error) {
-        
+        habilidadParecida(nombre);
     }
 }
-function avanzar(periodo,n) {
+
+function habilidadParecida(nombre) {
+    var maxPeak;
+    maxPeak= pj.getHabilidades().reduce((p, c) => jaroWrinker(nombre,p.nombre) > jaroWrinker(nombre,c.nombre)? p : c);
+    pj.getHabilidades().forEach(h => {
+
+        console.log(h.nombre , jaroWrinker(nombre,h.nombre));
+         
+        
+
+    //   console.log([...m.entries()].reduce((a, e ) => e[1] > a[1] ? e : a))
+    });
+
+    console.log(maxPeak.nombre);
+
+    try {
+        var h = pj.getHabilidad(mayuscula(maxPeak.nombre));
+        speak(`${h.nombre} ${h.v}%`)
+    } catch (error) {
+
+    }
+}
+
+function daño(pd,loc) {
+    if(isNumber(loc))
+        pj.cuerpo.dañarLocalizacion(pd,loc)
+    else{
+
+        var maxSimil= pj.cuerpo.todas().reduce((p, c) => jaroWrinker(loc,p.nombreLargo()) > jaroWrinker(loc,c.nombreLargo())? p : c);
+        maxSimil.dañar(pd);
+    }
+    
+}
+
+function avanzar(periodo, n) {
     // fechaMundo.mod(periodo,+n)
-    periodo=periodo.replace('día','dia') //tal vez problema con í, ñapa
-    console.log(fechaMundo.mod(periodo,+n));
+    periodo = periodo.replace('día', 'dia') //tal vez problema con í, ñapa
+    console.log(fechaMundo.mod(periodo, +n));
 }
 //#endregion
+
+function textoaNumero(s) {
+    if (parseInt(s)) return parseInt(s);
+    s = s.replace('y', '');
+    s = s.replace('veinti', 'veinte ')
+    var Small = {
+        'cero': 0,
+        'uno': 1,
+        'dos': 2,
+        'tres': 3,
+        'trés': 3,
+        'cuatro': 4,
+        'cinco': 5,
+        'seis': 6,
+        'siete': 7,
+        'ocho': 8,
+        'nueve': 9,
+        'diez': 10,
+        'once': 11,
+        'doce': 12,
+        'trece': 13,
+        'catorce': 14,
+        'quince': 15,
+        'dieciséis': 16,
+        'diecisiete': 17,
+        'dieciocho': 18,
+        'diecinueve': 19,
+        'veinte': 20,
+        'treinta': 30,
+        'cuarenta': 40,
+        'cincuenta': 50,
+        'sesenta': 60,
+        'setenta': 70,
+        'ochenta': 80,
+        'noventa': 90,
+        'cien': 100,
+        'ciento': 100,
+    };
+
+    var Magnitud = {
+        'mil': 1000,
+        'millones': 1000000,
+        'mil millones': 1000000000,
+        'trillón': 1000000000000,
+        'cuatrillones': 1000000000000000,
+        'quintillón': 1000000000000000000,
+        'sextillón': 1000000000000000000000,
+        'septillones': 10000000000000000000000000,
+        'octillón': 10000000000000000000000000000,
+        'nonillion': 10000000000000000000000000000000,
+        'decillón': 10000000000000000000000000000000000,
+    };
+
+    var a, n, g;
+
+    console.log("S es :" + s);
+    return text2num(s);
+
+    function text2num(s) {
+        a = s.toString().split(/[\s-]+/);
+        n = 0;
+        g = 0;
+        a.forEach(feach);
+        return n + g;
+    }
+
+    function feach(w) {
+        var x = Small[w];
+        if (x != null) {
+            g = g + x;
+        }
+
+        else {
+            x = Magnitud[w];
+            if (x != null) {
+                n = n + g * x
+                g = 0;
+            }
+            else {
+                 alert("Unknown number: "+w); 
+            }
+        }
+    }
+
+}

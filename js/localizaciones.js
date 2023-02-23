@@ -289,6 +289,41 @@ class Localizacion extends Localizaciones {
         this.x=x;
         this.y=y;
     }
+
+    /**
+     * Devuelve el nombre completo
+     * @returns {String} El nombre sin abreviaturas
+     */
+    nombreLargo(){
+        var largo=
+        this.nombre.replace(' Inf ', ' Inferior' ).replace(' Sup ', ' Superior ') //.replace('Sup ', 'Superior ')
+        if (largo.endsWith('D')) {
+            largo+='erecha'
+            
+        } else {
+            if (largo.endsWith('I')) {
+                largo+='zquierda'
+            }
+            
+        }
+
+    //Reemplazo las abreviaturas
+    // var e = / Inf /;
+    // l = l.replace(e, " Inferior ");
+
+    // e = / Sup /;
+    // l = l.replace(e, " Superior ");
+
+    // e = /I$/;
+    // l = l.replace(e, "Izquierda");
+
+    // e = /D$/;
+    // l = l.replace(e, "Derecha");
+
+        return largo;
+    }
+
+
     /**
      * Da coordenadas para la localizacion
      * en estilo area de HTML

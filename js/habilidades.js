@@ -119,8 +119,8 @@ class XP extends Clase {
   /**
    * 
    * @param {int} xp 
-   * @param {Date} fecha 
-   * @param {Date} fechaXp 
+   * @param {Date} fecha fecha de última subida
+   * @param {Date} fechaXp fecha de última subida de experiencia
    * @param {int} horasEntrenadas 
    * @param {*} desentrenado 
    */
@@ -219,6 +219,28 @@ class TipoTirada {
     return 5;
   }
 
+  static color(tp){
+    switch (tp) {
+      case (TipoTirada.SUPERCRITICO):
+        return "red";
+        break;
+      case (TipoTirada.CRITICO):
+        return "red";
+        break;
+      case (TipoTirada.ESPECIAL):
+        return "green";
+        break;
+      case (TipoTirada.EXITO):
+        return "inherit";
+        break;
+      case (TipoTirada.FALLO):
+        return "grey";
+        break;
+      default:
+        ;
+    }
+  }
+
 
 }
 
@@ -242,6 +264,7 @@ class Habilidad extends XP {
     this.bvalor = 0;
     this.bcritico = 0;
     this.bespecial = 0;
+    this.mods={}
   }
 
   //te copia todas las propiedades de un objeto o
@@ -249,7 +272,6 @@ class Habilidad extends XP {
     for (let key in o) {
       this[key] = o[key];
       // console.log( this[key] + o[key]);
-
     }
   }
 
@@ -275,6 +297,32 @@ class Habilidad extends XP {
     this.bcritico -= b.critico;
     b.activado = !b.activado;
   }
+
+  /**
+   * 
+   * @param {ModHab} mod El modificador de habilidad
+   */
+  addMod(mod){
+    console.log(mod);
+      if (!this.mods[mod.atributo])
+        this.mods[mod.atributo] = {}
+
+      this.mods[mod.atributo][mod.id] =mod;
+
+  }
+
+    /**
+   * 
+   * @param {ModHab} mod El modificador de habilidad a eliminar
+   */
+    delMod(mod){
+      console.log(mod);
+        if (!this.mods[mod.atributo])
+          this.mods[mod.atributo] = {}
+  
+        this.mods[mod.atributo][mod.id] =mod;
+  
+    }
 
   // save() {
   //     //TODO: utiliza la variable global pj, tal vez deberia hacerlo desde Animal
@@ -319,6 +367,45 @@ class Habilidad extends XP {
   get c() { return Math.round(this.v * 0.05) + this.bcritico }
   get p() { return Math.min(100, 101 - Math.round((100 - this.v) * 0.05)) }
 
+/**
+ * 
+ * @param {String} magnitud La magnitud (v,e,c) de la que obtener el valor
+ * @returns El valor total, aplicando mods, de la magnitud (v,e,c)
+ */
+  total(magnitud){
+    let total= this[magnitud];
+    if(!this.mods[magnitud]){
+      // console.log("No hay mods"+ magnitud);
+      return total;
+    }
+     let sumas=
+     Object.values(this.mods[magnitud]).filter(x => (x.op=='+' || x.op=='-'));
+
+     let multis=
+     Object.values(this.mods[magnitud]).filter(x => (x.op=='x' || x.op=='/'));
+     
+     if(sumas){
+      console.log("SUMAS");
+      console.log(sumas);
+      for (let s of sumas) {
+        console.log(s);
+        total = s.valor(total);
+      }
+     }
+     console.log(total);
+
+     if(multis){
+      console.log("multis");
+      console.log(multis);
+      for (let s of multis) {
+        total = s.valor(total);
+      }
+     }
+
+    console.log(magnitud , total);
+    return total;
+
+  }
 
   /**
    * Te devuelve que tipo de tirada se obtiene con t

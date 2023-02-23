@@ -70,7 +70,7 @@ const TipoHabilidades =
 
 class Efecto {
   // constructor(nombre, efecto, obj, fecha = 0) {
-  constructor(nombre, efecto, fecha = 0) {
+  constructor(nombre, efecto = new Daño('1d3', 'Fuego'), fecha = 0) {
     this.nombre = nombre;
     this.efecto = efecto;
     // this.obj = obj;
@@ -106,6 +106,8 @@ class Efecto {
   }
 
 }
+
+
 
 class Bon {
   constructor(
@@ -158,138 +160,92 @@ class Bon {
 
   }
 }
-// class Animal{
-//     constructor(
-//       {
-//         nombre="Anónimo",
-//         peso =60, //en kg
 
-//         FUE=10,
-//         CON=10,
-//         TAM=10,
-//         INT=10,
-//         POD=10,
-//         DES=10,
-//         ASP=10
-//       }
+class Modificaciones extends Clase {
+  constructor(id, efectos, temp) {
+    super();
+    this.id = id
+    this.efectos = efectos
+    this.temp = temp
 
-//     ) {
-//       this.car= {}
-//       this.nombre =   nombre
-//       this.peso =     peso
-//       this.car.FUE =  FUE
-//       this.car.CON =  CON
-//       this.car.TAM =  TAM
-//       this.car.INT =  INT
-//       this.car.POD =  POD
-//       this.car.DES =  DES
-//       this.car.ASP =  ASP
+  }
 
-//       this.bonificacion = new Bon({}); 
-//       this.inventario= creaInventario("Cuerpo");
-//       this.efectos=[];
-//       // this.backup = null
-//       this.act();     
-//     }
+  buscarMod(string) {
 
-//     getCar(car){
-//       return this.car[car]+ this.bonificacion[car];
-//     }
+    var av = string.match(/\s*(\+|-|x|\/)\s*(\d+)([ECPG])?\s*(.*)/i);
+    if (av) {
+    let atributoHabilidad=av[3];
+    let op = av[1]; let ctd = av[2]; let magnitud = av[4];
+    if (atributoHabilidad){
+      return new ModHab(this.id, op, ctd, magnitud, atributoHabilidad);
+      //hacer lo de añadir en la habilidad
+    }
+      console.log(`op ${op}, ctd ${ctd}, magnitud ${magnitud} ,
+      atributoHabilidad  ${atributoHabilidad}`);
+      return new Mod(this.id, op, ctd, magnitud);
+    }
+    
+  }
+}
 
-//     set(car, valor){
-//       this.car[car]=valor;
-//       this.act();
-//     }
+class Mod extends Clase {
+  constructor(id, op, ctd, magnitud) {
+    super();
+    this.id = id
+    this.op = op
+    this.ctd = ctd
+    this.magnitud = magnitud
+  }
 
-//     cambiaformas(forma2){
-//       this.forma2= forma2;
-//     }
+  valor(v) {
+    switch (this.op) {
+      case '+':
+        return v+ +this.ctd
+        break;
+      case '-':
+        return v- +this.ctd
+        break;
+      case '/':
+        return v/ +this.ctd;
+        break;
 
-//     setAll(o){
-//       for (let key in o) {
-//           this[key] = o[key];
-//           console.log(this[key]);
+      default:
+        return v* +this.ctd;
+        break;
+    }
+  }
+
+/**
+ * Devuelve un nuevo ModHab a partir de un mod;
+ * @param {Mod} mod El mod origen
+ * @param {String||null} atributo el nombre del atributo donde aplocar la mod
+ */
+  toModHab(atributo){
+    if (!atributo) atributo='v';
+    return new ModHab(
+                        this.id,
+                        this.op,
+                        this.ctd,
+                        this.magnitud,
+                        atributo)
+  }
+
+}
+
+class ModHab extends Mod{
+  constructor(id, op, ctd, magnitud,atributo) {
+    super();
+    this.id = id
+    this.op = op
+    this.ctd = ctd
+    this.magnitud = magnitud
+    this.atributo = atributo
+
+    //TODO: añadir localizacion(es) ej: correr, saltar, Marciales
+  }
 
 
-//           if(key=="inventario"){
-//           this.inventario = new Contenedor();
-//           this.inventario.setAll(o[key]);
-//           }
-//         }
-//   }
-
-//     //Positivos, negativos y secundarios
-//     P(car){ return this.getCar(car)-10}
-//     N(car){ return 10-this.getCar(car)}
-//     S(car){ return Math.round((this.getCar(car)-10)/2)}
-//     SN(car){ return Math.round((10-this.getCar(car))/2)}
-
-//     act(){
-//       this.car.Agilidad     = this.P("DES") + this.S("FUE") + this.SN("TAM")
-//       this.car.Comunicación = this.P("INT") + this.P("ASP")
-//       this.car.Conocimiento = this.P("INT")
-//       this.car.Magia        = this.P("INT") + this.P("POD")
-//       this.car.Manipulación = this.P("DES") + this.S("FUE") + this.P("INT")
-//       this.car.Percepción   = this.P("CON")
-//       this.car.Sigilo       = this.P("DES") + this.S("FUE") + this.N("TAM")
-
-//       this.car.PF = (this.getCar(FUE) + this.getCar(CON))
-//       this.car.PG = Math.round((this.getCar(TAM) + this.getCar(CON))/2)
-//       this.car.PM = Math.round((this.getCar(INT) + this.getCar(POD))/2)
-
-
-//     }
-
-//     pesoTotal(){
-//       return this.peso + this.inventario.pesoTotal();
-//     }
-
-//     save(){
-//       database.ref("personajes").child(this.nombre).set(this);
-//     }
-
-//     aplicar(efecto){
-//       // el efecto sólo se debería aplicar en las bonificaciones
-//       // a no ser que sea permanente (algo muy raro)
-//       var obj= efecto.obj
-
-//        if(efecto.ok(fechaMundo))
-//         eval(efecto.efecto);
-//     }
-
-//   aplicarEfectos() {
-//     if (this.backup == null) {
-//       let copy = new Animal({});
-//       copy.setAll(this);
-//       this.backup = copy;
-//       // console.log("backup");
-//       // console.log(this.backup);
-//       // console.log("END backup");
-//     }
-//     else {
-//       this.setAll(this.backup);
-//       console.log("cargo el buckup");
-
-//     }
-
-//     for (let e of this.efectos) {
-
-//       if (e.ok()) {
-//         console.log(e.nombre + " aplicado");
-//         this.aplicar(e);
-//       }
-//     }
-//   }
-
-//     addEfecto(efecto){
-//       this.efectos.push(efecto);
-//     }
-
-// sanar(tipoPuntos, valor){
-//   this.car[tipoPuntos]+= valor;
-// }
-
-// }
+}
 
 class ArmaNatural {
   constructor(nombre, daño, localizacion) {
@@ -361,6 +317,8 @@ class Animal extends Clase {
 
     this.habilidades = {}
     this.efectos = [];
+    this.mods = {}
+    this.listaMods={}
     // this.backup = null
     this.act();
     this.cuerpo = new Localizaciones(this.getMaxPuntos(PG));
@@ -421,38 +379,37 @@ class Animal extends Clase {
       console.log(a, m, d);
     }
     return (fechaMundo - this.nacimiento) / (3600000 * 24 * 365);
-
-    new Date(700, 1, 1)
   }
 
   //TODO: esto para que haga la trampa Angular
-  set _FUE(value){ this.FUE=value}
-  get _FUE(){this.act();
+  set _FUE(value) { this.FUE = value }
+  get _FUE() {
+    this.act();
     return this.FUE;
   }
 
   /**
    * Regenera los puntos (PM,PG,PF) durante el tiempo transcurrido
    */
-  regenerar(fechaActual=fechaMundo){
-    var tiempo=(fechaActual - this.fecha)/1000; //en segundos
-    let s_minuto= 60;
-    let s_hora =3600;
-    var rPM,rPG,rPF;
+  regenerar(fechaActual = fechaMundo) {
+    var tiempo = (fechaActual - this.fecha) / 1000; //en segundos
+    let s_minuto = 60;
+    let s_hora = 3600;
+    var rPM, rPG, rPF;
     //recupera los PM en un día
-    rPM = this.getMaxPuntos(PM)/(24 * s_hora)
+    rPM = this.getMaxPuntos(PM) / (24 * s_hora)
     //1 PG por día por cada 10 de CON y localización
-    rPG = (this.getCar(CON)/10)/(24 * s_hora)
+    rPG = (this.getCar(CON) / 10) / (24 * s_hora)
     //recupera los pF en una hora
-    rPF = this.getMaxPuntos(PF)/(s_hora)
+    rPF = this.getMaxPuntos(PF) / (s_hora)
 
     //TODO simplificar a 3 decimales
 
-    this.PM= Math.min(this.getMaxPuntos(PM),this.PM+rPM*tiempo)
-    this.PF= Math.min(this.getMaxPuntos(PF),this.PF+rPF*tiempo)
+    this.PM = Math.min(this.getMaxPuntos(PM), this.PM + rPM * tiempo)
+    this.PF = Math.min(this.getMaxPuntos(PF), this.PF + rPF * tiempo)
 
     //esto iría sanando tods las localizaciones a la vez
-    this.PG= Math.min(this.getMaxPuntos(PG),this.PG+rPG*tiempo)
+    this.PG = Math.min(this.getMaxPuntos(PG), this.PG + rPG * tiempo)
 
 
   }
@@ -465,7 +422,9 @@ class Animal extends Clase {
    * @memberof Animal
    */
   getCar(car) {
-    return +this[car] + (+this.bonificacion[car]||0);
+    // return +this[car] + (+this.bonificacion[car] || 0);
+    return this.getTotal(car);
+
   }
   /**
    * Hace una lista de los bonificadores de daño
@@ -523,6 +482,180 @@ class Animal extends Clase {
     this.PG = Math.round((this.getCar(TAM) + this.getCar(CON)) / 2)
     this.PM = Math.round((this.getCar(INT) + this.getCar(POD)) / 2)
   }
+
+
+  //#region MODIFICADORES
+
+  buscarMod(string, id='id') {
+    // var av = string.match(/\s*(\+|-|x|\/)\s*(\d+)\s*(.*)/i);
+
+    // // let av= string.match(/(\+|-) (\d+)/i);
+    // let op = av[1]; let ctd = parseInt(av[2]); let magnitud = av[3];
+    // if (av) {
+    //   console.log(av[1], av[2], av[3]);
+    // }
+
+    var av = string.match(/\s*(\+|-|x|\/)\s*(\d+)([ECPG])?\s*(.*)/i);
+    // let av= string.match(/(\+|-) (\d+)/i);
+    if (av) {
+    let atributoHabilidad=av[3];
+    let op = av[1]; let ctd = av[2]; let magnitud = av[4];
+    if (atributoHabilidad){
+      return new ModHab(id, op, ctd, magnitud, atributoHabilidad);
+      //hacer lo de añadir en la habilidad
+    }
+    
+    // let op = av[1]; let ctd = av[2]; let magnitud = av[3];
+    
+      // console.log(av[1], av[2], av[3], av[4]);
+      console.log(`op ${op}, ctd ${ctd}, magnitud ${magnitud} ,
+      atributoHabilidad  ${atributoHabilidad}`);
+      return new Mod(id, op, ctd, magnitud);
+    }
+
+    // return [op, ctd, magnitud];
+    
+  }
+
+
+  getMod(car) {
+    return this.mods[car];
+  }
+
+  getTotal(magnitud){
+    let total= this[magnitud];
+    if(!this.mods[magnitud]){
+      // console.log("No hay mods"+ magnitud);
+      return total;
+    }
+     let sumas=
+     Object.values(this.mods[magnitud]).filter(x => (x.op=='+' || x.op=='-'));
+
+     let multis=
+     Object.values(this.mods[magnitud]).filter(x => (x.op=='x' || x.op=='/'));
+
+     
+     if(sumas){
+      // console.log("SUMAS");
+      // console.log(sumas);
+      for (let s of sumas) {
+        // console.log(s);
+        total = s.valor(total);
+      }
+     }
+    //  console.log(total);
+
+     if(multis){
+      // console.log("multis");
+      // console.log(multis);
+      for (let s of multis) {
+        total = s.valor(total);
+      }
+
+     }
+    //  console.log((this.mods[magnitud]));
+    // for (let key in this.mods[magnitud]) {
+    //   sum += +this.mods[magnitud][key].ctd;
+    // }
+    // // console.log(magnitud, sum);
+
+    // this.bonificacion[magnitud] = sum;
+    console.log(magnitud , total);
+    return total;
+  }
+
+  //TODO: quitar
+  getModTotal(magnitud) {
+    let sum = 0;
+
+    for (let key in this.mods[magnitud]) {
+      sum += +this.mods[magnitud][key].ctd;
+    }
+    // console.log(magnitud, sum);
+
+    this.bonificacion[magnitud] = sum;
+    return sum;
+  }
+
+/**
+ * 
+ * @param {Modificaciones|String} m El modificador o el nombre (id)
+ */
+  delModificadores(m) {
+    let id;
+    if (m instanceof Modificaciones)
+      id= m.id
+    else
+      id=m;
+
+    if(!(this.listaMods[id])){
+      console.log("no hay efecto con esa id");
+      return;
+    }
+
+    let efectos = this.listaMods[id].efectos;
+    var ae = efectos.split(',')
+    ae.forEach(e => {
+      var mod = this.buscarMod(e);
+      // var mod = this.buscarMod(e);
+      delete (this.mods[mod.magnitud][id])
+      this.getModTotal(mod.magnitud);
+
+    });
+
+    delete(this.listaMods[id]);
+
+    // let efectos = m.efectos;
+    // var ae = efectos.split(',')
+    // ae.forEach(e => {
+    //   var mod = this.buscarMod(e);
+    //   delete (this.mods[mod.magnitud][id])
+    //   this.getModTotal(mod.magnitud);
+
+    // });
+    this.act();
+
+  }
+
+  addModificadores(m) {
+    //sobreescribe el mismo id
+    this.listaMods[m.id]=m;
+    let efectos = m.efectos;
+    var ae = efectos.split(',')
+    ae.forEach(e => {
+      var mod = this.buscarMod(e, m.id);
+      //TODO:hacerlo con lo de Modificadores.buscarMod
+      // var mod = m.buscarMod(e);
+      console.log(mod);
+      if(this.getHabilidad(mod.magnitud)){
+        console.log('Lo reconoce como mod Habilidad');
+        if(!(mod instanceof ModHab)){
+          mod=mod.toModHab('v');
+        }
+          console.log(mod);
+        this.habilidades[mod.magnitud].addMod(mod);
+        return;
+      }
+      if (!this.mods[mod.magnitud])
+        this.mods[mod.magnitud] = {}
+
+      this.mods[mod.magnitud][m.id] =mod;
+      // this.mods[magnitud][m.id] = +ctd;
+
+      this.getModTotal(mod.magnitud);
+
+    });
+
+    this.act();
+
+  }
+
+
+
+  //#endregion
+
+
+
 
   //#region ENTRENAMIENTO
 
@@ -598,7 +731,7 @@ class Animal extends Clase {
     console.log('SUMA:' + suma);
     // var arrayOriginal = this.getHabilidades();
 
-   //copio habilidades
+    //copio habilidades
     this.getHabilidades().forEach(habilidad => {
       //sin cambiarlas
       var h = new Habilidad()
@@ -627,14 +760,14 @@ class Animal extends Clase {
         var h = new Habilidad()
         h.setAll(this.habilidades[key]);
         ah[key] = h;
-        suma+= h.valor;
+        suma += h.valor;
       }
     }
 
     console.log('SUMA:' + suma);
 
     for (const key in ah) {
-      if (ah.hasOwnProperty( key)) {
+      if (ah.hasOwnProperty(key)) {
         let h = ah[key]
         let xhoras = horas * h.valor / suma
         console.log(`Entreno ${h.nombre} ${xhoras} horas`);
@@ -915,8 +1048,8 @@ class Animal extends Clase {
   }
 
   getClaseHabilidad(clase) {
-    if (typeof clase === "string"){
-      return Object.values(this.habilidades).filter(obj => obj.constructor.name=== clase)
+    if (typeof clase === "string") {
+      return Object.values(this.habilidades).filter(obj => obj.constructor.name === clase)
     }
 
     return Object.values(this.habilidades).filter(obj => obj instanceof clase);
@@ -951,14 +1084,12 @@ class Animal extends Clase {
    */
   cambiaformas(forma2) {
 
-    if(forma2 instanceof Animal)
-    var f2= forma2
+    if (forma2 instanceof Animal)
+      var f2 = forma2
     else
-    var f2= cargaLocalObjeto(forma2);
+      var f2 = cargaLocalObjeto(forma2);
     // var _this={}
     // var _f2={}
-
-    PUNTOS
 
     // PUNTOS.forEach(p => {
     //   // console.log(p,this[p]);
@@ -968,28 +1099,28 @@ class Animal extends Clase {
     //     f2.set(p,Math.round(valor),false)
     //     // console.log(p,valor,f2.getMaxPuntos(p));
     //   }
- 
+
     // });
 
     // limpiar daños para que no acumule de antes
     // f2.cuerpo.sanar(99999); //sanar parece que falla
-    console.log('sanar '+f2.nombre);
+    console.log('sanar ' + f2.nombre);
 
-   f2.cuerpo.todas().forEach(l => {
-    l.daño=0;
+    f2.cuerpo.todas().forEach(l => {
+      l.daño = 0;
     });
 
     // console.log(this.cuerpo.todas());
     this.cuerpo.todas().forEach(l => {
       // console.log(l,(l.min+l.max)/2);
-    //  let fl= f2.cuerpo.darLocalizacion(l.min);
-     let fl= f2.cuerpo.darLocalizacion((l.min+l.max)/2);
+      //  let fl= f2.cuerpo.darLocalizacion(l.min);
+      let fl = f2.cuerpo.darLocalizacion((l.min + l.max) / 2);
 
-     console.log(l.nombre+' equivale a '+fl.nombre);
-    if(l.daño)
-      fl.dañar(fl.pg*(l.daño / l.pg),false);
+      console.log(l.nombre + ' equivale a ' + fl.nombre);
+      if (l.daño)
+        fl.dañar(fl.pg * (l.daño / l.pg), false);
       // f2.cuerpo.dañarLocalizacion(fl.pg*(l.daño / l.pg),l.min)
-      
+
     });
 
 
@@ -1007,59 +1138,6 @@ class Animal extends Clase {
   combatir(enemigo) {
     this.enemigo = enemigo
   }
-
-  /**
-   * Copia toda la información de un objeto, sea de la misma clase
-   * o no, si tiene las mismas propiedades
-   * @param {*} o El objeto del cual se copia todo
-   */
-  // setAll(o) {
-  //   for (let key in o) {
-  //     this[key] = o[key];
-  //     // console.log(this[key]);
-
-  //     //TODO: Parece que va
-  //     if (key == "cuerpo") {
-  //       this.cuerpo = new Localizaciones();
-  //       this.cuerpo.setAll(o[key]);
-
-
-  //     }
-
-  //     if (key == "inventario") {
-  //       this.inventario = new Contenedor();
-  //       this.inventario.setAll(o[key]);
-  //     }
-
-
-  //     //TODO: Parece que va
-  //     if (key == "efectos") {
-  //       this.efectos = [];
-  //       o["efectos"].forEach(element => {
-  //         let e = new Efecto()
-  //         e.setAll(element);
-  //         this.addEfecto(e);
-  //       });
-
-  //     }
-
-  //     //TODO: Parece que va
-  //     if (key == "habilidades") {
-  //       // this.habilidades = {}
-  //       for (let k in o[key]) {
-  //         // console.log("setAll habilidades"+k);
-  //         let h = new Habilidad();
-  //         if (o[key][k].hasOwnProperty("pm")) { h = new Hechizo() }
-  //         if (o[key][k].hasOwnProperty("arma")) { h = new HabilidadMarcial() }
-  //         h.setAll(o[key][k])
-  //         // console.log(h);
-  //         this.habilidades[h.nombre] = h;
-  //       }
-
-  //     }
-
-  //   }
-  // }
 
   print() {
     for (let key in this) {
@@ -1117,8 +1195,8 @@ class Animal extends Clase {
     // if(oldManipulación !=this.Manipulación) actBonHab(Manipulación);
     // if(oldPercepción !=this.Percepción) actBonHab(Percepción);
     // if(oldSigilo !=this.Sigilo) actBonHab(Sigilo);
-    if(!this.PF) this.PF=this.getMaxPuntos(PF)
-    if(!this.PM) this.PM=this.getMaxPuntos(PM)
+    if (!this.PF) this.PF = this.getMaxPuntos(PF)
+    if (!this.PM) this.PM = this.getMaxPuntos(PM)
 
     this.actTodosBonHab();
     this.cuerpo?.actPG(this.getMaxPuntos(PG));
@@ -1473,8 +1551,8 @@ class Dragon extends Animal {
     // cabeza = new Localizacion("Pata Delantera Izquierda", 0.333, 17, 18, pa); this.cuerpo.add(cabeza);
     // cabeza = new Localizacion("Cabeza", 0.333, 19, 20, pa, 350, 320); this.cuerpo.add(cabeza);
 
-    
-    var cabeza  = new Localizacion("Cabeza", 0.333, 1, 10, pa, 350, 320); this.cuerpo.add(cabeza);
+
+    var cabeza = new Localizacion("Cabeza", 0.333, 1, 10, pa, 350, 320); this.cuerpo.add(cabeza);
     cabeza = new Localizacion("Pata Delantera Derecha", 0.333, 11, 20, pa); this.cuerpo.add(cabeza);
     cabeza = new Localizacion("Pata Delantera Izquierda", 0.333, 21, 30, pa); this.cuerpo.add(cabeza);
     cabeza = new Localizacion("Ala Derecha", 0.25, 31, 40, pa); this.cuerpo.add(cabeza);
@@ -1611,7 +1689,7 @@ Date.prototype.mod = function (interval, units) {
   return ret;
 }
 
-var _3d6=new Dado('3d6');
+var _3d6 = new Dado('3d6');
 class Humanoide extends Animal {
   constructor(
     {
@@ -1884,9 +1962,9 @@ class Enano extends Humanoide {
     this.setHabilidad(new Habilidad("Deslizarse en Silencio", Sigilo, 20));
     this.setHabilidad(new Habilidad("Esconderse", Sigilo, 20));
 
-    this.setHabilidad(new HabilidadMarcial("Puño",  Manipulación, 50));
-    this.setHabilidad(new HabilidadMarcial("Patada",  Manipulación, 20));
-    this.setHabilidad(new HabilidadMarcial("Mordisco",  Manipulación, 20));
+    this.setHabilidad(new HabilidadMarcial("Puño", Manipulación, 50));
+    this.setHabilidad(new HabilidadMarcial("Patada", Manipulación, 20));
+    this.setHabilidad(new HabilidadMarcial("Mordisco", Manipulación, 20));
 
 
 
@@ -2043,7 +2121,7 @@ try {
  * @param {string} nombre del objeto con .clase a cargar
  */
 function cargaLocalObjeto(nombre) {
-  var obj=JSON.parse(localStorage.getItem(nombre))
+  var obj = JSON.parse(localStorage.getItem(nombre))
 
   let clase = obj.clase;
 
@@ -2056,30 +2134,32 @@ function cargaLocalObjeto(nombre) {
     console.log(o);
     return o;
   }
-  
+
 }
 
 function guerrero(personaje, nivel, ...armas) {
 
   personaje.setHabilidad(new HabilidadMarcial("Esquivar", Agilidad, 25 + (nivel * 5), false));
   personaje.setHabilidad(new HabilidadMarcial("Puñetazo D", Manipulación, 25 + (nivel * 5), true, "Brazo D"));
-  armas.forEach((a,index) => {
+  armas.forEach((a, index) => {
     var d1 = new Daño('1d6', 'F')
     var d2 = new Daño('1d8', 'P')
-    let arma = new Arma(a, 1.5-index*0.3, 10, d1, d2);
+    let arma = new Arma(a, 1.5 - index * 0.3, 10, d1, d2);
     personaje.inventario.add(arma);
     personaje.setHabilidad(new HabilidadMarcial(a, Manipulación, 25 + (nivel * 10), true, "Brazo D", arma));
 
-    personaje.setHabilidad(new Tecnica('Matalobos',Manipulación,30,3,true))
+    personaje.setHabilidad(new Tecnica('Matalobos', Manipulación, 30, 3, true))
 
     personaje.act();
   });
 
 
- 
-  personaje.inventario.add(new Municion('Flecha voladora',0,0,1,1,2,1,0,0,1));
+
+  personaje.inventario.add(new Municion('Flecha voladora', 0, 0, 1, 1, +2, 1, 0, 0, 1));
+  personaje.inventario.add(new Municion('Svartor', 0, 0, +3, 20, 50, 7, 7, 7, 7));
+  ;
   // personaje.inventario.add(new Arco('Arco Largo',2,100,'1d8P',40,13));
-  personaje.inventario.add(new Arco('Arco Largo',2,100,new Daño('1d8', 'P'),40,13));
+  personaje.inventario.add(new Arco('Arco Largo', 2, 100, new Daño('1d8', 'P'), 40, 180));
 
   console.log(personaje.inventario.darClase(Arma));
   // personaje.save();
@@ -2095,21 +2175,21 @@ function guerrero(personaje, nivel, ...armas) {
 }
 
 
-function mago(personaje, nivel=5) {
+function mago(personaje, nivel = 5) {
 
   personaje.setHabilidad(new HabilidadMarcial("Esquivar", Agilidad, 25 + (nivel * 5), false));
   personaje.setHabilidad(new HabilidadMarcial("Puñetazo D", Manipulación, 25 + (nivel * 5), true, "Brazo D"));
 
-  personaje.setHabilidad(new Arte(new Habilidad('Intensidad','Magia', 25 + (nivel * 5) )))
-  personaje.setHabilidad(new Arte(new Habilidad('Duración','Magia', 25 + (nivel * 5) )))
-  personaje.setHabilidad(new Arte(new Habilidad('Alcance','Magia', 25 + (nivel * 5) )))
-  personaje.setHabilidad( new Hechizo('Bola de fuego',5,25 + (nivel * 5)));
-  personaje.setHabilidad( new Hechizo('Curación',1, Math.round(Math.random()*100) + (nivel * 5)));
-  personaje.setHabilidad( new Hechizo('Escudo',1, Math.round(Math.random()*100) + (nivel * 5)));
+  personaje.setHabilidad(new Arte(new Habilidad('Intensidad', 'Magia', 25 + (nivel * 5))))
+  personaje.setHabilidad(new Arte(new Habilidad('Duración', 'Magia', 25 + (nivel * 5))))
+  personaje.setHabilidad(new Arte(new Habilidad('Alcance', 'Magia', 25 + (nivel * 5))))
+  personaje.setHabilidad(new Hechizo('Bola de fuego', 5, 25 + (nivel * 5)));
+  personaje.setHabilidad(new Hechizo('Curación', 1, Math.round(Math.random() * 100) + (nivel * 5)));
+  personaje.setHabilidad(new Hechizo('Escudo', 1, Math.round(Math.random() * 100) + (nivel * 5)));
 
-  personaje.inventario.add(new Gema('Gema 1',0.001,10000,10,10));
-  personaje.inventario.add(new Gema('Gema 2',0.001,10000,10,5));
-  personaje.inventario.add(new Gema('Gema 3',0.001,10000,10,1));
+  personaje.inventario.add(new Gema('Gema 1', 0.001, 10000, 10, 10));
+  personaje.inventario.add(new Gema('Gema 2', 0.001, 10000, 10, 5));
+  personaje.inventario.add(new Gema('Gema 3', 0.001, 10000, 10, 1));
 
 }
 

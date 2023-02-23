@@ -424,6 +424,7 @@ class Daño {
 		this.dado=dado;
 		this.tipo = tipo;
 	}
+
 	toString() {
 		return this.dado + this.tipo;
 	}

@@ -109,6 +109,7 @@ function ProcessExcel(data) {
   hMarciales(2, 11);
 
   armas(17, 28)
+  arcos(34,35)
 
 
   ws = workbook.Sheets['Inventario'];
@@ -262,28 +263,30 @@ function arcos(inicio = 34, fin = 41, seguir = true, n = 'A', no = 'B', fue = 'C
       else return;
     }
     let obj;
-    let peso = ws[p + i]?.v;
+    // let peso = ws[p + i]?.v;
 
     let daños = []
 
-    let daño = ws[daño + i]?.v;
+    let _daño = ws[daño + i]?.v;
+    let _recto = ws[recto + i]?.v;
+    let _max = ws[max + i]?.v;
 
-    let no = ws[`F` + i]?.v;
-    let fue = ws[`F` + i]?.v;
-    let tdaño = ws[`H` + i]?.v;
-    // let tdaño = ws[`H` + i]?.v;
-    if (daño) {
-      daños.push(new Daño(daño, 'P'))
+
+    let ctd = ws[no + i]?.v;
+    let fuerza = ws[fue + i]?.v;
+
+    let _bonAp = ws[bonAp + i]?.v;
+
+    if (_daño) {
+      daños.push(new Daño(_daño, 'P'))
     }
 
-    daño = ws[`I` + i]?.v;
-    tdaño = ws[`J` + i]?.v;
-    if (daño) {
-      daños.push(new Daño(daño, tdaño))
-    }
 
+    obj= new Arco(nombre,0,0,...daños,_recto,_max,fuerza,_bonAp)
+
+    console.log(obj);
     // obj = new Arma(nombre, peso, 0, daños)
-    // pe.inventario.add(obj);
+    pe.inventario.add(obj);
 
   }
 }

@@ -282,7 +282,7 @@ class Contenedor extends Objeto {
 
   add(objeto, index) {
     // if(this.pesoLibre()>=objeto.pesoTotal)
-    console.log('add', objeto, index);
+    // console.log('add', objeto, index);
     // else (console.log("Demasiado peso")); 
     if (typeof index === 'number')
       this.objetos.splice(index, 0, objeto);
@@ -590,16 +590,40 @@ class ArmaDistancia extends Arma {
   }
 
   utilizar(municion) {
+    if (this.municion) {
+      this.quitar();
+    }
     this.municion = municion;
+    this._poner(municion);
+    console.log(this.municion);
   }
 
-  total(propiedad){
-    if (this.municion){
-      return this[propiedad]+(this.municion[propiedad]||0);
-    }
-    else
-    return this[propiedad];
+  quitar() {
+    this.daños[0].dado=this.daños[0].dado.replace("+"+this.municion.daño,"");
+    console.log('indexof last'); this.daños[0].dado.last
+    this.alcanceRecto -= this.municion.alcanceRecto
+    this.alcance -= this.municion.alcance
+    this.bonApuntado -= this.municion.bonApuntado
+    this.bonCritico -= this.municion.bonCritico
+    this.bonDiana -= this.municion.bonDiana
+    this.bonLocalización -= this.municion.bonLocalización
   }
+
+  _poner(municion) {
+
+    this.daños[0].dado += '+'+municion.daño;
+    this.alcanceRecto += municion.alcanceRecto
+    this.alcance += municion.alcance
+    this.bonApuntado += municion.bonApuntado
+    this.bonCritico += municion.bonCritico
+    this.bonDiana += municion.bonDiana
+    this.bonLocalización += municion.bonLocalización
+
+  }
+
+
+
+
 }
 
 class Municion extends ArmaDistancia {

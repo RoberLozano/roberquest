@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<!--
+    WARNING! Make sure that you match all Quasar related
+    tags to the same version! (Below it's "@2.11.5")
+  -->
+
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet"
+    type="text/css">
+  <link href="https://cdn.jsdelivr.net/npm/quasar@2.11.5/dist/quasar.prod.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+  <!-- example of injection point where you write your app template -->
+  <div id="q-app">Hola chaval
+
+
+
+    <div class="q-pa-md">
+      <div class="row">
+
+        <div class="col">
+          PF
+          <q-knob
+          :min="0"
+          :max="pj.getMaxPuntos('PF')"
+           v-model="pj.PF" show-value size="50px" :thickness="0.22" color="primary" track-color="grey-3"
+            class="text-primary q-ma-md" />
+        </div>
+        <div class="col">
+          PM
+          <q-knob
+          :min="0"
+          :max="pj.getMaxPuntos('PM')"
+            v-model="pj.PM" show-value size="50px" :thickness="0.22" color="blue" track-color="blue-3"
+            class="text-blue q-ma-md" />
+        </div>
+
+
+
+
+
+      </div>
+
+    </div>
+
+
+
+
+    <div class="q-pa-md">
+      <q-table dark title="Habilidades" :rows="pj.getHabilidades()" :columns="columns" row-key="nombre" />
+    </div>
+
+
+    <div class="q-pa-md">
+      <q-table dark title="Objetos" :rows="pj.inventario.objetos" row-key="nombre" />
+    </div>
+
+
+    <q-list bordered>
+      <q-item v-for="contact in pj.habilidades" :key="contact.nombre" class="q-my-sm" clickable v-ripple>
+        <q-item-section avatar>
+          <q-avatar color="primary" text-color="white">
+            {{ contact.nombre[0] }}
+          </q-avatar>
+        </q-item-section>
+
+        <q-item-section>
+          <q-item-label>{{ contact.nombre }}</q-item-label>
+          <q-item-label caption lines="1">{{ contact.v }}</q-item-label>
+        </q-item-section>
+
+        <q-item-section side>
+          <q-icon name="chat_bubble" color="green" />
+        </q-item-section>
+      </q-item>
+
+    </q-list>
+
+
+    <q-input clearable filled color="blue" v-model="pj.nombre" label="Nombre" />
+
+
+
+  </div>
+
+
+
+
+
+  <!-- Add the following at the end of your body tag -->
+  <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/quasar@2.11.5/dist/quasar.umd.prod.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/quasar@2.11.5/dist/lang/es.umd.prod.js"></script>
+
+  <!-- scrips del rol -->
+  <script src='js/utils.js'></script>
+  <script src='js/D.js'></script>
+  <script src='js/habilidades.js'></script>
+  <script src='js/inventario.js'></script>
+  <script src='js/localizaciones.js'></script>
+  <script src='js/armaduras.js'></script>
+  <script src='js/rol.js'></script>
+
+
+  <script>
+    /*
+      Example kicking off the UI. Obviously, adapt this to your specific needs.
+      Assumes you have a <div id="q-app"></div> in your <body> above
+     */
+    const app = Vue.createApp({
+      setup() {
+        var p = pj;
+        selected = []
+        columns = [
+          { name: 'nombre', label: 'nombre', field: 'nombre', sortable: true },
+          { name: 'v', label: 'total (%)', field: 'v', sortable: true },
+        ];
+
+        return { pj, p, columns }
+      }
+    })
+
+
+    app.use(Quasar)
+    Quasar.lang.set(Quasar.lang.es)
+    app.mount('#q-app')
+    Quasar.Notify.create('Hi and welcome!')
+
+
+  </script>
+</body>
+
+</html>

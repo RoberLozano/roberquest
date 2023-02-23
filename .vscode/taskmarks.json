@@ -1,5 +1,5 @@
 {
-	"activeTaskName": "excel",
+	"activeTaskName": "vue hechizo",
 	"tasks": [
 		{
 			"name": "default",
@@ -36,15 +36,18 @@
 				{
 					"filepath": "\\vue.html",
 					"marks": [
-						596,
-						767,
-						859
+						236,
+						605,
+						776,
+						868
 					]
 				},
 				{
-					"filepath": "\\js\\habilidades.js",
+					"filepath": "\\js\\rol.js",
 					"marks": [
-						1483
+						187,
+						611,
+						619
 					]
 				}
 			]
@@ -72,10 +75,32 @@
 				{
 					"filepath": "\\ex.js",
 					"marks": [
-						290
+						293
 					]
 				}
 			]
+		},
+		{
+			"name": "arcos",
+			"files": [
+				{
+					"filepath": "\\vue.html",
+					"marks": [
+						1340,
+						759
+					]
+				},
+				{
+					"filepath": "\\js\\inventario.js",
+					"marks": [
+						591
+					]
+				}
+			]
+		},
+		{
+			"name": "mods",
+			"files": []
 		}
 	]
 }
