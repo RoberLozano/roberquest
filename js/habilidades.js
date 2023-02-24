@@ -37,10 +37,10 @@ class Clase {
   }
 
   setAll(o) {
-   
+
     // if (typeof o === 'string') return o;
     for (let key in o) {
-      if(key==='mods'){
+      if (key === 'mods') {
         console.log('SetAll');
         console.log(o[key]);
       }
@@ -98,7 +98,7 @@ class Clase {
  */
 
 
-var constante={}
+var constante = {}
 
 //Variables globales
 const PIFIA = -1;
@@ -226,7 +226,7 @@ class TipoTirada {
     return 5;
   }
 
-  static color(tp){
+  static color(tp) {
     switch (tp) {
       case (TipoTirada.SUPERCRITICO):
         return "red";
@@ -271,7 +271,8 @@ class Habilidad extends XP {
     this.bvalor = 0;
     this.bcritico = 0;
     this.bespecial = 0;
-    this.mods={}
+    this.mods = {}
+    // this.t=this.total();
   }
 
   //te copia todas las propiedades de un objeto o
@@ -309,27 +310,33 @@ class Habilidad extends XP {
    * 
    * @param {ModHab} mod El modificador de habilidad
    */
-  addMod(mod){
+  addMod(mod) {
     console.log(mod);
-      if (!this.mods[mod.atributo])
-        this.mods[mod.atributo] = {}
+    if (!this.mods[mod.atributo])
+      this.mods[mod.atributo] = {}
 
-      this.mods[mod.atributo][mod.id] =mod;
-
+    this.mods[mod.atributo][mod.id] = mod;
+    //ÑAPA para que actualize el valot total
+    this.valor++; this.valor--;
   }
 
-    /**
-   * 
-   * @param {ModHab} mod El modificador de habilidad a eliminar
-   */
-    delMod(mod){
-      console.log(mod);
-        if (!this.mods[mod.atributo])
-          this.mods[mod.atributo] = {}
-  
-        this.mods[mod.atributo][mod.id] =mod;
-  
-    }
+  /**
+ * 
+ * @param {ModHab} mod El modificador de habilidad a eliminar
+ */
+  delMod(mod) {
+    console.log(mod);
+    if (!this.mods[mod.atributo])
+      return;
+
+    //ÑAPA para que actualize el valot total
+    this.valor++; this.valor--;
+
+    delete this.mods[mod.atributo][mod.id];
+    // this.t=this.total();
+
+
+  }
 
   // save() {
   //     //TODO: utiliza la variable global pj, tal vez deberia hacerlo desde Animal
@@ -374,42 +381,43 @@ class Habilidad extends XP {
   get c() { return Math.round(this.v * 0.05) + this.bcritico }
   get p() { return Math.min(100, 101 - Math.round((100 - this.v) * 0.05)) }
 
-/**
- * 
- * @param {String} magnitud La magnitud (v,e,c) de la que obtener el valor
- * @returns El valor total, aplicando mods, de la magnitud (v,e,c)
- */
-  total(magnitud){
-    let total= this[magnitud];
-    if(!this.mods[magnitud]){
+
+  /**
+   * 
+   * @param {String} magnitud La magnitud (v,e,c) de la que obtener el valor
+   * @returns El valor total, aplicando mods, de la magnitud (v,e,c)
+   */
+  total(magnitud = 'v') {
+    let total = this[magnitud];
+    if (!this.mods[magnitud]) {
       // console.log("No hay mods"+ magnitud);
       return total;
     }
-     let sumas=
-     Object.values(this.mods[magnitud]).filter(x => (x.op=='+' || x.op=='-'));
+    let sumas =
+      Object.values(this.mods[magnitud]).filter(x => (x.op == '+' || x.op == '-'));
 
-     let multis=
-     Object.values(this.mods[magnitud]).filter(x => (x.op=='x' || x.op=='/'));
-     
-     if(sumas){
-      console.log("SUMAS");
-      console.log(sumas);
+    let multis =
+      Object.values(this.mods[magnitud]).filter(x => (x.op == 'x' || x.op == '/'));
+
+    if (sumas) {
+      // console.log("SUMAS");
+      // console.log(sumas);
       for (let s of sumas) {
-        console.log(s);
+        // console.log(s);
         total = s.valor(total);
       }
-     }
-     console.log(total);
+    }
+    // console.log(total);
 
-     if(multis){
-      console.log("multis");
-      console.log(multis);
+    if (multis) {
+      // console.log("multis");
+      // console.log(multis);
       for (let s of multis) {
         total = s.valor(total);
       }
-     }
+    }
 
-    console.log(magnitud , total);
+    // console.log(magnitud, total);
     return total;
 
   }
@@ -1703,8 +1711,8 @@ class InputCustom extends HTMLElement {
     var html = '';
 
     var tabla = document.createElement('table');
-    this.reset ={}
-    this.appendChild(this.tablear('root',clase, lista));
+    this.reset = {}
+    this.appendChild(this.tablear('root', clase, lista));
   }
 
   /**
@@ -1712,7 +1720,7 @@ class InputCustom extends HTMLElement {
    * @param {Object} o el objeto del cual obtener la tabla
    * @returns La tabla 
    */
-  tablear(id,clase, lista) {
+  tablear(id, clase, lista) {
     var tabla = document.createElement('table');
     // var c;
     for (let key in clase) {
@@ -1768,9 +1776,9 @@ class InputCustom extends HTMLElement {
           default:
             // html += `${key}<${i}  value='${clase[key]}'><br>`
             if (typeof clase[key] === 'object') {
-              console.log('Tableo ' + id+key);
-              ta = this.tablear(id+key,clase[key])
-              ta.id = id+key;
+              console.log('Tableo ' + id + key);
+              ta = this.tablear(id + key, clase[key])
+              ta.id = id + key;
               // c = ta;
               isObject = true;
             }
@@ -1780,7 +1788,7 @@ class InputCustom extends HTMLElement {
             }
 
         }
-        this.reset[id+key]=clase[key]
+        this.reset[id + key] = clase[key]
         tabla.appendChild(fila)
         // this.appendChild(c);
 
@@ -1790,14 +1798,14 @@ class InputCustom extends HTMLElement {
           // let b= document.createElement('button');
           b.innerHTML = "&#9650";
           label.innerText = key;
-          label.id=ta.id;
+          label.id = ta.id;
           label.appendChild(b)
           b.addEventListener('click', (event) => {
-            let next=document.getElementById(label.id).nextSibling;
+            let next = document.getElementById(label.id).nextSibling;
             // console.log(ta);
             // next=ta.nextSibling;
             console.log(next);
-            
+
             next.hidden = !next.hidden
             next.hidden ? b.innerHTML = "&#9660;" : b.innerHTML = "&#9650"; // ▼ ▲
 
@@ -1819,17 +1827,17 @@ class InputCustom extends HTMLElement {
             console.log(event.target);
             console.log(event.target.parentNode.nextSibling);
             // c.setAttribute("value", this.reset[key]);
-            event.target.parentNode.nextSibling.setAttribute("value", this.reset[id+key]);
-            event.target.parentNode.nextSibling.value=this.reset[id+key];
+            event.target.parentNode.nextSibling.setAttribute("value", this.reset[id + key]);
+            event.target.parentNode.nextSibling.value = this.reset[id + key];
 
-            console.log(this.reset[id+key]);
+            console.log(this.reset[id + key]);
           });
 
           fila.appendChild(label)
           fila.appendChild(document.createElement('td').appendChild(c));
 
         }
-        
+
         tabla.appendChild(fila);
       }
 
@@ -1853,7 +1861,7 @@ customElements.define('input-subir', InputSubirHabilidad);
 
 var hechizo;
 
-function IUHechizos(p, div = "salida", black=false) {
+function IUHechizos(p, div = "salida", black = false) {
   var salida = document.getElementById(div);
   var options = ''
   // salida.appendChild(selector);
@@ -1891,7 +1899,7 @@ function IUHechizos(p, div = "salida", black=false) {
 
   salida.innerHTML = html;
 
-  var ih = new InputHechizo(p.getHabilidad('Volar'),black);
+  var ih = new InputHechizo(p.getHabilidad('Volar'), black);
   var div = document.createElement("div");
   ih.setPersonaje(p);
   hechizo = ih;
@@ -1918,7 +1926,7 @@ function IUHechizos(p, div = "salida", black=false) {
     if (h && h.valor > 0) {
       var div = document.createElement("div");
       // div.style.display="inline-block" //en linea si cabe entero
-      var ia = new InputArte(h,black);
+      var ia = new InputArte(h, black);
       ia.hidden = true;
       ia.ok.addEventListener('click', (event) => {
         console.log(`Aplicar desde ${ia.h.nombre} a Hechizo ${hechizo.h.nombre}`);
@@ -1958,7 +1966,7 @@ function IUHechizos(p, div = "salida", black=false) {
 
 }
 
-// export {Habilidad, BonHabilidad}; 
+// export {Habilidad, BonHabilidad};
 
 // var h1 = new Habilidad("Correr", "Agilidad", 100);
 

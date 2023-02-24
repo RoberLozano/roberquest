@@ -162,7 +162,7 @@ class Bon {
 }
 
 class Modificaciones extends Clase {
-  constructor(id, efectos, temp=false) {
+  constructor(id, efectos, temp = false) {
     super();
     this.id = id
     this.efectos = efectos
@@ -174,17 +174,17 @@ class Modificaciones extends Clase {
 
     var av = string.match(/\s*(\+|-|x|\/)\s*(\d+)([ECPG])?\s*(.*)/i);
     if (av) {
-    let atributoHabilidad=av[3];
-    let op = av[1]; let ctd = av[2]; let magnitud = av[4];
-    if (atributoHabilidad){
-      return new ModHab(this.id, op, ctd, magnitud, atributoHabilidad);
-      //hacer lo de añadir en la habilidad
-    }
+      let atributoHabilidad = av[3];
+      let op = av[1]; let ctd = av[2]; let magnitud = av[4];
+      if (atributoHabilidad) {
+        return new ModHab(this.id, op, ctd, magnitud, atributoHabilidad);
+        //hacer lo de añadir en la habilidad
+      }
       console.log(`op ${op}, ctd ${ctd}, magnitud ${magnitud} ,
       atributoHabilidad  ${atributoHabilidad}`);
       return new Mod(this.id, op, ctd, magnitud);
     }
-    
+
   }
 }
 
@@ -200,40 +200,40 @@ class Mod extends Clase {
   valor(v) {
     switch (this.op) {
       case '+':
-        return v+ +this.ctd
+        return v + +this.ctd
         break;
       case '-':
-        return v- +this.ctd
+        return v - +this.ctd
         break;
       case '/':
-        return v/ +this.ctd;
+        return v / +this.ctd;
         break;
 
       default:
-        return v* +this.ctd;
+        return v * +this.ctd;
         break;
     }
   }
 
-/**
- * Devuelve un nuevo ModHab a partir de un mod;
- * @param {Mod} mod El mod origen
- * @param {String||null} atributo el nombre del atributo donde aplocar la mod
- */
-  toModHab(atributo){
-    if (!atributo) atributo='v';
+  /**
+   * Devuelve un nuevo ModHab a partir de un mod;
+   * @param {Mod} mod El mod origen
+   * @param {String||null} atributo el nombre del atributo donde aplocar la mod
+   */
+  toModHab(atributo) {
+    if (!atributo) atributo = 'v';
     return new ModHab(
-                        this.id,
-                        this.op,
-                        this.ctd,
-                        this.magnitud,
-                        atributo)
+      this.id,
+      this.op,
+      this.ctd,
+      this.magnitud,
+      atributo)
   }
 
 }
 
-class ModHab extends Mod{
-  constructor(id, op, ctd, magnitud,atributo) {
+class ModHab extends Mod {
+  constructor(id, op, ctd, magnitud, atributo = 'v') {
     super();
     this.id = id
     this.op = op
@@ -318,36 +318,36 @@ class Animal extends Clase {
     this.habilidades = {}
     this.efectos = [];
     this.mods = {}
-    this.listaMods={}
+    this.listaMods = {}
     // this.backup = null
     this.act();
     this.cuerpo = new Localizaciones(this.getMaxPuntos(PG));
     // console.log('cuerpo' + this.getMaxPuntos(PG));
   }
 
-//TODO: ovwerwitr setAll()
-setAll(o){
-  super.setAll(o);
-  // this.mods = ;
-  console.log(o.mods);
-  //ÑAPA, Como son objetos anidados no hace bien el SetAll (imagino)
-  //Sobreescribo, pero como va con id da igual
-  for (let key in o.listaMods) {
-    this.addModificadores( o.listaMods[key]);
+  //TODO: ovwerwitr setAll()
+  setAll(o) {
+    super.setAll(o);
+    // this.mods = ;
+    console.log(o.mods);
+    //ÑAPA, Como son objetos anidados no hace bien el SetAll (imagino)
+    //Sobreescribo, pero como va con id da igual
+    for (let key in o.listaMods) {
+      this.addModificadores(o.listaMods[key]);
     }
 
 
 
-  // for (let key in o.mods) {
-  //   for( let m in o.mods[key])
-  //   console.log(o.mods[key][m])
-  //   this.addModificadores( o.mods[key][m]);
-  //   }
-  
-  
+    // for (let key in o.mods) {
+    //   for( let m in o.mods[key])
+    //   console.log(o.mods[key][m])
+    //   this.addModificadores( o.mods[key][m]);
+    //   }
 
-  // this.mods =o.mods;
-}
+
+
+    // this.mods =o.mods;
+  }
 
   set nacimiento(valor) {
     if (typeof valor === 'string') {
@@ -510,7 +510,7 @@ setAll(o){
 
   //#region MODIFICADORES
 
-  buscarMod(string, id='id') {
+  buscarMod(string, id = 'id') {
     // var av = string.match(/\s*(\+|-|x|\/)\s*(\d+)\s*(.*)/i);
 
     // // let av= string.match(/(\+|-) (\d+)/i);
@@ -522,15 +522,15 @@ setAll(o){
     var av = string.match(/\s*(\+|-|x|\/)\s*(\d+)([ECPG])?\s*(.*)/i);
     // let av= string.match(/(\+|-) (\d+)/i);
     if (av) {
-    let atributoHabilidad=av[3];
-    let op = av[1]; let ctd = av[2]; let magnitud = av[4];
-    if (atributoHabilidad){
-      return new ModHab(id, op, ctd, magnitud, atributoHabilidad);
-      //hacer lo de añadir en la habilidad
-    }
-    
-    // let op = av[1]; let ctd = av[2]; let magnitud = av[3];
-    
+      let atributoHabilidad = av[3];
+      let op = av[1]; let ctd = av[2]; let magnitud = av[4];
+      if (atributoHabilidad) {
+        return new ModHab(id, op, ctd, magnitud, atributoHabilidad);
+        //hacer lo de añadir en la habilidad
+      }
+
+      // let op = av[1]; let ctd = av[2]; let magnitud = av[3];
+
       // console.log(av[1], av[2], av[3], av[4]);
       console.log(`op ${op}, ctd ${ctd}, magnitud ${magnitud} ,
       atributoHabilidad  ${atributoHabilidad}`);
@@ -538,7 +538,7 @@ setAll(o){
     }
 
     // return [op, ctd, magnitud];
-    
+
   }
 
 
@@ -546,38 +546,38 @@ setAll(o){
     return this.mods[car];
   }
 
-  getTotal(magnitud){
-    let total= this[magnitud];
+  getTotal(magnitud) {
+    let total = this[magnitud];
     // console.log(this.mods[magnitud]);
-    if(!this.mods[magnitud]){
+    if (!this.mods[magnitud]) {
       // console.log("No hay mods"+ magnitud);
       return total;
     }
-     let sumas=
-     Object.values(this.mods[magnitud]).filter(x => (x.op=='+' || x.op=='-'));
+    let sumas =
+      Object.values(this.mods[magnitud]).filter(x => (x.op == '+' || x.op == '-'));
 
-     let multis=
-     Object.values(this.mods[magnitud]).filter(x => (x.op=='x' || x.op=='/'));
+    let multis =
+      Object.values(this.mods[magnitud]).filter(x => (x.op == 'x' || x.op == '/'));
 
-     
-     if(sumas){
+
+    if (sumas) {
       // console.log("SUMAS");
       // console.log(sumas);
       for (let s of sumas) {
         // console.log(s);
         total = s.valor(total);
       }
-     }
+    }
     //  console.log(total);
 
-     if(multis){
+    if (multis) {
       // console.log("multis");
       // console.log(multis);
       for (let s of multis) {
         total = s.valor(total);
       }
 
-     }
+    }
     //  console.log((this.mods[magnitud]));
     // for (let key in this.mods[magnitud]) {
     //   sum += +this.mods[magnitud][key].ctd;
@@ -602,18 +602,18 @@ setAll(o){
     return sum;
   }
 
-/**
- * 
- * @param {Modificaciones|String} m El modificador o el nombre (id)
- */
+  /**
+   * 
+   * @param {Modificaciones|String} m El modificador o el nombre (id)
+   */
   delModificadores(m) {
     let id;
     if (m instanceof Modificaciones)
-      id= m.id
+      id = m.id
     else
-      id=m;
+      id = m;
 
-    if(!(this.listaMods[id])){
+    if (!(this.listaMods[id])) {
       console.log("no hay efecto con esa id");
       return;
     }
@@ -621,14 +621,24 @@ setAll(o){
     let efectos = this.listaMods[id].efectos;
     var ae = efectos.split(',')
     ae.forEach(e => {
-      var mod = this.buscarMod(e);
-      // var mod = this.buscarMod(e);
-      delete (this.mods[mod.magnitud][id])
-      this.getModTotal(mod.magnitud);
+      var mod = this.buscarMod(e, id);
+      console.log(mod);
+      if (this.getHabilidad(mod.magnitud)) {
+        console.log('Lo reconoce como mod Habilidad');
+        if (!(mod instanceof ModHab)) {
+          mod = mod.toModHab('v');
+        }
+      }
+      if (mod instanceof ModHab)
+        this.habilidades[mod.magnitud].delMod(mod);
+      else
+        delete (this.mods[mod.magnitud][id])
+
+      // this.getModTotal(mod.magnitud);
 
     });
 
-    delete(this.listaMods[id]);
+    delete (this.listaMods[id]);
 
     // let efectos = m.efectos;
     // var ae = efectos.split(',')
@@ -639,12 +649,13 @@ setAll(o){
 
     // });
     this.act();
+    // this._FUE++; this._FUE--;
 
   }
 
   addModificadores(m) {
     //sobreescribe el mismo id
-    this.listaMods[m.id]=m;
+    this.listaMods[m.id] = m;
     let efectos = m.efectos;
     var ae = efectos.split(',')
     ae.forEach(e => {
@@ -652,19 +663,19 @@ setAll(o){
       //TODO:hacerlo con lo de Modificadores.buscarMod
       // var mod = m.buscarMod(e);
       console.log(mod);
-      if(this.getHabilidad(mod.magnitud)){
+      if (this.getHabilidad(mod.magnitud)) {
         console.log('Lo reconoce como mod Habilidad');
-        if(!(mod instanceof ModHab)){
-          mod=mod.toModHab('v');
+        if (!(mod instanceof ModHab)) {
+          mod = mod.toModHab('v');
         }
-          console.log(mod);
+        console.log(mod);
         this.habilidades[mod.magnitud].addMod(mod);
         return;
       }
       if (!this.mods[mod.magnitud])
         this.mods[mod.magnitud] = {}
 
-      this.mods[mod.magnitud][m.id] =mod;
+      this.mods[mod.magnitud][m.id] = mod;
       // this.mods[magnitud][m.id] = +ctd;
 
       this.getModTotal(mod.magnitud);
@@ -2162,41 +2173,41 @@ function cargaLocalObjeto(nombre) {
 
 }
 
-function cargarPersonajeOnline(nombre){
+function cargarPersonajeOnline(nombre) {
   try {
     let ruta = `personajes/${nombre}/`;
-  // console.log("CARGAR RUTA:" + ruta);
- 
-   fbActual = database.ref(ruta);
+    // console.log("CARGAR RUTA:" + ruta);
 
-  // si lo hago así es menos eficiente,
-  // porque siempre que haya un cambio
-  // donde sea me, va a cargar el personaje entero
-  fbActual.on('value', function (item) {
-    console.log("onvalue personaje" + item.val().nombre);
+    fbActual = database.ref(ruta);
 
-    let nuevo=item.val();
-    if (nuevo.clase){
-      // pj =  new Humanoide({});
-      pj= Clase.convertir(item.val())
-    }
-    else
-    pj = new Humanoide({});
-    // pj = new Animal({});
-    pj.setAll(item.val());
+    // si lo hago así es menos eficiente,
+    // porque siempre que haya un cambio
+    // donde sea me, va a cargar el personaje entero
+    fbActual.on('value', function (item) {
+      console.log("onvalue personaje" + item.val().nombre);
 
-    console.log("CARGA EL PUTO PERSONAJE:" + pj.nombre);
+      let nuevo = item.val();
+      if (nuevo.clase) {
+        // pj =  new Humanoide({});
+        pj = Clase.convertir(item.val())
+      }
+      else
+        pj = new Humanoide({});
+      // pj = new Animal({});
+      pj.setAll(item.val());
 
-    document.title = pj.nombre;
+      console.log("CARGA EL PUTO PERSONAJE:" + pj.nombre);
 
-    console.log(pj);
+      document.title = pj.nombre;
 
-  });
-  
+      console.log(pj);
+
+    });
+
   } catch (error) {
     console.log("ERROR EN CARGA ONLINE");
     alert("ERROR EN CARGA ONLINE")
-    
+
   }
 
 }

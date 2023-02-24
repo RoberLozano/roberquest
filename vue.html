@@ -152,7 +152,7 @@
                   <v-list-item-icon>
                     <v-icon>mdi-account</v-icon> <v-icon>mdi-wifi</v-icon>
                   </v-list-item-icon>
-                  
+
                   <v-combobox v-model="nombrePersonajeOnline" :items="ls('personajes')" label="Personaje"
                     @change="cargarOnline(nombrePersonajeOnline);pj.actTodosBonHab();p=pj; contenedor=pj.inventario">
                   </v-combobox>
@@ -206,7 +206,7 @@
                     <v-tooltip right color="black">
                       <template v-slot:activator="{ on, attrs }">
                         <span v-bind="attrs" v-on="on">
-                          <h2 id="caracteristicas"  @click="act()">Características</h2><br>
+                          <h2 id="caracteristicas" @click="act()">Características</h2><br>
                         </span>
                       </template>
                       <!-- <span>{{pj.getMod(c)}} <b>{{pj.getModTotal(c)}}</b></span> -->
@@ -222,14 +222,17 @@
                         <tr v-for="(c,index) in CP">
                           <td class="padd4">{{ c }}</td>
                           <td class="padd4"><input :style="{ 'color': 'white','width': '3em'}" type="number"
-                              v-model="pj[c]"></td>
+                              v-model.number="pj[c]"></td>
 
                           <td class="padd4">
 
                             <v-tooltip right color="black" :disabled="darTooltip(c).length<1">
                               <template v-slot:activator="{ on, attrs }">
-                                <span v-bind="attrs" v-on="on"> <input type="number" v-model="p[c]"
-                                    :style="{ 'color': (pj.bonificacion[c]>0 ? 'green' : 'red') ,'width': '2.5em'}"></span>
+                                <span :style="{ 'color': (pj[c]>pj.getCar(c) ? 'red':
+                                  ( pj[c]<pj.getCar(c) ? 'green' : 'inherit')
+                                    ),'width': '2.5em', 'float': 'right'}" v-bind="attrs" v-on="on">
+                                  {{pj.getCar(c)}}
+                                </span>
                               </template>
                               <!-- <span>{{pj.getMod(c)}} <b>{{pj.getModTotal(c)}}</b></span> -->
                               <span v-html="darTooltip(c)"></span>
@@ -238,17 +241,14 @@
 
                           </td>
 
-                          <td class="padd4" @click="darTooltip(c);">{{pj.getCar(c) }}
-                          </td>
-
 
                           <td class="padd4"> </td>
                           <td class="padd4">{{TipoHabilidades[index]}}</td>
                           <td class="padd4">
                             <v-tooltip right color="black" :disabled="darTooltip(TipoHabilidades[index]).length<1">
                               <template v-slot:activator="{ on, attrs }">
-                                <span :style="{ 'color': (pj.bonificacion[TipoHabilidades[index]]<0 ? 'red':
-                                ( pj.bonificacion[TipoHabilidades[index]]>0 ? 'green' : 'inherit')
+                                <span :style="{ 'color': (pj[TipoHabilidades[index]]>pj.getCar(TipoHabilidades[index]) ? 'red':
+                                ( pj[TipoHabilidades[index]]<pj.getCar(TipoHabilidades[index]) ? 'green' : 'inherit')
                                   ),'width': '2.5em', 'float': 'right'}" v-bind="attrs" v-on="on">
                                   {{pj.getCar(TipoHabilidades[index])}}
                                   <!-- <input type="number" v-model="pj.getCar(TipoHabilidades[index])"
@@ -313,10 +313,32 @@
                                     </v-edit-dialog>
                                   </template>
 
-                                  <template v-slot:item.v="{ item }">
+                                  <template v-slot:item.t="{item}">
                                     <!-- <p :style="{color: getColor(item.v)}">{{item.v}}</p> -->
-                                    <td :style="{color: item.v>100?'green':(item.v>10?'inherit':'red')}">{{item.v}}</td>
+                                    <!-- <td :style="{color: item.v<item.total()?'green':(item.v==item.total()?'inherit':'red')}"> -->
+                                    <td>
+                                      {{item.v}}
+                                      <v-tooltip right color="black" :disabled="darTooltip(item.nombre,true).length<1">
+                                        <template v-slot:activator="{ on, attrs }">
+                                          <span :style="{ 'color': item.total()<item.v ? 'red':
+                                         (item.total()>item.v ?  'green' : 'inherit')
+                                            ,'width': '2.5em', 'float': 'right'}" v-bind="attrs" v-on="on">
+                                            {{item.total()}}
+                                            <!-- <input type="number" v-model="pj.getCar(TipoHabilidades[index])"
+                                          :style="{ 'color': (pj.bonificacion[TipoHabilidades[index]]>0 ? 'green' : 'red') ,'width': '2.5em'}"> -->
+                                          </span>
+                                        </template>
+                                        <!-- <span>{{pj.getMod(c)}} <b>{{pj.getModTotal(c)}}</b></span> -->
+                                        <span v-html="darTooltip(item.nombre,true)"></span>
+                                      </v-tooltip>
+
+                                      <input type="number" v-model.number="item.total()"
+                                        :style="{color: item.total()>item.v?'green':'red'}"
+                                        @click="darTooltip(item.nombre,true)">
+                                    </td>
                                   </template>
+
+
 
                                   <template v-slot:item.sub="{ item }">
                                     <!-- <p :style="{color: getColor(item.v)}">{{item.v}}</p> -->
@@ -1166,7 +1188,7 @@
 
               console.log(pj);
               document.getElementById('caracteristicas').click()
-              
+
 
             });
 
@@ -1240,16 +1262,27 @@
         // IU
 
         //TODO:
-        darTooltip(c) {
+        darTooltip(c, habilidad = false, ah = 'v') {
 
           let html = "";
           if (c) {
-            for (const key in pj.getMod(c)) {
-              let valor = pj.getMod(c)[key];
-              // let color=valor>0?'green':'red';
-              let color = pj.getCar(c) > pj[c] ? 'green' : 'red';
-              html += `${key}: <b style="color: ${color}">${c} ${valor.op} ${valor.ctd} </b><br>`
+
+            if (habilidad) {
+              for (const key in pj.habilidades[c].mods[ah]) {
+                let valor = pj.habilidades[c].mods[ah][key];
+                // let color=valor>0?'green':'red';
+                let color = pj.habilidades[c][ah] < pj.habilidades[c].total(ah) ? 'green' : 'red';
+                html += `${key}: <b style="color: ${color}"> ${valor.op} ${valor.ctd} </b><br>`
+              }
+
             }
+            else
+              for (const key in pj.getMod(c)) {
+                let valor = pj.getMod(c)[key];
+                // let color=valor>0?'green':'red';
+                let color = pj.getCar(c) > pj[c] ? 'green' : 'red';
+                html += `${key}: <b style="color: ${color}">${c} ${valor.op} ${valor.ctd} </b><br>`
+              }
 
           }
           else {
@@ -1261,7 +1294,9 @@
             }
 
           }
+          
           return html;
+
           // return pj.getModTotal(c);
 
         },
@@ -1475,7 +1510,7 @@
           // { text: 'Categoria', value: 'tipo' },
           // { text: 'Clase', value: 'clase' },
           { text: 'Valor', value: 'valor', groupable: false },
-          { text: 'Total', value: 'v', groupable: false },
+          { text: 'Total', value: "t", groupable: false },
           { text: 'Subir', value: 'sub', groupable: false },
           { text: '', value: 'data-table-expand', groupable: false, width: "5%" },
         ],
