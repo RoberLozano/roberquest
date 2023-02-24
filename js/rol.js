@@ -162,7 +162,7 @@ class Bon {
 }
 
 class Modificaciones extends Clase {
-  constructor(id, efectos, temp) {
+  constructor(id, efectos, temp=false) {
     super();
     this.id = id
     this.efectos = efectos
@@ -324,6 +324,30 @@ class Animal extends Clase {
     this.cuerpo = new Localizaciones(this.getMaxPuntos(PG));
     // console.log('cuerpo' + this.getMaxPuntos(PG));
   }
+
+//TODO: ovwerwitr setAll()
+setAll(o){
+  super.setAll(o);
+  // this.mods = ;
+  console.log(o.mods);
+  //ÑAPA, Como son objetos anidados no hace bien el SetAll (imagino)
+  //Sobreescribo, pero como va con id da igual
+  for (let key in o.listaMods) {
+    this.addModificadores( o.listaMods[key]);
+    }
+
+
+
+  // for (let key in o.mods) {
+  //   for( let m in o.mods[key])
+  //   console.log(o.mods[key][m])
+  //   this.addModificadores( o.mods[key][m]);
+  //   }
+  
+  
+
+  // this.mods =o.mods;
+}
 
   set nacimiento(valor) {
     if (typeof valor === 'string') {
@@ -524,6 +548,7 @@ class Animal extends Clase {
 
   getTotal(magnitud){
     let total= this[magnitud];
+    // console.log(this.mods[magnitud]);
     if(!this.mods[magnitud]){
       // console.log("No hay mods"+ magnitud);
       return total;
@@ -560,7 +585,7 @@ class Animal extends Clase {
     // // console.log(magnitud, sum);
 
     // this.bonificacion[magnitud] = sum;
-    console.log(magnitud , total);
+    // console.log(magnitud , total);
     return total;
   }
 

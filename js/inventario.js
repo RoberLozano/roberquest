@@ -249,7 +249,7 @@ class Contenedor extends Objeto {
       //miro los distintos tipos de objetos por una propiedad única
       //TODO: tal vez poner el tipo de clase en una propiedad
       let oo;
-      console.log(ob);
+      // console.log(ob);
       try {
         oo = Clase.convertir(ob);
         // if (ob.hasOwnProperty("pm")) { oo = new Gema(); }

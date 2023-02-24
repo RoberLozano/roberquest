@@ -37,8 +37,13 @@ class Clase {
   }
 
   setAll(o) {
+   
     // if (typeof o === 'string') return o;
     for (let key in o) {
+      if(key==='mods'){
+        console.log('SetAll');
+        console.log(o[key]);
+      }
       //genérico para sustituir todos los setAll
       // if (o[key] instanceof Object){
       if (typeof o[key] === 'object' && o[key] !== null) {
@@ -57,6 +62,7 @@ class Clase {
       }
       else {
         // console.log('NO es objeto');
+        // console.log(this[key]);
         this[key] = o[key];
       }
 
