@@ -335,8 +335,24 @@ class Habilidad extends XP {
     delete this.mods[mod.atributo][mod.id];
     // this.t=this.total();
 
-
   }
+  
+  /**
+   * Da el tooltip de las modificaciones de la caracteristica c, o sin c, todas als modificaciones
+   * @param {string} ah El atributo para Tooltip de Mods (e,c, g) o nada para dar el general (v)
+   * @returns El texto en html del Tooltip
+   */
+  darTooltipMods(ah = 'v') {
+    let html = "";
+    for (const key in this.mods[ah]) {
+      let valor = this.mods[ah][key];
+      // let color=valor>0?'green':'red';
+      let color = this[ah] < this.total(ah) ? 'green' : 'red';
+      html += `${key}: <b style="color: ${color}"> ${valor.op} ${valor.ctd} </b><br>`
+    }
+    return html;
+  }
+
 
   // save() {
   //     //TODO: utiliza la variable global pj, tal vez deberia hacerlo desde Animal

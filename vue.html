@@ -206,7 +206,8 @@
                     <v-tooltip right color="black">
                       <template v-slot:activator="{ on, attrs }">
                         <span v-bind="attrs" v-on="on">
-                          <h2 id="caracteristicas" @click="act()">Características</h2><br>
+                          <h2 id="caracteristicas" @click="act()">{{pj.nombre}} <span style="color:red" > {{pj.clase}} <b>&male;</b></span>
+                          </h2> <br>
                         </span>
                       </template>
                       <!-- <span>{{pj.getMod(c)}} <b>{{pj.getModTotal(c)}}</b></span> -->
@@ -294,7 +295,10 @@
                             <v-expansion-panel-content>
                               <template>
 
-                                <v-data-table dense dark hide-default-footer :headers="headers"
+                                <!-- fixed-header
+                                height="300px" -->
+                                <v-data-table
+                                dense dark hide-default-footer :headers="headers"
                                   :items="pj.getHabilidades()" :custom-sort="subirSort" multi-sort show-group-by
                                   :items-per-page="-1" class="elevation-1" show-expand :single-expand="singleExpand"
                                   :expanded.sync="expanded" :search="search" item-key="nombre" :mobile-breakpoint=200>
@@ -375,6 +379,7 @@
                       </v-row>
                     </v-row>
                   </v-container>
+
                 </v-tab-item>
 
                 <!-- Tab Inventario -->
@@ -1026,8 +1031,51 @@
         <!-- hora -->
 
         <div id="editor"></div>
+        <v-btn
+        color="primary"
+        @click="dialog = true"
+      >
+        Open Dialog
+      </v-btn>
 
 
+        <v-dialog
+      v-model="dialog"
+      width="auto"
+    >
+      <v-card>
+        <v-card-actions>
+          <v-btn color="primary" icon="mdi-heart"  @click="dialog = false"><v-icon>mdi-close</v-icon></v-btn>
+        </v-card-actions>
+        <canvas id="canvas" width="500" height="900" style="background-color: black;">
+          Your browser does not support the HTML5 canvas tag.</canvas>
+          <v-btn
+          icon="mdi-close"
+          color="secondary"
+        ></v-btn>
+
+      </v-card>
+    </v-dialog>
+
+
+                   
+
+                <div id="test4" hidden >
+                  <h2>Cuerpo</h2>
+                  <img id="cuerpo" src="Body.png" alt="Cuerpo" usemap="#bodymap">
+                  <map name="bodymap" id="bodymap">
+                      <!-- <area shape="circle" coords="243,59,50" alt="Cabeza" onclick="console.log('Hostia en la bocha')"> -->
+                      <area shape="circle" coords="243,130,30" alt="cuello" onclick="console.log('Hostia en cuello')">
+                      <area shape="circle" coords="242,60,40" alt="cara" title="cara" onclick="console.log('Hostia en cara')">
+                      <area shape="circle" coords="243,19,20" alt="craneo" title="craneo"
+                          onclick="console.log('Hostia en craneo');">
+                      <area shape="circle" coords="243,59,50" alt="" onclick="console.log('Hostia en ')">
+                      <!-- <area shape="circle" coords="243,59,314,248" alt="" onclick="console.log('Hostia en pecho')"> -->
+                      <area shape="rect" coords="170,158,314,248" alt="pecho" onclick="console.log('Hostia en pecho')">
+                      <area shape="rect" coords="94,320,159,410" alt="antebrazo D" onclick="console.log('Hostia en antebrazo D')">
+                  </map>
+              </div>
+          
         <!-- grafico -->
         <!-- <template>
           <v-card class="mx-auto text-center" dark max-width="600">
@@ -1135,6 +1183,26 @@
     //     chaleco]
     // );
 
+
+    function cuerpoModal(rol) {
+  let p = null;
+  if (rol === "PNJ")
+    p = pnj[$('#nombreEnemigo').val()]
+  else
+    p = pj;
+
+  console.log('rol:' + rol);
+  let canvas = document.getElementById('canvas');
+  let h = alto();
+  let zoomCuerpo = h / 900 * 0.95;
+  canvas.width = 500 * zoomCuerpo;
+  canvas.height = 900 * zoomCuerpo;
+  p.cuerpoDaño("canvas", zoomCuerpo);
+  
+
+}
+
+
     new Vue({
       el: '#app',
       vuetify: new Vuetify({
@@ -1144,7 +1212,8 @@
       }),
       methods: {
 
-        act() {
+        act(fecha=true) {
+          if (fecha) this.date=fechaMundo.fecha();
           pj.act();
           this.p = pj;
           console.log('ACT');

@@ -900,7 +900,6 @@ class Animal extends Clase {
 
         }
 
-
       }
 
       fechaMundo = fechaMundo.mod('dia', 1);
@@ -1357,6 +1356,7 @@ class Animal extends Clase {
   //   this.car[tipoPuntos]+= valor;
   // }
 
+  //#region IU
 
   cuerpoDaño(canvas, scale = 1) {
 
@@ -1427,6 +1427,42 @@ class Animal extends Clase {
     });
   }
 
+  /**
+   * Da el tooltip de las modificaciones de la caracteristica c, o sin c, todas als modificaciones
+   * @param {string} c La caracteristica de la quedar el Tooltip de Mods o nada para dar el general
+   * @returns El texto en html del Tooltip
+   */
+  darTooltipMods(c) {
+
+    let html = "";
+    if (c) {
+        for (const key in this.getMod(c)) {
+          let valor = this.getMod(c)[key];
+          // let color=valor>0?'green':'red';
+          let color = this.getCar(c) > this[c] ? 'green' : 'red';
+          html += `${key}: <b style="color: ${color}">${valor.op} ${valor.ctd}</b><br>`
+          // html += `${key}: <b style="color: ${color}">${c} ${valor.op} ${valor.ctd} </b><br>`
+        }
+
+    }
+    else {
+      for (const key in this.listaMods) {
+        let mod = this.listaMods[key];
+        // let color=valor>0?'green':'red';
+        let color = this.getCar(c) > this[c] ? 'green' : 'red';
+        html += `${key}: <b style="color: ${color}">${this.listaMods[key].efectos} </b><br>`
+      }
+
+    }
+    
+    return html;
+
+    // return pj.getModTotal(c);
+
+  }
+
+
+  //#endregion IU
 }
 //Bonificación en Animal
 var d = new Dado("3d6");
@@ -1854,6 +1890,8 @@ class Humanoide extends Animal {
   }
 
   cuerpoDaño(canvas, scale = 1) {
+
+console.warn("cuerpoDaño de Humanoide");
 
     canvas = document.getElementById(canvas);
     var ctx = canvas.getContext("2d");
