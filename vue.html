@@ -383,7 +383,7 @@
                 </v-tab-item>
 
                 <!-- Tab Inventario -->
-                <v-tab-item  id='Inventario' value='Inventario'>
+                <v-tab-item id='Inventario' value='Inventario'>
                   <v-container fluid>
 
                     <!-- tabla inventario  sin: item-key="nombre"  se necesita para el expandable-->
@@ -921,7 +921,7 @@
 
 
                 <!-- Tab magia -->
-                <v-tab-item>
+                <v-tab-item value='Magia'>
                   <v-container fluid>
                     <v-row>
                       <v-autocomplete :items="pj.getClaseHabilidad('Arte')" label="Artes" deletable-chips multiple
@@ -971,7 +971,7 @@
 
 
                           <v-col cols="12" sm="1">
-                            <v-text-field v-model="hechizo.pm" type="number" color="blue darken-2" label="PM" required>
+                            <v-text-field v-model.number="hechizo.pm" type="number" color="blue darken-2" label="PM" required>
                             </v-text-field>
                           </v-col>
 
@@ -990,10 +990,49 @@
 
 
                         </v-row>
+
+
                       </template>
 
                     </v-row>
 
+                    <!-- IU -->
+
+                    <v-row>
+                      <template>
+                      <v-col cols="12" sm="4">
+                        <v-text-field v-model="iHechizo.nombre"  color="blue darken-2" label="Nombre" required>
+                        </v-text-field>
+                      </v-col>
+
+                      <v-col cols="12" sm="1">
+                        <v-text-field v-model.number="iHechizo.pm" type="number" color="blue darken-2" label="PM" required>
+                        </v-text-field>
+                      </v-col>
+
+                      <v-col cols="12" sm="1">
+                        <v-text-field v-model.number="iHechizo.total" type="number" color="blue darken-2" label="Valor"
+                          required>
+                        </v-text-field>
+                      </v-col>
+                      <v-col cols="12" sm="1">
+                        <v-text-field v-model.number="iHechizo.tirada" type="number" :color="TipoTirada.color(iHechizo.grado)" label="Tirada"
+                          required>
+                        </v-text-field>
+                      </v-col>
+                      <v-col cols="12" sm="1">
+                        <v-text-field v-model.number="iHechizo.gastado" type="number" color="blue darken-2" label="Gastado"
+                          required>
+                        </v-text-field>
+                      </v-col>
+
+                      <v-col cols="12" sm="4">
+                        <v-slider v-model.number="iHechizo.v" color="orange" label="Total" hint="Be honest" min="1"
+                          max="300" thumb-label="always"></v-slider>
+                      </v-col>
+                    </template>
+
+                    </v-row>
                     <v-row>
                       <v-btn @click="iuHechizo()">IU</v-btn>
                       <div id="divHechizo"></div>
@@ -1034,46 +1073,49 @@
         <v-btn color="primary" @click="dialog = true;">
           Open Dialog
         </v-btn>
-        <a @click="$vuetify.goTo('caracteristicas')">Características</a>
-        <a  @click="tab='Inventario'">Inventario</a>
+
+        <a @click="tab='Inventario'">Inventario</a>
         <v-btn>
 
 
-        <v-dialog v-model="dialog" width="auto">
-          <v-card>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="primary" icon="mdi-heart" @click="dialog = false"><v-icon>mdi-cached</v-icon></v-btn>
-              <v-btn color="primary" icon="mdi-heart" @click="dialog = false"><v-icon>mdi-close</v-icon></v-btn>
-            </v-card-actions>
-            <canvas id="canvas" width="500" height="900" style="background-color: black;">
-              Your browser does not support the HTML5 canvas tag.</canvas>
-            <v-btn icon="mdi-close" color="secondary"></v-btn>
+          <v-dialog v-model="dialog" width="auto">
+            <v-card>
+              <v-card-actions>
+                {{pj.nombre}}
+                <v-spacer></v-spacer>
+                <v-btn color="primary" icon="mdi-heart"
+                  @click="pj.cuerpoDaño('canvas')"><v-icon>mdi-cached</v-icon></v-btn>
+                <v-btn color="primary" icon="mdi-heart" @click="dialog = false"><v-icon>mdi-close</v-icon></v-btn>
+              </v-card-actions>
+              <canvas id="canvas" width="500" height="900" style="background-color: black;">
+                Your browser does not support the HTML5 canvas tag.</canvas>
+              <v-btn icon="mdi-close" color="secondary"></v-btn>
 
-          </v-card>
-        </v-dialog>
+            </v-card>
+          </v-dialog>
 
 
 
 
-        <div id="test4" hidden>
-          <h2>Cuerpo</h2>
-          <img id="cuerpo" src="Body.png" alt="Cuerpo" usemap="#bodymap">
-          <map name="bodymap" id="bodymap">
-            <!-- <area shape="circle" coords="243,59,50" alt="Cabeza" onclick="console.log('Hostia en la bocha')"> -->
-            <area shape="circle" coords="243,130,30" alt="cuello" onclick="console.log('Hostia en cuello')">
-            <area shape="circle" coords="242,60,40" alt="cara" title="cara" onclick="console.log('Hostia en cara')">
-            <area shape="circle" coords="243,19,20" alt="craneo" title="craneo"
-              onclick="console.log('Hostia en craneo');">
-            <area shape="circle" coords="243,59,50" alt="" onclick="console.log('Hostia en ')">
-            <!-- <area shape="circle" coords="243,59,314,248" alt="" onclick="console.log('Hostia en pecho')"> -->
-            <area shape="rect" coords="170,158,314,248" alt="pecho" onclick="console.log('Hostia en pecho')">
-            <area shape="rect" coords="94,320,159,410" alt="antebrazo D" onclick="console.log('Hostia en antebrazo D')">
-          </map>
-        </div>
+          <div id="test4" hidden>
+            <h2>Cuerpo</h2>
+            <img id="cuerpo" src="Body.png" alt="Cuerpo" usemap="#bodymap">
+            <map name="bodymap" id="bodymap">
+              <!-- <area shape="circle" coords="243,59,50" alt="Cabeza" onclick="console.log('Hostia en la bocha')"> -->
+              <area shape="circle" coords="243,130,30" alt="cuello" onclick="console.log('Hostia en cuello')">
+              <area shape="circle" coords="242,60,40" alt="cara" title="cara" onclick="console.log('Hostia en cara')">
+              <area shape="circle" coords="243,19,20" alt="craneo" title="craneo"
+                onclick="console.log('Hostia en craneo');">
+              <area shape="circle" coords="243,59,50" alt="" onclick="console.log('Hostia en ')">
+              <!-- <area shape="circle" coords="243,59,314,248" alt="" onclick="console.log('Hostia en pecho')"> -->
+              <area shape="rect" coords="170,158,314,248" alt="pecho" onclick="console.log('Hostia en pecho')">
+              <area shape="rect" coords="94,320,159,410" alt="antebrazo D"
+                onclick="console.log('Hostia en antebrazo D')">
+            </map>
+          </div>
 
-        <!-- grafico -->
-        <!-- <template>
+          <!-- grafico -->
+          <!-- <template>
           <v-card class="mx-auto text-center" dark max-width="600">
             <v-card-text>
               <v-sheet>
@@ -1102,30 +1144,30 @@
         </template> -->
 
 
-        <!-- Bottomsheet -->
-        <v-bottom-sheet v-model="sheet" persistent>
+          <!-- Bottomsheet -->
+          <v-bottom-sheet v-model="sheet" persistent>
 
-          <v-sheet class="text-center" height="200px">
-            <div class="py-3">
-              Elige donde mover
-              <v-select v-model="contenedorMover" :items="pj.inventario.darContenedores()" label="contenedor"
-                return-object
-                @change="selected.forEach(i => {contenedor.mover(i,contenedorMover)});selected=[];sheet = !sheet">
-                <template v-slot:selection="{ item, index }">
-                  {{ item.nombre }}
-                </template>
+            <v-sheet class="text-center" height="200px">
+              <div class="py-3">
+                Elige donde mover
+                <v-select v-model="contenedorMover" :items="pj.inventario.darContenedores()" label="contenedor"
+                  return-object
+                  @change="selected.forEach(i => {contenedor.mover(i,contenedorMover)});selected=[];sheet = !sheet">
+                  <template v-slot:selection="{ item, index }">
+                    {{ item.nombre }}
+                  </template>
 
-                <template v-slot:item="{ item}">
-                  {{ item.nombre }} <v-badge :content="item.carga+'/'+item.max + 'kg'"
-                    :color="interColor(item.carga,item.max,true)" inline>
-                    {{item.carga}}/{{item.max}}
-                  </v-badge>
-                </template>
+                  <template v-slot:item="{ item}">
+                    {{ item.nombre }} <v-badge :content="item.carga+'/'+item.max + 'kg'"
+                      :color="interColor(item.carga,item.max,true)" inline>
+                      {{item.carga}}/{{item.max}}
+                    </v-badge>
+                  </template>
 
-              </v-select>
-            </div>
-          </v-sheet>
-        </v-bottom-sheet>
+                </v-select>
+              </div>
+            </v-sheet>
+          </v-bottom-sheet>
 
 
       </v-main>
@@ -1214,6 +1256,26 @@
           if (fecha) this.date = fechaMundo.fecha();
           pj.act();
           this.p = pj;
+
+          let lastContenedor = this.contenedor;
+          console.log(lastContenedor);
+          let contenedores = pj.inventario.darClaseRecursiva(Contenedor)
+          let encontrado = false;
+          console.log(lastContenedor.nombre, this.contenedor.nombre);
+          if (contenedores.length > 0) {
+            contenedores.forEach(c => {
+              if (c.nombre == lastContenedor.nombre) {
+                this.contenedor = c;
+                encontrado = true;
+                console.log("mismo contenedor encontrado");
+              }
+
+            });
+            console.log(pj.inventario.darClaseRecursiva(Contenedor));
+
+          }
+          if (!encontrado)
+            this.contenedor = pj.inventario;
           console.log('ACT');
 
         },
@@ -1254,7 +1316,8 @@
               document.title = pj.nombre;
 
               console.log(pj);
-              document.getElementById('caracteristicas').click()
+              //TODO: ver si es necesario, act() no funciona desde aquí
+              document.getElementById('loadOnline').click()
 
 
             });
@@ -1319,11 +1382,15 @@
         },
 
         copiarHechizo(obj) {
+          console.log("COPIA HECHIZO");
 
-          this.copiaHechizo = new Hechizo();
-          this.copiaHechizo.setAll(obj);
-          this.copiaHechizo.valor += 10;
-          console.log(this.copiaHechizo);
+          // this.copiaHechizo = new Hechizo();
+          // this.copiaHechizo.setAll(obj);
+          // this.copiaHechizo.valor += 10;
+          // console.log(this.copiaHechizo);
+
+          this.iHechizo= this.hechizo.iu();
+          console.log(this.iHechizo);
         },
 
         // IU
@@ -1391,7 +1458,7 @@
 
         abrir(contenedor, index) {
           if (contenedor instanceof Contenedor) {
-            console.log(contenedor);
+            // console.log(contenedor);
 
             if (index || index == 0) {
               this.abiertos.splice(index);
@@ -1523,21 +1590,11 @@
           editor.appendChild(new InputCustom(objeto));
         }
 
-
-
-
-
-
+     
       },
 
 
       //TODO: editar los objetos con el modal
-
-
-
-
-
-
 
       watch: {
         value(val) {
@@ -1604,6 +1661,7 @@
         ct: constante,
         contenedor: pj.inventario,
         hechizo: new Hechizo('Hechizo'),
+        iHechizo: new iuHechizo(this.hechizo),
         // picker: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
         date: fechaMundo.fecha(),
         dialog: false,

@@ -1802,7 +1802,9 @@ class Humanoide extends Animal {
 
     this.bonificacion = new Bon({});
 
-    this.inventario = creaInventario("Cuerpo");
+   
+      this.inventario = new Contenedor("Cuerpo");
+    // this.inventario = creaInventario("Cuerpo");
     // this.inventario = new Contenedor("Cuerpo");
 
     this.habilidades = {}
@@ -2268,15 +2270,15 @@ function guerrero(personaje, nivel, ...armas) {
 
 
 
-  personaje.inventario.add(new Municion('Flecha voladora', 0, 0, 1, 1, +2, 1, 0, 0, 1));
-  personaje.inventario.add(new Municion('Svartor', 0, 0, +3, 20, 50, 7, 7, 7, 7));
-  ;
-  // personaje.inventario.add(new Arco('Arco Largo',2,100,'1d8P',40,13));
-  personaje.inventario.add(new Arco('Arco Largo', 2, 100, new Daño('1d8', 'P'), 40, 180));
+  // personaje.inventario.add(new Municion('Flecha voladora', 0, 0, 1, 1, +2, 1, 0, 0, 1));
+  // personaje.inventario.add(new Municion('Svartor', 0, 0, +3, 20, 50, 7, 7, 7, 7));
+  // ;
+  // // personaje.inventario.add(new Arco('Arco Largo',2,100,'1d8P',40,13));
+  // personaje.inventario.add(new Arco('Arco Largo', 2, 100, new Daño('1d8', 'P'), 40, 180));
 
-  console.log(personaje.inventario.darClase(Arma));
-  // personaje.save();
-  console.log(personaje.habilidades);
+  // console.log(personaje.inventario.darClase(Arma));
+  // // personaje.save();
+  // console.log(personaje.habilidades);
   // for( h in personaje.habilidades){
   //   if
   // }
@@ -2307,8 +2309,8 @@ function mago(personaje, nivel = 5) {
 }
 
 
-guerrero(pj, 10, 'espada', 'arco', 'daga');
-mago(pj);
+// guerrero(pj, 10, 'espada', 'arco', 'daga');
+// mago(pj);
 
 
 // let armanat = new ArmaNatural("puño", "1d3C", "Brazo D");

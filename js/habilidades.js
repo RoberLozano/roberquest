@@ -229,15 +229,17 @@ class TipoTirada {
   static color(tp) {
     switch (tp) {
       case (TipoTirada.SUPERCRITICO):
-        return "red";
+        return "orange";
         break;
       case (TipoTirada.CRITICO):
         return "red";
         break;
       case (TipoTirada.ESPECIAL):
+        return "blue";
         return "green";
         break;
       case (TipoTirada.EXITO):
+        return "green";
         return "inherit";
         break;
       case (TipoTirada.FALLO):
@@ -459,7 +461,7 @@ class Habilidad extends XP {
       });
       return mejor;
     }
-    //TODO: soporte para -1,etc en tiradas?
+    //TODO: soporte para -1,etc en tiradas? y hacer con total(x)
     switch (true) {
       case (t == 7 || t == 77):
         return TipoTirada.SUPERCRITICO;
@@ -583,6 +585,10 @@ class Hechizo extends Habilidad {
     this.efecto.obj = objetivo;
     objetivo.addEfecto(this.efecto);
 
+  }
+
+  iu(){
+    return new iuHechizo(this);
   }
 
 }
@@ -1996,15 +2002,76 @@ function IUHechizos(p, div = "salida", black = false) {
 // }
 // console.log(TipoTirada.tirada[h1.tirada(77)-h1.tirada(1)+1]);
 
-// var finDeAnio = new Date(776, 11, 31, 23, 59, 59, 999);
-// var añoNuevo= new Date(778, 0, 1, 0, 0, 0, 0);
 
-// console.log(finDeAnio);
-// console.log(finDeAnio.getTime());
-// console.log(añoNuevo);
-// console.log(añoNuevo.getTime());
+//#region IU
+// Creo clases para la IU, especialmente para Vue, Angular, etc
 
-// let xp = new XP(4,finDeAnio,null,null,null);
-// console.log(xp.getProbabilidad(100, añoNuevo));
+ function numero(x){
+  if (isNaN(x)) x = parseInt(x)||0 ;
+  return x;
+}
+
+
+class iuHabilidad {
+  constructor(habilidad, tirada,grado,modificadores) {
+		this._habilidad = habilidad
+    this.nombre = habilidad?.nombre || "iuHabilidad"
+    this._tirada = numero(tirada)
+    this._grado = numero(grado)
+    this._modificadores = modificadores
+  }
+
+  get total(){
+    return this.habilidad?.total() || 0
+  }
+
+	get habilidad() { return this._habilidad}
+  set habilidad(habilidad) { this._habilidad =habilidad}
+ 
+  get tirada() { return this._tirada}
+  set tirada(tirada) {
+     this._tirada =numero(tirada);
+     this.grado= this.habilidad.tirada(tirada);
+     console.log(this.grado);
+    }
+ 
+  get grado() { return this._grado}
+  set grado(grado) { this._grado = numero(grado)}
+ 
+  get modificadores() { return this._modificadores}
+  set modificadores(modificadores) { this._modificadores =modificadores} 
+
+
+}
+
+class iuHechizo extends iuHabilidad{
+  constructor(habilidad, tirada,grado,modificadores,pm, intensidad, gastado) {
+    super(habilidad, tirada,grado,modificadores)
+		this._pm = habilidad?.pm
+    this._intensidad = intensidad
+    this._gastado = gastado
+  }
+
+  
+	get pm() { return this._pm}
+  set pm(pm) {
+   this._pm = numero(pm);
+    this._pm =pm
+    this.gastado=pm}
+ 
+  get intensidad() { return this._intensidad}
+  set intensidad(intensidad) {
+    this._intensidad = numero(intensidad);
+    }
+ 
+  get gastado() { return this._gastado}
+  set gastado(gastado) {
+    console.log("gastado " +gastado);
+    this._gastado = numero(gastado);
+    } 
+
+}
+
+//#endregion
 
 
