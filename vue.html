@@ -924,7 +924,7 @@
                 <v-tab-item value='Magia'>
                   <v-container fluid>
                     <v-row>
-                      <v-autocomplete :items="pj.getClaseHabilidad('Arte')" label="Artes" deletable-chips multiple
+                      <v-autocomplete v-model="artes" :items="pj.getClaseHabilidad('Arte')" label="Artes" deletable-chips multiple
                         small-chips return-object item-text="nombre">
                       </v-autocomplete>
                     </v-row>
@@ -1016,7 +1016,7 @@
                         </v-text-field>
                       </v-col>
                       <v-col cols="12" sm="1">
-                        <v-text-field v-model.number="iHechizo.tirada" type="number" :color="TipoTirada.color(iHechizo.grado)" label="Tirada"
+                        <v-text-field v-model.number="iHechizo.dados" type="number" :color="TipoTirada.color(iHechizo.grado)" label="Dados"
                           required>
                         </v-text-field>
                       </v-col>
@@ -1033,6 +1033,39 @@
                     </template>
 
                     </v-row>
+
+                    <v-row v-for="a in artes">
+                      <template>
+                      <v-col cols="12" sm="4">
+                        <v-text-field v-model="a.nombre"  color="blue darken-2" label="Nombre" required>
+                        </v-text-field>
+                      </v-col>
+
+                      <v-col cols="12" sm="1">
+                        <v-text-field v-model.number="a.pm" type="number" color="blue darken-2" label="PM" required>
+                        </v-text-field>
+                      </v-col>
+
+                      <v-col cols="12" sm="1">
+                        <v-text-field v-model.number="a.total" type="number" color="blue darken-2" label="Valor"
+                          required>
+                        </v-text-field>
+                      </v-col>
+                      <v-col cols="12" sm="1">
+                        <v-text-field v-model.number="a.tirada" type="number" :color="TipoTirada.color(a.grado)" label="Tirada"
+                          required>
+                        </v-text-field>
+                      </v-col>
+                      <v-col cols="12" sm="1">
+                        <v-text-field v-model.number="a.gastado" type="number" color="blue darken-2" label="Gastado"
+                          required>
+                        </v-text-field>
+                      </v-col>
+
+                    </template>
+
+                    </v-row>
+
                     <v-row>
                       <v-btn @click="iuHechizo()">IU</v-btn>
                       <div id="divHechizo"></div>
@@ -1681,7 +1714,7 @@
         dadoDañoDistancia: 0,
         d100: new Dado('1d100'),
         copiaHechizo: new Hechizo(),
-
+        artes:[],
         value: [],
         selectedHeaders: [],
 

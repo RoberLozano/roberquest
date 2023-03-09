@@ -2013,10 +2013,10 @@ function IUHechizos(p, div = "salida", black = false) {
 
 
 class iuHabilidad {
-  constructor(habilidad, tirada,grado,modificadores) {
+  constructor(habilidad, dados,grado,modificadores) {
 		this._habilidad = habilidad
     this.nombre = habilidad?.nombre || "iuHabilidad"
-    this._tirada = numero(tirada)
+    this._dados = numero(dados)
     this._grado = numero(grado)
     this._modificadores = modificadores
   }
@@ -2028,10 +2028,10 @@ class iuHabilidad {
 	get habilidad() { return this._habilidad}
   set habilidad(habilidad) { this._habilidad =habilidad}
  
-  get tirada() { return this._tirada}
-  set tirada(tirada) {
-     this._tirada =numero(tirada);
-     this.grado= this.habilidad.tirada(tirada);
+  get dados() { return this._dados}
+  set dados(dados) {
+     this._dados =numero(dados);
+     this.grado= this.habilidad.tirada(dados);
      console.log(this.grado);
     }
  
@@ -2045,8 +2045,8 @@ class iuHabilidad {
 }
 
 class iuHechizo extends iuHabilidad{
-  constructor(habilidad, tirada,grado,modificadores,pm, intensidad, gastado) {
-    super(habilidad, tirada,grado,modificadores)
+  constructor(habilidad, dados,grado,modificadores,pm, intensidad, gastado) {
+    super(habilidad, dados,grado,modificadores)
 		this._pm = habilidad?.pm
     this._intensidad = intensidad
     this._gastado = gastado
