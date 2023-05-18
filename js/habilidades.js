@@ -156,13 +156,16 @@ class XP extends Clase {
     // var bonus=this.tipoBonus;
     //TODO: por si pongo XP distinta para cada raza
     //		int xpNec= this.getPertenece().getAnimal().getXPNecesaria();
-
+    
+    // % extra de subida por cada punto de XP mayor del necesario
+    var pExtra=2.5;
     // const xpNec = 4;
     if (this.xp < xpNec) return 100;
 
     // if (this.fecha == 0) return valor - (this.xp - xpNec) * 5 - bonus;
 
-    if (this.fecha == 0) return Math.min(100, valor) - (this.xp - xpNec) * 5 - bonus;
+    if (this.fecha == 0)
+      return Math.round(Math.min(100, valor) - (this.xp - xpNec) * pExtra - bonus);
     else {
       var fechaSub
       fechaSub = new Date(this.fecha)
@@ -175,7 +178,7 @@ class XP extends Clase {
       if (diferencia >= 7) {
         // console.log('días',diferencia);
         // console.log(("Se subio hace más de una semana"));
-        return Math.min(100, valor) - (this.xp - xpNec) * 5 - bonus;
+        return Math.round(Math.min(100, valor) - (this.xp - xpNec) * pExtra - bonus);
       }
       else return 100;
     }
@@ -400,6 +403,14 @@ class Habilidad extends XP {
   get p() { return Math.min(100, 101 - Math.round((100 - this.v) * 0.05)) }
 
 
+  //HACER COMO PROPIEDAD PARA VUETIFY del valor total con modificaciones
+  get porcentaje() { return this.total('v') }
+  get especial() { return this.total('e')}
+  get critico() { return this.total('c') }
+  get pifia() { return this.total('p') }
+
+
+
   /**
    * 
    * @param {String} magnitud La magnitud (v,e,c) de la que obtener el valor
@@ -439,6 +450,8 @@ class Habilidad extends XP {
     return total;
 
   }
+
+
 
   /**
    * Te devuelve que tipo de tirada se obtiene con t

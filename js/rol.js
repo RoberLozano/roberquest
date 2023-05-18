@@ -1283,6 +1283,7 @@ class Animal extends Clase {
       console.log("GUARDADO:" + this.nombre);
     } catch (error) {
       console.log('error en Firebase, guardando local');
+      console.error(error);
       this.saveLocal()
     }
 

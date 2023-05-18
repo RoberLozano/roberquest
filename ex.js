@@ -109,7 +109,7 @@ function ProcessExcel(data) {
   hMarciales(2, 11);
 
   armas(17, 28)
-  arcos(34,35)
+  arcos(34, 35)
 
 
   ws = workbook.Sheets['Inventario'];
@@ -120,18 +120,18 @@ function ProcessExcel(data) {
   //mirar si ya hay uno con ese nombre y las diferencias
   // if (last) console.log(diferencia(pe, last));
 
-  if (ls(pe.nombre)){
-    last= Clase.convertir(ls(pe.nombre));
+  if (ls(pe.nombre)) {
+    last = Clase.convertir(ls(pe.nombre));
   }
 
-  if (last) console.log(diferencia(last,pe));
+  if (last) console.log(diferencia(last, pe));
   // eval(`last=new ${pe.clase}()`)
   // last.setAll(pe)
 
   if (confirm(`¿Quiere guardar '${pe.nombre}' en localStorage? `) == true) {
-   ls(pe.nombre,pe);
-   listaPersonajes(pe.nombre)
-   console.log(`guardado '${pe.nombre}' en localStorage`);
+    ls(pe.nombre, pe);
+    listaPersonajes(pe.nombre)
+    console.log(`guardado '${pe.nombre}' en localStorage`);
   } else {
     console.log('No se ha guardado nada');
   }
@@ -213,7 +213,7 @@ function equipo(inicio, fin, n = 'A', p = 'B', c = 'C', seguir = true) {
       else
         obj = new Objeto(nombre, peso)
 
-        // console.log(obj);
+    // console.log(obj);
 
     pe.inventario.add(obj);
 
@@ -282,7 +282,7 @@ function arcos(inicio = 34, fin = 41, seguir = true, n = 'A', no = 'B', fue = 'C
     }
 
 
-    obj= new Arco(nombre,0,0,...daños,_recto,_max,fuerza,_bonAp)
+    obj = new Arco(nombre, 0, 0, ...daños, _recto, _max, fuerza, _bonAp)
 
     console.log(obj);
     // obj = new Arma(nombre, peso, 0, daños)
@@ -302,7 +302,7 @@ function gemas(params) {
     pe.inventario.add(gema)
   }
 
-  
+
 }
 
 // var tipo = Agilidad;
@@ -342,7 +342,7 @@ function h(inicio, fin, ceros = true, hab = 'A', xp = 'B', valor = 'C', seguir =
 }
 
 
-function hMarciales(inicio, fin, ceros = true, hab = 'A', xp = 'B', valor = 'C', seguir = true, fechaSubida = 'L') {
+function hMarciales(inicio, fin, ceros = true, hab = 'A', xp = 'B', valor = 'C', seguir = true, fechaSubida = 'T') {
   let habilidad = new Habilidad();
 
   for (let i = inicio; i < fin; i++) {
@@ -374,6 +374,22 @@ function hMarciales(inicio, fin, ceros = true, hab = 'A', xp = 'B', valor = 'C',
     // console.log(ws[nombre + i]?.v, ws[xp + i]?.v, ws[valor + i]?.v);
     console.log(nombre, exp, porcentaje);
     // console.log(habilidad);
+
+    // Buscar la detención
+    var porcentajeDet = ws['L' + i]?.v;
+    if (porcentajeDet) {
+      var exp = ws['K' + i]?.v
+      //si no se admiten 0 en el porcentaje y no tien xp se pasa a otro
+      nombre += ' (Def)'
+      habilidad = new HabilidadMarcial(nombre, tipo, porcentajeDet);
+      if (exp) habilidad.xp = exp;
+      let f = fecha(i, 'U')
+      if (f) habilidad.fecha = f;
+
+      pe.habilidades[nombre] = habilidad;
+
+    }
+
   }
 }
 
@@ -463,17 +479,31 @@ function info(params) {
   console.log("fecha Nacimiento:");
   console.log(fecha_nac.toLocaleDateString());
 
-  pe.nacimiento=fecha_nac;
+  pe.nacimiento = fecha_nac;
   f = (ws['K7']?.w + '-' + ws['L7']?.v).split('-'); //fecha actual
   let fecha = new Date(parseInt(f[2]), parseInt(f[1]) - 1, parseInt(f[0]))
   console.log(fecha.toLocaleDateString());
-  pe.fecha=fecha;
+  pe.fecha = fecha;
   fechaMundo = fecha;
 
   car();
   // console.log(fecha.toLocaleString());
   // console.log(ws['K6']);
 
+  //Especiales
+  var especiales = ws['B8']?.v
+
+  especiales.split('.').forEach(e => {
+    if (e.includes(':')) {
+      var x = e.split(':')
+      console.log(x);
+
+      console.log(new Modificaciones(x[0], x[1]));
+      pe.addModificadores(new Modificaciones(x[0], x[1]));
+    }
+
+  })
+  console.log(pe.listaMods);
 
   //DINERO
 
@@ -603,6 +633,7 @@ function bancos(inicio, n = 10) {
 }
 
 function fecha(i, fecha) {
+  if (!ws[fecha + i]?.w) return 0;
   let f = (ws[fecha + i]?.w + '-' + fechaMundo.getFullYear()).split('-'); //fecha ingreso
   // console.log(parseInt(f[2]), parseInt(f[1]) - 1, parseInt(f[0]));
   let fe = new Date(parseInt(f[2]), parseInt(f[1]) - 1, parseInt(f[0]))
@@ -630,13 +661,13 @@ function tablas(personaje) {
   var salida = document.getElementById('inputs');
   var ic = new InputCustom(personaje);
   salida.appendChild(ic);
-  
+
 }
 
 function limpiarTablas() {
   var salida = document.getElementById('inputs');
-  salida.innerHTML=""
-  
+  salida.innerHTML = ""
+
 }
 
 function pifias(inicio, fin) {

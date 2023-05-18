@@ -230,7 +230,7 @@ class Contenedor extends Objeto {
   constructor(nombre, peso, valor, max, multiplicador = 1) {
     super(nombre, peso, valor);
     this.multiplicador = multiplicador;
-    this.max = max;
+    this.max = max||null;
     this.objetos = [];
 
   }
@@ -239,7 +239,7 @@ class Contenedor extends Objeto {
     this.nombre = o.nombre;
     this.peso = o.peso;
     this.valor = o.valor;
-    this.max = o.max;
+    this.max = o.max|| null;
     // this.objetos= o.objetos ;
     let ot = [];
 
