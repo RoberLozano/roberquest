@@ -85,11 +85,11 @@ function ProcessExcel(data) {
   // }
   info();
   //HABILIDADES
-  h(21, 86, false);
+  h(21, 89, false);
   pe.act();
 
   tipo = Conocimiento; //idiomas
-  h(22, 86, false, 'M', 'N', 'O', false);
+  h(22, 35, false, 'M', 'N', 'O', false);
 
   tipo = Manipulación;
   ws = workbook.Sheets['Técnicas'];
