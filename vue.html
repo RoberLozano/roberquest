@@ -299,9 +299,34 @@
                                 <!-- fixed-header
                                 height="300px" -->
                                 <v-data-table dense dark hide-default-footer :headers="colHabSel" 
-                                  :items="pj.getHabilidades()" :custom-sort="subirSort" multi-sort show-group-by
+                                  :items="pj.getHabilidades()"  multi-sort show-group-by
                                   :items-per-page="-1" class="elevation-1" show-expand :single-expand="singleExpand"
                                   :expanded.sync="expanded" :search="search" item-key="nombre" :mobile-breakpoint=200>
+
+                                  <template v-slot:item.nombre="{item}">
+                                    <!-- <p :style="{color: getColor(item.v)}">{{item.v}}</p> -->
+                                    <!-- <td :style="{color: item.v<item.total()?'green':(item.v==item.total()?'inherit':'red')}"> -->
+                                      
+                                      <v-tooltip right color="black">
+                                        <template v-slot:activator="{ on, attrs }">
+                                          <td>
+                                          <span v-bind="attrs" v-on="on">
+                                            {{item.nombre}}
+                                            <!-- <input type="number" v-model="pj.getCar(TipoHabilidades[index])"
+                                          :style="{ 'color': (pj.bonificacion[TipoHabilidades[index]]>0 ? 'green' : 'red') ,'width': '2.5em'}"> -->
+                                          </span>
+                                        </td>
+                                        </template>
+                                        <!-- <span>{{pj.getMod(c)}} <b>{{pj.getModTotal(c)}}</b></span> -->
+                                        <span>{{item.total()}}% <b class="verde">{{item.e}}  </b> <b class="rojo">{{item.c}}</span>
+                                      </v-tooltip>
+                                      <!-- <input type="number" v-model.number="item.total()"
+                                        :style="{color: item.total()>item.v?'green':'red'}"
+                                        @click="darTooltip(item.nombre,true)"> -->
+                                    
+                                  </template>
+
+
                                   
                                   <template v-slot:item.xp="props">
                                     <v-edit-dialog :return-value.sync="props.item.xp" large persistent>
@@ -321,7 +346,7 @@
                                     <!-- <p :style="{color: getColor(item.v)}">{{item.v}}</p> -->
                                     <!-- <td :style="{color: item.v<item.total()?'green':(item.v==item.total()?'inherit':'red')}"> -->
       
-                                      <v-tooltip right color="black" :disabled="darTooltip(item.nombre,true).length<1">
+                                      <v-tooltip right color="red" :disabled="darTooltip(item.nombre,true).length<1">
                                         <template v-slot:activator="{ on, attrs }">
                                           <td>
                                           <span :style="{ 'color': item.total()<item.v ? 'red':
@@ -1607,12 +1632,19 @@
         },
 
         subirSort(items, index, isDesc) {
+          console.log(index, isDesc);
           items.sort((a, b) => {
             // console.log(index[0]);
             if (index[0] === "sub") {
               // return a.subible() - b.subible()
               return a.subible() - b.subible()
-            } else {
+            } else
+            if (index[0] === "t") {
+              // return a.subible() - b.subible()
+              return a.total() - b.total();
+            } else
+            
+            {
               return a[index[0]] < b[index[0]] ? -1 : 1;
             }
           });
@@ -1677,6 +1709,8 @@
       },
       data: {
 
+
+        dialogoHabilidad:false,
         //drawer
         drawer: false,
         group: null,
@@ -1704,7 +1738,15 @@
           // { text: 'Categoria', value: 'tipo' },
           // { text: 'Clase', value: 'clase' },
           { text: 'Valor', value: 'valor', groupable: false },
-          { text: 'Total', value: "t", groupable: false },
+          { text: 'Total', value: "t", groupable: false, 
+          // sort: function(a, b) {
+          //   console.log('orden'+a.total()- b.total());
+          //       return a.total()- b.total();
+          //   // implement custom compare function here
+          // },sortable: true
+        },
+          // { text: 'E', value: 'especial', groupable: false },
+          // { text: 'C', value: 'critico', groupable: false },
           { text: 'Subir', value: 'sub', groupable: false },
           { text: '', value: 'data-table-expand', groupable: false, width: "5%" },
         ],
@@ -1724,7 +1766,7 @@
           { text: 'Valor', value: 'valor', groupable: false },
           { text: 'Porcentaje', value: "porcentaje", groupable: false },
           { text: 'E', value: 'especial', groupable: false },
-          { text: 'C', value: 'critico', groupable: false },
+          { text: 'C', value: 'critico', groupable: false},
           
         ],
         headerInventario: [

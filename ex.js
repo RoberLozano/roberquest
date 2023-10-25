@@ -124,6 +124,7 @@ function ProcessExcel(data) {
     last = Clase.convertir(ls(pe.nombre));
   }
 
+  console.warn("Diferencias");
   if (last) console.log(diferencia(last, pe));
   // eval(`last=new ${pe.clase}()`)
   // last.setAll(pe)

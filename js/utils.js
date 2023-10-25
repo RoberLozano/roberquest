@@ -143,9 +143,15 @@ function diferencia(o1, o2,verbose=true,ruta="") {
     if((typeof o2[k] === "undefined")) {if(verbose)console.log(`NADA ${ruta} ${k} -> ${o2[k]}`);n++;continue;}
     if(o1[k] instanceof Object){
       n+=diferencia(o1[k],o2[k],verbose,ruta+'/'+k);
-    } 
+    }
     else
       if (o1[k] != o2[k]) {
+        if(o2[k] instanceof Date) {
+          let f1=new Date(o1[k]);
+          let dif=(f1.valueOf()-o2[k].valueOf());
+          if(dif) console.log(`${ruta} ${k} ${o1[k]} -> ${o2[k]}`);
+        }
+        else
         if(verbose)console.log(`${ruta} ${k} ${o1[k]} -> ${o2[k]}`);
         n++
       }  

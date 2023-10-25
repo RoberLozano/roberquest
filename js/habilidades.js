@@ -402,6 +402,12 @@ class Habilidad extends XP {
   get c() { return Math.round(this.v * 0.05) + this.bcritico }
   get p() { return Math.min(100, 101 - Math.round((100 - this.v) * 0.05)) }
 
+  //propiedad de total
+  get t(){return this.total()};
+
+  //propiedad de subible
+  get sub(){return this.subible()};
+
 
   //HACER COMO PROPIEDAD PARA VUETIFY del valor total con modificaciones
   get porcentaje() { return this.total('v') }
