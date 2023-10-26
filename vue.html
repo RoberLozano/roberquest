@@ -301,7 +301,7 @@
                                 <v-data-table dense dark hide-default-footer :headers="colHabSel" 
                                   :items="pj.getHabilidades()"  multi-sort show-group-by
                                   :items-per-page="-1" class="elevation-1" show-expand :single-expand="singleExpand"
-                                  @click:row="clickHabilidad"
+                                 
                                   :expanded.sync="expanded" :search="search" item-key="nombre" :mobile-breakpoint=200>
 
                                   <template v-slot:item.nombre="{item}">
@@ -310,7 +310,7 @@
                                       
                                       <v-tooltip right color="black">
                                         <template v-slot:activator="{ on, attrs }">
-                                          <td>
+                                          <td @click="clickHabilidad(item)">
                                           <span v-bind="attrs" v-on="on">
                                             {{item.nombre}}
                                             <!-- <input type="number" v-model="pj.getCar(TipoHabilidades[index])"
@@ -1441,6 +1441,7 @@
 
       clickHabilidad(item, row) {
       console.log('row clicked', item);
+      
       document.getElementById('iH').h=item;
       this.dialogoHabilidad=true;
       },

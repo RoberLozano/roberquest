@@ -1214,14 +1214,11 @@ class InputHabilidad extends HTMLElement {
   }
 
   lista(id, habilidades) {
-    console.log("DENTRO DE LISTA", id, habilidades);
     let ah=habilidades;
     // this.label.setAttribute("type", "search");
     let options = "";
-    console.log(ah);
     habilidades.forEach(h => {
       options += `<option value="${h.nombre}"></option>`;
-      console.log(`<option value="${h.nombre}"></option>`);
     });
     this.label.innerHTML = `  <datalist id=${id}>
     ${options}
