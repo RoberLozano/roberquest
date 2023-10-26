@@ -503,7 +503,7 @@ class Habilidad extends XP {
     // console.log(t);
     let tir = this.tirada(t, suerte);
     // console.log(tir);
-    this.xpTipoTirada(tir, +t);
+    return this.xpTipoTirada(tir, +t);
   }
 
   /**Añade la XP (solo hasta los porcentajes) de la tirada
@@ -517,11 +517,13 @@ class Habilidad extends XP {
       case TipoTirada.SUPERCRITICO:
         this.xp += 4;
         console.log("Sube SUPERCRITICO:" + dado);
+        return 4;
         break;
       case TipoTirada.CRITICO:
         if (dado && dado < 11) {
           this.xp += 3;
           console.log("Sube CRITICO:" + dado);
+          return 3;
         }
         else if (dado && dado < 21) {
           this.xp += 1;
@@ -532,9 +534,10 @@ class Habilidad extends XP {
         if (dado && dado < 21) {
           this.xp += 1;
           console.log("Sube ESPECIAL:" + dado);
+          return 1;
         }
         break;
-      default: console.log("NO SUBE NADA");
+      default:{console.log("NO SUBE NADA") ; return 0}
         break;
     }
 
@@ -575,6 +578,14 @@ class HabilidadEditable extends Habilidad {
 
   sumar(s) { this.total += s }
   multiplicar(m) { this.total *= m }
+
+  // xpTipoTirada(tir, dado) {
+  //   console.log("SUbida delegada");
+  //   //TirAMOS DE PJ
+  //   pj.habilidades[this.nombre].xpTipoTirada(tir, dado);
+
+  // }
+
 }
 
 class Hechizo extends Habilidad {
@@ -1004,7 +1015,7 @@ class MyCounter extends HTMLElement {
 
 
 class InputHabilidad extends HTMLElement {
-  constructor(hab = new HabilidadEditable("Habilidad", "Agilidad", 77), black = false) {
+  constructor(hab = new HabilidadEditable("Habilidad", "Agilidad", 77), black = true) {
     // Always call super first in constructor
     super();
     //Habilidad editable
@@ -1118,7 +1129,10 @@ class InputHabilidad extends HTMLElement {
     // if (this.habilidad instanceof HabilidadMarcial) this.ok.src = this.habilidad.ataque?'img/sword.svg':'img/shield.svg';
     this.ok.addEventListener('click', (event) => {
       console.log('Evento de xpTirada');
-      this.habilidad.xpTirada(this.input.value, this.personaje?.suerte)
+      let subida=this.habilidad.xpTirada(this.input.value, this.personaje?.suerte);
+      this.personaje.habilidades[this.habilidad.nombre].xp+=subida
+      console.log(subida);
+      
     });
 
     var styleblack = ''
@@ -1186,14 +1200,28 @@ class InputHabilidad extends HTMLElement {
     this.wrapper.appendChild(this.ok);
 
 
+    //SI no hay personaje pj
+    
+    try {
+      this.setPersonaje(pj);
+      
+    } catch (e) {
+      
+    }
+
+
     // Create a shadow root
   }
 
   lista(id, habilidades) {
-    this.label.setAttribute("type", "search");
+    console.log("DENTRO DE LISTA", id, habilidades);
+    let ah=habilidades;
+    // this.label.setAttribute("type", "search");
     let options = "";
+    console.log(ah);
     habilidades.forEach(h => {
-      options += `<option value="${h.nombre}"></option>`
+      options += `<option value="${h.nombre}"></option>`;
+      console.log(`<option value="${h.nombre}"></option>`);
     });
     this.label.innerHTML = `  <datalist id=${id}>
     ${options}
@@ -1210,8 +1238,8 @@ class InputHabilidad extends HTMLElement {
       return a.v - b.v;
     });
     console.log(array.reverse());
-    // this.lista("listaHab"+personaje.nombre,this.personaje.getHabilidades());
-    this.lista("listaHab" + personaje.nombre, this.personaje.getHabilidades(h => (h instanceof HabilidadMarcial)));
+    this.lista("listaHab"+personaje.nombre,this.personaje.getHabilidades());
+    // this.lista("listaHab" + personaje.nombre, array);
     this.h = array[0];
 
 

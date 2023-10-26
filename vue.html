@@ -301,6 +301,7 @@
                                 <v-data-table dense dark hide-default-footer :headers="colHabSel" 
                                   :items="pj.getHabilidades()"  multi-sort show-group-by
                                   :items-per-page="-1" class="elevation-1" show-expand :single-expand="singleExpand"
+                                  @click:row="clickHabilidad"
                                   :expanded.sync="expanded" :search="search" item-key="nombre" :mobile-breakpoint=200>
 
                                   <template v-slot:item.nombre="{item}">
@@ -318,7 +319,7 @@
                                         </td>
                                         </template>
                                         <!-- <span>{{pj.getMod(c)}} <b>{{pj.getModTotal(c)}}</b></span> -->
-                                        <span>{{item.total()}}% <b class="verde">{{item.e}}  </b> <b class="rojo">{{item.c}}</span>
+                                        <span>{{item.total()}}% <b class="verde">{{item.especial}}  </b> <b class="rojo">{{item.critico}}</span>
                                       </v-tooltip>
                                       <!-- <input type="number" v-model.number="item.total()"
                                         :style="{color: item.total()>item.v?'green':'red'}"
@@ -1160,8 +1161,14 @@
           Open Dialog
         </v-btn>
 
+        <v-btn color="primary" @click="dialogoHabilidad = true;">
+          Habilidad
+        </v-btn>
+
         <a @click="tab='Inventario'">Inventario</a>
-        <v-btn>
+        
+        
+
 
 
           <v-dialog v-model="dialog" width="auto">
@@ -1175,6 +1182,19 @@
               </v-card-actions>
               <canvas id="canvas" width="500" height="900" style="background-color: black;">
                 Your browser does not support the HTML5 canvas tag.</canvas>
+              <v-btn icon="mdi-close" color="secondary"></v-btn>
+
+            </v-card>
+          </v-dialog>
+
+          <v-dialog v-model="dialogoHabilidad" width="auto">
+            <v-card>
+              <v-card-actions>
+                Tirar dados
+                <v-spacer></v-spacer>
+                <v-btn color="primary" icon="mdi-heart" @click="dialogoHabilidad = false"><v-icon>mdi-close</v-icon></v-btn>
+              </v-card-actions>
+              <input-habilidad id="iH"></input-habilidad>
               <v-btn icon="mdi-close" color="secondary"></v-btn>
 
             </v-card>
@@ -1418,6 +1438,12 @@
         close() {
           console.log('Dialog closed')
         },
+
+      clickHabilidad(item, row) {
+      console.log('row clicked', item);
+      document.getElementById('iH').h=item;
+      this.dialogoHabilidad=true;
+      },
 
         unir(array) {
           var o = array[0];
