@@ -1139,7 +1139,7 @@
         <template>
           <v-row>
             <v-col cols="12" sm="6" md="4">
-              <v-menu :close-on-content-click="true" :nudge-right="40" transition="scale-transition" offset-y
+              <v-menu  :nudge-right="40" transition="scale-transition" offset-y
                 min-width="auto">
                 <template v-slot:activator="{ on, attrs }">
                   <v-text-field v-model="date" label="Fecha" prepend-icon="mdi-calendar" readonly v-bind="attrs"
@@ -1152,6 +1152,53 @@
 
             <v-spacer></v-spacer>
           </v-row>
+
+          <v-row>
+            <v-col
+              cols="12"
+              lg="6"
+            >
+              <v-menu
+                ref="menu1"
+                v-model="menu1"
+                :close-on-content-click="false"
+                transition="scale-transition"
+                offset-y
+                max-width="290px"
+                min-width="auto"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-text-field
+                    v-model="date"
+                    label="Fecha Mundo"
+                    persistent-hint
+                    prepend-icon="mdi-calendar"
+                    v-bind="attrs"
+                  
+                    v-on="on"
+                  ></v-text-field>
+                </template>
+                <v-date-picker
+                  v-model="date"
+                  no-title
+                  locale='es'
+                  :first-day-of-week="1"
+                  @input="menu1 = false"
+                ></v-date-picker>
+              </v-menu>
+            </v-col>
+      
+          </v-row>
+          <v-row
+          justify="space-around"
+          align="center"
+        >
+          <v-time-picker
+            v-model="hora"
+            scrollable
+            use-seconds
+          ></v-time-picker>
+        </v-row>
         </template>
 
         <!-- hora -->
@@ -1769,8 +1816,9 @@
         console.log(this.selectedHeaders);
       },
       data: {
-
-
+        hora:"07:00",
+        date: new Date("0783-10-06"),
+        menu1:false,
         dialogoHabilidad:false,
         dialogoSubir:false,
         //drawer
