@@ -399,7 +399,7 @@ class Habilidad extends XP {
 
   //poner posibles bonificaciones en especialñ y crítico
   get e() { return Math.round(this.v * 0.2) + this.bespecial }
-  get c() { return Math.round(this.v * 0.05) + this.bcritico }
+  get c() { return Math.max(Math.round(this.v * 0.05),1) + this.bcritico }
   get p() { return Math.min(100, 101 - Math.round((100 - this.v) * 0.05)) }
 
   //propiedad de total
@@ -1229,13 +1229,14 @@ class InputHabilidad extends HTMLElement {
   setPersonaje(personaje) {
     this.personaje = personaje;
 
-    let array = this.personaje.getHabilidades(h => (h instanceof HabilidadMarcial));
+    // let array = this.personaje.getHabilidades(h => (h instanceof HabilidadMarcial));
+    let array = this.personaje.getHabilidades();
 
-    array.sort(function (a, b) {
-      return a.v - b.v;
-    });
-    console.log(array.reverse());
-    this.lista("listaHab"+personaje.nombre,this.personaje.getHabilidades());
+    // array.sort(function (a, b) {
+    //   return a.v - b.v;
+    // });
+    // console.log(array.reverse());
+    this.lista("listaHab"+personaje.nombre,array);
     // this.lista("listaHab" + personaje.nombre, array);
     this.h = array[0];
 
@@ -1354,8 +1355,9 @@ class InputSubirHabilidad extends InputHabilidad {
 
     this.ok.addEventListener('click', (event) => {
       console.log("SUBIR");
+      
       this.habilidad.subir(this.inputdado.value);
-      tablaHabilidades();
+      // tablaHabilidades();
       let id;
       //si se ha definido como modal al darle a ok se cierra
       if (this.hasAttribute('modal')) {
@@ -1383,8 +1385,10 @@ class InputSubirHabilidad extends InputHabilidad {
       this.inputdado.value = this.DADO.dadoMax() * 2
     }
     else
-      if (iv > v) { input.style.color = "green"; }
-      else { input.style.color = "grey"; }
+      if (iv > v) { input.style.color = "green"; this.ok.hidden=false }
+      else { input.style.color = "grey";
+      this.ok.hidden=true;
+    }
 
 
   }

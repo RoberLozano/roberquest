@@ -319,7 +319,7 @@
                                         </td>
                                         </template>
                                         <!-- <span>{{pj.getMod(c)}} <b>{{pj.getModTotal(c)}}</b></span> -->
-                                        <span>{{item.total()}}% <b class="verde">{{item.especial}}  </b> <b class="rojo">{{item.critico}}</span>
+                                        <span>{{item.total()}}% <b class="verde">{{item.especial}}  </b> <b class="rojo">{{item.critico}} </b> <b :style="{color:'purple'}">{{item.pifia}} </b></span>
                                       </v-tooltip>
                                       <!-- <input type="number" v-model.number="item.total()"
                                         :style="{color: item.total()>item.v?'green':'red'}"
@@ -376,7 +376,7 @@
                                     <!-- <p :style="{color: getColor(item.v)}">{{item.v}}</p> -->
                                     <td  v-if="item.subible()<100"
                                       :style="{color: item.subible()>=100?'red':(item.subible()>50?'inherit':'green')}">
-                                      <b>{{item.subible()}} {{item.subible()>50?'&uarr;':'&#x21C8;'}}</b>
+                                      <b @click="clickSubir(item)">{{item.subible()}} {{item.subible()>50?'&uarr;':'&#x21C8;'}}</b>
                                     </td>
                                   </template>
 
@@ -1161,16 +1161,9 @@
           Open Dialog
         </v-btn>
 
-        <v-btn color="primary" @click="dialogoHabilidad = true;">
-          Habilidad
-        </v-btn>
-
         <a @click="tab='Inventario'">Inventario</a>
         
         
-
-
-
           <v-dialog v-model="dialog" width="auto">
             <v-card>
               <v-card-actions>
@@ -1195,12 +1188,24 @@
                 <v-btn color="primary" icon="mdi-heart" @click="dialogoHabilidad = false"><v-icon>mdi-close</v-icon></v-btn>
               </v-card-actions>
               <input-habilidad id="iH"></input-habilidad>
+
               <v-btn icon="mdi-close" color="secondary"></v-btn>
 
             </v-card>
           </v-dialog>
+          <v-dialog v-model="dialogoSubir" width="auto">
+            <v-card>
+              <v-card-actions>
+                Subir habilidad
+                <v-spacer></v-spacer>
+                <v-btn color="primary" icon="mdi-heart" @click="dialogoSubir = false"><v-icon>mdi-close</v-icon></v-btn>
+              </v-card-actions>
+              <input-subir id="iS"></input-subir>
 
+              <v-btn icon="mdi-close" color="secondary"></v-btn>
 
+            </v-card>
+          </v-dialog>
 
 
           <div id="test4" hidden>
@@ -1440,10 +1445,39 @@
         },
 
       clickHabilidad(item, row) {
-      console.log('row clicked', item);
-      
-      document.getElementById('iH').h=item;
-      this.dialogoHabilidad=true;
+
+        if(document.getElementById('iH')){
+          document.getElementById('iH').h=item;
+          this.dialogoHabilidad=true;
+        }
+        else{
+          this.dialogoHabilidad=true;
+          //espero que se cargue
+          setTimeout(function(){
+            this.dialogoHabilidad=false;
+            document.getElementById('iH').h=item;
+            this.dialogoHabilidad=true;
+              }, 1);
+        }
+        // this.dialogoHabilidad=true;
+
+      },
+
+      clickSubir(item, row) {
+      // console.log('row clicked', item);
+      if(document.getElementById('iS')){
+          document.getElementById('iS').h=item;
+          this.dialogoSubir=true;
+        }
+        else{
+          this.dialogoSubir=true;
+          //espero que se cargue
+          setTimeout(function(){
+            this.dialogoSubir=false;
+            document.getElementById('iS').h=item;
+            this.dialogoSubir=true;
+              }, 1);
+        }
       },
 
         unir(array) {
@@ -1738,6 +1772,7 @@
 
 
         dialogoHabilidad:false,
+        dialogoSubir:false,
         //drawer
         drawer: false,
         group: null,
