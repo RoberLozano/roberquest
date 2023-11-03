@@ -630,8 +630,6 @@ class ArmaDistancia extends Arma {
   }
 
 
-
-
 }
 
 class Municion extends ArmaDistancia {

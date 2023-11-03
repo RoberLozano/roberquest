@@ -432,8 +432,12 @@ class Animal extends Clase {
     this.PM = Math.min(this.getMaxPuntos(PM), this.PM + rPM * tiempo)
     this.PF = Math.min(this.getMaxPuntos(PF), this.PF + rPF * tiempo)
 
-    //esto iría sanando tods las localizaciones a la vez
-    this.PG = Math.min(this.getMaxPuntos(PG), this.PG + rPG * tiempo)
+    console.log('PM',this.PM , rPM * tiempo);
+    console.log('PG',this.PG , rPG * tiempo);
+
+    //TODO: hacer curar con sanar de cuerpo
+    // esto iría sanando tods las localizaciones a la vez
+    // this.PG = Math.min(this.getMaxPuntos(PG), this.PG + rPG * tiempo)
 
 
   }
@@ -2039,9 +2043,11 @@ class Enano extends Humanoide {
     this.setHabilidad(new Habilidad("Deslizarse en Silencio", Sigilo, 20));
     this.setHabilidad(new Habilidad("Esconderse", Sigilo, 20));
 
+    this.setHabilidad(new HabilidadDistancia("Ballesta", Manipulación, 50));
     this.setHabilidad(new HabilidadMarcial("Puño", Manipulación, 50));
     this.setHabilidad(new HabilidadMarcial("Patada", Manipulación, 20));
     this.setHabilidad(new HabilidadMarcial("Mordisco", Manipulación, 20));
+
 
 
 
@@ -2055,6 +2061,10 @@ class Enano extends Humanoide {
  */
 // var pj = new Humanoide({});
 var pj = new Enano();
+let ballesta = new Arco('Ballesta',3,1,new Daño('1d8', 'P'),35,200);
+let virote = new Municion('Virote de vuelo',0,0,1,5,10)
+pj.inventario.add(ballesta)
+pj.inventario.add(virote)
 pj.act();
 
 

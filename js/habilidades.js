@@ -888,6 +888,45 @@ class HabilidadMarcial extends Habilidad {
 
 }
 
+class HabilidadDistancia extends HabilidadMarcial{
+
+  constructor(nombre, tipo, valor, ataque = true, localizacion = null, arma = null, distancia=0) {
+    super(nombre, tipo, valor, ataque = true, localizacion = null, arma = null)
+    // this.nombre = nombre
+    // this.tipo = tipo
+    // this.valor = valor
+    this.distancia = distancia
+  }
+
+  disparo(distancia, viento, objetivo){
+    this.distancia = distancia
+    this.viento = viento
+    this.objetivo = objetivo
+  }
+  //Overrides
+  get v(){
+    var pen=0;
+    //TODO mirar las fórmulas
+    if(this.distancia){
+      if(this.distancia<=this.arma.alcanceRecto){
+        pen = this.distancia;
+      }
+      else
+      if(this.distancia<=this.arma.alcance){
+        pen= this.distancia*2
+      }
+      else
+      if(this.distancia>this.arma.alcance){
+        return 0;
+      }
+
+
+    }
+    return super.v -pen;
+  }
+
+}
+
 class Tecnica extends HabilidadMarcial {
   constructor(nombre, tipo, valor, pf = 1, ataque = true, localizacion = null, arma = null) {
     super(nombre, tipo, valor, ataque, localizacion, arma);

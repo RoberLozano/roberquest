@@ -269,15 +269,15 @@
                     </v-row>
                     <v-row>
                       <v-col sm="1">
-                        <v-text-field v-model="pj.PG" type="number" label="PG" size="1"
+                        <v-text-field v-model.number="pj.PG" type="number" label="PG" size="1"
                           max="pj.getMaxPuntos('PG')">{{pj.PG}}</v-text-field>
                       </v-col>
                       <v-col sm="1">
-                        <v-text-field v-model="pj.PF" type="number" label="PF" size="1"
+                        <v-text-field v-model.number="pj.PF" type="number" label="PF" size="1"
                           max="pj.getMaxPuntos('PF')">{{pj.PF}}</v-text-field>
                       </v-col>
                       <v-col sm="1">
-                        <v-text-field v-model="pj.PM" type="number" label="PM" size="1"
+                        <v-text-field v-model.number="pj.PM" type="number" label="PM" size="1"
                           max="pj.getMaxPuntos('PM')">{{pj.PM}}</v-text-field>
                       </v-col>
                     </v-row>
@@ -764,12 +764,12 @@
                           <v-text-field v-model="habilidadFiltro.v" label="%" size="1">
                           </v-text-field>
 
-                          <input v-model="dado" :label="TipoTirada.tirada[habilidadFiltro.tirada(dado)]" type="number"
+                          <!-- <input v-model="dado" :label="TipoTirada.tirada[habilidadFiltro.tirada(dado)]" type="number"
                             size="1"
                             :style="{ 'color': TipoTirada.color(habilidadFiltro.tirada(dado)) ,'width': '2.5em'}"
                             @input="iuDaño.dado=arma.daño.tirar(habilidadFiltro.tirada(dado))">
 
-                          </input>
+                          </input> -->
 
                           <v-text-field v-model="dado" :label="TipoTirada.tirada[habilidadFiltro.tirada(dado)]" size="2"
                             :color="TipoTirada.color(habilidadFiltro.tirada(dado))"
@@ -849,10 +849,13 @@
                             <template>
 
                               <v-layout row wrap class="pa-3">
+                                <!-- Fila habilidad arma -->
                                 <v-row>
-                                  <v-autocomplete v-model="habilidadFiltro"
-                                    :items="pj.getHabilidades(parseStringToFunction(filtro))" return-object
-                                    item-text="nombre">
+                                  <div class="d-inline-flex">
+                                  <v-autocomplete v-model="habilidadDistancia"
+                                    :items="pj.getHabilidades(obj => obj instanceof HabilidadDistancia)" return-object
+                                    item-text="nombre"
+                                    >
 
                                     <template v-slot:item="{item}">
                                       {{item.nombre}} <v-spacer></v-spacer> <span :style="{color: getColor(item.v)}">
@@ -861,23 +864,23 @@
                                   </v-autocomplete>
 
 
-                                  <div class="d-inline-flex">
-                                    <v-text-field v-model="habilidadFiltro.v" label="%" size="1">
+                                  
+                                    <v-text-field v-model="habilidadDistancia.v" label="%" size="1">
                                     </v-text-field>
 
-                                    <input v-model="dado" :label="TipoTirada.tirada[habilidadFiltro.tirada(dado)]"
+                                    <!-- <input v-model="dado" :label="TipoTirada.tirada[habilidadFiltro.tirada(dado)]"
                                       type="number" size="1"
                                       :style="{ 'color': TipoTirada.color(habilidadFiltro.tirada(dado)) ,'width': '2.5em'}"
                                       @input="iuDaño.dado=arma.daño.tirar(habilidadFiltro.tirada(dado))">
 
-                                    </input>
+                                    </input> -->
 
-                                    <v-text-field v-model="dado"
-                                      :label="TipoTirada.tirada[habilidadFiltro.tirada(dado)]" size="2"
-                                      :color="TipoTirada.color(habilidadFiltro.tirada(dado))"
-                                      :background-color="TipoTirada.color(habilidadFiltro.tirada(dado)-1)"
-                                      @click="dado=d100.tirar(); iuDaño.dado=arma.daño.tirar(habilidadFiltro.tirada(dado))"
-                                      @input="iuDaño.dado=arma.daño.tirar(habilidadFiltro.tirada(dado))">
+                                    <v-text-field v-model.number="dado"
+                                      :label="TipoTirada.tirada[habilidadDistancia.tirada(dado)]" size="2"
+                                      :color="TipoTirada.color(habilidadDistancia.tirada(dado))"
+                                      :background-color="TipoTirada.color(habilidadDistancia.tirada(dado)-1)"
+                                      @click="dado=d100.tirar(); iuDaño.dado=armaDistancia.daño.tirar(habilidadDistancia.tirada(dado))"
+                                      @input="iuDaño.dado=armaDistancia.daño.tirar(habilidadDistancia.tirada(dado))">
 
                                     </v-text-field>
 
@@ -885,20 +888,31 @@
                                     <!-- <v-text-field v-model="TipoTirada.tirada[habilidadFiltro.tirada(dado)]" label="Tirada" size="1"  >
                                       </v-text-field> -->
                                     <v-btn icon color="green"
-                                      @click="habilidadFiltro.xpTipoTirada(habilidadFiltro.tirada(dado),dado)">
+                                      @click="habilidadDistancia.xpTipoTirada(habilidadDistancia.tirada(dado),dado)">
                                       <v-icon>mdi-check-outline</v-icon>
                                     </v-btn>
                                   </div>
 
-                                </v-row>
+                                  <div class="d-inline-flex">
+                                  <!-- distancia en metros -->
 
+                                  <v-text-field v-model.number="habilidadDistancia.distancia" label="m" size="1" :color="getColor(dado)"
+                                  ></v-text-field>
+                                  </div>
+                                  <v-slider  id="sliderMetros" v-model.number="habilidadDistancia.distancia" :color="habilidadDistancia.distancia>=armaDistancia.alcanceRecto?'red':'green'" hint="Distancia en metros" min="0"
+                                  :max="armaDistancia.alcance||300" thumb-label="always"></v-slider>
+                                
+
+                                </v-row>
+                                
+                              </v-layout>
                                 <v-row>
                                   <v-autocomplete size="6" v-model="armaDistancia" label="Arma"
-                                    :items="pj.inventario.darClaseRecursiva(Arco)" return-object item-text="nombre">
+                                    :items="pj.inventario.darClaseRecursiva(Arco)" @change="habilidadDistancia.arma= armaDistancia; cambiarTiro(); " return-object item-text="nombre">
                                     <template v-slot:item="{item}">
 
                                       <v-list-item-avatar color="indigo" class="text-h6 font-weight-light white--text">
-                                        {{ item.peso }}
+                                        {{ item.bonApuntado }}
                                       </v-list-item-avatar>
                                       <v-list-item-content>
                                         <v-list-item-title v-html="item.nombre"></v-list-item-title>
@@ -951,7 +965,7 @@
                                       @click:append="iuDaño.dado=armaDistancia.daño.tirar()">
 
                                       <v-btn slot="append-outer" icon color="green"
-                                        @click="habilidadFiltro.xpTipoTirada(habilidadFiltro.tirada(dado),dado)">
+                                        @click="habilidadDistancia.xpTipoTirada(habilidadDistancia.tirada(dado),dado)">
                                         <v-icon>mdi-check-outline</v-icon>
                                       </v-btn>
 
@@ -959,7 +973,16 @@
 
                                   </div>
 
+                                  
+
                                 </v-row>
+                              
+                                <v-row>
+
+
+                                
+                                </v-row>
+ 
                               </v-layout>
 
                             </template>
@@ -1156,7 +1179,7 @@
   id="party"
   type="datetime-local"
   name="partydate"
-  step="2"
+  step="1"
   v-model="date"/>
           
 
@@ -1165,7 +1188,7 @@
               cols="12"
               lg="6"
             >
-              <v-menu
+              <!-- <v-menu
                 ref="menu1"
                 v-model="menu1"
                 :close-on-content-click="false"
@@ -1192,7 +1215,7 @@
                   :first-day-of-week="1"
                   @input="menu1 = false"
                 ></v-date-picker>
-              </v-menu>
+              </v-menu> -->
             </v-col>
       
           </v-row>
@@ -1215,7 +1238,23 @@
           Open Dialog
         </v-btn>
 
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              color="primary"
+              onclick="fechaMundo=new Date(pj.fecha); console.log(fechaMundo);"
+              dark
+            >
+              Actualizar
+            </v-btn>
+          </template>
+          <span>Actualizar fecha con la del personaje</span>
+        </v-tooltip>
+
         <a @click="tab='Inventario'">Inventario</a>
+
+        <a onclick="pj.fecha=fechaMundo">Fecha a PJ</a>
+
         
         
           <v-dialog v-model="dialog" width="auto">
@@ -1415,10 +1454,30 @@
           dark: true,
         },
       }),
+
+    //   computed: {
+    //   colorDistancia () {
+    //     if  (!this.armaDistancia) return 'grey'
+    //     if (this.bpm < 100) return 'indigo'
+    //     if (this.bpm < 125) return 'teal'
+    //     if (this.bpm < 140) return 'green'
+    //     if (this.bpm < 175) return 'orange'
+    //     return 'red'
+    //   },
+    //   animationDuration () {
+    //     return `${60 / this.bpm}s`
+    //   },
+    // },
       methods: {
 
         act(fecha = true) {
-          if (fecha) this.date = fechaMundo.fecha();
+          if (fecha) this.date = fechaMundo.fechahora()
+          if(pj.fecha){
+            console.log("actualizao fecha");
+            fechaMundo=new Date(pj.fecha);
+            this.date = fechaMundo.fechahora()
+          }
+
           pj.act();
           this.p = pj;
 
@@ -1534,6 +1593,12 @@
         }
       },
 
+
+      cambiarTiro(){
+        document.getElementById('sliderMetros').setAttribute('max', '9999');
+      },
+
+      // Inventario
         unir(array) {
           var o = array[0];
           if (o instanceof Objetos && o.ctd) {
@@ -1810,6 +1875,11 @@
           console.log(val);
         },
 
+        date(val) {
+          fechaMundo = new Date(val);
+          console.log(val);
+        },
+
         // valColHab(v) {
         //   this.colHabSel = v;
           
@@ -1824,7 +1894,7 @@
       },
       data: {
         hora:"07:00",
-        date: new Date("0783-10-06"),
+        date: new Date(fechaMundo),
         menu1:false,
         dialogoHabilidad:false,
         dialogoSubir:false,
@@ -1918,10 +1988,12 @@
         habilidadFiltro: new Habilidad(),
         ifHabilidadFiltro: false,
         arma: new Arma(),
+        habilidadDistancia: new HabilidadDistancia(),
         armaDistancia: new ArmaDistancia(),
         municion: new Municion(),
         daño: [],
         dañoDistancia: [],
+        distancia:0,
         dado: 100,
         iuDaño: { dado: 0, daño: [] },
         dadoDaño: 0,
