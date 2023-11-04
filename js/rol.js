@@ -2062,7 +2062,8 @@ class Enano extends Humanoide {
 // var pj = new Humanoide({});
 var pj = new Enano();
 let ballesta = new Arco('Ballesta',3,1,new Daño('1d8', 'P'),35,200);
-let virote = new Municion('Virote de vuelo',0,0,1,5,10)
+let virote = new Municion('Virote de vuelo',0.08,0,10,1,5,10)
+virote.ctd=100;
 pj.inventario.add(ballesta)
 pj.inventario.add(virote)
 pj.act();

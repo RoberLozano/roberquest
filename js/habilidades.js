@@ -1931,6 +1931,7 @@ class InputCustom extends HTMLElement {
           let b = document.createElement('span');
           // let b= document.createElement('button');
           b.innerHTML = "&#11176";
+          // b.innerHTML = "&#8630";
           label.appendChild(b)
           b.addEventListener('click', (event) => {
             console.log(event.target);
@@ -1938,6 +1939,7 @@ class InputCustom extends HTMLElement {
             // c.setAttribute("value", this.reset[key]);
             event.target.parentNode.nextSibling.setAttribute("value", this.reset[id + key]);
             event.target.parentNode.nextSibling.value = this.reset[id + key];
+            event.target.parentNode.nextSibling.dispatchEvent(new Event("change"));;
 
             console.log(this.reset[id + key]);
           });

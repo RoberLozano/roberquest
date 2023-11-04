@@ -607,7 +607,12 @@ class ArmaDistancia extends Arma {
   }
 
   quitar() {
-    this.daños[0].dado=this.daños[0].dado.replace("+"+this.municion.daño,"");
+    if(this.municion.daño){
+      if(this.municion.daño>0)
+      this.daños[0].dado=this.daños[0].dado.replace("+"+this.municion.daño,"");
+      else
+      this.daños[0].dado=this.daños[0].dado.replace(""+this.municion.daño,"");
+    }
     console.log('indexof last'); this.daños[0].dado.last
     this.alcanceRecto -= this.municion.alcanceRecto
     this.alcance -= this.municion.alcance
@@ -618,8 +623,12 @@ class ArmaDistancia extends Arma {
   }
 
   _poner(municion) {
-
-    this.daños[0].dado += '+'+municion.daño;
+    if(this.municion.daño){
+      if(municion.daño>0)
+      this.daños[0].dado += '+'+municion.daño;
+    else 
+    this.daños[0].dado += municion.daño
+    }
     this.alcanceRecto += municion.alcanceRecto
     this.alcance += municion.alcance
     this.bonApuntado += municion.bonApuntado
@@ -632,16 +641,19 @@ class ArmaDistancia extends Arma {
 
 }
 
-class Municion extends ArmaDistancia {
-  constructor(nombre, peso, valor, daño, alcanceRecto, alcance,
+class Municion extends Objetos {
+  constructor(nombre, peso, valor,ctd=1, daño, alcanceRecto, alcance,
     bonApuntado = 0, bonCritico = 0, bonDiana = 0, bonLocalización = 0) {
-    super(nombre, peso, valor, daño, alcance);
+    super (nombre, peso, valor, ctd = 1)
+    this.daño=daño;
+    this.alcance = alcance;
     this.alcanceRecto = alcanceRecto
     this.alcance = alcance
     this.bonApuntado = bonApuntado
     this.bonCritico = bonCritico
     this.bonDiana = bonDiana
     this.bonLocalización = bonLocalización
+    console.log("Municiones"+this.ctd);
   }
 }
 

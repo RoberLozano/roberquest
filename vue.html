@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
@@ -298,37 +298,38 @@
 
                                 <!-- fixed-header
                                 height="300px" -->
-                                <v-data-table dense dark hide-default-footer :headers="colHabSel" 
-                                  :items="pj.getHabilidades()"  multi-sort show-group-by
-                                  :items-per-page="-1" class="elevation-1" show-expand :single-expand="singleExpand"
-                                 
+                                <v-data-table dense dark hide-default-footer :headers="colHabSel"
+                                  :items="pj.getHabilidades()" multi-sort show-group-by :items-per-page="-1"
+                                  class="elevation-1" show-expand :single-expand="singleExpand"
                                   :expanded.sync="expanded" :search="search" item-key="nombre" :mobile-breakpoint=200>
 
                                   <template v-slot:item.nombre="{item}">
                                     <!-- <p :style="{color: getColor(item.v)}">{{item.v}}</p> -->
                                     <!-- <td :style="{color: item.v<item.total()?'green':(item.v==item.total()?'inherit':'red')}"> -->
-                                      
-                                      <v-tooltip right color="black">
-                                        <template v-slot:activator="{ on, attrs }">
-                                          <td @click="clickHabilidad(item)">
+
+                                    <v-tooltip right color="black">
+                                      <template v-slot:activator="{ on, attrs }">
+                                        <td @click="clickHabilidad(item)">
                                           <span v-bind="attrs" v-on="on">
                                             {{item.nombre}}
                                             <!-- <input type="number" v-model="pj.getCar(TipoHabilidades[index])"
                                           :style="{ 'color': (pj.bonificacion[TipoHabilidades[index]]>0 ? 'green' : 'red') ,'width': '2.5em'}"> -->
                                           </span>
                                         </td>
-                                        </template>
-                                        <!-- <span>{{pj.getMod(c)}} <b>{{pj.getModTotal(c)}}</b></span> -->
-                                        <span>{{item.total()}}% <b class="verde">{{item.especial}}  </b> <b class="rojo">{{item.critico}} </b> <b :style="{color:'purple'}">{{item.pifia}} </b></span>
-                                      </v-tooltip>
-                                      <!-- <input type="number" v-model.number="item.total()"
+                                      </template>
+                                      <!-- <span>{{pj.getMod(c)}} <b>{{pj.getModTotal(c)}}</b></span> -->
+                                      <span>{{item.total()}}% <b class="verde">{{item.especial}} </b> <b
+                                          class="rojo">{{item.critico}} </b> <b :style="{color:'purple'}">{{item.pifia}}
+                                        </b></span>
+                                    </v-tooltip>
+                                    <!-- <input type="number" v-model.number="item.total()"
                                         :style="{color: item.total()>item.v?'green':'red'}"
                                         @click="darTooltip(item.nombre,true)"> -->
-                                    
+
                                   </template>
 
 
-                                  
+
                                   <template v-slot:item.xp="props">
                                     <v-edit-dialog :return-value.sync="props.item.xp" large persistent>
 
@@ -346,10 +347,10 @@
                                   <template v-slot:item.t="{item}">
                                     <!-- <p :style="{color: getColor(item.v)}">{{item.v}}</p> -->
                                     <!-- <td :style="{color: item.v<item.total()?'green':(item.v==item.total()?'inherit':'red')}"> -->
-      
-                                      <v-tooltip right color="red" :disabled="darTooltip(item.nombre,true).length<1">
-                                        <template v-slot:activator="{ on, attrs }">
-                                          <td>
+
+                                    <v-tooltip right color="red" :disabled="darTooltip(item.nombre,true).length<1">
+                                      <template v-slot:activator="{ on, attrs }">
+                                        <td>
                                           <span :style="{ 'color': item.total()<item.v ? 'red':
                                          (item.total()>item.v ?  'green' : 'inherit')
                                             ,'width': '2.5em', 'float': 'right'}" v-bind="attrs" v-on="on">
@@ -358,25 +359,26 @@
                                           :style="{ 'color': (pj.bonificacion[TipoHabilidades[index]]>0 ? 'green' : 'red') ,'width': '2.5em'}"> -->
                                           </span>
                                         </td>
-                                        </template>
-                                        <!-- <span>{{pj.getMod(c)}} <b>{{pj.getModTotal(c)}}</b></span> -->
-                                        <span v-html="darTooltip(item.nombre,true)"></span>
-                                      </v-tooltip>
-                                      <!-- <input type="number" v-model.number="item.total()"
+                                      </template>
+                                      <!-- <span>{{pj.getMod(c)}} <b>{{pj.getModTotal(c)}}</b></span> -->
+                                      <span v-html="darTooltip(item.nombre,true)"></span>
+                                    </v-tooltip>
+                                    <!-- <input type="number" v-model.number="item.total()"
                                         :style="{color: item.total()>item.v?'green':'red'}"
                                         @click="darTooltip(item.nombre,true)"> -->
-                                    
+
                                   </template>
 
-                                  
+
 
 
 
                                   <template v-slot:item.sub="{ item }">
                                     <!-- <p :style="{color: getColor(item.v)}">{{item.v}}</p> -->
-                                    <td  v-if="item.subible()<100"
+                                    <td v-if="item.subible()<100"
                                       :style="{color: item.subible()>=100?'red':(item.subible()>50?'inherit':'green')}">
-                                      <b @click="clickSubir(item)">{{item.subible()}} {{item.subible()>50?'&uarr;':'&#x21C8;'}}</b>
+                                      <b @click="clickSubir(item)">{{item.subible()}}
+                                        {{item.subible()>50?'&uarr;':'&#x21C8;'}}</b>
                                     </td>
                                   </template>
 
@@ -415,8 +417,8 @@
                           <v-expansion-panel-content>
                             <template>
 
-                              <v-autocomplete v-model="colHabSel" :items="headers" deletable-chips multiple
-                                small-chips return-object>
+                              <v-autocomplete v-model="colHabSel" :items="headers" deletable-chips multiple small-chips
+                                return-object>
                               </v-autocomplete>
 
 
@@ -565,9 +567,13 @@
                                     <v-icon v-else-if="item instanceof ArmaDistancia" small>
                                       mdi-bullseye
                                     </v-icon>
-
+                                    
                                     <v-icon v-else-if="item instanceof Arma" small>
                                       mdi-sword
+                                    </v-icon> 
+
+                                    <v-icon v-else-if="item instanceof Municion" small>
+                                      mdi-arrow-projectile-multiple
                                     </v-icon>
 
                                     <v-icon v-else-if="item.clase == 'Gema'" small :style="shadow(item.pm)"
@@ -852,19 +858,18 @@
                                 <!-- Fila habilidad arma -->
                                 <v-row>
                                   <div class="d-inline-flex">
-                                  <v-autocomplete v-model="habilidadDistancia"
-                                    :items="pj.getHabilidades(obj => obj instanceof HabilidadDistancia)" return-object
-                                    item-text="nombre"
-                                    >
+                                    <v-autocomplete v-model="habilidadDistancia"
+                                      :items="pj.getHabilidades(obj => obj instanceof HabilidadDistancia)" return-object
+                                      item-text="nombre">
 
-                                    <template v-slot:item="{item}">
-                                      {{item.nombre}} <v-spacer></v-spacer> <span :style="{color: getColor(item.v)}">
-                                        {{item.v}}%</span>
-                                    </template>
-                                  </v-autocomplete>
+                                      <template v-slot:item="{item}">
+                                        {{item.nombre}} <v-spacer></v-spacer> <span :style="{color: getColor(item.v)}">
+                                          {{item.v}}%</span>
+                                      </template>
+                                    </v-autocomplete>
 
 
-                                  
+
                                     <v-text-field v-model="habilidadDistancia.v" label="%" size="1">
                                     </v-text-field>
 
@@ -894,95 +899,92 @@
                                   </div>
 
                                   <div class="d-inline-flex">
-                                  <!-- distancia en metros -->
+                                    <!-- distancia en metros -->
 
-                                  <v-text-field v-model.number="habilidadDistancia.distancia" label="m" size="1" :color="getColor(dado)"
-                                  ></v-text-field>
+                                    <v-text-field v-model.number="habilidadDistancia.distancia" label="m" size="1"
+                                      :color="getColor(dado)"></v-text-field>
                                   </div>
-                                  <v-slider  id="sliderMetros" v-model.number="habilidadDistancia.distancia" :color="habilidadDistancia.distancia>=armaDistancia.alcanceRecto?'red':'green'" hint="Distancia en metros" min="0"
-                                  :max="armaDistancia.alcance||300" thumb-label="always"></v-slider>
-                                
+                                  <v-slider id="sliderMetros" v-model.number="habilidadDistancia.distancia"
+                                    :color="habilidadDistancia.distancia>=armaDistancia.alcanceRecto?'red':'green'"
+                                    hint="Distancia en metros" min="0" :max="armaDistancia.alcance||300"
+                                    thumb-label="always"></v-slider>
+
 
                                 </v-row>
-                                
+
                               </v-layout>
-                                <v-row>
-                                  <v-autocomplete size="6" v-model="armaDistancia" label="Arma"
-                                    :items="pj.inventario.darClaseRecursiva(Arco)" @change="habilidadDistancia.arma= armaDistancia; cambiarTiro(); " return-object item-text="nombre">
-                                    <template v-slot:item="{item}">
+                              <v-row>
+                                <v-autocomplete size="6" v-model="armaDistancia" label="Arma"
+                                  :items="pj.inventario.darClaseRecursiva(Arco)"
+                                  @change="habilidadDistancia.arma= armaDistancia; cambiarTiro(); " return-object
+                                  item-text="nombre">
+                                  <template v-slot:item="{item}">
 
-                                      <v-list-item-avatar color="indigo" class="text-h6 font-weight-light white--text">
-                                        {{ item.bonApuntado }}
-                                      </v-list-item-avatar>
-                                      <v-list-item-content>
-                                        <v-list-item-title v-html="item.nombre"></v-list-item-title>
-                                        <v-list-item-subtitle v-html="item.daño"></v-list-item-subtitle>
-                                      </v-list-item-content>
-
-
-                                      <v-list-item-action>
-                                        <v-list-item-action-text v-text="item.alcance+'m'"></v-list-item-action-text>
-                                      </v-list-item-action>
-
-                                    </template>
-                                  </v-autocomplete>
-
-                                  <v-autocomplete size="6" v-model="municion" label="Munición"
-                                    :items="pj.inventario.darClaseRecursiva(Municion)" return-object item-text="nombre"
-                                    @change="armaDistancia.utilizar(municion)">
-                                    <template v-slot:item="{item}">
-
-                                      <v-list-item-avatar color="indigo" class="text-h6 font-weight-light white--text">
-                                        {{ item.daño }}
-                                      </v-list-item-avatar>
-                                      <v-list-item-content>
-                                        <v-list-item-title v-html="item.nombre"></v-list-item-title>
-                                        <v-list-item-subtitle v-html="item.daño"></v-list-item-subtitle>
-                                      </v-list-item-content>
+                                    <v-list-item-avatar color="indigo" class="text-h6 font-weight-light white--text">
+                                      {{ item.bonApuntado }}
+                                    </v-list-item-avatar>
+                                    <v-list-item-content>
+                                      <v-list-item-title v-html="item.nombre"></v-list-item-title>
+                                      <v-list-item-subtitle v-html="item.daño"></v-list-item-subtitle>
+                                    </v-list-item-content>
 
 
-                                      <v-list-item-action>
-                                        <v-list-item-action-text v-text="item.alcance+'m'"></v-list-item-action-text>
-                                      </v-list-item-action>
+                                    <v-list-item-action>
+                                      <v-list-item-action-text v-text="item.alcance+'m'"></v-list-item-action-text>
+                                    </v-list-item-action>
 
-                                    </template>
-                                  </v-autocomplete>
+                                  </template>
+                                </v-autocomplete>
 
-                                  <!-- <v-text-field v-model="arma.daños" label="%" size="1">
+                                <v-autocomplete size="6" v-model="municion" label="Munición"
+                                  :items="pj.inventario.darClaseRecursiva(Municion)" return-object item-text="nombre"
+                                  @change="armaDistancia.utilizar(municion)">
+                                  <template v-slot:item="{item}">
+
+                                    <v-list-item-avatar color="indigo" class="text-h6 font-weight-light white--text">
+                                      {{ item.ctd }}
+                                    </v-list-item-avatar>
+                                    <v-list-item-content>
+                                      <v-list-item-title v-html="item.nombre"></v-list-item-title>
+                                      <v-list-item-subtitle v-html="item.daño"></v-list-item-subtitle>
+                                    </v-list-item-content>
+
+
+                                    <v-list-item-action>
+                                      <v-list-item-action-text v-text="item.alcance+'m'"></v-list-item-action-text>
+                                    </v-list-item-action>
+
+                                  </template>
+                                </v-autocomplete>
+
+                                <!-- <v-text-field v-model="arma.daños" label="%" size="1">
                                   </v-text-field> -->
 
-                                  <!-- <v-select size="1" v-model="daño" :items="arma.daños" label="Daño" return-object
+                                <!-- <v-select size="1" v-model="daño" :items="arma.daños" label="Daño" return-object
                                     @change="arma.daño=daño.dado; console.log(arma.daño.dado)">
                                   </v-select> -->
 
-                                  <div class="d-inline-flex">
-                                    <v-autocomplete size="2" v-model="dañoDistancia" :items="armaDistancia.daños"
-                                      label="Daño" return-object
-                                      @change="armaDistancia.daño=dañoDistancia.dado; console.log(armaDistancia.total[daño])">
-                                    </v-autocomplete>
-                                    <v-text-field v-model="iuDaño.dado" :label="daño" size="1" :color="getColor(dado)"
-                                      append-icon="mdi-dice-3" @click="iuDaño.dado=armaDistancia.daño.tirar()"
-                                      @click:append="iuDaño.dado=armaDistancia.daño.tirar()">
+                                <div class="d-inline-flex">
+                                  <v-autocomplete size="2" v-model="dañoDistancia" :items="armaDistancia.daños"
+                                    label="Daño" return-object
+                                    @change="armaDistancia.daño=dañoDistancia.dado; console.log(armaDistancia.total[daño])">
+                                  </v-autocomplete>
+                                  <v-text-field v-model="iuDaño.dado" :label="daño" size="1" :color="getColor(dado)"
+                                    append-icon="mdi-dice-3" @click="iuDaño.dado=armaDistancia.daño.tirar()"
+                                    @click:append="iuDaño.dado=armaDistancia.daño.tirar()">
 
-                                      <v-btn slot="append-outer" icon color="green"
-                                        @click="habilidadDistancia.xpTipoTirada(habilidadDistancia.tirada(dado),dado)">
-                                        <v-icon>mdi-check-outline</v-icon>
-                                      </v-btn>
+                                    <v-btn slot="append-outer" icon color="green"
+                                      @click="habilidadDistancia.xpTipoTirada(habilidadDistancia.tirada(dado),dado)">
+                                      <v-icon>mdi-check-outline</v-icon>
+                                    </v-btn>
 
-                                    </v-text-field>
+                                  </v-text-field>
 
-                                  </div>
+                                </div>
 
-                                  
-
-                                </v-row>
-                              
-                                <v-row>
+                              </v-row>
 
 
-                                
-                                </v-row>
- 
                               </v-layout>
 
                             </template>
@@ -1001,8 +1003,8 @@
                 <v-tab-item value='Magia'>
                   <v-container fluid>
                     <v-row>
-                      <v-autocomplete v-model="artes" :items="pj.getClaseHabilidad('Arte')" label="Artes" deletable-chips multiple
-                        small-chips return-object item-text="nombre">
+                      <v-autocomplete v-model="artes" :items="pj.getClaseHabilidad('Arte')" label="Artes"
+                        deletable-chips multiple small-chips return-object item-text="nombre">
                       </v-autocomplete>
                     </v-row>
 
@@ -1048,7 +1050,8 @@
 
 
                           <v-col cols="12" sm="1">
-                            <v-text-field v-model.number="hechizo.pm" type="number" color="blue darken-2" label="PM" required>
+                            <v-text-field v-model.number="hechizo.pm" type="number" color="blue darken-2" label="PM"
+                              required>
                             </v-text-field>
                           </v-col>
 
@@ -1077,69 +1080,70 @@
 
                     <v-row>
                       <template>
-                      <v-col cols="12" sm="4">
-                        <v-text-field v-model="iHechizo.nombre"  color="blue darken-2" label="Nombre" required>
-                        </v-text-field>
-                      </v-col>
+                        <v-col cols="12" sm="4">
+                          <v-text-field v-model="iHechizo.nombre" color="blue darken-2" label="Nombre" required>
+                          </v-text-field>
+                        </v-col>
 
-                      <v-col cols="12" sm="1">
-                        <v-text-field v-model.number="iHechizo.pm" type="number" color="blue darken-2" label="PM" required>
-                        </v-text-field>
-                      </v-col>
+                        <v-col cols="12" sm="1">
+                          <v-text-field v-model.number="iHechizo.pm" type="number" color="blue darken-2" label="PM"
+                            required>
+                          </v-text-field>
+                        </v-col>
 
-                      <v-col cols="12" sm="1">
-                        <v-text-field v-model.number="iHechizo.total" type="number" color="blue darken-2" label="Valor"
-                          required>
-                        </v-text-field>
-                      </v-col>
-                      <v-col cols="12" sm="1">
-                        <v-text-field v-model.number="iHechizo.dados" type="number" :color="TipoTirada.color(iHechizo.grado)" label="Dados"
-                          required>
-                        </v-text-field>
-                      </v-col>
-                      <v-col cols="12" sm="1">
-                        <v-text-field v-model.number="iHechizo.gastado" type="number" color="blue darken-2" label="Gastado"
-                          required>
-                        </v-text-field>
-                      </v-col>
+                        <v-col cols="12" sm="1">
+                          <v-text-field v-model.number="iHechizo.total" type="number" color="blue darken-2"
+                            label="Valor" required>
+                          </v-text-field>
+                        </v-col>
+                        <v-col cols="12" sm="1">
+                          <v-text-field v-model.number="iHechizo.dados" type="number"
+                            :color="TipoTirada.color(iHechizo.grado)" label="Dados" required>
+                          </v-text-field>
+                        </v-col>
+                        <v-col cols="12" sm="1">
+                          <v-text-field v-model.number="iHechizo.gastado" type="number" color="blue darken-2"
+                            label="Gastado" required>
+                          </v-text-field>
+                        </v-col>
 
-                      <v-col cols="12" sm="4">
-                        <v-slider v-model.number="iHechizo.v" color="orange" label="Total" hint="Be honest" min="1"
-                          max="300" thumb-label="always"></v-slider>
-                      </v-col>
-                    </template>
+                        <v-col cols="12" sm="4">
+                          <v-slider v-model.number="iHechizo.v" color="orange" label="Total" hint="Be honest" min="1"
+                            max="300" thumb-label="always"></v-slider>
+                        </v-col>
+                      </template>
 
                     </v-row>
 
                     <v-row v-for="a in artes">
                       <template>
-                      <v-col cols="12" sm="4">
-                        <v-text-field v-model="a.nombre"  color="blue darken-2" label="Nombre" required>
-                        </v-text-field>
-                      </v-col>
+                        <v-col cols="12" sm="4">
+                          <v-text-field v-model="a.nombre" color="blue darken-2" label="Nombre" required>
+                          </v-text-field>
+                        </v-col>
 
-                      <v-col cols="12" sm="1">
-                        <v-text-field v-model.number="a.pm" type="number" color="blue darken-2" label="PM" required>
-                        </v-text-field>
-                      </v-col>
+                        <v-col cols="12" sm="1">
+                          <v-text-field v-model.number="a.pm" type="number" color="blue darken-2" label="PM" required>
+                          </v-text-field>
+                        </v-col>
 
-                      <v-col cols="12" sm="1">
-                        <v-text-field v-model.number="a.total" type="number" color="blue darken-2" label="Valor"
-                          required>
-                        </v-text-field>
-                      </v-col>
-                      <v-col cols="12" sm="1">
-                        <v-text-field v-model.number="a.tirada" type="number" :color="TipoTirada.color(a.grado)" label="Tirada"
-                          required>
-                        </v-text-field>
-                      </v-col>
-                      <v-col cols="12" sm="1">
-                        <v-text-field v-model.number="a.gastado" type="number" color="blue darken-2" label="Gastado"
-                          required>
-                        </v-text-field>
-                      </v-col>
+                        <v-col cols="12" sm="1">
+                          <v-text-field v-model.number="a.total" type="number" color="blue darken-2" label="Valor"
+                            required>
+                          </v-text-field>
+                        </v-col>
+                        <v-col cols="12" sm="1">
+                          <v-text-field v-model.number="a.tirada" type="number" :color="TipoTirada.color(a.grado)"
+                            label="Tirada" required>
+                          </v-text-field>
+                        </v-col>
+                        <v-col cols="12" sm="1">
+                          <v-text-field v-model.number="a.gastado" type="number" color="blue darken-2" label="Gastado"
+                            required>
+                          </v-text-field>
+                        </v-col>
 
-                    </template>
+                      </template>
 
                     </v-row>
 
@@ -1175,19 +1179,11 @@
 
             <v-spacer></v-spacer>
           </v-row> -->
-          <input
-  id="party"
-  type="datetime-local"
-  name="partydate"
-  step="1"
-  v-model="date"/>
-          
+          <input id="party" type="datetime-local" name="partydate" step="1" v-model="date" />
+
 
           <v-row>
-            <v-col
-              cols="12"
-              lg="6"
-            >
+            <v-col cols="12" lg="6">
               <!-- <v-menu
                 ref="menu1"
                 v-model="menu1"
@@ -1217,18 +1213,11 @@
                 ></v-date-picker>
               </v-menu> -->
             </v-col>
-      
+
           </v-row>
-          <v-row
-          justify="space-around"
-          align="center"
-        >
-          <v-time-picker
-            v-model="hora"
-            scrollable
-            use-seconds
-          ></v-time-picker>
-        </v-row>
+          <v-row justify="space-around" align="center">
+            <v-time-picker v-model="hora" scrollable use-seconds></v-time-picker>
+          </v-row>
         </template>
 
         <!-- hora -->
@@ -1240,11 +1229,7 @@
 
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
-            <v-btn
-              color="primary"
-              onclick="fechaMundo=new Date(pj.fecha); console.log(fechaMundo);"
-              dark
-            >
+            <v-btn color="primary" onclick="fechaMundo=new Date(pj.fecha); console.log(fechaMundo);" dark>
               Actualizar
             </v-btn>
           </template>
@@ -1255,71 +1240,71 @@
 
         <a onclick="pj.fecha=fechaMundo">Fecha a PJ</a>
 
-        
-        
-          <v-dialog v-model="dialog" width="auto">
-            <v-card>
-              <v-card-actions>
-                {{pj.nombre}}
-                <v-spacer></v-spacer>
-                <v-btn color="primary" icon="mdi-heart"
-                  @click="pj.cuerpoDaño('canvas')"><v-icon>mdi-cached</v-icon></v-btn>
-                <v-btn color="primary" icon="mdi-heart" @click="dialog = false"><v-icon>mdi-close</v-icon></v-btn>
-              </v-card-actions>
-              <canvas id="canvas" width="500" height="900" style="background-color: black;">
-                Your browser does not support the HTML5 canvas tag.</canvas>
-              <v-btn icon="mdi-close" color="secondary"></v-btn>
-
-            </v-card>
-          </v-dialog>
-
-          <v-dialog v-model="dialogoHabilidad" width="auto">
-            <v-card>
-              <v-card-actions>
-                Tirar dados
-                <v-spacer></v-spacer>
-                <v-btn color="primary" icon="mdi-heart" @click="dialogoHabilidad = false"><v-icon>mdi-close</v-icon></v-btn>
-              </v-card-actions>
-              <input-habilidad id="iH"></input-habilidad>
-
-              <v-btn icon="mdi-close" color="secondary"></v-btn>
-
-            </v-card>
-          </v-dialog>
-          <v-dialog v-model="dialogoSubir" width="auto">
-            <v-card>
-              <v-card-actions>
-                Subir habilidad
-                <v-spacer></v-spacer>
-                <v-btn color="primary" icon="mdi-heart" @click="dialogoSubir = false"><v-icon>mdi-close</v-icon></v-btn>
-              </v-card-actions>
-              <input-subir id="iS"></input-subir>
-
-              <v-btn icon="mdi-close" color="secondary"></v-btn>
-
-            </v-card>
-          </v-dialog>
 
 
-          <div id="test4" hidden>
-            <h2>Cuerpo</h2>
-            <img id="cuerpo" src="Body.png" alt="Cuerpo" usemap="#bodymap">
-            <map name="bodymap" id="bodymap">
-              <!-- <area shape="circle" coords="243,59,50" alt="Cabeza" onclick="console.log('Hostia en la bocha')"> -->
-              <area shape="circle" coords="243,130,30" alt="cuello" onclick="console.log('Hostia en cuello')">
-              <area shape="circle" coords="242,60,40" alt="cara" title="cara" onclick="console.log('Hostia en cara')">
-              <area shape="circle" coords="243,19,20" alt="craneo" title="craneo"
-                onclick="console.log('Hostia en craneo');">
-              <area shape="circle" coords="243,59,50" alt="" onclick="console.log('Hostia en ')">
-              <!-- <area shape="circle" coords="243,59,314,248" alt="" onclick="console.log('Hostia en pecho')"> -->
-              <area shape="rect" coords="170,158,314,248" alt="pecho" onclick="console.log('Hostia en pecho')">
-              <area shape="rect" coords="94,320,159,410" alt="antebrazo D"
-                onclick="console.log('Hostia en antebrazo D')">
-            </map>
-          </div>
+        <v-dialog v-model="dialog" width="auto">
+          <v-card>
+            <v-card-actions>
+              {{pj.nombre}}
+              <v-spacer></v-spacer>
+              <v-btn color="primary" icon="mdi-heart"
+                @click="pj.cuerpoDaño('canvas')"><v-icon>mdi-cached</v-icon></v-btn>
+              <v-btn color="primary" icon="mdi-heart" @click="dialog = false"><v-icon>mdi-close</v-icon></v-btn>
+            </v-card-actions>
+            <canvas id="canvas" width="500" height="900" style="background-color: black;">
+              Your browser does not support the HTML5 canvas tag.</canvas>
+            <v-btn icon="mdi-close" color="secondary"></v-btn>
 
-          <!-- grafico -->
-          <!-- <template>
+          </v-card>
+        </v-dialog>
+
+        <v-dialog v-model="dialogoHabilidad" width="auto">
+          <v-card>
+            <v-card-actions>
+              Tirar dados
+              <v-spacer></v-spacer>
+              <v-btn color="primary" icon="mdi-heart"
+                @click="dialogoHabilidad = false"><v-icon>mdi-close</v-icon></v-btn>
+            </v-card-actions>
+            <input-habilidad id="iH"></input-habilidad>
+
+            <v-btn icon="mdi-close" color="secondary"></v-btn>
+
+          </v-card>
+        </v-dialog>
+        <v-dialog v-model="dialogoSubir" width="auto">
+          <v-card>
+            <v-card-actions>
+              Subir habilidad
+              <v-spacer></v-spacer>
+              <v-btn color="primary" icon="mdi-heart" @click="dialogoSubir = false"><v-icon>mdi-close</v-icon></v-btn>
+            </v-card-actions>
+            <input-subir id="iS"></input-subir>
+
+            <v-btn icon="mdi-close" color="secondary"></v-btn>
+
+          </v-card>
+        </v-dialog>
+
+
+        <div id="test4" hidden>
+          <h2>Cuerpo</h2>
+          <img id="cuerpo" src="Body.png" alt="Cuerpo" usemap="#bodymap">
+          <map name="bodymap" id="bodymap">
+            <!-- <area shape="circle" coords="243,59,50" alt="Cabeza" onclick="console.log('Hostia en la bocha')"> -->
+            <area shape="circle" coords="243,130,30" alt="cuello" onclick="console.log('Hostia en cuello')">
+            <area shape="circle" coords="242,60,40" alt="cara" title="cara" onclick="console.log('Hostia en cara')">
+            <area shape="circle" coords="243,19,20" alt="craneo" title="craneo"
+              onclick="console.log('Hostia en craneo');">
+            <area shape="circle" coords="243,59,50" alt="" onclick="console.log('Hostia en ')">
+            <!-- <area shape="circle" coords="243,59,314,248" alt="" onclick="console.log('Hostia en pecho')"> -->
+            <area shape="rect" coords="170,158,314,248" alt="pecho" onclick="console.log('Hostia en pecho')">
+            <area shape="rect" coords="94,320,159,410" alt="antebrazo D" onclick="console.log('Hostia en antebrazo D')">
+          </map>
+        </div>
+
+        <!-- grafico -->
+        <!-- <template>
           <v-card class="mx-auto text-center" dark max-width="600">
             <v-card-text>
               <v-sheet>
@@ -1348,30 +1333,30 @@
         </template> -->
 
 
-          <!-- Bottomsheet -->
-          <v-bottom-sheet v-model="sheet" persistent>
+        <!-- Bottomsheet -->
+        <v-bottom-sheet v-model="sheet" persistent>
 
-            <v-sheet class="text-center" height="200px">
-              <div class="py-3">
-                Elige donde mover
-                <v-select v-model="contenedorMover" :items="pj.inventario.darContenedores()" label="contenedor"
-                  return-object
-                  @change="selected.forEach(i => {contenedor.mover(i,contenedorMover)});selected=[];sheet = !sheet">
-                  <template v-slot:selection="{ item, index }">
-                    {{ item.nombre }}
-                  </template>
+          <v-sheet class="text-center" height="200px">
+            <div class="py-3">
+              Elige donde mover
+              <v-select v-model="contenedorMover" :items="pj.inventario.darContenedores()" label="contenedor"
+                return-object
+                @change="selected.forEach(i => {contenedor.mover(i,contenedorMover)});selected=[];sheet = !sheet">
+                <template v-slot:selection="{ item, index }">
+                  {{ item.nombre }}
+                </template>
 
-                  <template v-slot:item="{ item}">
-                    {{ item.nombre }} <v-badge :content="item.carga+'/'+item.max + 'kg'"
-                      :color="interColor(item.carga,item.max,true)" inline>
-                      {{item.carga}}/{{item.max}}
-                    </v-badge>
-                  </template>
+                <template v-slot:item="{ item}">
+                  {{ item.nombre }} <v-badge :content="item.carga+'/'+item.max + 'kg'"
+                    :color="interColor(item.carga,item.max,true)" inline>
+                    {{item.carga}}/{{item.max}}
+                  </v-badge>
+                </template>
 
-                </v-select>
-              </div>
-            </v-sheet>
-          </v-bottom-sheet>
+              </v-select>
+            </div>
+          </v-sheet>
+        </v-bottom-sheet>
 
 
       </v-main>
@@ -1455,26 +1440,26 @@
         },
       }),
 
-    //   computed: {
-    //   colorDistancia () {
-    //     if  (!this.armaDistancia) return 'grey'
-    //     if (this.bpm < 100) return 'indigo'
-    //     if (this.bpm < 125) return 'teal'
-    //     if (this.bpm < 140) return 'green'
-    //     if (this.bpm < 175) return 'orange'
-    //     return 'red'
-    //   },
-    //   animationDuration () {
-    //     return `${60 / this.bpm}s`
-    //   },
-    // },
+      //   computed: {
+      //   colorDistancia () {
+      //     if  (!this.armaDistancia) return 'grey'
+      //     if (this.bpm < 100) return 'indigo'
+      //     if (this.bpm < 125) return 'teal'
+      //     if (this.bpm < 140) return 'green'
+      //     if (this.bpm < 175) return 'orange'
+      //     return 'red'
+      //   },
+      //   animationDuration () {
+      //     return `${60 / this.bpm}s`
+      //   },
+      // },
       methods: {
 
         act(fecha = true) {
           if (fecha) this.date = fechaMundo.fechahora()
-          if(pj.fecha){
+          if (pj.fecha) {
             console.log("actualizao fecha");
-            fechaMundo=new Date(pj.fecha);
+            fechaMundo = new Date(pj.fecha);
             this.date = fechaMundo.fechahora()
           }
 
@@ -1557,48 +1542,48 @@
           console.log('Dialog closed')
         },
 
-      clickHabilidad(item, row) {
+        clickHabilidad(item, row) {
 
-        if(document.getElementById('iH')){
-          document.getElementById('iH').h=item;
-          this.dialogoHabilidad=true;
-        }
-        else{
-          this.dialogoHabilidad=true;
-          //espero que se cargue
-          setTimeout(function(){
-            this.dialogoHabilidad=false;
-            document.getElementById('iH').h=item;
-            this.dialogoHabilidad=true;
-              }, 1);
-        }
-        // this.dialogoHabilidad=true;
+          if (document.getElementById('iH')) {
+            document.getElementById('iH').h = item;
+            this.dialogoHabilidad = true;
+          }
+          else {
+            this.dialogoHabilidad = true;
+            //espero que se cargue
+            setTimeout(function () {
+              this.dialogoHabilidad = false;
+              document.getElementById('iH').h = item;
+              this.dialogoHabilidad = true;
+            }, 1);
+          }
+          // this.dialogoHabilidad=true;
 
-      },
+        },
 
-      clickSubir(item, row) {
-      // console.log('row clicked', item);
-      if(document.getElementById('iS')){
-          document.getElementById('iS').h=item;
-          this.dialogoSubir=true;
-        }
-        else{
-          this.dialogoSubir=true;
-          //espero que se cargue
-          setTimeout(function(){
-            this.dialogoSubir=false;
-            document.getElementById('iS').h=item;
-            this.dialogoSubir=true;
-              }, 1);
-        }
-      },
+        clickSubir(item, row) {
+          // console.log('row clicked', item);
+          if (document.getElementById('iS')) {
+            document.getElementById('iS').h = item;
+            this.dialogoSubir = true;
+          }
+          else {
+            this.dialogoSubir = true;
+            //espero que se cargue
+            setTimeout(function () {
+              this.dialogoSubir = false;
+              document.getElementById('iS').h = item;
+              this.dialogoSubir = true;
+            }, 1);
+          }
+        },
 
 
-      cambiarTiro(){
-        document.getElementById('sliderMetros').setAttribute('max', '9999');
-      },
+        cambiarTiro() {
+          document.getElementById('sliderMetros').setAttribute('max', '9999');
+        },
 
-      // Inventario
+        // Inventario
         unir(array) {
           var o = array[0];
           if (o instanceof Objetos && o.ctd) {
@@ -1655,7 +1640,7 @@
           // this.copiaHechizo.valor += 10;
           // console.log(this.copiaHechizo);
 
-          this.iHechizo= this.hechizo.iu();
+          this.iHechizo = this.hechizo.iu();
           console.log(this.iHechizo);
         },
 
@@ -1819,14 +1804,12 @@
               // return a.subible() - b.subible()
               return a.subible() - b.subible()
             } else
-            if (index[0] === "t") {
-              // return a.subible() - b.subible()
-              return a.total() - b.total();
-            } else
-            
-            {
-              return a[index[0]] < b[index[0]] ? -1 : 1;
-            }
+              if (index[0] === "t") {
+                // return a.subible() - b.subible()
+                return a.total() - b.total();
+              } else {
+                return a[index[0]] < b[index[0]] ? -1 : 1;
+              }
           });
 
           if (isDesc[0]) return items.reverse()
@@ -1863,7 +1846,7 @@
           editor.appendChild(new InputCustom(objeto));
         }
 
-     
+
       },
 
 
@@ -1882,7 +1865,7 @@
 
         // valColHab(v) {
         //   this.colHabSel = v;
-          
+
         // },
 
       },
@@ -1893,11 +1876,11 @@
         console.log(this.selectedHeaders);
       },
       data: {
-        hora:"07:00",
+        hora: "07:00",
         date: new Date(fechaMundo),
-        menu1:false,
-        dialogoHabilidad:false,
-        dialogoSubir:false,
+        menu1: false,
+        dialogoHabilidad: false,
+        dialogoSubir: false,
         //drawer
         drawer: false,
         group: null,
@@ -1925,13 +1908,14 @@
           // { text: 'Categoria', value: 'tipo' },
           // { text: 'Clase', value: 'clase' },
           { text: 'Valor', value: 'valor', groupable: false },
-          { text: 'Total', value: "t", groupable: false, 
-          // sort: function(a, b) {
-          //   console.log('orden'+a.total()- b.total());
-          //       return a.total()- b.total();
-          //   // implement custom compare function here
-          // },sortable: true
-        },
+          {
+            text: 'Total', value: "t", groupable: false,
+            // sort: function(a, b) {
+            //   console.log('orden'+a.total()- b.total());
+            //       return a.total()- b.total();
+            //   // implement custom compare function here
+            // },sortable: true
+          },
           // { text: 'E', value: 'especial', groupable: false },
           // { text: 'C', value: 'critico', groupable: false },
           { text: 'Subir', value: 'sub', groupable: false },
@@ -1953,8 +1937,8 @@
           { text: 'Valor', value: 'valor', groupable: false },
           { text: 'Porcentaje', value: "porcentaje", groupable: false },
           { text: 'E', value: 'especial', groupable: false },
-          { text: 'C', value: 'critico', groupable: false},
-          
+          { text: 'C', value: 'critico', groupable: false },
+
         ],
         headerInventario: [
           {
@@ -1993,14 +1977,14 @@
         municion: new Municion(),
         daño: [],
         dañoDistancia: [],
-        distancia:0,
+        distancia: 0,
         dado: 100,
         iuDaño: { dado: 0, daño: [] },
         dadoDaño: 0,
         dadoDañoDistancia: 0,
         d100: new Dado('1d100'),
         copiaHechizo: new Hechizo(),
-        artes:[],
+        artes: [],
         value: [],
         colHabSel: [],
         selectedHeaders: [],
