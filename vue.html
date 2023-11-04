@@ -1179,7 +1179,7 @@
 
             <v-spacer></v-spacer>
           </v-row> -->
-          <input id="party" type="datetime-local" name="partydate" step="1" v-model="date" />
+          <input id="party" type="datetime-local" name="fecha" step="1" v-model="date" />
 
 
           <v-row>
@@ -1215,9 +1215,10 @@
             </v-col>
 
           </v-row>
-          <v-row justify="space-around" align="center">
+
+          <!-- <v-row justify="space-around" align="center">
             <v-time-picker v-model="hora" scrollable use-seconds></v-time-picker>
-          </v-row>
+          </v-row> -->
         </template>
 
         <!-- hora -->
@@ -1877,7 +1878,7 @@
       },
       data: {
         hora: "07:00",
-        date: new Date(fechaMundo),
+        date: fechaMundo.fechahora(),
         menu1: false,
         dialogoHabilidad: false,
         dialogoSubir: false,
@@ -1964,7 +1965,7 @@
         hechizo: new Hechizo('Hechizo'),
         iHechizo: new iuHechizo(this.hechizo),
         // picker: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
-        date: fechaMundo.fecha(),
+        date: fechaMundo.fechahora(),
         dialog: false,
         hidden: false,
         selected: [],//inventario selected

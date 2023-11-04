@@ -2133,7 +2133,7 @@ var contenedorActual;
 // console.log(v);
 // console.log(fechaMundo);
 
-var añoMas = new Date(778, 9, 1, 1, 0, 0, 0);
+var añoMas = new Date(773, 9, 7, 1, 0, 0, 0);
 var finDeAnio = new Date(776, 11, 31, 23, 59, 59, 999);
 fechaMundo = añoMas;
 
