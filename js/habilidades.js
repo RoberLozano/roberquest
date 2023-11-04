@@ -909,20 +909,20 @@ class HabilidadDistancia extends HabilidadMarcial{
     //TODO mirar las fórmulas
     if(this.distancia){
       if(this.distancia<=this.arma.alcanceRecto){
-        pen = this.distancia;
+        pen = Math.round(this.distancia/2);
       }
       else
       if(this.distancia<=this.arma.alcance){
-        pen= this.distancia*2
+        pen= this.distancia
       }
       else
       if(this.distancia>this.arma.alcance){
         return 0;
       }
 
-
     }
-    return super.v -pen;
+    //si está en alcance al menos 1
+    return Math.max(1,super.v -pen) ;
   }
 
 }
