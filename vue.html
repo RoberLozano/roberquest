@@ -141,11 +141,11 @@
           <v-navigation-drawer v-model="drawer" absolute temporary>
             <v-list nav>
               <v-list-item-group v-model="group" active-class="red--text text--accent-4">
-                <v-list-item>
+                <v-list-item @click="tab='Personaje'">
                   <v-list-item-icon>
                     <v-icon>mdi-home</v-icon>
                   </v-list-item-icon>
-                  <v-list-item-title>Home</v-list-item-title>
+                  <v-list-item-title>Personaje</v-list-item-title>
                 </v-list-item>
 
                 <v-list-item>
@@ -203,11 +203,12 @@
                 <v-tab-item value='Personaje'>
                   <v-container fluid>
                     <!-- <h2>Características</h2><br> -->
-                    <v-tooltip right color="black">
+                    <v-tooltip right color="black" :disabled="darTooltip().length<1">
                       <template v-slot:activator="{ on, attrs }">
                         <span v-bind="attrs" v-on="on">
-                          <h2 id="caracteristicas" @click="act()">{{pj.nombre}} <span style="color:red"> {{pj.clase}}
-                              <b>&male;</b></span>
+                          <h2 id="caracteristicas" @click="act()">{{pj.nombre}} <span
+                              style="color:red;font-size: small;"> {{pj.clase}}
+                            </span> <b>{{pj.sexo}}</b>
                           </h2> <br>
                         </span>
                       </template>
@@ -273,12 +274,12 @@
                           max="pj.getMaxPuntos('PG')">{{pj.PG}}</v-text-field>
                       </v-col>
                       <v-col sm="1">
-                        <v-text-field v-model.number="pj.PF" type="number" label="PF" size="1"
-                          max="pj.getMaxPuntos('PF')">{{pj.PF}}</v-text-field>
+                        <v-text-field v-model.number="pj.pf" type="number" label="PF" size="1"
+                          max="pj.getMaxPuntos('PF')">{{pj.pf}}</v-text-field>
                       </v-col>
                       <v-col sm="1">
-                        <v-text-field v-model.number="pj.PM" type="number" label="PM" size="1"
-                          max="pj.getMaxPuntos('PM')">{{pj.PM}}</v-text-field>
+                        <v-text-field v-model.number="pj.pm" type="number" label="PM" size="1"
+                          max="pj.getMaxPuntos('PM')">{{pj.pm}}</v-text-field>
                       </v-col>
                     </v-row>
                   </v-container>
@@ -567,10 +568,10 @@
                                     <v-icon v-else-if="item instanceof ArmaDistancia" small>
                                       mdi-bullseye
                                     </v-icon>
-                                    
+
                                     <v-icon v-else-if="item instanceof Arma" small>
                                       mdi-sword
-                                    </v-icon> 
+                                    </v-icon>
 
                                     <v-icon v-else-if="item instanceof Municion" small>
                                       mdi-arrow-projectile-multiple
@@ -1359,6 +1360,56 @@
           </v-sheet>
         </v-bottom-sheet>
 
+        <!-- Dial  customizado -->
+        <v-speed-dial right bottom fixed>
+
+          <template v-slot:activator>
+            <v-btn v-model="fab" color="red darken-2" dark fab>
+              <v-icon v-if="fab">
+                mdi-close
+              </v-icon>
+              <v-icon v-else>
+                mdi-account-circle
+              </v-icon>
+            </v-btn>
+          </template>
+          <v-btn fab dark small color="green">
+            <v-icon>mdi-pencil</v-icon>
+          </v-btn>
+          <v-btn  v-if="tab=='Inventario'" fab dark small color="indigo">
+            <v-icon>mdi-plus</v-icon>
+          </v-btn>
+          <div  v-if="tab=='Inventario'">
+            <v-btn fab dark small color="red">
+            <v-icon>mdi-delete</v-icon>
+          </v-btn>
+          <v-btn fab dark small color="red">
+            <v-icon>mdi-delete</v-icon>
+          </v-btn>
+          <div  v-if="selected.length>0">
+          <v-btn small @click="sheet = !sheet">Mover</v-btn>
+          <v-btn v-if="selected.length==1" small @click="editar(selected[0])">Editar</v-btn>
+          <v-btn small @click="selected.forEach(i => {contenedor.sacar(i)});selected=[];">
+            Tirar
+          </v-btn>
+          <!-- <v-btn @click="moverItem(contenedor.objetos)">Subir
+          </v-btn> -->
+          <v-btn small @click="arribaItems()">
+            <v-icon>mdi-format-vertical-align-top</v-icon>
+          </v-btn>
+          <v-btn small
+            @click="selected.sort((a, b) => contenedor.objetos.indexOf(a)-contenedor.objetos.indexOf(b)).forEach(element => moverItems(contenedor.objetos,element));">
+            <v-icon>mdi-arrow-up-bold</v-icon>
+          </v-btn>
+        </div>
+        </div>
+      
+          
+        </v-speed-dial>
+
+
+
+        <!-- <button type="button" class="transition-swing v-btn v-btn--bottom v-btn--is-elevated v-btn--fab v-btn--fixed v-btn--has-bg v-btn--right v-btn--round theme--light v-size--large primary" aria-label="Scroll to top" title="Scroll to top" style="z-index: 6; margin-bottom: 0px; transform-origin: center center;"><span class="v-btn__content"><span aria-hidden="true" class="v-icon notranslate theme--light"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" aria-hidden="true" class="v-icon__svg"><path d="M7.41,15.41L12,10.83L16.59,15.41L18,14L12,8L6,14L7.41,15.41Z"></path></svg></span></span></button> -->
 
       </v-main>
 
@@ -1441,18 +1492,17 @@
         },
       }),
 
-      //   computed: {
-      //   colorDistancia () {
-      //     if  (!this.armaDistancia) return 'grey'
-      //     if (this.bpm < 100) return 'indigo'
-      //     if (this.bpm < 125) return 'teal'
-      //     if (this.bpm < 140) return 'green'
-      //     if (this.bpm < 175) return 'orange'
-      //     return 'red'
-      //   },
-      //   animationDuration () {
-      //     return `${60 / this.bpm}s`
-      //   },
+      // computed: {
+      //   pm: {
+      //     get: function () {
+      //       //round or truncate
+      //       // return Math.round(pj.PM)
+      //       return Math.trunc(pj.PM)
+      //     },
+      //     set: function (newValue) {
+      //       pj.PM = newValue
+      //     }
+      //   }
       // },
       methods: {
 

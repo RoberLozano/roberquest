@@ -98,7 +98,7 @@ class Ropa extends Objeto {
         var b = s.match(pb);
         if (!b) b = s.match(re); //si no encuntra pa detras busca delante
 
-        if(b) this.pa=b[1];
+        if(b) this.pa=parseInt(b[1]);
 
         // if(esRopa) //-> tal vez si no tiene PA no hacer localizaciones??
         //TODO: localizaciones 

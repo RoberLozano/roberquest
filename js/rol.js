@@ -349,6 +349,13 @@ class Animal extends Clase {
     // this.mods =o.mods;
   }
 
+  // Puntos de magia y de fatiga para que te los den redondeados
+set pf(valor){this.PF=valor;}
+get pf(){return this.getTotal(PF)}
+
+set pm(valor){this.PM=valor;}
+get pm(){return this.getTotal(PM)}
+
   set nacimiento(valor) {
     if (typeof valor === 'string') {
       // let d=new Date(valor+'T00:00:00')
@@ -582,15 +589,10 @@ class Animal extends Clase {
       }
 
     }
-    //  console.log((this.mods[magnitud]));
-    // for (let key in this.mods[magnitud]) {
-    //   sum += +this.mods[magnitud][key].ctd;
-    // }
-    // // console.log(magnitud, sum);
 
-    // this.bonificacion[magnitud] = sum;
-    // console.log(magnitud , total);
-    return total;
+    // Redondear??
+    return Math.round(total);
+    // return total;
   }
 
   //TODO: quitar
@@ -1224,7 +1226,7 @@ class Animal extends Clase {
     this.Conocimiento = this.P("INT")
     this.Magia = this.P("INT") + this.P("POD") + this.S("DES")
     this.Manipulación = this.P("DES") + this.S("FUE") + this.P("INT")
-    this.Percepción = this.P("CON") + this.S("INT")
+    this.Percepción = this.P("CON") + this.P("INT")
     this.Sigilo = this.P("DES") + this.S("INT") + this.SN("TAM");
 
     // if(oldAgilidad !=this.Agilidad) actBonHab(Agilidad);
@@ -2137,6 +2139,7 @@ var añoMas = new Date(773, 9, 7, 1, 0, 0, 0);
 var finDeAnio = new Date(776, 11, 31, 23, 59, 59, 999);
 fechaMundo = añoMas;
 
+
 function en(s) {
   let x = [];
   for (c in s) {
@@ -2193,6 +2196,10 @@ function de(s) {
 // console.log(pj.backup);
 
 
+// Modificaciones
+// let mdf= new Modificaciones('Cansado','/2 PF',false);
+// pj.addModificadores(mdf);
+// pj.act();
 
 //Cargo el firebase
 try {

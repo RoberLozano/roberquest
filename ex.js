@@ -457,6 +457,7 @@ function info(params) {
   var clase = ws['B2']?.v
   var altura = ws['B3']?.v
   var peso = ws['I3']?.v
+  var sexo= ws['E1']?.v
 
   console.log(nombre);
   console.log(clase);
@@ -469,11 +470,15 @@ function info(params) {
     console.log(pe);
   }
   else pe = new Humano();
-
+  
   pe.nombre = nombre;
   pe.clase = clase;
   pe.altura = altura;
   pe.peso = peso;
+
+  // pe.sexo = (sexo.toLowerCase().trim()==="mujer")?"&female;":"&male;"
+  pe.sexo = (sexo.toLowerCase().trim()==="mujer")?"♀":"♂"
+  // pe.sexo = sexo.toLowerCase();
 
   let f = (ws['K6']?.w + '-' + ws['L6']?.v).split('-'); //fecha nacimiento
   let fecha_nac = new Date(parseInt(f[2]), parseInt(f[1]) - 1, parseInt(f[0]))
