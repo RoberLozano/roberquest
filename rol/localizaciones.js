@@ -2,13 +2,15 @@ export class Localizaciones {
     /**
      *Creates an instance of Localizaciones.
      * @param {number} pg Los puntos de golpe del personaje
+     * @param {number} pa Los puntos de armadura naturales del personaje
      * @memberof Localizaciones
      */
-    constructor(pg) {
+    constructor(pg,pa=0) {
         this.localizaciones = []
         /** Se utiliza para un daño general como desangramiento o succionar PG */
         this.dañoGeneral = 0;
         this.pg //=1
+        this.pa=pa //=1
     }
 
     /**
@@ -19,6 +21,7 @@ export class Localizaciones {
      */
     add(loc) {
         if(this.pg) loc.setPG(pg)
+        if(this.pa) loc.pa=this.pa;
         this.localizaciones.push(loc)
         // console.log(this.localizaciones);
     }
@@ -33,6 +36,19 @@ export class Localizaciones {
         this.pg = pg;
         this.localizaciones.forEach(loc => {
             loc.setPG(pg);
+        });
+    }
+
+    /**
+     *  Actualiza los PA de la localización
+     *
+     * @param {number} pa
+     * @memberof Localizaciones
+     */
+    actPA(pa) {
+        this.pa = pa;
+        this.localizaciones.forEach(loc => {
+            if(!loc.pa) loc.pa=pa;
         });
     }
 

@@ -3,7 +3,7 @@
 // import { D } from '/D.js';
 
 
-class Objeto extends Clase {
+class Objeto extends Modificable {
   constructor(nombre, peso = 0, valor = 0) {
     super()
     // this.clase = this.constructor.name;
@@ -13,6 +13,7 @@ class Objeto extends Clase {
     this.valor = valor;
     this.bonificador = null;
     this.efectos = null;
+    this.mods = {}
 
   }
 
@@ -38,6 +39,69 @@ class Objeto extends Clase {
   get id() {
     return this.nombre + this.ctd + this.peso + this.valor;
   }
+
+    /**
+   * 
+   * @param {ModHab} mod El modificador de objeto
+   */
+    addMod(mod) {
+      console.log(mod);
+      if (!this.mods[mod.atributo])
+        this.mods[mod.atributo] = {}
+  
+      this.mods[mod.atributo][mod.id] = mod;
+      //ÑAPA para que actualize el valor total
+      // this.valor++; this.valor--;
+    }
+  
+    /**
+   * 
+   * @param {ModHab} mod El modificador de objeto a eliminar
+   */
+    delMod(mod) {
+      console.log(mod);
+      if (!this.mods[mod.atributo])
+        return;
+  
+      //ÑAPA para que actualize el valot total
+      this.valor++; this.valor--;
+  
+      delete this.mods[mod.atributo][mod.id];
+      // this.t=this.total();
+  
+    }
+
+/**
+ * 
+ * @param {Animal} pj El personaje en el que se equipa el objeto
+ */
+    equipar(pj){
+      this.equipado=true;
+      if(this.listaMods){
+        for(let m in this.listaMods){
+          console.error(m);
+          pj.addModificadores(this.listaMods[m])
+        }
+        
+      }
+    }
+
+    /**
+ * 
+ * @param {Animal} pj El personaje en el que se equipa el objeto
+ */
+    desequipar(pj){
+      this.equipado=false;
+      if(this.listaMods){
+
+        for(let m in this.listaMods){
+          console.error(m);
+          pj.delModificadores(m)
+          // pj.delModificadores(this.listaMods[m])
+        }
+        
+      }
+    }
 
 }
 
@@ -308,8 +372,18 @@ class Contenedor extends Objeto {
   }
 
   darObjeto(objeto) {
+    var resultado=null;
     if (typeof objeto === "string") {
-      return Object.values(this.objetos).filter(obj => obj.nombre === objeto)
+      return Object.values(this.objetos).filter(obj => obj.nombre === objeto)[0]
+      this.objetos.forEach(o => {
+        console.log(o.nombre);
+        if(o.nombre===objeto){
+          console.log("ENCONTARDO");
+          console.log(resultado);
+          resultado=o;
+          return resultado;
+        } 
+      });
     }
     else {
       var pos = this.objetos.indexOf(objeto);
@@ -641,20 +715,34 @@ class ArmaDistancia extends Arma {
 
 }
 
+// class Municion extends Objetos {
+//   constructor(nombre, peso, valor,ctd=1, daño, alcanceRecto, alcance,
+//     bonApuntado = 0, bonCritico = 0, bonDiana = 0, bonLocalización = 0) {
+//     super (nombre, peso, valor, ctd = 1)
+//     this.daño=daño;
+//     this.alcance = alcance;
+//     this.alcanceRecto = alcanceRecto
+//     this.alcance = alcance
+//     this.bonApuntado = bonApuntado
+//     this.bonCritico = bonCritico
+//     this.bonDiana = bonDiana
+//     this.bonLocalización = bonLocalización
+//     console.log("Municiones"+this.ctd);
+//   }
+// }
+
+/**
+ * Clase Munición con Mods
+ */
 class Municion extends Objetos {
-  constructor(nombre, peso, valor,ctd=1, daño, alcanceRecto, alcance,
-    bonApuntado = 0, bonCritico = 0, bonDiana = 0, bonLocalización = 0) {
+  constructor(nombre, peso, valor,ctd=1, daño
+   ) {
     super (nombre, peso, valor, ctd = 1)
     this.daño=daño;
-    this.alcance = alcance;
-    this.alcanceRecto = alcanceRecto
-    this.alcance = alcance
-    this.bonApuntado = bonApuntado
-    this.bonCritico = bonCritico
-    this.bonDiana = bonDiana
-    this.bonLocalización = bonLocalización
     console.log("Municiones"+this.ctd);
   }
+
+  
 }
 
 class Arco extends ArmaDistancia {

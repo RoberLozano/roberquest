@@ -30,6 +30,8 @@ const PF = "PF"
 const PG = "PG"
 const PM = "PM"
 
+const PA = "PA" //Puntos de armadura naturales
+
 const PUNTOS = ["PF", "PG", "PM"]
 
 const CP = ["FUE", "CON", "TAM", "INT", "POD", "DES", "ASP"];
@@ -170,9 +172,12 @@ class Modificaciones extends Clase {
 
   }
 
-  buscarMod(string) {
+  buscarMod(string=this.efectos) {
+    //para que multiplique con * tambien
+    string =string.replace('*','x');
 
-    var av = string.match(/\s*(\+|-|x|\/)\s*(\d+)([ECPG])?\s*(.*)/i);
+    var av = string.match(/\s*(\+|-|x|\/)\s*(\d+\.?\d*)([ECPG])?\s*(.*)/i);
+    // var av = string.match(/\s*(\+|-|x|\/)\s*(\d+(\.\d+)*)([ECPG])?\s*(.*)/i);
     if (av) {
       let atributoHabilidad = av[3];
       let op = av[1]; let ctd = av[2]; let magnitud = av[4];
@@ -187,6 +192,7 @@ class Modificaciones extends Clase {
 
   }
 }
+
 
 class Mod extends Clase {
   constructor(id, op, ctd, magnitud) {
@@ -247,6 +253,8 @@ class ModHab extends Mod {
 
 }
 
+
+
 class ArmaNatural {
   constructor(nombre, daño, localizacion) {
     this.nombre = nombre
@@ -287,7 +295,9 @@ class Animal extends Clase {
       INT = 10,
       POD = 10,
       DES = 10,
-      ASP = 10
+      ASP = 10,
+
+      PA=0
     }
 
   ) {
@@ -303,6 +313,7 @@ class Animal extends Clase {
     this.POD = POD
     this.DES = DES
     this.ASP = ASP
+    this.PA = PA
 
     // this.fecha= fechaMundo;
 
@@ -321,7 +332,7 @@ class Animal extends Clase {
     this.listaMods = {}
     // this.backup = null
     this.act();
-    this.cuerpo = new Localizaciones(this.getMaxPuntos(PG));
+    this.cuerpo = new Localizaciones(this.getMaxPuntos(PG),this.pa);
     // console.log('cuerpo' + this.getMaxPuntos(PG));
   }
 
@@ -355,6 +366,11 @@ get pf(){return this.getTotal(PF)}
 
 set pm(valor){this.PM=valor;}
 get pm(){return this.getTotal(PM)}
+
+set pa(valor){this.PA=valor;}
+get pa(){return this.getTotal(PA)||0}
+
+get pg(){return this.getMaxPuntos('PG')-this.cuerpo.darDaño()}
 
   set nacimiento(valor) {
     if (typeof valor === 'string') {
@@ -530,9 +546,12 @@ get pm(){return this.getTotal(PM)}
     //   console.log(av[1], av[2], av[3]);
     // }
 
-    var av = string.match(/\s*(\+|-|x|\/)\s*(\d+)([ECPG])?\s*(.*)/i);
+    string =string.replace('*','x');
+    var av = string.match(/\s*(\+|-|x|\/)\s*(\d+\.?\d*)([ECPG])?\s*(.*)/i);
+    // var av = string.match(/\s*(\+|-|x|\/)\s*(\d+)([ECPG])?\s*(.*)/i);
     // let av= string.match(/(\+|-) (\d+)/i);
     if (av) {
+      console.log(av);
       let atributoHabilidad = av[3];
       let op = av[1]; let ctd = av[2]; let magnitud = av[4];
       if (atributoHabilidad) {
@@ -658,10 +677,14 @@ get pm(){return this.getTotal(PM)}
     // this._FUE++; this._FUE--;
 
   }
-
+/**
+ * 
+ * @param {Modificaciones} m La modificaciones a añadir
+ */
   addModificadores(m) {
     //sobreescribe el mismo id
     this.listaMods[m.id] = m;
+    console.log(m);
     let efectos = m.efectos;
     var ae = efectos.split(',')
     ae.forEach(e => {
@@ -1837,7 +1860,7 @@ class Humanoide extends Animal {
   crearCuerpo() {
     this.imagen = 'Body.png';
     // this.imagen='img/Dragon.jpg';
-    this.cuerpo = new Localizaciones(this.getMaxPuntos(PG));
+    this.cuerpo = new Localizaciones(this.getMaxPuntos(PG), this.pa);
     // console.log(this.nombre + ' cuerpo-> PG:' + this.getMaxPuntos(PG));
     //Menteniendo junta toda la localización
     var cabeza = new Localizacion("Cabeza", 0.333, 1, 9, 0)
@@ -1989,6 +2012,7 @@ console.warn("cuerpoDaño de Humanoide");
 class Humano extends Humanoide {
   constructor() {
     super({});
+    
   }
 }
 

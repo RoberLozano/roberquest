@@ -109,7 +109,7 @@ function ProcessExcel(data) {
   hMarciales(2, 11);
 
   armas(17, 28)
-  arcos(34, 35)
+  arcos(34, 41)
 
 
   ws = workbook.Sheets['Inventario'];
@@ -199,6 +199,9 @@ function equipo(inicio, fin, n = 'A', p = 'B', c = 'C', seguir = true) {
     let obj;
     let peso = ws[p + i]?.v;
     var ctd = parseInt(ws[c + i]?.v);
+
+
+
     //si no se admiten 0 en el porcentaje y no tien xp se pasa a otro
     if (nombre.toLowerCase().startsWith("poción")) {
       // console.log('POCION');
@@ -216,7 +219,26 @@ function equipo(inicio, fin, n = 'A', p = 'B', c = 'C', seguir = true) {
 
     // console.log(obj);
 
+        //Buscar modificaciones en los objetos
+   nombre.split('.').forEach(e => {
+    if (e.includes(':')) {
+      var x = e.split(':')
+      console.log(x);
+
+      console.log(new Modificaciones(x[0], x[1]));
+      obj.nombre=x[0];
+      obj.listaMods[x[0]]=new Modificaciones(x[0], x[1]);
+      pe.addModificadores(new Modificaciones(x[0], x[1]));
+      console.log(obj);
+    
+      // console.error(obj.listaMods);
+      // obj.equipar(pe);
+    }
+
+  })
+
     pe.inventario.add(obj);
+    // console.log(obj.nombre);
 
   }
 }
@@ -258,22 +280,43 @@ function arcos(inicio = 34, fin = 41, seguir = true, n = 'A', no = 'B', fue = 'C
   recto = 'D', max = 'E', daño = 'J', bonAp = 'M', crit = 'T', diana = 'U', loc = 'V') {
 
   for (let i = inicio; i <= fin; i++) {
+
     let nombre = ws[n + i]?.v;
     if (!nombre) {
       if (seguir) continue;
       else return;
     }
+    // console.error(nombre);
     let obj;
     // let peso = ws[p + i]?.v;
+
+    let ctd = ws[no + i]?.v;
+
+    console.log(ws[recto + i]?.f?.substring(3));
+    //Si hay ctd es munición
+    if(ctd){
+      console.log(`'CTD'`);
+      obj = new Municion(nombre, 0, 0,ctd, daño)
+      let _recto = ws[recto + i]?.f?.substring(3)
+      if(_recto){obj.addMod(new Mod(nombre,_recto[0],_recto.substring(1),'alcanceRecto'))
+        console.log(obj.mods);
+      }
+      let _max = ws[max + i]?.f.substring(3)
+
+      // console.error(_recto , _max);
+
+
+    }
 
     let daños = []
 
     let _daño = ws[daño + i]?.v;
+    
     let _recto = ws[recto + i]?.v;
     let _max = ws[max + i]?.v;
 
 
-    let ctd = ws[no + i]?.v;
+
     let fuerza = ws[fue + i]?.v;
 
     let _bonAp = ws[bonAp + i]?.v;
@@ -366,7 +409,17 @@ function hMarciales(inicio, fin, ceros = true, hab = 'A', xp = 'B', valor = 'C',
       continue;
     }
 
-    habilidad = new HabilidadMarcial(nombre, tipo, porcentaje);
+    //fila la donde empiezan las habilidades de armas a distancia (arcos, ballestas,...)
+    let EmpiezaDistancia = 9;
+    let n=nombre.toLowerCase();
+    console.log(n);
+    if (n.includes('arco') ||
+    n.includes('ballesta') ||
+    n.includes('pistola')
+    )
+      habilidad = new HabilidadDistancia(nombre, tipo, porcentaje);
+    else
+      habilidad = new HabilidadMarcial(nombre, tipo, porcentaje);
     if (exp) habilidad.xp = exp;
     let f = fecha(i, fechaSubida)
     if (f) habilidad.fecha = f;
@@ -457,7 +510,7 @@ function info(params) {
   var clase = ws['B2']?.v
   var altura = ws['B3']?.v
   var peso = ws['I3']?.v
-  var sexo= ws['E1']?.v
+  var sexo = ws['F1']?.v
 
   console.log(nombre);
   console.log(clase);
@@ -470,14 +523,14 @@ function info(params) {
     console.log(pe);
   }
   else pe = new Humano();
-  
+
   pe.nombre = nombre;
   pe.clase = clase;
   pe.altura = altura;
   pe.peso = peso;
 
   // pe.sexo = (sexo.toLowerCase().trim()==="mujer")?"&female;":"&male;"
-  pe.sexo = (sexo.toLowerCase().trim()==="mujer")?"♀":"♂"
+  pe.sexo = (sexo.toLowerCase().trim() === "mujer") ? "♀" : "♂"
   // pe.sexo = sexo.toLowerCase();
 
   let f = (ws['K6']?.w + '-' + ws['L6']?.v).split('-'); //fecha nacimiento

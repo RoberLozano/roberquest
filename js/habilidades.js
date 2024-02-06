@@ -92,6 +92,153 @@ class Clase {
   }
 }
 
+
+
+
+/**
+ * @typedef Modificable
+ * @type {object}
+ * @property {Mod} mods - Los mods
+ * @property {Modificaciones} listaMods -La lista de Modificaciones por id.
+ * @property {number} age - your age.
+ */
+class Modificable extends Clase {
+  constructor() {
+    super();
+    //Mods sobre cada atributo de la clase
+    /**
+     * @property {Mod} mods - Mods sobre cada atributo de la clase
+     */
+    this.mods = {}
+    //Lista de Modificaciones
+    
+    /**
+     * @property {Modificaciones} listaMods -La lista de Modificaciones por id.
+     */
+    this.listaMods = {}
+  }
+
+  /**
+ * 
+ * @param {Modificaciones|String} m El modificador o el nombre (id)
+ */
+  delModificadores(m) {
+
+    if(typeof m=='string'){
+      m= this.listaMods[m];
+    }
+    let id;
+    if (m instanceof Modificaciones)
+      id = m.id
+    else
+      id = m;
+
+    if (!(this.listaMods[id])) {
+      console.log("no hay efecto con esa id");
+      return;
+    }
+
+    let efectos = this.listaMods[id].efectos;
+    var ae = efectos.split(',')
+    ae.forEach(e => {
+      var mod = m.buscarMod(e, id);
+      console.log(mod);
+      delete (this.mods[mod.magnitud][id])
+
+      // this.getModTotal(mod.magnitud);
+
+    });
+
+    delete (this.listaMods[id]);
+
+
+  }
+  /**
+   * 
+   * @param {Modificaciones} m La modificaciones a añadir
+   */
+  addModificadores(m) {
+    //sobreescribe el mismo id
+    console.log(m);
+    this.listaMods[m.id] = m;
+    let efectos = m.efectos;
+    var ae = efectos.split(',')
+    ae.forEach(e => {
+      if(!m.buscarMod) return;
+      var mod = m.buscarMod(e, m.id);
+      console.log(mod);
+      if (!this.mods[mod.magnitud])
+        this.mods[mod.magnitud] = {}
+
+      this.mods[mod.magnitud][m.id] = mod;
+
+    });
+
+  }
+
+  numero(index){
+    let n=0;
+    for(let m in this.listaMods){
+      if(index==n) return this.listaMods[m].efectos; n++
+    }
+    return n;
+  }
+
+  setAll(o) {
+    super.setAll(o);
+    // this.mods = ;
+    console.log(o.mods);
+    //ÑAPA, Como son objetos anidados no hace bien el SetAll (imagino)
+    //Sobreescribo, pero como va con id da igual
+    for (let key in o.listaMods) {
+      this.addModificadores(o.listaMods[key]);
+    }
+  }
+
+  /**
+   * @param {String} magnitud La magnitud o campo del que obtener el valor
+   * @param {Boolean} redondear si redondea a entero o no
+   * @returns 
+   */
+  total(magnitud = 'v', redondear = false) {
+    let total = this[magnitud];
+    if (!this.mods[magnitud]) {
+      // console.log("No hay mods"+ magnitud);
+      return total;
+    }
+    let sumas =
+      Object.values(this.mods[magnitud]).filter(x => (x.op == '+' || x.op == '-'));
+
+    let multis =
+      Object.values(this.mods[magnitud]).filter(x => (x.op == 'x' || x.op == '/'));
+
+    if (sumas) {
+      // console.log("SUMAS");
+      // console.log(sumas);
+      for (let s of sumas) {
+        // console.log(s);
+        total = s.valor(total);
+      }
+    }
+    // console.log(total);
+
+    if (multis) {
+      // console.log("multis");
+      // console.log(multis);
+      for (let s of multis) {
+        total = s.valor(total);
+      }
+    }
+
+    // console.log(magnitud, total);
+    // Redondear??
+    if (redondear) return Math.round(total);
+    return total;
+
+  }
+
+}
+
 //debe haber una variable global pj con el personaje
 /**
  * 
@@ -156,9 +303,9 @@ class XP extends Clase {
     // var bonus=this.tipoBonus;
     //TODO: por si pongo XP distinta para cada raza
     //		int xpNec= this.getPertenece().getAnimal().getXPNecesaria();
-    
+
     // % extra de subida por cada punto de XP mayor del necesario
-    var pExtra=2.5;
+    var pExtra = 2.5;
     // const xpNec = 4;
     if (this.xp < xpNec) return 100;
 
@@ -341,7 +488,7 @@ class Habilidad extends XP {
     // this.t=this.total();
 
   }
-  
+
   /**
    * Da el tooltip de las modificaciones de la caracteristica c, o sin c, todas als modificaciones
    * @param {string} ah El atributo para Tooltip de Mods (e,c, g) o nada para dar el general (v)
@@ -399,19 +546,19 @@ class Habilidad extends XP {
 
   //poner posibles bonificaciones en especialñ y crítico
   get e() { return Math.round(this.v * 0.2) + this.bespecial }
-  get c() { return Math.max(Math.round(this.v * 0.05),1) + this.bcritico }
+  get c() { return Math.max(Math.round(this.v * 0.05), 1) + this.bcritico }
   get p() { return Math.min(100, 101 - Math.round((100 - this.v) * 0.05)) }
 
   //propiedad de total
-  get t(){return this.total()};
+  get t() { return this.total() };
 
   //propiedad de subible
-  get sub(){return this.subible()};
+  get sub() { return this.subible() };
 
 
   //HACER COMO PROPIEDAD PARA VUETIFY del valor total con modificaciones
   get porcentaje() { return this.total('v') }
-  get especial() { return this.total('e')}
+  get especial() { return this.total('e') }
   get critico() { return this.total('c') }
   get pifia() { return this.total('p') }
 
@@ -537,7 +684,7 @@ class Habilidad extends XP {
           return 1;
         }
         break;
-      default:{console.log("NO SUBE NADA") ; return 0}
+      default: { console.log("NO SUBE NADA"); return 0 }
         break;
     }
 
@@ -617,7 +764,7 @@ class Hechizo extends Habilidad {
 
   }
 
-  iu(){
+  iu() {
     return new iuHechizo(this);
   }
 
@@ -888,9 +1035,9 @@ class HabilidadMarcial extends Habilidad {
 
 }
 
-class HabilidadDistancia extends HabilidadMarcial{
+class HabilidadDistancia extends HabilidadMarcial {
 
-  constructor(nombre, tipo, valor, ataque = true, localizacion = null, arma = null, distancia=0) {
+  constructor(nombre, tipo, valor, ataque = true, localizacion = null, arma = null, distancia = 0) {
     super(nombre, tipo, valor, ataque = true, localizacion = null, arma = null)
     // this.nombre = nombre
     // this.tipo = tipo
@@ -898,31 +1045,31 @@ class HabilidadDistancia extends HabilidadMarcial{
     this.distancia = distancia
   }
 
-  disparo(distancia, viento, objetivo){
+  disparo(distancia, viento, objetivo) {
     this.distancia = distancia
     this.viento = viento
     this.objetivo = objetivo
   }
   //Overrides
-  get v(){
-    var pen=0;
+  get v() {
+    var pen = 0;
     //TODO mirar las fórmulas
-    if(this.distancia){
-      if(this.distancia<=this.arma.alcanceRecto){
-        pen = Math.round(this.distancia/2);
+    if (this.distancia) {
+      if (this.distancia <= this.arma.alcanceRecto) {
+        pen = Math.round(this.distancia / 2);
       }
       else
-      if(this.distancia<=this.arma.alcance){
-        pen= this.distancia
-      }
-      else
-      if(this.distancia>this.arma.alcance){
-        return 0;
-      }
+        if (this.distancia <= this.arma.alcance) {
+          pen = this.distancia
+        }
+        else
+          if (this.distancia > this.arma.alcance) {
+            return 0;
+          }
 
     }
     //si está en alcance al menos 1
-    return Math.max(1,super.v -pen) ;
+    return Math.max(1, super.v - pen);
   }
 
 }
@@ -1168,10 +1315,10 @@ class InputHabilidad extends HTMLElement {
     // if (this.habilidad instanceof HabilidadMarcial) this.ok.src = this.habilidad.ataque?'img/sword.svg':'img/shield.svg';
     this.ok.addEventListener('click', (event) => {
       console.log('Evento de xpTirada');
-      let subida=this.habilidad.xpTirada(this.input.value, this.personaje?.suerte);
-      this.personaje.habilidades[this.habilidad.nombre].xp+=subida
+      let subida = this.habilidad.xpTirada(this.input.value, this.personaje?.suerte);
+      this.personaje.habilidades[this.habilidad.nombre].xp += subida
       console.log(subida);
-      
+
     });
 
     var styleblack = ''
@@ -1240,12 +1387,12 @@ class InputHabilidad extends HTMLElement {
 
 
     //SI no hay personaje pj
-    
+
     try {
       this.setPersonaje(pj);
-      
+
     } catch (e) {
-      
+
     }
 
 
@@ -1253,7 +1400,7 @@ class InputHabilidad extends HTMLElement {
   }
 
   lista(id, habilidades) {
-    let ah=habilidades;
+    let ah = habilidades;
     // this.label.setAttribute("type", "search");
     let options = "";
     habilidades.forEach(h => {
@@ -1275,7 +1422,7 @@ class InputHabilidad extends HTMLElement {
     //   return a.v - b.v;
     // });
     // console.log(array.reverse());
-    this.lista("listaHab"+personaje.nombre,array);
+    this.lista("listaHab" + personaje.nombre, array);
     // this.lista("listaHab" + personaje.nombre, array);
     this.h = array[0];
 
@@ -1394,7 +1541,7 @@ class InputSubirHabilidad extends InputHabilidad {
 
     this.ok.addEventListener('click', (event) => {
       console.log("SUBIR");
-      
+
       this.habilidad.subir(this.inputdado.value);
       // tablaHabilidades();
       let id;
@@ -1424,10 +1571,11 @@ class InputSubirHabilidad extends InputHabilidad {
       this.inputdado.value = this.DADO.dadoMax() * 2
     }
     else
-      if (iv > v) { input.style.color = "green"; this.ok.hidden=false }
-      else { input.style.color = "grey";
-      this.ok.hidden=true;
-    }
+      if (iv > v) { input.style.color = "green"; this.ok.hidden = false }
+      else {
+        input.style.color = "grey";
+        this.ok.hidden = true;
+      }
 
 
   }
@@ -2095,69 +2243,70 @@ function IUHechizos(p, div = "salida", black = false) {
 //#region IU
 // Creo clases para la IU, especialmente para Vue, Angular, etc
 
- function numero(x){
-  if (isNaN(x)) x = parseInt(x)||0 ;
+function numero(x) {
+  if (isNaN(x)) x = parseInt(x) || 0;
   return x;
 }
 
 
 class iuHabilidad {
-  constructor(habilidad, dados,grado,modificadores) {
-		this._habilidad = habilidad
+  constructor(habilidad, dados, grado, modificadores) {
+    this._habilidad = habilidad
     this.nombre = habilidad?.nombre || "iuHabilidad"
     this._dados = numero(dados)
     this._grado = numero(grado)
     this._modificadores = modificadores
   }
 
-  get total(){
+  get total() {
     return this.habilidad?.total() || 0
   }
 
-	get habilidad() { return this._habilidad}
-  set habilidad(habilidad) { this._habilidad =habilidad}
- 
-  get dados() { return this._dados}
+  get habilidad() { return this._habilidad }
+  set habilidad(habilidad) { this._habilidad = habilidad }
+
+  get dados() { return this._dados }
   set dados(dados) {
-     this._dados =numero(dados);
-     this.grado= this.habilidad.tirada(dados);
-     console.log(this.grado);
-    }
- 
-  get grado() { return this._grado}
-  set grado(grado) { this._grado = numero(grado)}
- 
-  get modificadores() { return this._modificadores}
-  set modificadores(modificadores) { this._modificadores =modificadores} 
+    this._dados = numero(dados);
+    this.grado = this.habilidad.tirada(dados);
+    console.log(this.grado);
+  }
+
+  get grado() { return this._grado }
+  set grado(grado) { this._grado = numero(grado) }
+
+  get modificadores() { return this._modificadores }
+  set modificadores(modificadores) { this._modificadores = modificadores }
 
 
 }
 
-class iuHechizo extends iuHabilidad{
-  constructor(habilidad, dados,grado,modificadores,pm, intensidad, gastado) {
-    super(habilidad, dados,grado,modificadores)
-		this._pm = habilidad?.pm
+class iuHechizo extends iuHabilidad {
+  constructor(habilidad, dados, grado, modificadores, pm, intensidad, gastado) {
+    super(habilidad, dados, grado, modificadores)
+    this._pm = habilidad?.pm
     this._intensidad = intensidad
     this._gastado = gastado
   }
 
-  
-	get pm() { return this._pm}
+
+  get pm() { return this._pm }
   set pm(pm) {
-   this._pm = numero(pm);
-    this._pm =pm
-    this.gastado=pm}
- 
-  get intensidad() { return this._intensidad}
+    this._pm = numero(pm);
+    this._pm = pm
+    this.gastado = pm
+  }
+
+  get intensidad() { return this._intensidad }
   set intensidad(intensidad) {
     this._intensidad = numero(intensidad);
-    }
- 
-  get gastado() { return this._gastado}
+  }
+
+  get gastado() { return this._gastado }
   set gastado(gastado) {
-    console.log("gastado " +gastado);
+    console.log("gastado " + gastado);
     this._gastado = numero(gastado);
-    } 
+  }
 
 }
 

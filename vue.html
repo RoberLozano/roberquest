@@ -270,8 +270,8 @@
                     </v-row>
                     <v-row>
                       <v-col sm="1">
-                        <v-text-field v-model.number="pj.PG" type="number" label="PG" size="1"
-                          max="pj.getMaxPuntos('PG')">{{pj.PG}}</v-text-field>
+                        <v-text-field v-model.number="pj.pg" type="number" label="PG" size="1"
+                          max="pj.getMaxPuntos('PG')">{{pj.pg}}</v-text-field>
                       </v-col>
                       <v-col sm="1">
                         <v-text-field v-model.number="pj.pf" type="number" label="PF" size="1"
@@ -478,6 +478,30 @@
                                       <v-badge :content="item.pm" color="negro" inline>
                                         <!-- {{item.carga}}/{{item.max}} -->
                                       </v-badge>
+                                    </div>
+
+                                    <div style="display: inline" v-if="item.equipado">
+                                      <v-icon small @click="item.desequipar(pj)">
+                                        mdi-bag-personal
+                                      </v-icon>
+                                    </div>
+
+                                    <div style="display: inline" v-else-if="item.numero()>0">
+                                      <v-tooltip right color="red" :disabled="item.numero()==0">
+                                        <template v-slot:activator="{ on, attrs }">
+                                          
+                                            <v-icon v-bind="attrs" v-on="on" color="blue">
+                                              mdi-auto-fix
+                                              <!-- <input type="number" v-model="pj.getCar(TipoHabilidades[index])"
+                                            :style="{ 'color': (pj.bonificacion[TipoHabilidades[index]]>0 ? 'green' : 'red') ,'width': '2.5em'}"> -->
+                                              </v-icon>
+                                          
+                                        </template>
+                                        <!-- <span>{{pj.getMod(c)}} <b>{{pj.getModTotal(c)}}</b></span> -->
+                                        <span v-html="item.numero(0)"></span>
+                                      </v-tooltip>
+
+                         
                                     </div>
 
                                     <div style="display: inline" v-if="item.nombre == 'mo'">
@@ -1335,7 +1359,7 @@
         </template> -->
 
 
-        <!-- Bottomsheet -->
+        <!-- Bottomsheet mover-->
         <v-bottom-sheet v-model="sheet" persistent>
 
           <v-sheet class="text-center" height="200px">
@@ -1387,6 +1411,12 @@
             <v-icon>mdi-delete</v-icon>
           </v-btn>
           <div  v-if="selected.length>0">
+            <v-btn small @click="selected.forEach(i => {contenedor.darObjeto(i).equipar(pj)});selected=[];">
+              Equipar
+            </v-btn>
+            <v-btn small @click="selected.forEach(i => {contenedor.darObjeto(i).desequipar(pj)});selected=[];">
+              Desequipar
+            </v-btn>
           <v-btn small @click="sheet = !sheet">Mover</v-btn>
           <v-btn v-if="selected.length==1" small @click="editar(selected[0])">Editar</v-btn>
           <v-btn small @click="selected.forEach(i => {contenedor.sacar(i)});selected=[];">

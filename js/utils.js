@@ -140,7 +140,7 @@ function diferencia(o1, o2,verbose=true,ruta="") {
   let n=0;
   for (k in o1) {
     //si o2[k] no existe saltamos a la siguiente (sumar como diferencia?)
-    if((typeof o2[k] === "undefined")) {if(verbose)console.log(`NADA ${ruta} ${k} -> ${o2[k]}`);n++;continue;}
+    if((o2[k]===null||typeof o2[k] === "undefined")) {if(verbose)console.log(`NADA ${ruta} ${k} -> ${o2[k]}`);n++;continue;}
     if(o1[k] instanceof Object){
       n+=diferencia(o1[k],o2[k],verbose,ruta+'/'+k);
     }

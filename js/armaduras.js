@@ -372,6 +372,12 @@ brazoD = brazoD.concat("Antebrazo D")
 brazoD = brazoD.concat("Codo D")
 brazoD = brazoD.concat("Mano D")
 
+
+let hombros = ["Hombro D", "Hombro I"];
+let biceps = ["Biceps D", "Biceps I"];
+let antebrazos = ["Antebrazo D", "Antebrazo I"];
+let codos = ["Codo D", "Codo I"];
+let manos = ["Mano D", "Mano I"];
 // chaleco y dos mangas
 todo = brazoD.concat(chaleco, manga, lado(brazoD,'I'))
 

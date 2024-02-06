@@ -8,11 +8,12 @@ class Localizaciones {
      * @param {number} pg Los puntos de golpe del personaje
      * @memberof Localizaciones
      */
-    constructor(pg = 1) {
+    constructor(pg = 1,pa=0) {
         this.localizaciones = []
         /** Se utiliza para un daño general como desangramiento o succionar PG */
         this.dañoGeneral = 0;
         this.pg = pg //=1
+        this.pa = pa //=1
     }
 
     /**
@@ -23,6 +24,7 @@ class Localizaciones {
      */
     add(loc) {
         if (this.pg) loc.setPG(this.pg)
+        if(!loc.pa) loc.pa=this.pa;
         this.localizaciones.push(loc)
         // console.log(this.localizaciones);
     }
@@ -41,6 +43,19 @@ class Localizaciones {
             loc.setPG(pg);
         });
     }
+
+    /**
+     *  Actualiza los PA de la localización
+     *
+     * @param {number} pa
+     * @memberof Localizaciones
+     */
+        actPA(pa) {
+            this.pa = pa;
+            this.localizaciones.forEach(loc => {
+                if(!loc.pa) loc.pa=pa;
+            });
+        }
 
 
     /**
@@ -155,7 +170,8 @@ class Localizaciones {
      */
     sanarPartes(x) {
         //se filtran las partes que tengan daño
-        let dañadas = this.localizaciones.filter(l => l.daño > 0);
+        console.log("sanar partes:"+x);
+        let dañadas = this.localizaciones.filter(l => l.darDaño() > 0);
         //Las más dañadas primero (con respecto a los pg que tiene)
         console.log(dañadas.sort((a, b) => (b.daño / b.pg) - (a.daño / a.pg)));
 
