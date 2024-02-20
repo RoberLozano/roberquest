@@ -517,8 +517,8 @@ function info(params) {
   console.log(altura);
   console.log(peso);
   if (clase) {
-    eval(`pe=new ${clase}({})`) //un poco más rápida pero menos segura
-    // pe = (Function('return new ' + clase))() //se supone que es más segura
+    // eval(`pe=new ${clase}({})`) //un poco más rápida pero menos segura
+    pe = (Function('return new ' + clase))() //se supone que es más segura
     //TODO: hacer pruebas de rendimiento;
     console.log(pe);
   }

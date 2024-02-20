@@ -88,7 +88,7 @@ class Objeto extends Modificable {
 
     /**
  * 
- * @param {Animal} pj El personaje en el que se equipa el objeto
+ * @param {Animal} pj El personaje en el que se desequipa el objeto
  */
     desequipar(pj){
       this.equipado=false;
