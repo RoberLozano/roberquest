@@ -519,13 +519,14 @@ function info(params) {
   if (clase) {
 
     try {
-          // eval(`pe=new ${clase}({})`) //un poco más rápida pero menos segura
+    // eval(`pe=new ${clase}({})`) //un poco más rápida pero menos segura
     pe = (Function('return new ' + clase))() //se supone que es más segura
     //TODO: hacer pruebas de rendimiento;
     console.log(pe);
       
     } catch (error) {
-      console.log('Error haciendo clase:'+ error);
+      console.log('Error haciendo clase:'+ error.stack);
+       pe = new Humano();
     }
 
   }
@@ -535,6 +536,7 @@ function info(params) {
   pe.clase = clase;
   pe.altura = altura;
   pe.peso = peso;
+  console.log(pe);
 
   // pe.sexo = (sexo.toLowerCase().trim()==="mujer")?"&female;":"&male;"
   pe.sexo = (sexo.toLowerCase().trim() === "mujer") ? "♀" : "♂"
