@@ -539,7 +539,7 @@ function info(params) {
   console.log(pe);
 
   // pe.sexo = (sexo.toLowerCase().trim()==="mujer")?"&female;":"&male;"
-  pe.sexo = (sexo.toLowerCase().trim() === "mujer") ? "♀" : "♂"
+  if(sexo) pe.sexo = (sexo.toLowerCase().trim() === "mujer") ? "♀" : "♂"
   // pe.sexo = sexo.toLowerCase();
 
   let f = (ws['K6']?.w + '-' + ws['L6']?.v).split('-'); //fecha nacimiento
