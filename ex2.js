@@ -1,5 +1,5 @@
 var ws;//el worksheet
-var pe //perosnaje excel
+var pe= new Humano(); //perosnaje excel
 var last; //el último personaje;
 
 
@@ -520,7 +520,7 @@ function info(params) {
 
     try {
     
-    pe = new Humano()
+    pe = new Humano();
     //TODO: hacer pruebas de rendimiento;
     console.log(pe);
       
