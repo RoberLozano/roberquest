@@ -519,18 +519,18 @@ function info(params) {
   if (clase) {
 
     try {
-    // eval(`pe=new ${clase}({})`) //un poco más rápida pero menos segura
-    pe = (Function('return new ' + clase))({nombre: "Paco"}) //se supone que es más segura
+    
+    pe = new Humano()
     //TODO: hacer pruebas de rendimiento;
     console.log(pe);
       
     } catch (error) {
       console.log('Error haciendo clase:'+ error.stack);
-       pe = new Humano({});
+       pe = new Humano();
     }
 
   }
-  else pe = new Humano({});
+  else pe = new Humano();
 
   pe.nombre = nombre;
   pe.clase = clase;
