@@ -520,7 +520,7 @@ function info(params) {
 
     try {
     
-    pe = new Humano();
+    pe = new Enano();
     //TODO: hacer pruebas de rendimiento;
     console.log(pe);
       
