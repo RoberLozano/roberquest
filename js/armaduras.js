@@ -145,16 +145,34 @@ class Armadura {
 }
 
 class Pieza {
-    constructor(localizaciones, pa) {
+    /**
+     * 
+     * @param {*} localizaciones 
+     * @param {int} pa los Puntos de Armadura iniciales
+     * @param {int} mPr 0 si es indestructible
+     */
+    constructor(localizaciones, pa, mPr = 5) {
         this.localizaciones = localizaciones
-        this.pa = pa
+        if (mPr=0) this._pa=pa;
+        else{
+            this.pr = pa*mPr;
+            this.mPr=mPr;
+        }
+       
     }
+
+    get pa(){
+        if(this._pa) return this._pa;
+        return Math.round(this.pr/this.mPr);
+    }
+    
 }
 
 
 
 // Clases de Armaduras compleja
 //#region 
+//TODO ordenar paramnetros de constructores
 // class Material {
 //     constructor(nombre, pa, peso, precio) {
 //         this.nombre = nombre;
@@ -165,7 +183,7 @@ class Pieza {
 // }
 
 // class Calidad {
-//     constructor(nombre, pa, peso, precio) {
+//     constructor(nombre, peso, precio, pa) {
 //         this.nombre = nombre;
 //         this.peso = peso;
 //         this.precio = precio;
@@ -318,6 +336,8 @@ function lado(array,lado) {
 }
 
 
+//TODO: materiales, calidades, 
+
 //Materiales
 // const Hierro = new Material("Hierro", 1, 1, 0);
 // const Acero = new Material("Acero", 1, 1.5, 1);
@@ -335,6 +355,15 @@ function lado(array,lado) {
 // const Normal = new Material("Normal", 1, 1, 0);
 // const Excelente = new Material("Excelente", 1, 10, 1);
 // const Unicornio = new Material("Unicornio", 1, 50000, 7);
+
+
+//TODO: DEFINIR LAS CALIDADES (nombre, pa, peso, precio)
+// const normal = new Calidad("Normal", 1, 1, 0);
+// const superior = new Calidad("Superior", 1, 2, 1);
+// const ligera = new Calidad("Ligera", 0.9, 1.6, 0);
+// const muyLigera = new Calidad("Muy Ligera", 0.8, 2.3, 0);
+// const eterea = new Calidad("Etérea", 0.7, 7, 1);
+// const maestra = new Calidad("Obra Maestra", 0.77, 13.7, 2);
 
 
 // const Cuero = new TipoArmadura("Cuero", 1, 20, false, 1.5, 0.1, false);

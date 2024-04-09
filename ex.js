@@ -188,6 +188,19 @@ function tecnicas(inicio = 2, fin = 38, ceros = false, hab = 'A', pf = 'B', xp =
 }
 
 
+
+function armaduras() {
+  //TODO: Tengo que decidir cómo hacerlo, si con una hoja de excel o por el nombre
+
+  var nombre = ws['B1']?.v
+  var clase = ws['B2']?.v
+  var altura = ws['B3']?.v
+  var peso = ws['I3']?.v
+  var sexo = ws['F1']?.v
+
+  
+}
+
 function equipo(inicio, fin, n = 'A', p = 'B', c = 'C', seguir = true) {
 
   for (let i = inicio; i < fin; i++) {
