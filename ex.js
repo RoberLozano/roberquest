@@ -1,3 +1,5 @@
+//last edit: 15/04/2024 13:17
+
 var ws;//el worksheet
 var pe //perosnaje excel
 var last; //el último personaje;
@@ -308,7 +310,7 @@ function arcos(inicio = 34, fin = 41, seguir = true, n = 'A', no = 'B', fue = 'C
     console.log(ws[recto + i]?.f?.substring(3));
     //Si hay ctd es munición
     if(ctd){
-      console.log(`'CTD'`);
+      console.log(`'CTD': ${ctd}`);
       obj = new Municion(nombre, 0, 0,ctd, daño)
       let _recto = ws[recto + i]?.f?.substring(3)
       if(_recto){obj.addMod(new Mod(nombre,_recto[0],_recto.substring(1),'alcanceRecto'))
