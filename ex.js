@@ -318,12 +318,17 @@ function arcos(inicio = 34, fin = 41, seguir = true, n = 'A', no = 'B', fue = 'C
       }
       let _max = ws[max + i]?.f.substring(3)
 
+      if(_max){obj.addMod(new Mod(nombre,_max[0],_max.substring(1),'alcanceRecto'))
+      console.log(obj.mods);
+    }
+
       // console.error(_recto , _max);
 
 
     }
 
     else{
+      console.log(' dentro de Arco Municiones')
       let daños = []
 
       let _daño = ws[daño + i]?.v;
