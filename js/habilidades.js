@@ -2034,10 +2034,12 @@ class InputCustom extends HTMLElement {
             // html += `${key}<${i}  value='${clase[key]}'><br>`
             if (typeof clase[key] === 'object') {
               console.log('Tableo ' + id + key);
+
               ta = this.tablear(id + key, clase[key])
               ta.id = id + key;
               // c = ta;
               isObject = true;
+              ta.style.border = "thin solid"
             }
             else {
               c = document.createElement('input');

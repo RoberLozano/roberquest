@@ -95,7 +95,7 @@ function ProcessExcel(data) {
 
   tipo = Manipulación;
   ws = workbook.Sheets['Técnicas'];
-  tecnicas()
+  tecnicas();
 
 
   ws = workbook.Sheets['Magia'];
@@ -104,18 +104,18 @@ function ProcessExcel(data) {
   tipo = Magia;
   ws = workbook.Sheets['Magia'];
   artes(5, 20);
-  hechizos(23, 52)
+  hechizos(23, 52);
 
   tipo = Manipulación;
   ws = workbook.Sheets['Armas'];
   hMarciales(2, 11);
 
-  armas(17, 28)
-  arcos(34, 41)
+  armas(17, 28);
+  arcos(34, 41);
 
 
   ws = workbook.Sheets['Inventario'];
-  equipo(2, 20)
+  equipo(2, 20);
 
   pe.act();
 
@@ -306,19 +306,25 @@ function arcos(inicio = 34, fin = 41, seguir = true, n = 'A', no = 'B', fue = 'C
     // let peso = ws[p + i]?.v;
 
     let ctd = ws[no + i]?.v;
+    let _daño = ws[daño + i]?.v;
 
     console.log(ws[recto + i]?.f?.substring(3));
     //Si hay ctd es munición
     if(ctd){
       console.log(`'CTD': ${ctd}`);
-      obj = new Municion(nombre, 0, 0,ctd, daño)
+      console.log(' dentro de Arco Municiones')
+      obj = new Municion(nombre, 0, 0,ctd, _daño)
       let _recto = ws[recto + i]?.f?.substring(3)
-      if(_recto){obj.addMod(new Mod(nombre,_recto[0],_recto.substring(1),'alcanceRecto'))
+      if(_recto){
+
+        
+        
+        obj.addMod(new Mod(nombre,_recto[0],_recto.substring(1),'alcanceRecto'))
         console.log(obj.mods);
       }
       let _max = ws[max + i]?.f.substring(3)
 
-      if(_max){obj.addMod(new Mod(nombre,_max[0],_max.substring(1),'alcanceRecto'))
+      if(_max){obj.addMod(new Mod(nombre,_max[0],_max.substring(1),'alcance'))
       console.log(obj.mods);
     }
 
@@ -328,7 +334,7 @@ function arcos(inicio = 34, fin = 41, seguir = true, n = 'A', no = 'B', fue = 'C
     }
 
     else{
-      console.log(' dentro de Arco Municiones')
+      console.log(' dentro de Arco ')
       let daños = []
 
       let _daño = ws[daño + i]?.v;
@@ -490,7 +496,7 @@ function artes(inicio, fin, ceros = true, hab = 'A', xp = 'B', valor = 'C', segu
 
     habilidad = new Habilidad(nombre, tipo, porcentaje);
     if (exp) habilidad.xp = exp;
-    let f = fecha(i, fechaSubida)
+    let f = fecha(i, fechaSubida);
     if (f) habilidad.fecha = f;
 
     pe.habilidades[nombre] = new Arte(habilidad);
@@ -500,7 +506,7 @@ function artes(inicio, fin, ceros = true, hab = 'A', xp = 'B', valor = 'C', segu
   }
 }
 
-function hechizos(inicio, fin, ceros = true, hab = 'A', xp = 'B', valor = 'C', pm = 'K', seguir = true) {
+function hechizos(inicio, fin, ceros = true, hab = 'A', xp = 'B', valor = 'C', pm = 'K', seguir = true, fechaSubida = 'L') {
   let habilidad = new Habilidad();
 
   for (let i = inicio; i < fin; i++) {
@@ -511,8 +517,8 @@ function hechizos(inicio, fin, ceros = true, hab = 'A', xp = 'B', valor = 'C', p
     }
 
     var porcentaje = ws[valor + i]?.v;
-    var exp = ws[xp + i]?.v
-    var puntosm = ws[pm + i]?.v
+    var exp = ws[xp + i]?.v;
+    var puntosm = ws[pm + i]?.v;
 
     //si no se admiten 0 en el porcentaje y no tien xp se pasa a otro
     if (!ceros && !porcentaje && !exp) {
@@ -521,6 +527,8 @@ function hechizos(inicio, fin, ceros = true, hab = 'A', xp = 'B', valor = 'C', p
 
     habilidad = new Hechizo(nombre, puntosm, porcentaje);
     if (exp) habilidad.xp = exp;
+    let f = fecha(i, fechaSubida);
+    if (f) habilidad.fecha = f;
 
     pe.habilidades[nombre] = habilidad;
     // console.log(ws[nombre + i]?.v, ws[xp + i]?.v, ws[valor + i]?.v);
