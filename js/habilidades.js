@@ -41,7 +41,7 @@ class Clase {
     // if (typeof o === 'string') return o;
     for (let key in o) {
       if (key === 'mods') {
-        console.log('SetAll');
+        // console.log('SetAll');
         console.log(o[key]);
       }
       //genérico para sustituir todos los setAll
@@ -1051,19 +1051,20 @@ class HabilidadDistancia extends HabilidadMarcial {
     this.objetivo = objetivo
   }
   //Overrides
+  //TODO: si es ballesta cambiar
   get v() {
     var pen = 0;
     //TODO mirar las fórmulas
     if (this.distancia) {
-      if (this.distancia <= this.arma.alcanceRecto) {
+      if (this.distancia <= this.arma.total('alcanceRecto')) {
         pen = Math.round(this.distancia / 2);
       }
       else
-        if (this.distancia <= this.arma.alcance) {
+        if (this.distancia <= this.arma.total('alcance')) {
           pen = this.distancia
         }
         else
-          if (this.distancia > this.arma.alcance) {
+          if (this.distancia > this.arma.total('alcance')) {
             return 0;
           }
 

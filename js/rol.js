@@ -172,12 +172,13 @@ class Modificaciones extends Clase {
 
   }
 
-  buscarMod(string=this.efectos) {
+  buscarMod(string = this.efectos) {
     //para que multiplique con * tambien
-    string =string.replace('*','x');
-
-    var av = string.match(/\s*(\+|-|x|\/)\s*(\d+\.?\d*)([ECPG])?\s*(.*)/i);
-    // var av = string.match(/\s*(\+|-|x|\/)\s*(\d+(\.\d+)*)([ECPG])?\s*(.*)/i);
+    string = string.replace('*', 'x');
+    
+    // var av = string.match(/\s*(\+|-|x|\/)\s*(\d+\.?\d*|(\d+d\d+)?([+|-](\d+|(\d+d\d+))))([ECPG])?\s*(.*)/i);
+    // var av = string.match(/\s*(\+|-|x|\/)\s*(\d+\.?\d*|\d+d\d+\+?d*)([ECPG])?\s*(.*)/i);
+    var av = string.match(/\s*(\+|-|x|\/)\s*(\d+[\.\d+]*)([ECPG])?\s*(.*)/i);
     if (av) {
       let atributoHabilidad = av[3];
       let op = av[1]; let ctd = av[2]; let magnitud = av[4];
@@ -193,8 +194,14 @@ class Modificaciones extends Clase {
   }
 }
 
-
 class Mod extends Clase {
+  /**
+   * 
+   * @param {*} id 
+   * @param {*} op operacion a realizar (+,-,/,x,*)
+   * @param {*} ctd 
+   * @param {*} magnitud el atributo de la clase sobre el que se hace la modificación
+   */
   constructor(id, op, ctd, magnitud) {
     super();
     this.id = id
@@ -202,29 +209,53 @@ class Mod extends Clase {
     this.ctd = ctd
     this.magnitud = magnitud
   }
-
+  /**
+   * 
+   * @param {number} v El valor sobre el que hacer la operación
+   * @returns El valor tras la modificación
+   */
   valor(v) {
-    switch (this.op) {
-      case '+':
-        return v + +this.ctd
-        break;
-      case '-':
-        return v - +this.ctd
-        break;
-      case '/':
-        return v / +this.ctd;
-        break;
 
-      default:
-        return v * +this.ctd;
-        break;
+    // console.log(v);
+
+    // console.log(this.id+". V:"+v);
+    
+    if (Array.isArray(v)){
+      // console.log((this.ctd));
+      // console.log(v.concat(+this.ctd));
+      // if(v.length==0) return v.concat(this.ctd);
+      return v.concat(parseInt(this.op+this.ctd));
     }
+    //TODO: si no es number hacer otros
+    if (isNumber(v)) {
+      // console.log("Estoy en num:"+v+this.ctd);
+
+      switch (this.op) {
+        case '+':
+          return v + +this.ctd
+          break;
+        case '-':
+          return v - +this.ctd
+          break;
+        case '/':
+          return v / +this.ctd;
+          break;
+
+        default:
+          return v * +this.ctd;
+          break;
+      }
+
+    }
+
+
+
   }
 
   /**
    * Devuelve un nuevo ModHab a partir de un mod;
    * @param {Mod} mod El mod origen
-   * @param {String||null} atributo el nombre del atributo donde aplocar la mod
+   * @param {String||null} atributo el nombre del atributo donde aplicar la mod, v, e, c
    */
   toModHab(atributo) {
     if (!atributo) atributo = 'v';
@@ -237,6 +268,7 @@ class Mod extends Clase {
   }
 
 }
+
 
 class ModHab extends Mod {
   constructor(id, op, ctd, magnitud, atributo = 'v') {
@@ -297,7 +329,7 @@ class Animal extends Clase {
       DES = 10,
       ASP = 10,
 
-      PA=0
+      PA = 0
     }
 
   ) {
@@ -332,7 +364,7 @@ class Animal extends Clase {
     this.listaMods = {}
     // this.backup = null
     this.act();
-    this.cuerpo = new Localizaciones(this.getMaxPuntos(PG),this.pa);
+    this.cuerpo = new Localizaciones(this.getMaxPuntos(PG), this.pa);
     // console.log('cuerpo' + this.getMaxPuntos(PG));
   }
 
@@ -361,16 +393,16 @@ class Animal extends Clase {
   }
 
   // Puntos de magia y de fatiga para que te los den redondeados
-set pf(valor){this.PF=valor;}
-get pf(){return this.getTotal(PF)}
+  set pf(valor) { this.PF = valor; }
+  get pf() { return this.getTotal(PF) }
 
-set pm(valor){this.PM=valor;}
-get pm(){return this.getTotal(PM)}
+  set pm(valor) { this.PM = valor; }
+  get pm() { return this.getTotal(PM) }
 
-set pa(valor){this.PA=valor;}
-get pa(){return this.getTotal(PA)||0}
+  set pa(valor) { this.PA = valor; }
+  get pa() { return this.getTotal(PA) || 0 }
 
-get pg(){return this.getMaxPuntos('PG')-this.cuerpo.darDaño()}
+  get pg() { return this.getMaxPuntos('PG') - this.cuerpo.darDaño() }
 
   set nacimiento(valor) {
     if (typeof valor === 'string') {
@@ -455,8 +487,8 @@ get pg(){return this.getMaxPuntos('PG')-this.cuerpo.darDaño()}
     this.PM = Math.min(this.getMaxPuntos(PM), this.PM + rPM * tiempo)
     this.PF = Math.min(this.getMaxPuntos(PF), this.PF + rPF * tiempo)
 
-    console.log('PM',this.PM , rPM * tiempo);
-    console.log('PG',this.PG , rPG * tiempo);
+    console.log('PM', this.PM, rPM * tiempo);
+    console.log('PG', this.PG, rPG * tiempo);
 
     //TODO: hacer curar con sanar de cuerpo
     // esto iría sanando tods las localizaciones a la vez
@@ -546,7 +578,7 @@ get pg(){return this.getMaxPuntos('PG')-this.cuerpo.darDaño()}
     //   console.log(av[1], av[2], av[3]);
     // }
 
-    string =string.replace('*','x');
+    string = string.replace('*', 'x');
     var av = string.match(/\s*(\+|-|x|\/)\s*(\d+\.?\d*)([ECPG])?\s*(.*)/i);
     // var av = string.match(/\s*(\+|-|x|\/)\s*(\d+)([ECPG])?\s*(.*)/i);
     // let av= string.match(/(\+|-) (\d+)/i);
@@ -610,8 +642,8 @@ get pg(){return this.getMaxPuntos('PG')-this.cuerpo.darDaño()}
     }
 
     // Redondear??
-    return Math.round(total);
-    // return total;
+    // return Math.round(total);
+    return total;
   }
 
   //TODO: quitar
@@ -677,10 +709,10 @@ get pg(){return this.getMaxPuntos('PG')-this.cuerpo.darDaño()}
     // this._FUE++; this._FUE--;
 
   }
-/**
- * 
- * @param {Modificaciones} m La modificaciones a añadir
- */
+  /**
+   * 
+   * @param {Modificaciones} m La modificaciones a añadir
+   */
   addModificadores(m) {
     //sobreescribe el mismo id
     this.listaMods[m.id] = m;
@@ -1466,13 +1498,13 @@ get pg(){return this.getMaxPuntos('PG')-this.cuerpo.darDaño()}
 
     let html = "";
     if (c) {
-        for (const key in this.getMod(c)) {
-          let valor = this.getMod(c)[key];
-          // let color=valor>0?'green':'red';
-          let color = this.getCar(c) > this[c] ? 'green' : 'red';
-          html += `${key}: <b style="color: ${color}">${valor.op} ${valor.ctd}</b><br>`
-          // html += `${key}: <b style="color: ${color}">${c} ${valor.op} ${valor.ctd} </b><br>`
-        }
+      for (const key in this.getMod(c)) {
+        let valor = this.getMod(c)[key];
+        // let color=valor>0?'green':'red';
+        let color = this.getCar(c) > this[c] ? 'green' : 'red';
+        html += `${key}: <b style="color: ${color}">${valor.op} ${valor.ctd}</b><br>`
+        // html += `${key}: <b style="color: ${color}">${c} ${valor.op} ${valor.ctd} </b><br>`
+      }
 
     }
     else {
@@ -1484,7 +1516,7 @@ get pg(){return this.getMaxPuntos('PG')-this.cuerpo.darDaño()}
       }
 
     }
-    
+
     return html;
 
     // return pj.getModTotal(c);
@@ -1832,8 +1864,8 @@ class Humanoide extends Animal {
 
     this.bonificacion = new Bon({});
 
-   
-      this.inventario = new Contenedor("Cuerpo");
+
+    this.inventario = new Contenedor("Cuerpo");
     // this.inventario = creaInventario("Cuerpo");
     // this.inventario = new Contenedor("Cuerpo");
 
@@ -1923,7 +1955,7 @@ class Humanoide extends Animal {
 
   cuerpoDaño(canvas, scale = 1) {
 
-console.warn("cuerpoDaño de Humanoide");
+    console.warn("cuerpoDaño de Humanoide");
 
     canvas = document.getElementById(canvas);
     var ctx = canvas.getContext("2d");
@@ -2012,7 +2044,7 @@ console.warn("cuerpoDaño de Humanoide");
 class Humano extends Humanoide {
   constructor() {
     super({});
-    
+
   }
 }
 
@@ -2087,9 +2119,9 @@ class Enano extends Humanoide {
  */
 // var pj = new Humanoide({});
 var pj = new Enano();
-let ballesta = new Arco('Ballesta',3,1,new Daño('1d8', 'P'),35,200);
-let virote = new Municion('Virote de vuelo',0.08,0,10,1,5,10)
-virote.ctd=100;
+let ballesta = new Arco('Ballesta', 3, 1, new Daño('1d8', 'P'), 35, 200);
+let virote = new Municion('Virote de vuelo', 0.08, 0, 10, 1, 5, 10)
+virote.ctd = 100;
 pj.inventario.add(ballesta)
 pj.inventario.add(virote)
 pj.act();

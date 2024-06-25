@@ -313,22 +313,23 @@ function arcos(inicio = 34, fin = 41, seguir = true, n = 'A', no = 'B', fue = 'C
     if(ctd){
       console.log(`'CTD': ${ctd}`);
       console.log(' dentro de Arco Municiones')
-      obj = new Municion(nombre, 0, 0,ctd, _daño)
+      let efectos="";
+      
       let _recto = ws[recto + i]?.f?.substring(3)
       if(_recto){
-
-        
-        
-        obj.addMod(new Mod(nombre,_recto[0],_recto.substring(1),'alcanceRecto'))
-        console.log(obj.mods);
+       efectos+= `${_recto} alcanceRecto, `   
       }
       let _max = ws[max + i]?.f.substring(3)
 
-      if(_max){obj.addMod(new Mod(nombre,_max[0],_max.substring(1),'alcance'))
-      console.log(obj.mods);
+      if(_max){
+        efectos+= `${_max} alcance, `   
     }
 
       // console.error(_recto , _max);
+    efectos = efectos.replace(/, $/, '');
+    console.error(efectos);
+
+    obj = new Municion(nombre, 0, 0,ctd, _daño, efectos)
 
 
     }

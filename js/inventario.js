@@ -595,6 +595,11 @@ function creaInventario(nombre = "mochila") {
   return contenedor;
 }
 
+/**
+ * 
+ * @extends Objeto
+ * @implements Modificable
+ */
 class Arma extends Objeto {
   constructor(nombre, peso, valor, ...daños) {
     super(nombre, peso, valor);
@@ -603,6 +608,7 @@ class Arma extends Objeto {
     if (this.daños)
       this.index = 0
   }
+
   set daño(valor) {
     // console.log(typeof valor);
     if (typeof valor === 'string') {
@@ -625,8 +631,27 @@ class Arma extends Objeto {
     // TODO: hacer string y Daño
     this.dañar()
   }
+  /**
+   * Devuelve el daño indexado
+   */
   get daño() {
     return this.daños[this.index]
+  }
+
+  //con mayusculas será el valor númerico
+  /**
+   * 
+   */
+  set Daño(valor) {
+    // console.log(typeof valor);
+    this.dmg=valor;
+  }
+  get Daño() {
+   if (this.dmg){
+    return this.dmg;
+   }
+   //else return 0;
+   else this.dmg= this.daño.tirar();
   }
 
   setAll(o) {
@@ -661,54 +686,56 @@ class Arma extends Objeto {
 
   toString() { return this.nombre }
 
+
 }
 
 
 
+
+/**
+ * ARMAS A DISTANCIA COMO ARCOS Y BALLESTAS
+ */
 class ArmaDistancia extends Arma {
   constructor(nombre, peso, valor, daño, alcance) {
     super(nombre, peso, valor, daño);
     this.alcance = alcance;
   }
 
+  /**
+   * Sobreescribe el daño para que cuente la munición
+   * @override
+   *{@link Municion.daño}
+   */
+  get daño() {
+    if (this.municion && this.municion.daño) {
+      return new Daño(
+        this.daños[this.index].dado + this.municion.daño,
+        this.daños[this.index].tipo
+      )
+    }else
+    return this.daños[this.index] //o super()
+  }
+
+  /**
+   * No debe haber municiones distintas con el mismo nombre
+   * @param {Municion} municion la munición a utilizar
+   */
   utilizar(municion) {
     if (this.municion) {
       this.quitar();
     }
     this.municion = municion;
-    this._poner(municion);
+    //Las modificaciones de la munición en el arma
+    if(municion.modArma)
+    this.addModificadores(municion.modArma)
     console.log(this.municion);
   }
-
+/**
+ * quita la Municion actual
+ */
   quitar() {
-    if(this.municion.daño){
-      if(this.municion.daño>0)
-      this.daños[0].dado=this.daños[0].dado.replace("+"+this.municion.daño,"");
-      else
-      this.daños[0].dado=this.daños[0].dado.replace(""+this.municion.daño,"");
-    }
-    console.log('indexof last'); this.daños[0].dado.last
-    this.alcanceRecto -= this.municion.alcanceRecto
-    this.alcance -= this.municion.alcance
-    this.bonApuntado -= this.municion.bonApuntado
-    this.bonCritico -= this.municion.bonCritico
-    this.bonDiana -= this.municion.bonDiana
-    this.bonLocalización -= this.municion.bonLocalización
-  }
-
-  _poner(municion) {
-    if(this.municion.daño){
-      if(municion.daño>0)
-      this.daños[0].dado += '+'+municion.daño;
-    else 
-    this.daños[0].dado += municion.daño
-    }
-    this.alcanceRecto += municion.alcanceRecto
-    this.alcance += municion.alcance
-    this.bonApuntado += municion.bonApuntado
-    this.bonCritico += municion.bonCritico
-    this.bonDiana += municion.bonDiana
-    this.bonLocalización += municion.bonLocalización
+    this.delModificadores(this.municion.nombre)
+    this.municion=null;
 
   }
 
@@ -732,15 +759,32 @@ class ArmaDistancia extends Arma {
 // }
 
 /**
- * Clase Munición con Mods
+ * Clase Munición con Mods {@link modArma}
+ * @extends Objetos
  */
 class Municion extends Objetos {
-  constructor(nombre, peso, valor,ctd=1, daño
+  constructor(nombre, peso, valor,ctd=1, daño, modArma
    ) {
+    //TODO: ver si lo pongo como mods normales
     super (nombre, peso, valor, ctd = 1)
+
+    if (daño)
+    /**
+     * El daño que sumar al arco. Debe empezar por + o - 
+     * @type {string}*/
     this.daño=daño;
-    console.log("Municiones"+this.ctd);
+
+    if(modArma)
+    /**
+     * Es el Modificaciones que se aplicara al Arco
+     * @type {Modificaciones} 
+     */
+    this.modArma = new Modificaciones(nombre,modArma);
+  
+    // console.log("Municiones"+this.ctd);
   }
+
+  
 
   
 }

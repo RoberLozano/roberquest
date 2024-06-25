@@ -414,6 +414,8 @@ class Daño {
 		if (!tipo && dado) {
 			dado = dado.trim();
 			let s = dado.slice(-1);
+			//comprobar que es tipo de daño
+			
 			try {
 				tipo = s;
 				dado = dado.slice(0, -1)

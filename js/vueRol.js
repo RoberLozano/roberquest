@@ -382,6 +382,11 @@
           },
   
           getColor(v) {
+            if("string"==typeof v){
+              if(v.startsWith("+")) return 'green'
+               if(v.startsWith("-")) return 'red'
+            }
+              
             if (v > 100) return 'green'
             else if (v < 10) return 'red'
             else if (v < 40) return 'orange'

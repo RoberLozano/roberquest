@@ -40,6 +40,11 @@
       padding: 0px !important;
     }
 
+    .row {
+      margin: 0px !important;
+    }
+
+
     /** para las flechas de inventario*/
     .v-toolbar__content {
       height: 56px;
@@ -766,7 +771,7 @@
                     </v-autocomplete>
 
                     <!-- Habilidad -->
-                    <v-row>
+                    <v-row  id="rowHabilidadFiltro">
                       <v-text-field v-if="ifHabilidadFiltro" v-model="filtro" append-icon="mdi-magnify" label="Buscar"
                         single-line hide-details clearable>
                       </v-text-field>
@@ -780,7 +785,7 @@
 
 
                     <v-layout row wrap class="pa-3">
-                      <v-row>
+                      <v-row id="rowHabilidadArma">
                         <v-autocomplete v-model="habilidadFiltro"
                           :items="pj.getHabilidades(parseStringToFunction(filtro))" return-object item-text="nombre">
 
@@ -808,20 +813,24 @@
                             @click="dado=d100.tirar(); iuDaño.dado=arma.daño.tirar(habilidadFiltro.tirada(dado))"
                             @input="iuDaño.dado=arma.daño.tirar(habilidadFiltro.tirada(dado))">
 
+                            <v-btn icon color="green" slot="append-outer"
+                            @click="habilidadFiltro.xpTipoTirada(habilidadFiltro.tirada(dado),dado)">
+                            <v-icon>mdi-check-outline</v-icon>
+                          </v-btn>
+
                           </v-text-field>
 
 
                           <!-- <v-text-field v-model="TipoTirada.tirada[habilidadFiltro.tirada(dado)]" label="Tirada" size="1"  >
                           </v-text-field> -->
-                          <v-btn icon color="green"
-                            @click="habilidadFiltro.xpTipoTirada(habilidadFiltro.tirada(dado),dado)">
-                            <v-icon>mdi-check-outline</v-icon>
-                          </v-btn>
+
+
+                          
                         </div>
 
                       </v-row>
 
-                      <v-row>
+                      <v-row id="rowArma">
                         <v-autocomplete size="6" v-model="arma" label="Arma"
                           :items="pj.inventario.darClaseRecursiva(Arma)" return-object item-text="nombre">
                           <template v-slot:item="{item}">
@@ -929,9 +938,14 @@
                                     <v-text-field v-model.number="habilidadDistancia.distancia" label="m" size="1"
                                       :color="getColor(dado)"></v-text-field>
                                   </div>
-                                  <v-slider id="sliderMetros" v-model.number="habilidadDistancia.distancia"
-                                    :color="habilidadDistancia.distancia>=armaDistancia.alcanceRecto?'red':'green'"
-                                    hint="Distancia en metros" min="0" :max="armaDistancia.alcance||300"
+                                  <v-slider  
+                                  style="
+                                  margin-bottom: -12px;
+                                  align-self: end;"
+                                  
+                                  id="sliderMetros" v-model.number="habilidadDistancia.distancia"
+                                    :color="habilidadDistancia.distancia>=armaDistancia.total('alcanceRecto')?'red':'green'"
+                                    hint="Distancia en metros" min="0" :max="armaDistancia.total('alcance')||300"
                                     thumb-label="always"></v-slider>
 
 
@@ -955,7 +969,7 @@
 
 
                                     <v-list-item-action>
-                                      <v-list-item-action-text v-text="item.alcance+'m'"></v-list-item-action-text>
+                                      <v-list-item-action-text v-text="item.total('alcance')+'m'"></v-list-item-action-text>
                                     </v-list-item-action>
 
                                   </template>
@@ -966,17 +980,19 @@
                                   @change="armaDistancia.utilizar(municion)">
                                   <template v-slot:item="{item}">
 
-                                    <v-list-item-avatar color="indigo" class="text-h6 font-weight-light white--text">
+                                    <v-list-item-avatar :color="getColor(item.daño)" class="text-h6 font-weight-light white--text">
                                       {{ item.ctd }}
                                     </v-list-item-avatar>
                                     <v-list-item-content>
                                       <v-list-item-title v-html="item.nombre"></v-list-item-title>
-                                      <v-list-item-subtitle v-html="item.daño"></v-list-item-subtitle>
+                                      <v-list-item-subtitle v-html="item.modArma?.efectos"></v-list-item-subtitle>
                                     </v-list-item-content>
 
 
-                                    <v-list-item-action>
-                                      <v-list-item-action-text v-text="item.alcance+'m'"></v-list-item-action-text>
+                                    <v-list-item-action >
+                                      <v-list-item-title ><span :text-color="getColor(item.daño)"><b>{{item.daño}}</b></span> daño</v-list-item-title>
+                                   
+                                      <v-list-item-action-text v-text="item.daño" :text-color="getColor(item.daño)"></v-list-item-action-text>
                                     </v-list-item-action>
 
                                   </template>
