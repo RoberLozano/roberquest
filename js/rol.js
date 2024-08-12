@@ -750,7 +750,23 @@ class Animal extends Clase {
 
 
   //#endregion
+/**
+ * Hace una tirada contando con la suerte total de personaje
+ * @param {Habilidad|string} habilidad La habilidad o su nombre
+ * @param {number} dados la tirada, si vacía se hace una nueva 1d100
+ * @returns {number} el número correspondiente a la tirada
+ */
+  tirarHabilidad(habilidad,dados = new D(1, 100).norm()) {
+    if (typeof habilidad === 'string')
+      var h = this.getHabilidad(habilidad);
+    else
+      if (habilidad instanceof Habilidad)
+        var h = habilidad;
 
+      let tirada = h.tirada(dados, this.getTotal('suerte'));
+      return tirada
+
+    }
 
 
 
@@ -1276,7 +1292,8 @@ class Animal extends Clase {
     // let oldSigilo =this.Sigilo;
 
     //Roberquest (como en Excel)
-    this.Agilidad = this.P("DES") + this.S("FUE") + this.SN("TAM")
+    // this.Agilidad = this.P("DES") + this.S("FUE") + this.SN("TAM")
+    this.Agilidad = this.P("DES") + this.S("FUE")
     this.Comunicación = this.P("INT") + this.P("ASP")
     this.Conocimiento = this.P("INT")
     this.Magia = this.P("INT") + this.P("POD") + this.S("DES")
@@ -1909,7 +1926,7 @@ class Humanoide extends Animal {
     // <area shape="circle" coords="242,60,40" alt="cara" title="cara" onclick="console.log('Hostia en cara')">
     // <area shape="circle" coords="243,19,20" alt="craneo" title="craneo" onclick="console.log('Hostia en craneo');">
 
-    cabeza.add(new Localizacion("Craneo", 1, 1, 4, 0, 243, 19))
+    cabeza.add(new Localizacion("Cráneo", 1, 1, 4, 0, 243, 19))
     cabeza.add(new Localizacion("Cara", 1, 5, 7, 0, 242, 60))
     cabeza.add(new Localizacion("Cuello", 1, 8, 9, 0, 243, 130))
 
@@ -1930,14 +1947,14 @@ class Humanoide extends Animal {
     abdomen.add(new Localizacion("Ingle", 1, 69, 69, 0, 243, 448))
     abdomen.add(new Localizacion("Cadera I", 1, 70, 72, 0, 306, 390))
 
-    piernaD.add(new Localizacion("Muslo Superior D", 1, 73, 77, 0, 195, 503))
-    piernaD.add(new Localizacion("Muslo Inferior D", 1, 78, 80, 0, 203, 557))
+    piernaD.add(new Localizacion("Muslo Sup D", 1, 73, 77, 0, 195, 503))
+    piernaD.add(new Localizacion("Muslo Inf D", 1, 78, 80, 0, 203, 557))
     piernaD.add(new Localizacion("Rodilla D", 1, 81, 81, 0, 207, 630))
     piernaD.add(new Localizacion("Pierna Inf D", 1, 82, 85, 0, 207, 737))
     piernaD.add(new Localizacion("Pie D", 1, 86, 86, 0, 205, 850))
 
-    piernaI.add(new Localizacion("Muslo Superior I", 1, 87, 91, 0, 287, 503))
-    piernaI.add(new Localizacion("Muslo Inferior I", 1, 92, 94, 0, 282, 557))
+    piernaI.add(new Localizacion("Muslo Sup I", 1, 87, 91, 0, 287, 503))
+    piernaI.add(new Localizacion("Muslo Inf I", 1, 92, 94, 0, 282, 557))
     piernaI.add(new Localizacion("Rodilla I", 1, 95, 95, 0, 282, 630))
     piernaI.add(new Localizacion("Pierna Inf I", 1, 96, 99, 0, 277, 737))
     piernaI.add(new Localizacion("Pie I", 1, 100, 100, 0, 283, 850))
@@ -2120,7 +2137,8 @@ class Enano extends Humanoide {
 // var pj = new Humanoide({});
 var pj = new Enano();
 let ballesta = new Arco('Ballesta', 3, 1, new Daño('1d8', 'P'), 35, 200);
-let virote = new Municion('Virote de vuelo', 0.08, 0, 10, 1, 5, 10)
+let virote = new Municion('Virote de vuelo', 0.08, 0, 10, '-1',
+   "*1.2 alcanceRecto, *1.3 alcance")
 virote.ctd = 100;
 pj.inventario.add(ballesta)
 pj.inventario.add(virote)
@@ -2262,6 +2280,7 @@ try {
   var config = JSON.parse(de(coor));
   firebase.initializeApp(config);
   var database = firebase.database();
+  console.log('firebase iniciado')
 } catch (error) {
   // alert('Error en firebase')
   console.log('Error en firebase')
@@ -2325,6 +2344,13 @@ function cargarPersonajeOnline(nombre) {
 
   }
 
+}
+
+function historial( valor,campo='habilidades') {
+  console.log("guardando en historial: personajes" + pj.nombre + ("habilidades") );
+      database.ref("historial").child(campo).child(pj.nombre).child(valor.nombre).set(valor);
+
+  
 }
 
 function guerrero(personaje, nivel, ...armas) {

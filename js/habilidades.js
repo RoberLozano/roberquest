@@ -336,9 +336,17 @@ class XP extends Clase {
     // console.log("fechaMundo:"+fechaMundo.toISOString());
     //por si no estuviera definida la variabel global
     if (fechaMundo) this.fechaXp = fechaMundo.toISOString();
+    this.historial();
+
   }
 
   clearXP() { this.xp = 0 }
+
+  historial() {
+    database.ref("historial").child(this.clase).child(pj.nombre).child(fechaMundo.fecha()).child(this.nombre).set(this);
+    console.log("guardando en historial/XP/" + pj.nombre + "/"+fechaMundo.fecha() );
+  
+  }
 
 }
 
@@ -519,7 +527,14 @@ class Habilidad extends XP {
       this.valor += subida;
       this.clearXP();
       if (fechaMundo && subida > 0) this.fecha = fechaMundo;
+      this.historial();
     }
+  }
+
+  historial() {
+    database.ref("historial").child("habilidades").child(pj.nombre).child(fechaMundo.fecha()).child(this.nombre).set(this);
+    console.log("guardando en historial/habilidades/" + pj.nombre + "/"+fechaMundo.fecha() );
+  
   }
 
   subible() {

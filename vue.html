@@ -944,7 +944,7 @@
                                   align-self: end;"
                                   
                                   id="sliderMetros" v-model.number="habilidadDistancia.distancia"
-                                    :color="habilidadDistancia.distancia>=armaDistancia.total('alcanceRecto')?'red':'green'"
+                                    :color="habilidadDistancia.distancia>armaDistancia.total('alcanceRecto')?'red':'green'"
                                     hint="Distancia en metros" min="0" :max="armaDistancia.total('alcance')||300"
                                     thumb-label="always"></v-slider>
 
@@ -970,6 +970,8 @@
 
                                     <v-list-item-action>
                                       <v-list-item-action-text v-text="item.total('alcance')+'m'"></v-list-item-action-text>
+                                      <!-- <v-list-item-action-text v-text="item.total('alcanceRecto')+'m'"></v-list-item-action-text> -->
+                                      <span style="color:green; font-size:12px">{{item.total('alcanceRecto')}}  m</span>
                                     </v-list-item-action>
 
                                   </template>
@@ -992,7 +994,7 @@
                                     <v-list-item-action >
                                       <v-list-item-title ><span :text-color="getColor(item.daño)"><b>{{item.daño}}</b></span> daño</v-list-item-title>
                                    
-                                      <v-list-item-action-text v-text="item.daño" :text-color="getColor(item.daño)"></v-list-item-action-text>
+                                      <v-list-item-action-text v-text="item.daño" text-color="red"></v-list-item-action-text>
                                     </v-list-item-action>
 
                                   </template>
@@ -1271,7 +1273,7 @@
 
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
-            <v-btn color="primary" onclick="fechaMundo=new Date(pj.fecha); console.log(fechaMundo);" dark>
+            <v-btn color="primary" onclick="fechaMundo=new Date(pj.fecha); console.log(fechaMundo);document.getElementById('party').value=fechaMundo.fechahora()" dark>
               Actualizar
             </v-btn>
           </template>

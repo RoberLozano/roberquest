@@ -86,7 +86,12 @@ function ProcessExcel(data) {
   //   ws = workbook.Sheets[firstSheet];
   // }
   info();
-  //HABILIDADES
+
+  //Armaduras
+  // ws = workbook.Sheets['Armadura'];
+  // armaduras();
+
+  // HABILIDADES
   h(21, 89, false);
   pe.act();
 
@@ -119,8 +124,8 @@ function ProcessExcel(data) {
 
   pe.act();
 
-  //mirar si ya hay uno con ese nombre y las diferencias
-  // if (last) console.log(diferencia(pe, last));
+  // mirar si ya hay uno con ese nombre y las diferencias
+  if (last) console.log(diferencia(pe, last));
 
   if (ls(pe.nombre)) {
     last = Clase.convertir(ls(pe.nombre));
@@ -191,16 +196,82 @@ function tecnicas(inicio = 2, fin = 38, ceros = false, hab = 'A', pf = 'B', xp =
 
 
 
-function armaduras() {
+function armaduras(seguir = true, inicio = 4, fin = 37,
+  pieza1 = 'A', loc1 = 'B', pr1 = 'F', PA1 = 'G',
+  pieza2 = 'K', loc2 = 'L', pr2 = 'P', PA2 = 'Q') {
+
+    //Mirar si cambio cosas
+  let mPr = ws['L39']?.v;
+
+  var piezas = {};
+  console.log("EN ARMADURAS");
+
   //TODO: Tengo que decidir cómo hacerlo, si con una hoja de excel o por el nombre
 
-  var nombre = ws['B1']?.v
-  var clase = ws['B2']?.v
-  var altura = ws['B3']?.v
-  var peso = ws['I3']?.v
-  var sexo = ws['F1']?.v
+  //COLUMNAS A-Pieza B-Loc  K-Pieza L-Localización
+  //Primera columna
+  for (let i = inicio; i < fin; i++) {
+    let nombre = ws[pieza1 + i]?.v;
+    console.log('Pieza:' + nombre);
+    if (!nombre|| nombre.includes("Total")) {
+      if (seguir) continue;
+      else return;
+    }
+    
 
-  
+    let loc = ws[loc1 + i]?.v;
+    let dañados = ws[pr1 + i]?.v;
+    let pa = ws[PA1 + i]?.v;
+
+    var lp = new LocPieza(loc, pa, mPr);
+    if (dañados) lp.dañar(dañados);
+    console.log(nombre);
+    console.log(lp);
+
+
+    //si ya hay una pieza llamada así
+    if (!piezas[nombre]) {
+      piezas[nombre] = new Pieza(nombre);
+      // console.log(piezas[nombre]);
+    }
+    //En clase Pieza añado la LocPieza
+    piezas[nombre].add(lp);
+
+
+  }
+  //Segunda columna
+  for (let i = inicio; i < fin; i++) {
+    let nombre = ws[pieza2 + i]?.v;
+    // console.log('Pieza:' + nombre);
+    if (!nombre|| nombre.includes("Total")){
+      if (seguir) continue;
+      else return;
+    }
+
+    let loc = ws[loc2 + i]?.v;
+    let dañados = ws[pr2 + i]?.v;
+    let pa = ws[PA2 + i]?.v;
+
+    var lp = new LocPieza(loc, pa, mPr);
+    if (dañados) lp.dañar(dañados);
+
+
+    //si ya hay una pieza llamada así
+    if (!piezas[nombre]) {
+      piezas[nombre] = new Pieza(nombre);
+    }
+    //ES clase Pieza 
+    piezas[nombre].add(lp)
+
+  }
+
+
+//Uma vez acabado mostramos todo:
+console.log(piezas);
+
+
+
+
 }
 
 function equipo(inicio, fin, n = 'A', p = 'B', c = 'C', seguir = true) {
@@ -234,23 +305,23 @@ function equipo(inicio, fin, n = 'A', p = 'B', c = 'C', seguir = true) {
 
     // console.log(obj);
 
-        //Buscar modificaciones en los objetos
-   nombre.split('.').forEach(e => {
-    if (e.includes(':')) {
-      var x = e.split(':')
-      console.log(x);
+    //Buscar modificaciones en los objetos
+    nombre.split('.').forEach(e => {
+      if (e.includes(':')) {
+        var x = e.split(':')
+        console.log(x);
 
-      console.log(new Modificaciones(x[0], x[1]));
-      obj.nombre=x[0];
-      obj.listaMods[x[0]]=new Modificaciones(x[0], x[1]);
-      pe.addModificadores(new Modificaciones(x[0], x[1]));
-      console.log(obj);
-    
-      // console.error(obj.listaMods);
-      // obj.equipar(pe);
-    }
+        console.log(new Modificaciones(x[0], x[1]));
+        obj.nombre = x[0];
+        obj.listaMods[x[0]] = new Modificaciones(x[0], x[1]);
+        pe.addModificadores(new Modificaciones(x[0], x[1]));
+        console.log(obj);
 
-  })
+        // console.error(obj.listaMods);
+        // obj.equipar(pe);
+      }
+
+    })
 
     pe.inventario.add(obj);
     // console.log(obj.nombre);
@@ -310,50 +381,51 @@ function arcos(inicio = 34, fin = 41, seguir = true, n = 'A', no = 'B', fue = 'C
 
     console.log(ws[recto + i]?.f?.substring(3));
     //Si hay ctd es munición
-    if(ctd){
+    if (ctd) {
       console.log(`'CTD': ${ctd}`);
       console.log(' dentro de Arco Municiones')
-      let efectos="";
-      
+      let efectos = "";
+
       let _recto = ws[recto + i]?.f?.substring(3)
-      if(_recto){
-       efectos+= `${_recto} alcanceRecto, `   
+      if (_recto) {
+        efectos += `${_recto} alcanceRecto, `
       }
       let _max = ws[max + i]?.f.substring(3)
 
-      if(_max){
-        efectos+= `${_max} alcance, `   
-    }
+      if (_max) {
+        efectos += `${_max} alcance, `
+      }
 
       // console.error(_recto , _max);
-    efectos = efectos.replace(/, $/, '');
-    console.error(efectos);
+      efectos = efectos.replace(/, $/, '');
+      console.error(efectos);
 
-    obj = new Municion(nombre, 0, 0,ctd, _daño, efectos)
+      obj = new Municion(nombre, 0, 0, ctd, _daño, efectos)
 
 
     }
 
-    else{
+    else {
       console.log(' dentro de Arco ')
       let daños = []
 
       let _daño = ws[daño + i]?.v;
-      
+
       let _recto = ws[recto + i]?.v;
       let _max = ws[max + i]?.v;
-  
-  
-  
-      let fuerza = ws[fue + i]?.v;
-  
+
+
+
+      let fuerza = ws[fue + i]?.v||0;
+      
+
       let _bonAp = ws[bonAp + i]?.v;
-  
+
       if (_daño) {
         daños.push(new Daño(_daño, 'P'))
       }
-  
-  
+
+
       obj = new Arco(nombre, 0, 0, ...daños, _recto, _max, fuerza, _bonAp)
     }
 
@@ -442,11 +514,11 @@ function hMarciales(inicio, fin, ceros = true, hab = 'A', xp = 'B', valor = 'C',
 
     //fila la donde empiezan las habilidades de armas a distancia (arcos, ballestas,...)
     let EmpiezaDistancia = 9;
-    let n=nombre.toLowerCase();
+    let n = nombre.toLowerCase();
     console.log(n);
     if (n.includes('arco') ||
-    n.includes('ballesta') ||
-    n.includes('pistola')
+      n.includes('ballesta') ||
+      n.includes('pistola')
     )
       habilidad = new HabilidadDistancia(nombre, tipo, porcentaje);
     else
@@ -552,14 +624,14 @@ function info(params) {
   if (clase) {
 
     try {
-    eval(`pe=new ${clase}({})`) //un poco más rápida pero menos segura
-    // pe = (Function('return new ' + clase))() //se supone que es más segura
-    //TODO: hacer pruebas de rendimiento;
-    console.log(pe);
-      
+      eval(`pe=new ${clase}({})`) //un poco más rápida pero menos segura
+      // pe = (Function('return new ' + clase))() //se supone que es más segura
+      //TODO: hacer pruebas de rendimiento;
+      console.log(pe);
+
     } catch (error) {
-      console.log('Error haciendo clase:'+ error.stack);
-       pe = new Humano({});
+      console.log('Error haciendo clase:' + error.stack);
+      pe = new Humano({});
     }
 
   }
@@ -572,7 +644,7 @@ function info(params) {
   console.log(pe);
 
   // pe.sexo = (sexo.toLowerCase().trim()==="mujer")?"&female;":"&male;"
-  if(sexo) pe.sexo = (sexo.toLowerCase().trim() === "mujer") ? "♀" : "♂"
+  if (sexo) pe.sexo = (sexo.toLowerCase().trim() === "mujer") ? "♀" : "♂"
   // pe.sexo = sexo.toLowerCase();
 
   let f = (ws['K6']?.w + '-' + ws['L6']?.v).split('-'); //fecha nacimiento
@@ -688,8 +760,12 @@ function IUHechizos(p, div = "salida") {
 }
 
 
-
-function car(n = 10, col = 'E') {
+/**
+ * 
+ * @param {number} n El número de fila en que empieza 
+ * @param {string} col La columna: C sin bonificaciones, E con bonificaciones
+ */
+function car(n = 10, col = 'C') {
   let suma = 0
   for (let i = 0; i < 7; i++) {
     let car = ws[col + (n + i)]?.v;
@@ -740,12 +816,13 @@ function fecha(i, fecha) {
   let fe = new Date(parseInt(f[2]), parseInt(f[1]) - 1, parseInt(f[0]))
   if (fe > fechaMundo) {
     // console.log(fe,fechaMundo);
-    console.log(fe.mod('año', -1), fechaMundo);
+    // console.log(fe.mod('año', -1), fechaMundo);
+    fe = fe.mod('año', -1);
   }
-  else
-    if (fe < fechaMundo) {
-      console.log(fe, fechaMundo);
-    }
+  // else
+  //   if (fe < fechaMundo) {
+  //     console.log(fe, fechaMundo);
+  //   }
 
   return fe;
 }

@@ -61,6 +61,14 @@ ropa['botas'] = ["Pierna Inf I", "Pie I",
 
 ropa['botas altas'] = ropa['botas'].concat(ropa['rodilleras']);
 
+ropa['vestido'] = ["Hombro D", "Biceps D", "Antebrazo D", "Codo D",
+    "Hombro I", "Biceps I", "Antebrazo I", "Codo I",
+    "Pecho","Vientre", "Cadera D", "Ingle", "Cadera I",
+    "Muslo Superior I", "Muslo Inferior I", "Rodilla I", "Pierna Inf I",
+    "Muslo Superior D", "Muslo Inferior D", "Rodilla D", "Pierna Inf D"]
+    ;
+
+
 
 
 
@@ -73,7 +81,7 @@ class Ropa extends Objeto {
      * @param {Array} localizaciones array de  localizaciones que cubre
      * @param {Number} peso numero de puntos de armadura
      */
-    constructor(nombre, peso, valor, localizaciones, pa = 0) {
+    constructor(nombre, peso, valor, pa = 0, localizaciones) {
         super(nombre, peso, valor);
         this.localizaciones = localizaciones;
         this.pa = pa;
@@ -119,60 +127,61 @@ class Ropa extends Objeto {
     }
 }
 
-class Armadura {
-    constructor(piezas) {
-        this.piezas = piezas
-    }
+// class Armadura {
+//     constructor(piezas) {
+//         this.piezas = piezas
+//     }
 
-    atacar(daño, localizacion) {
-        let armadura = this.daPiezas(localizacion);
-        return daño - armadura;
-    }
+//     atacar(daño, localizacion) {
+//         let armadura = this.daPiezas(localizacion);
+//         return daño - armadura;
+//     }
 
-    /** Devuelve los PA que cubren esa localización
-     *
-     * @param {string} localizacion la localización 
-     * @memberof Armadura
-     */
-    daPiezas(localizacion) {
-        let armadura = 0;
-        this.piezas.forEach(p => {
-            let l = p.localizaciones.indexOf(localizacion)
-            if (l > -1) { armadura += p.pa }
-        });
-        return armadura;
-    }
-}
-
-class Pieza {
-    /**
-     * 
-     * @param {*} localizaciones 
-     * @param {int} pa los Puntos de Armadura iniciales
-     * @param {int} mPr 0 si es indestructible
-     */
-    constructor(localizaciones, pa, mPr = 5) {
-        this.localizaciones = localizaciones
-        if (mPr=0) this._pa=pa;
-        else{
-            this.pr = pa*mPr;
-            this.mPr=mPr;
-        }
-       
-    }
-
-    get pa(){
-        if(this._pa) return this._pa;
-        return Math.round(this.pr/this.mPr);
-    }
+//     /** Devuelve los PA que cubren esa localización
+//      *
+//      * @param {string} localizacion la localización 
+//      * @memberof Armadura
+//      */
+//     daPiezas(localizacion) {
+//         let armadura = 0;
+//         this.piezas.forEach(p => {
+//             let l = p.localizaciones.indexOf(localizacion)
+//             if (l > -1) { armadura += p.pa }
+//         });
+//         return armadura;
+//     }
     
-}
+// }
+
+// class Pieza {
+//     /**
+//      * 
+//      * @param {*} localizaciones 
+//      * @param {int} pa los Puntos de Armadura iniciales
+//      * @param {int} mPr 0 si es indestructible
+//      */
+//     constructor(localizaciones, pa, mPr = 5) {
+//         this.localizaciones = localizaciones
+//         if (mPr=0) this._pa=pa;
+//         else{
+//             this.pr = pa*mPr;
+//             this.mPr=mPr;
+//         }
+       
+//     }
+
+//     get pa(){
+//         if(this._pa) return this._pa;
+//         return Math.round(this.pr/this.mPr);
+//     }
+    
+// }
 
 
 
 // Clases de Armaduras compleja
-//#region 
-//TODO ordenar paramnetros de constructores
+// #region Armadura
+// TODO ordenar paramnetros de constructores
 // class Material {
 //     constructor(nombre, pa, peso, precio) {
 //         this.nombre = nombre;
@@ -213,107 +222,172 @@ class Pieza {
 // }
 
 
-// //TODO hacerla por capas?
-// class Armadura {
-//     constructor(piezas) {
-//         this.capas = 0; //capas de armaduras, acolchada, malla, peto, etc...
-//         this.piezas = piezas;
-//     }
-//     /**
-//      * Devuelve las piezas que cubren esa localización
-//      *
-//      * @param {string} localizacion la localización 
-//      * @memberof Armadura
-//      */
-//     daPiezas(localizacion) {
-//         let lista = [];
-//         this.piezas.forEach(p => {
-//             let l = (p.daLoc(localizacion))
-//             console.log(l);
-//             if (l) { lista.push((l)) }
-//         });
+//TODO hacerla por capas?
+class Armadura {
+    constructor(piezas) {
+        this.capas = 0; //capas de armaduras, acolchada, malla, peto, etc...
+        this.piezas = piezas;
+    }
+    /**
+     * Devuelve las piezas que cubren esa localización
+     *
+     * @param {string} localizacion la localización 
+     * @memberof Armadura
+     */
+    daPiezas(localizacion) {
+        let lista = [];
+        this.piezas.forEach(p => {
+            let l = (p.daLoc(localizacion))
+            console.log(l);
+            if (l) { lista.push((l)); console.log(l+" de "+p.nombre);}
+        });
 
-//         // en que tiene un orden mayor recibe el impacto antes
-//         lista.sort(function (a, b) { return b.orden - a.orden });
-//         return lista;
+        // en que tiene un orden mayor recibe el impacto antes
+        lista.sort(function (a, b) { return b.orden - a.orden });
+        return lista;
 
-//     }
+    }
 
-//     atacar(daño, tipo, localizacion) {
-//         let d = daño;
-//         let lista = daPiezas(localizacion);
-//         if (lista.length < 1) return daño;
-//         lista.forEach(l => {
-//             if (d = 0) return 0;
-//             d = l.atacar(d, tipo);
-//         });
-//         return d;
-//     }
-// }
+    atacar(daño, tipo, localizacion) {
+        let d = daño;
+        let lista = this.daPiezas(localizacion);
+        if (lista.length < 1) return daño;
+        lista.forEach(l => {
+            if (d == 0) return 0;
+            console.log(`Ataca con ${d} ${tipo} a ${l.nombre}`);
+            d = l.atacar(d, tipo);
+        });
+        return d;
+    }
+}
 
-// /**
-//  *
-//  *
-//  * @class Pieza
-//  */
-// class Pieza {
+/**
+ *
+ *  Clase que contiene todas las piezas por localizaciones LocPieza
+ * @class Pieza
+ */
+class Pieza {
+/**
+ * 
+ * @param {Array} localizacion las localizaciones que cubre
+ * @param {int} pa PA iniciales
+ * @param {int} mPr Los puntos de resistencia (PR) por cada PA, 0 si es irrompible
+ * @param {int} L Lacerante si float multiplicador
+ * @param {int} C Contundente si float multiplicador
+ * @param {int} P Penetrante si float multiplicador
+ * @param {int} orden creo que innecesario 
+ */
+    constructor(nombre,localizaciones,pa,mPr=5,L=0,C=0,P=0,orden) {
+        this.nombre=nombre;
+        this.localizaciones = [];
+        //por cada nombre de localizacion se crea una 
+        if(this.localizaciones.length>0) 
+        localizaciones.forEach(l => {
+            // this.localizaciones.push(new LocPieza(l, tipo.pa + material.pa, material.mPr))
+            this.localizaciones.push(new LocPieza(l, pa, mPr, L,C,P,orden))
+        });
+    }
 
-//     constructor(localizaciones, orden = 0, material, tipo, ) {
-//         this.localizaciones = [];
-//         //por cada nombre de localizacion se crea una  
-//         localizaciones.forEach(l => {
-//             // this.localizaciones.push(new LocPieza(l, tipo.pa + material.pa, material.mPr))
-//             this.localizaciones.push(new LocPieza(l, 5, 5, orden))
-//         });
-//     }
+    add(localizacion){
+        this.localizaciones.push(localizacion);
 
-
-//     /**
-//      * Devuelve la localizacion por el nombre
-//      *
-//      * @param {string} nombre de la localización
-//      * @returns la LocPieza con esa localización
-//      * @memberof Pieza
-//      */
-//     daLoc(nombre) {
-//         let loc = false;
-//         this.localizaciones.forEach(l => {
-//             console.log(l.nombre + ":" + nombre);
-//             if (l.nombre == nombre) loc = l;
-//         });
-
-//         return loc;
-//     }
-
-// }
+    }
 
 
-// class LocPieza {
-//     constructor(localizacion, pa, mPr = 5, orden = 0) {
-//         this.nombre = localizacion;
-//         // this.pa = pa;
-//         this.pr = pa * mPr //TODO
-//         //el orden de las capas (0 lo más pegado al cuerpo)
-//         this.orden = orden;
-//     }
+    /**
+     * Devuelve la localizacion por el nombre
+     *
+     * @param {string} nombre de la localización
+     * @returns la LocPieza con esa localización
+     * @memberof Pieza
+     */
+    daLoc(nombre) {
+        let loc = false;
+        this.localizaciones.forEach(l => {
+            console.log(l.nombre + ":" + nombre);
+            if (l.nombre == nombre) loc = l;
+        });
 
-//     get pa() {
-//         return Math.round(this.pr / mPr); //devuelve los puntos de resistancia entre su multiplicador
-//     }
+        return loc;
+    }
 
-//     atacar(daño, tipo) {
-//         if (daño <= this.pa)
-//             return 0;
-//         else {
-//             let d = daño - this.pa; 5
-//             this.pr = this.pr - daño; //se restan PR
-//             return d;
-//         }
-//     }
+}
 
-// }
 
-//#endregion
+class LocPieza {
+/**
+ * 
+ * @param {Array} localizacion las localizaciones que cubre
+ * @param {int} pa PA iniciales
+ * @param {int} mPr Los puntos de resistencia (PR) por cada PA, 0 si es irrompible
+ * @param {int} L Lacerante(corte)
+ * @param {int} C Contundente
+ * @param {int} P Penetrante
+ * @param {int} orden creo que innecesario 
+ */
+    constructor(localizacion, pa, mPr = 5,L=0,C=0,P=0, orden = 0) {
+        this.nombre = localizacion;
+        // this.pa = pa;
+        /**
+         * los puntos de armadura iniciales
+         */
+        this.PAi=pa;
+        //La modificaciones a los tipos de daño
+        this.L=L;
+        this.C=C;
+        this.P=P;
+        /**
+         * Los puntos de resistencia (PR) por cada PA, 0 si es irrompible
+         */
+        this.mPr=mPr;
+        this.pr = pa * mPr + mPr //TODO
+        //el orden de las capas (0 lo más pegado al cuerpo)
+        this.orden = orden;
+    }
+
+    /**
+     * los PA actuales
+     */
+    get pa() {
+        if(this.mPr==0) return this.PAi;
+        return Math.max(0,Math.round(this.pr / this.mPr)); //devuelve los puntos de resistancia entre su multiplicador
+    }
+
+    /**
+     * 
+     * @param {int} daño 
+     * @param {'L'|'C'|'P'} tipo Lacerante, Contundente, Penetrante
+     * @returns 
+     */
+    atacar(daño, tipo) {
+        let mult=1;
+        if (tipo){
+            //TODO: ver si dejo que bonificación negativa influye en PR
+            if(this[tipo]){
+                let bon=this[tipo];
+                console.log(tipo+"-se aplica bon:"+bon);
+                if(Number.isInteger(bon)) daño=Math.max(0,daño-bon)
+                    else mult=bon;
+            }
+        }
+        console.log(daño);
+        if (daño <= this.pa)
+            return 0;
+        else {
+            let d = daño - Math.round(this.pa*mult);
+            if(this.mPr>0) this.pr = this.pr - daño; //se restan PR
+            return d;
+        }
+    }
+/**
+ * 
+ * @param {int} daño Los PR dañados
+ */
+    dañar(daño){this.pr = this.pr - daño }
+
+}
+
+// #endregion
 
 //me jode los arrays
 
@@ -385,12 +459,12 @@ let manga = ["Hombro", "Codo", "Brazo Superior", "Antebrazo"];
 // manga = manga.lado('I')
 manga = lado(manga,'I')
 
-let blusa = new Pieza(chaleco);
+// let blusa = new Pieza(chaleco);
 
 
-let cota = new Pieza(chaleco, 1);
-let coraza = new Pieza(chaleco, 2)
-let a = new Armadura([cota, blusa, coraza]);
+// let cota = new Pieza(chaleco, 1);
+let coraza = new Pieza('coraza',chaleco, 5,5,1)
+// let a = new Armadura([cota, blusa, coraza]);
 
 
 var brazoD = []
@@ -409,5 +483,9 @@ let codos = ["Codo D", "Codo I"];
 let manos = ["Mano D", "Mano I"];
 // chaleco y dos mangas
 todo = brazoD.concat(chaleco, manga, lado(brazoD,'I'))
+
+let pa= new Pieza( 'camisa malla',ropa['camisa'], 8,5,2,0.5,0)
+let vZ= new Pieza('Vestido de Zaahira',ropa['vestido'],6,0);
+let arm = new Armadura([pa,vZ])
 
 
