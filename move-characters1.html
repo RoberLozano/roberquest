@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Interactive Map with Characters</title>
+    <style>
+        .map-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+        
+        .map-bg {
+            min-width: 100%;
+            min-height: 100%;
+            transform-origin: 0 0;
+            position: absolute;
+        }
+        
+        #zoomControls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+        
+        .zoom-btn {
+            padding: 8px 12px;
+            margin: 0 4px;
+            cursor: pointer;
+        }
+
+        #canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .character {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            cursor: move;
+            z-index: 2;
+            transform-origin: center;
+        }
+
+        .controls {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        #tooltip {
+            position: fixed;
+            display: none;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px;
+            border-radius: 3px;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div class="map-container" id="mapContainer">
+        <div class="map-bg" id="mapBg"></div>
+    </div>
+
+    <canvas id="canvas"></canvas>
+    <div id="tooltip"></div>
+
+    <div class="controls">
+        <input type="file" id="bgInput" accept="image/*" />
+        <input type="file" id="characterInput" accept="image/*" multiple />
+        <div id="distance"></div>
+    </div>
+
+    <script>
+        let scale = 1;
+        let dragStart = { x: 0, y: 0 };
+        let currentPos = { x: 0, y: 0 };
+        let isDragging = false;
+        let pathPoints = [];
+        let isDrawingPath = false;
+        
+        const mapContainer = document.getElementById('mapContainer');
+        const mapBg = document.getElementById('mapBg');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const tooltip = document.getElementById('tooltip');
+
+        // Set canvas size
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Map pan functionality
+        mapContainer.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            dragStart = {
+                x: e.clientX - currentPos.x,
+                y: e.clientY - currentPos.y
+            };
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                currentPos = {
+                    x: e.clientX - dragStart.x,
+                    y: e.clientY - dragStart.y
+                };
+                mapBg.style.transform = `translate(${currentPos.x}px, ${currentPos.y}px) scale(${scale})`;
+            }
+        });
+
+        window.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+    function adjustZoom(delta, mouseX, mouseY) {
+        let oldScale = scale;
+        scale = Math.max(0.5, Math.min(100, scale + delta));
+        
+        if (oldScale !== scale) {
+            // Calculate how much the zoom has changed
+            const scaleRatio = scale / oldScale;
+            
+            // Adjust position to zoom towards mouse point
+            currentPos.x = mouseX - (mouseX - currentPos.x) * scaleRatio;
+            currentPos.y = mouseY - (mouseY - currentPos.y) * scaleRatio;
+            
+            mapBg.style.transform = `translate(${currentPos.x}px, ${currentPos.y}px) scale(${scale})`;
+            adjustCharacterSize();
+        }
+        console.log("scale:"+scale);
+    }
+
+    // Update wheel event listener
+    mapContainer.addEventListener('wheel', (e) => {
+        if (!e.ctrlKey && !e.shiftKey && !e.altKey) {
+            e.preventDefault();
+            const rect = mapContainer.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+            console.log("wdelta:"+e.wheelDelta+"\n"+e.deltaY+"\n");
+            
+            // adjustZoom(e.deltaY > 0 ? -0.1 : 0.1, mouseX, mouseY);
+            //para que dependa de la cantidfad de pixeles que se mueve el scroll
+            adjustZoom(-e.deltaY/120, mouseX, mouseY);
+        }
+    });
+
+        // Background image loading
+        document.getElementById('bgInput').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    mapBg.style.backgroundImage = `url(${event.target.result})`;
+                    mapBg.style.backgroundSize = 'contain';
+                    mapBg.style.backgroundRepeat = 'no-repeat';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Character creation and movement
+        function createCharacter(src) {
+            const char = document.createElement('img');
+            char.src = src;
+            char.className = 'character';
+            char.draggable = false;
+            mapBg.appendChild(char);
+
+            let charPos = { x: 0, y: 0 };
+            let isDraggingChar = false;
+
+            char.addEventListener('mousedown', (e) => {
+                e.stopPropagation();
+                isDraggingChar = true;
+                charPos = {
+                    x: e.clientX - char.offsetLeft,
+                    y: e.clientY - char.offsetTop
+                };
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (isDraggingChar) {
+                    char.style.left = (e.clientX - charPos.x) + 'px';
+                    char.style.top = (e.clientY - charPos.y) + 'px';
+                    updateDistance();
+                }
+            });
+
+            window.addEventListener('mouseup', () => {
+                isDraggingChar = false;
+            });
+        }
+
+        document.getElementById('characterInput').addEventListener('change', (e) => {
+            Array.from(e.target.files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (event) => createCharacter(event.target.result);
+                reader.readAsDataURL(file);
+            });
+        });
+
+        function updateDistance() {
+            const chars = document.getElementsByClassName('character');
+            if (chars.length >= 2) {
+                const char1 = chars[0].getBoundingClientRect();
+                const char2 = chars[1].getBoundingClientRect();
+                const distance = Math.sqrt(
+                    Math.pow(char2.left - char1.left, 2) + 
+                    Math.pow(char2.top - char1.top, 2)
+                );
+                document.getElementById('distance').innerText = 
+                    `Distance: ${Math.round(distance)}px`;
+            }
+        }
+
+    // Adjust character size based on zoom level
+    function adjustCharacterSize() {
+        const characters = document.querySelectorAll('.character');
+        characters.forEach(character => {
+            character.style.transform = `scale(${1 / scale})`;
+        });
+    }
+
+    // Call adjustCharacterSize whenever the zoom level changes
+    document.addEventListener('wheel', adjustCharacterSize);
+    </script>
+</body>
+</html>

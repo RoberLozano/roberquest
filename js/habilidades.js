@@ -42,11 +42,13 @@ class Clase {
     for (let key in o) {
       if (key === 'mods') {
         // console.log('SetAll');
-        console.log(o[key]);
+        //console.log(o[key]);
       }
       //genérico para sustituir todos los setAll
       // if (o[key] instanceof Object){
       if (typeof o[key] === 'object' && o[key] !== null) {
+
+       if(Array.isArray(o[key])) this[key] = o[key];
         if (o[key].clase)
           this[key] = Clase.convertir(o[key])
         else
@@ -187,7 +189,7 @@ class Modificable extends Clase {
   setAll(o) {
     super.setAll(o);
     // this.mods = ;
-    console.log(o.mods);
+    //console.log(o.mods);
     //ÑAPA, Como son objetos anidados no hace bien el SetAll (imagino)
     //Sobreescribo, pero como va con id da igual
     for (let key in o.listaMods) {

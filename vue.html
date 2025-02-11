@@ -189,6 +189,9 @@
                   <v-list-item-title>Dados</v-list-item-title>
                 </v-list-item>
 
+                <li><a class="waves-effect" id="dictar" onclick="hablar(true)">Dictar comando<i
+                  class="material-icons">mic</i></a></li>
+
 
 
               </v-list-item-group>
@@ -298,17 +301,19 @@
                       <v-row justify="center">
                         <v-expansion-panels accordion dark>
                           <v-expansion-panel>
-                            <v-expansion-panel-header>Habilidades</v-expansion-panel-header>
+                            <v-expansion-panel-header>Habilidades 
+ 
+                            </v-expansion-panel-header>
                             <v-expansion-panel-content>
                               <template>
 
                                 <!-- fixed-header
                                 height="300px" -->
-                                <v-data-table dense dark hide-default-footer :headers="colHabSel"
-                                  :items="pj.getHabilidades()" multi-sort show-group-by :items-per-page="-1"
+                                <v-data-table  id = "tablaHabilidades" dense dark hide-default-footer :headers="colHabSel"
+                                  :items="pj.getHabilidades(fh)" multi-sort show-group-by :items-per-page="-1"
                                   class="elevation-1" show-expand :single-expand="singleExpand"
                                   :expanded.sync="expanded" :search="search" item-key="nombre" :mobile-breakpoint=200>
-
+                                 
                                   <template v-slot:item.nombre="{item}">
                                     <!-- <p :style="{color: getColor(item.v)}">{{item.v}}</p> -->
                                     <!-- <td :style="{color: item.v<item.total()?'green':(item.v==item.total()?'inherit':'red')}"> -->
@@ -390,11 +395,62 @@
 
                                   <template v-slot:top>
                                     <v-toolbar flat>
-                                      <v-text-field v-model="search" append-icon="mdi-magnify" label="Buscar"
+                                      <v-text-field v-model="search" clearable append-icon="mdi-magnify" label="Buscar"
                                         single-line hide-details>
                                       </v-text-field>
-                                      <v-switch v-if="0 === 1" v-model="singleExpand" label="Single expand"
+                                      <br>
+                                      <div class="d-none d-md-block">
+                                        <v-switch v-if="0 === 1" v-model="singleExpand" label="Single expand"
                                         class="mt-2"></v-switch>
+                                        <v-chip
+                                        class="ma-2"
+                                       
+                                        @click="fh=filtroTecnica"
+                                        color="primary"
+                                      >
+                                      <v-icon>mdi-sword-cross</v-icon>
+                                        Técnicas
+                                      </v-chip>
+                                  
+                                      <v-chip
+                                        class="ma-2"
+                                        color="secondary"
+                                        small
+                                        @click="fh=filtroHechizo"
+                                      >
+                                        Hechizos
+                                      </v-chip>
+
+                                      <v-chip
+                                      class="ma-2"
+                                      color="secondary"
+                                      small
+                                      @click="fh=filtroSubir"
+                                    >
+                                    <v-icon>mdi-chevron-double-up</v-icon>
+                                    </v-chip>
+                                  
+                                      <v-chip
+                                        class="ma-2"
+                                        color="red"
+                                        text-color="white"
+                                        @click="fh=filtroHabilidadMarcial"
+                                        
+                                      >
+                                      <v-icon>mdi-sword</v-icon>
+                                        Combate
+                                      </v-chip>
+                                  
+                                      <v-chip
+                                        class="ma-2"
+                                        color="green"
+                                        text-color="white"
+                                        @click="fh=null"
+                                      >
+                                        Todo
+                                      </v-chip>
+                                      </div>
+                                      
                                     </v-toolbar>
                                   </template>
 
@@ -553,13 +609,9 @@
                                         Cambiar Cantidad
                                       </div>
 
-
-
                                       <v-text-field v-model.number="props.item.ctd" label="ctd" class="mt-0 pt-0"
                                         hide-details single-line type="number" counter autofocus>
                                       </v-text-field>
-
-
 
                                       <v-slider v-model="sliderSeparar" hint="Objetos a separar" :max="props.item.ctd"
                                         min="0" thumb-label>
@@ -568,8 +620,6 @@
                                         @click="contenedor.add(props.item.separar(sliderSeparar), contenedor.objetos.indexOf(props.item)+1); sliderSeparar=0">
                                         <v-icon>mdi-check-outline</v-icon>
                                       </v-btn>
-
-
 
 
                                       <!-- <input type="number" v-model.number="props.item.ctd" :style="{color: props.item.ctd>4?'green':'red'}"> -->
@@ -1418,6 +1468,9 @@
           <v-btn fab dark small color="green">
             <v-icon>mdi-pencil</v-icon>
           </v-btn>
+          <v-btn id ="mic" fab dark small color="red" @click="hablar()">
+            <v-icon>mdi-microphone</v-icon>
+          </v-btn>
           <v-btn  v-if="tab=='Inventario'" fab dark small color="indigo">
             <v-icon>mdi-plus</v-icon>
           </v-btn>
@@ -1503,6 +1556,8 @@
   <script src='js/armaduras.js'></script>
   <script src='js/rol.js'></script>
   <script src='js/vueRol.js'></script>
+  <script src='js/voz-rol.js'></script>
+  
 
 
   <!-- <script>

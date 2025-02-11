@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Map</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        #map-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-color: #333;
+        }
+
+        .controls {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 5px;
+            border-radius: 5px;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .map-button {
+            background: white;
+            border: 1px solid #ccc;
+            padding: 5px 10px;
+            margin: 2px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .map-button:hover {
+            background: #eee;
+        }
+
+        #searchBox {
+            position: fixed;
+            top: 50px;
+            right: 10px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 5px;
+            border-radius: 5px;
+        }
+
+        #svg-container {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map-container">
+        <div id="svg-container"></div>
+        <div class="controls">
+            <label for="fileInput" class="map-button">
+                Load Map
+            </label>
+            <input type="file" id="fileInput" accept="image/svg+xml">
+            <button class="map-button" id="zoomIn">+</button>
+            <button class="map-button" id="zoomOut">-</button>
+            <button class="map-button" id="resetView">Reset</button>
+        </div>
+        <div id="searchBox">
+            <input type="text" id="searchInput" placeholder="Enter name to zoom">
+            <button class="map-button" id="searchButton">Zoom</button>
+        </div>
+    </div>
+
+    <script>
+        let scale = 1;
+        let panning = false;
+        let pointX = 0;
+        let pointY = 0;
+        let start = { x: 0, y: 0 };
+        let svgElement = null;
+
+        const mapContainer = document.getElementById("map-container");
+        const svgContainer = document.getElementById("svg-container");
+        
+        // File input handler
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file && file.type === "image/svg+xml") {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    svgContainer.innerHTML = event.target.result;
+                    svgElement = svgContainer.querySelector('svg');
+                    adjustContainerToSVG();
+                }
+                reader.readAsText(file);
+            } else {
+                alert("Please upload a valid SVG file.");
+            }
+        });
+
+        // Touch handlers
+        mapContainer.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            if (e.touches.length === 1) {
+                panning = true;
+                start = { 
+                    x: e.touches[0].clientX - pointX,
+                    y: e.touches[0].clientY - pointY
+                };
+            }
+        });
+
+        mapContainer.addEventListener('touchmove', function(e) {
+            e.preventDefault();
+            if (e.touches.length === 1 && panning) {
+                pointX = e.touches[0].clientX - start.x;
+                pointY = e.touches[0].clientY - start.y;
+                setTransform();
+            } else if (e.touches.length === 2) {
+                // Handle pinch zoom
+                const touch1 = e.touches[0];
+                const touch2 = e.touches[1];
+                const dist = Math.hypot(
+                    touch2.clientX - touch1.clientX,
+                    touch2.clientY - touch1.clientY
+                );
+                
+                if (this.lastDist) {
+                    const delta = dist - this.lastDist;
+                    scale += delta * 0.01;
+                    scale = Math.min(Math.max(0.1, scale), 100); // Permitir hasta 100x zoom
+                    setTransform();
+                }
+                this.lastDist = dist;
+            }
+        });
+
+        mapContainer.addEventListener('touchend', function(e) {
+            panning = false;
+            this.lastDist = null;
+        });
+
+        // Mouse handlers
+        mapContainer.addEventListener('mousedown', function(e) {
+            panning = true;
+            start = { 
+                x: e.clientX - pointX,
+                y: e.clientY - pointY
+            };
+        });
+
+        mapContainer.addEventListener('mousemove', function(e) {
+            if (panning) {
+                pointX = e.clientX - start.x;
+                pointY = e.clientY - start.y;
+                setTransform();
+            }
+        });
+
+        mapContainer.addEventListener('mouseup', function() {
+            panning = false;
+        });
+
+        mapContainer.addEventListener('mouseleave', function() {
+            panning = false;
+        });
+
+        // Wheel handler for zoom
+        mapContainer.addEventListener('wheel', function(e) {
+            e.preventDefault();
+            const zoomFactor = e.deltaY < 0 ? 1.2 : 0.8;
+            const centerX = mapContainer.clientWidth / 2;
+            const centerY = mapContainer.clientHeight / 2;
+
+            const newScale = Math.min(Math.max(0.1, scale * zoomFactor), 100);
+            const scaleChange = newScale / scale;
+
+            pointX = centerX - (centerX - pointX) * scaleChange;
+            pointY = centerY - (centerY - pointY) * scaleChange;
+
+            scale = newScale;
+            setTransform();
+        });
+
+        // Button handlers
+        document.getElementById('zoomIn').addEventListener('click', function() {
+            scale *= 1.2;
+            scale = Math.min(100, scale); // Permitir hasta 100x zoom
+            setTransform();
+        });
+
+        document.getElementById('zoomOut').addEventListener('click', function() {
+            scale *= 0.8;
+            scale = Math.max(0.1, scale);
+            setTransform();
+        });
+
+        document.getElementById('resetView').addEventListener('click', function() {
+            scale = 1;
+            pointX = 0;
+            pointY = 0;
+            setTransform();
+        });
+
+        document.getElementById('searchButton').addEventListener('click', function() {
+            const searchText = document.getElementById('searchInput').value;
+            zoomToText(searchText);
+        });
+
+        function setTransform() {
+            if (svgElement) {
+                svgElement.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
+            }
+        }
+
+        function zoomToText(text) {
+            if (!svgElement) return;
+
+            const elements = svgElement.querySelectorAll('text');
+            elements.forEach(element => {
+                console.log(element.textContent);
+                
+                if (element.textContent.includes(text)) {
+                    const bbox = element.getBBox();
+                    const centerX = bbox.x + bbox.width / 2;
+                    const centerY = bbox.y + bbox.height / 2;
+
+                    //scale = 5; // Ajustar el nivel de zoom según sea necesario
+                    pointX = -centerX * scale + mapContainer.clientWidth / 2;
+                    pointY = -centerY * scale + mapContainer.clientHeight / 2;
+                    setTransform();
+                }
+            });
+        }
+
+        function adjustContainerToSVG() {
+            if (svgElement) {
+                const bbox = svgElement.getBBox();
+                svgContainer.style.width = `${bbox.width}px`;
+                svgContainer.style.height = `${bbox.height}px`;
+                svgContainer.style.overflow = 'visible';
+                pointX = 0;
+                pointY = 0;
+                scale = 1;
+                setTransform();
+            }
+        }
+    </script>
+</body>
+</html>

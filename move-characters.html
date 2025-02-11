@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Move Characters</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+        .character {
+            position: absolute;
+            cursor: grab;
+        }
+        #distance {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 5px;
+            border-radius: 5px;
+        }
+        #fileInput, #bgInput {
+            position: absolute;
+            top: 10px;
+            cursor: pointer;
+        }
+        #fileInput {
+            right: 50px;
+        }
+        #bgInput {
+            right: 10px;
+        }
+        .icon {
+            width: 32px;
+            height: 32px;
+        }
+        .tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 12px;
+            pointer-events: none;
+            display: none;
+            max-width: 200px;
+            white-space: pre-wrap;
+        }
+        .selection-box {
+            position: absolute;
+            border: 2px dashed #fff;
+            background: rgba(255, 255, 255, 0.1);
+            pointer-events: none;
+        }
+        .character.selected {
+            box-shadow: 0 0 10px 3px #00ff00;
+            border-radius: 50%;
+        }
+        .character.moving {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div id="distance">Distance: 0px</div>
+    <label for="fileInput">
+        <img src="character-icon.png" class="icon" alt="Add Character">
+    </label>
+    <input type="file" id="fileInput" accept="image/*" style="display: none;">
+    <label for="bgInput">
+        <img src="map-icon.png" class="icon" alt="Add Background">
+    </label>
+    <input type="file" id="bgInput" accept="image/*" style="display: none;">
+    <img src="CharacterBG3_01.png" id="character1" class="character" style="top: 100px; left: 100px;" width="50" height="50">
+    <img src="CharacterBG3_02.png" id="character2" class="character" style="top: 200px; left: 200px;" width="50" height="50">
+    <div id="tooltip" class="tooltip"></div>
+    <canvas id="lineCanvas" style="position: absolute; top: 0; left: 0; pointer-events: none;"></canvas>
+
+    <script src='js/coor.js'></script>
+    <script src='js/utils.js'></script>
+    <script src='js/D.js'></script>
+    <script src='js/habilidades.js'></script>
+    <script src='js/inventario.js'></script>
+    <script src='js/localizaciones.js'></script>
+    <script src='js/armaduras.js'></script>
+    <script src='js/rol.js'></script>
+
+    <script>
+        const characters = document.querySelectorAll('.character');
+        let activeCharacter = null;
+        let offsetX, offsetY;
+        let initialAngle = 0;
+        let startX = 0, startY = 0;
+        const tooltip = document.getElementById('tooltip');
+        const canvas = document.getElementById('lineCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Add new variables for path tracking
+        let pathPoints = [];
+        let isDrawingPath = false;
+        let characterObjects = new Map(); // Map to store character objects
+
+        // Add new variables for selection
+        let isSelecting = false;
+        let selectionBox = null;
+        let selectionStart = { x: 0, y: 0 };
+
+        // Add new variables for multiple character movement
+        let selectedCharacters = new Set();
+        let movingCharacters = [];
+        let movingOffsets = [];
+
+        // Set canvas size to match window
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        characters.forEach(character => {
+            character.addEventListener('mousedown', (e) => {
+                activeCharacter = character;
+                offsetX = e.clientX - character.getBoundingClientRect().left;
+                offsetY = e.clientY - character.getBoundingClientRect().top;
+                initialAngle = getRotationAngle(character);
+                character.style.cursor = 'grabbing';
+                
+                // Save initial position
+                startX = character.getBoundingClientRect().left + character.width/2;
+                startY = character.getBoundingClientRect().top + character.height/2;
+                
+                tooltip.style.display = 'none';
+                
+                // Clear previous line
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // Initialize path
+                pathPoints = [[startX, startY]];
+                isDrawingPath = true;
+            });
+        });
+
+        document.addEventListener('mousedown', (e) => {
+            if (e.shiftKey && e.button === 0) { // Shift + Left click para selección de área
+                e.preventDefault();
+                isSelecting = true;
+                selectionStart.x = e.pageX;
+                selectionStart.y = e.pageY;
+                
+                // Create selection box
+                selectionBox = document.createElement('div');
+                selectionBox.className = 'selection-box';
+                selectionBox.style.left = e.pageX + 'px';
+                selectionBox.style.top = e.pageY + 'px';
+                document.body.appendChild(selectionBox);
+            } else if (e.target.classList.contains('character')) {
+                if (!e.shiftKey && !selectedCharacters.has(e.target)) {
+                    // Clear selection only if shift is not pressed and clicking unselected character
+                    selectedCharacters.forEach(char => char.classList.remove('selected'));
+                    selectedCharacters.clear();
+                }
+                
+                // Add to selection if not already selected
+                if (!selectedCharacters.has(e.target)) {
+                    selectedCharacters.add(e.target);
+                    e.target.classList.add('selected');
+                }
+
+                // Setup movement for all selected characters
+                movingCharacters = Array.from(selectedCharacters);
+                movingOffsets = movingCharacters.map(char => ({
+                    x: e.clientX - char.getBoundingClientRect().left,
+                    y: e.clientY - char.getBoundingClientRect().top
+                }));
+                
+                // Start path tracking for the clicked character
+                activeCharacter = e.target;
+                offsetX = e.clientX - activeCharacter.getBoundingClientRect().left;
+                offsetY = e.clientY - activeCharacter.getBoundingClientRect().top;
+                startX = activeCharacter.getBoundingClientRect().left + activeCharacter.width/2;
+                startY = activeCharacter.getBoundingClientRect().top + activeCharacter.height/2;
+                pathPoints = [[startX, startY]];
+                isDrawingPath = true;
+                
+                movingCharacters.forEach(char => char.classList.add('moving'));
+            } else {
+                // Click on empty space clears selection
+                if (!e.shiftKey) {
+                    selectedCharacters.forEach(char => char.classList.remove('selected'));
+                    selectedCharacters.clear();
+                }
+            }
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (isSelecting && selectionBox) {
+                // Update selection box size
+                const width = e.pageX - selectionStart.x;
+                const height = e.pageY - selectionStart.y;
+                
+                selectionBox.style.width = Math.abs(width) + 'px';
+                selectionBox.style.height = Math.abs(height) + 'px';
+                selectionBox.style.left = (width < 0 ? e.pageX : selectionStart.x) + 'px';
+                selectionBox.style.top = (height < 0 ? e.pageY : selectionStart.y) + 'px';
+            }
+            if (activeCharacter) {
+                activeCharacter.style.left = `${e.clientX - offsetX}px`;
+                activeCharacter.style.top = `${e.clientY - offsetY}px`;
+                updateDistance();
+                
+                const currentX = activeCharacter.getBoundingClientRect().left + activeCharacter.width/2;
+                const currentY = activeCharacter.getBoundingClientRect().top + activeCharacter.height/2;
+
+                // Add point to path
+                if (isDrawingPath) {
+                    pathPoints.push([currentX, currentY]);
+                }
+                
+                // Draw curved path
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.beginPath();
+                ctx.setLineDash([5, 5]);
+                ctx.strokeStyle = 'red';
+                ctx.lineWidth = 2;
+
+                if (pathPoints.length > 0) {
+                    ctx.moveTo(pathPoints[0][0], pathPoints[0][1]);
+                    
+                    // Draw smooth curve through points
+                    for (let i = 1; i < pathPoints.length - 2; i++) {
+                        const xc = (pathPoints[i][0] + pathPoints[i + 1][0]) / 2;
+                        const yc = (pathPoints[i][1] + pathPoints[i + 1][1]) / 2;
+                        ctx.quadraticCurveTo(pathPoints[i][0], pathPoints[i][1], xc, yc);
+                    }
+
+                    // Handle last points
+                    if (pathPoints.length > 2) {
+                        ctx.quadraticCurveTo(
+                            pathPoints[pathPoints.length-2][0],
+                            pathPoints[pathPoints.length-2][1],
+                            pathPoints[pathPoints.length-1][0],
+                            pathPoints[pathPoints.length-1][1]
+                        );
+                    }
+                }
+                
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Calculate total path length
+                let totalDistance = 0;
+                for (let i = 1; i < pathPoints.length; i++) {
+                    totalDistance += Math.sqrt(
+                        Math.pow(pathPoints[i][0] - pathPoints[i-1][0], 2) + 
+                        Math.pow(pathPoints[i][1] - pathPoints[i-1][1], 2)
+                    );
+                }
+                
+                tooltip.textContent = `Moved: ${Math.round(totalDistance)}px`;
+                tooltip.style.display = 'block';
+                tooltip.style.left = `${currentX - tooltip.offsetWidth/2}px`;
+                tooltip.style.top = `${currentY + activeCharacter.height + 5}px`;
+            }
+            if (movingCharacters.length > 0) {
+                movingCharacters.forEach((char, index) => {
+                    const offset = movingOffsets[index];
+                    char.style.left = `${e.clientX - offset.x}px`;
+                    char.style.top = `${e.clientY - offset.y}px`;
+                });
+            }
+        }); 
+
+        document.addEventListener('mouseup', (e) => {
+            if (isSelecting) {
+                isSelecting = false;
+                
+                // Get selection box boundaries
+                const boxRect = selectionBox.getBoundingClientRect();
+                
+                // Check which characters are inside the selection
+                document.querySelectorAll('.character').forEach(char => {
+                    const charRect = char.getBoundingClientRect();
+                    if (isRectOverlap(boxRect, charRect)) {
+                        if (!e.shiftKey) {
+                            selectedCharacters.forEach(char => char.classList.remove('selected'));
+                            selectedCharacters.clear();
+                        }
+                        selectedCharacters.add(char);
+                        char.classList.add('selected');
+                        const charObject = characterObjects.get(char);
+                        if (charObject) {
+                            console.log('Selected character:', charObject.nombre);
+                        } else {
+                            console.log('Selected character without data:', char.src);
+                        }
+                    }
+                });
+                
+                // Remove selection box
+                selectionBox.remove();
+                selectionBox = null;
+            }
+            if (activeCharacter) {
+                activeCharacter.style.cursor = 'grab';
+                activeCharacter = null;
+                isDrawingPath = false;
+                
+                // Hide path and tooltip after delay
+                setTimeout(() => {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    tooltip.style.display = 'none';
+                    pathPoints = [];
+                }, 1500);
+            }
+            movingCharacters.forEach(char => char.classList.remove('moving'));
+            movingCharacters = [];
+            movingOffsets = [];
+        });
+
+        document.addEventListener('wheel', (e) => {
+            if (e.shiftKey) {
+                e.preventDefault();
+                // Rotar todos los personajes seleccionados
+                selectedCharacters.forEach(char => {
+                    const currentAngle = getRotationAngle(char);
+                    const rotationSpeed = 5;
+                    const newAngle = currentAngle + (e.deltaY > 0 ? rotationSpeed : -rotationSpeed);
+                    char.style.transform = `rotate(${newAngle}deg)`;
+                });
+
+                // Si hay un personaje activo que no está seleccionado, también rotarlo
+                if (activeCharacter && !selectedCharacters.has(activeCharacter)) {
+                    const currentAngle = getRotationAngle(activeCharacter);
+                    const rotationSpeed = 5;
+                    const newAngle = currentAngle + (e.deltaY > 0 ? rotationSpeed : -rotationSpeed);
+                    activeCharacter.style.transform = `rotate(${newAngle}deg)`;
+                }
+            }
+        }, { passive: false });
+
+        function isRectOverlap(rect1, rect2) {
+            return !(rect1.right < rect2.left || 
+                    rect1.left > rect2.right || 
+                    rect1.bottom < rect2.top || 
+                    rect1.top > rect2.bottom);
+        }
+
+        function createCharacterWithObject(imgSrc, img) {
+            // Get filename without extension
+            const filename = imgSrc.split('/').pop().split('.')[0];
+            // Try to load character object
+            try {
+                const charObject = cargaLocalObjeto(filename);
+                if (charObject) {
+                    characterObjects.set(img, charObject);
+                    
+                    // Add mouseover event for character info
+                    img.addEventListener('mouseover', (e) => {
+                        const char = characterObjects.get(img);
+                        if (char) {
+                            tooltip.style.display = 'block';
+                            tooltip.style.left = e.pageX + 10 + 'px';
+                            tooltip.style.top = e.pageY + 10 + 'px';
+                            tooltip.innerHTML = `
+                                Nombre: ${char.nombre}
+                                FUE: ${char.FUE}
+                                CON: ${char.CON}
+                                DES: ${char.DES}
+                                INT: ${char.INT}
+                                POD: ${char.POD}
+                                PG: ${char.pg}
+                                PM: ${char.pm}
+                                PF: ${char.pf}
+                            `;
+                        }
+                    });
+
+                    img.addEventListener('mouseout', () => {
+                        tooltip.style.display = 'none';
+                    });
+                }
+            } catch (error) {
+                console.log('No se encontró personaje para:', filename);
+            }
+        }
+
+        // Modify existing character loading
+        document.getElementById('fileInput').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const img = document.createElement('img');
+                    img.src = event.target.result;
+                    img.classList.add('character');
+                    img.style.top = '50px';
+                    img.style.left = '50px';
+                    img.width = 50;
+                    img.height = 50;
+                    document.body.appendChild(img);
+                    
+                    // Create character object and add events
+                    createCharacterWithObject(file.name, img);
+
+                    img.addEventListener('mousedown', (e) => {
+                        activeCharacter = img;
+                        offsetX = e.clientX - img.getBoundingClientRect().left;
+                        offsetY = e.clientY - img.getBoundingClientRect().top;
+                        initialAngle = getRotationAngle(img);
+                        img.style.cursor = 'grabbing';
+                        
+                        // Save initial position
+                        startX = img.getBoundingClientRect().left + img.width/2;
+                        startY = img.getBoundingClientRect().top + img.height/2;
+                        
+                        tooltip.style.display = 'none';
+                        
+                        // Clear previous line
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                        // Initialize path
+                        pathPoints = [[startX, startY]];
+                        isDrawingPath = true;
+                    });
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Load initial characters
+        document.querySelectorAll('.character').forEach(img => {
+            createCharacterWithObject(img.src, img);
+        });
+
+        document.getElementById('bgInput').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    document.body.style.backgroundImage = `url(${event.target.result})`;
+                    document.body.style.backgroundSize = 'cover';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function updateDistance() {
+            const char1 = document.getElementById('character1').getBoundingClientRect();
+            const char2 = document.getElementById('character2').getBoundingClientRect();
+            const distance = Math.sqrt(Math.pow(char2.left - char1.left, 2) + Math.pow(char2.top - char1.top, 2));
+            document.getElementById('distance').innerText = `Distance: ${Math.round(distance)}px`;
+        }
+
+        function getRotationAngle(element) {
+            const st = window.getComputedStyle(element, null);
+            const tr = st.getPropertyValue("transform");
+            if (tr === "none") return 0;
+            const values = tr.split('(')[1].split(')')[0].split(',');
+            const a = values[0];
+            const b = values[1];
+            const angle = Math.round(Math.atan2(b, a) * (180 / Math.PI));
+            return angle;
+        }
+    </script>
+</body>
+</html>

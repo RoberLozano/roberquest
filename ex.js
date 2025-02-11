@@ -150,7 +150,7 @@ function ProcessExcel(data) {
 
 };
 
-function tecnicas(inicio = 2, fin = 38, ceros = false, hab = 'A', pf = 'B', xp = 'C', valor = 'D', des = 'M', seguir = true) {
+function tecnicas(inicio = 2, fin = 38, ceros = false, hab = 'A', pf = 'B', xp = 'C', valor = 'D', des = 'M', colFecha='L', seguir = true) {
   let habilidad = new Tecnica();
   //tipo= 'Manipulación'
 
@@ -167,6 +167,8 @@ function tecnicas(inicio = 2, fin = 38, ceros = false, hab = 'A', pf = 'B', xp =
     if (!ceros && !porcentaje && !exp) {
       continue;
     }
+
+    //La descripción y efectos
     var descripcion = ws[des + i]?.v;
 
     let f = ws[pf + (i + 1)]?.v;
@@ -185,6 +187,8 @@ function tecnicas(inicio = 2, fin = 38, ceros = false, hab = 'A', pf = 'B', xp =
 
     habilidad = new Tecnica(nombre, tipo, porcentaje, fatiga);
     if (exp) habilidad.xp = exp;
+    let fe= fecha(i,colFecha);
+    if (fe) habilidad.fecha=fe;
 
 
     pe.habilidades[nombre] = habilidad;
@@ -617,6 +621,8 @@ function info(params) {
   var peso = ws['I3']?.v
   var sexo = ws['F1']?.v
 
+  var suerte = ws['F2']?.v
+
   console.log(nombre);
   console.log(clase);
   console.log(altura);
@@ -646,6 +652,11 @@ function info(params) {
   // pe.sexo = (sexo.toLowerCase().trim()==="mujer")?"&female;":"&male;"
   if (sexo) pe.sexo = (sexo.toLowerCase().trim() === "mujer") ? "♀" : "♂"
   // pe.sexo = sexo.toLowerCase();
+  if (suerte) {
+    console.warn(eval(`[${suerte}]`));
+    pe.suerte=eval(`[${suerte}]`);
+
+  }
 
   let f = (ws['K6']?.w + '-' + ws['L6']?.v).split('-'); //fecha nacimiento
   let fecha_nac = new Date(parseInt(f[2]), parseInt(f[1]) - 1, parseInt(f[0]))
@@ -809,6 +820,12 @@ function bancos(inicio, n = 10) {
 
 }
 
+/**
+ * Te da la fecha de una celda
+ * @param {*} i fila
+ * @param {*} fecha columna
+ * @returns 
+ */
 function fecha(i, fecha) {
   if (!ws[fecha + i]?.w) return 0;
   let f = (ws[fecha + i]?.w + '-' + fechaMundo.getFullYear()).split('-'); //fecha ingreso

@@ -46,8 +46,14 @@ function escuchar() {
     mic = document.getElementById("mic");
     boton.style.color = "green";
 
-    mic.classList.remove("red");
-    mic.classList.add("green");
+try {
+        mic.classList.remove("red");
+        mic.classList.add("green");
+} catch (error) {
+    mic.color = "green";
+    
+}
+
     console.log('Preparado para escuchar');
     console.log(`Diga '${regSTOP}' para detener la escucha`);
     escuchando = true;
@@ -60,7 +66,6 @@ function escuchar() {
  * 
  */
 function hablar() {
-
 
     //   hablado = document.getElementById("hablado");
     if (escuchando) //ya esta escuchando y se para
@@ -244,19 +249,59 @@ function voz(dictado) {
         buscar(b[1])
     }
 
+    var cf = dictado.match(/cambiar fecha a (.*)/i);
+    if (cf) {
+        console.log("CAMBIAR FECHA");
+        console.log(cf);
+        function cambiarFechaTexto(fechaTexto) {
+            fechaTexto = fechaTexto.replace(/\bde \b/g, '');
+            console.log(`Fecha texto después del cambio: ${fechaTexto}`);
+            const meses = {
+            'enero': 0, 'febrero': 1, 'marzo': 2, 'abril': 3, 'mayo': 4, 'junio': 5,
+            'julio': 6, 'agosto': 7, 'septiembre': 8, 'octubre': 9, 'noviembre': 10, 'diciembre': 11
+            };
 
-    var av = dictado.match(/avanzar (\d+) (segundo|minuto|hora|día|semana|mes|año)e*s*/i);
-    if (av) {
-        console.log(av);
-        avanzar(av[2], av[1])
+            let partes = fechaTexto.toLowerCase().split(' ');
+            if (partes.length === 3 || partes.length === 2) {
+            let dia = parseInt(textoaNumero(partes[0]));
+            let mes = meses[partes[1]];
+            let año;
+            if(partes.length === 2) año = fechaMundo.getFullYear();
+            else
+            año = parseInt(partes[2], 10);
+            console.log(`Día: ${dia}, Mes: ${mes + 1}, Año: ${año}`);
+            if (!isNaN(dia) && mes !== undefined && !isNaN(año)) {
+                fechaMundo = new Date(año, mes, dia);
+                console.log(`Fecha cambiada a: ${fechaMundo}`);
+            } else {
+                console.error('Formato de fecha incorrecto. Use "día mes año".');
+            }
+        } else {
+            console.error('Formato de fecha incorrecto. Use "día mes año".');
+        }
+
     }
+        
+
+        cambiarFechaTexto(cf[1]);
+
+    }
+
+
+    var av = dictado.match(/avanzar (.*) (segundo|minuto|hora|día|semana|mes|año)e*s*/i);
+    if (av) {
+		console.log("AVANZAR")
+        console.log(av);
+		//Hago el texto a numero porque ya no da en castellano las cifras
+        avanzar(av[2], textoaNumero(av[1]))
+    }
+
 
     var d = dictado.match(/dañar (.*) en (.*)/i);
     if (d) {
         console.log(d);
         daño(textoaNumero(d[1]), d[2]);
     }
-
 
 }
 
@@ -363,17 +408,21 @@ function avanzar(periodo, n) {
 
 function textoaNumero(s) {
     if (parseInt(s)) return parseInt(s);
+    s=s.toLowerCase();
     s = s.replace('y', '');
     s = s.replace('veinti', 'veinte ')
     var Small = {
         'cero': 0,
         'uno': 1,
+        'un': 1,
+        'una': 1,
         'dos': 2,
         'tres': 3,
         'trés': 3,
         'cuatro': 4,
         'cinco': 5,
         'seis': 6,
+        'séis': 6,
         'siete': 7,
         'ocho': 8,
         'nueve': 9,

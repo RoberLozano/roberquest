@@ -136,11 +136,11 @@ Date.prototype.fechahora = function () {
  * @param {String} ruta la ruta interna
  * @returns {Number} el número de diferencias
  */
-function diferencia(o1, o2,verbose=true,ruta="") {
+function diferencia(o1, o2,verbose=false,ruta="") {
   let n=0;
   for (k in o1) {
     //si o2[k] no existe saltamos a la siguiente (sumar como diferencia?)
-    if((o2[k]===null||typeof o2[k] === "undefined")) {if(verbose)console.log(`NADA ${ruta} ${k} -> ${o2[k]}`);n++;continue;}
+    if((o2[k]===null||typeof o2[k] === "undefined")) {if(verbose)console.log(`NADA ${ruta} ${k} -> ${o2[k]}`);continue;}
     if(o1[k] instanceof Object){
       n+=diferencia(o1[k],o2[k],verbose,ruta+'/'+k);
     }
@@ -148,11 +148,12 @@ function diferencia(o1, o2,verbose=true,ruta="") {
       if (o1[k] != o2[k]) {
         if(o2[k] instanceof Date) {
           let f1=new Date(o1[k]);
-          let dif=(f1.valueOf()-o2[k].valueOf());
-          if(dif) console.log(`${ruta} ${k} ${o1[k]} -> ${o2[k]}`);
+          let dif=(o2[k].valueOf()-f1.valueOf());
+          if(dif) console.log(`${ruta} ${k} ${o1[k]} -> ${o2[k]} (${dif/(60*60*24*1000)}) dias`);
         }
         else
-        if(verbose)console.log(`${ruta} ${k} ${o1[k]} -> ${o2[k]}`);
+        //if(verbose)
+          console.log(`${ruta} ${k} ${o1[k]} -> ${o2[k]}`);
         n++
       }  
   }

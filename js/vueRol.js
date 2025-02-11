@@ -5,6 +5,10 @@
     // );
 
 
+
+    var fh=null;
+
+
     function cuerpoModal(rol) {
         let p = null;
         if (rol === "PNJ")
@@ -474,6 +478,13 @@
           console.log(this.selectedHeaders);
         },
         data: {
+
+           filtroSubir: x=> x.subible()<100,
+           filtroTecnica: x=> x instanceof Tecnica,
+           filtroHabilidadMarcial: x=> x.clase=="HabilidadMarcial",
+           filtroHechizo: x=> x instanceof Hechizo,
+           filtroTecnica: x=> x instanceof Tecnica,
+           fh:null,
           hora: "07:00",
           date: fechaMundo.fechahora(),
           menu1: false,
@@ -516,6 +527,10 @@
             },
             // { text: 'E', value: 'especial', groupable: false },
             // { text: 'C', value: 'critico', groupable: false },
+
+            //PARA poder buscar por nmbre de clase
+            { text: 'Clase', value: 'clase', align: ' d-none' }, // ' d-none' hides the column but keeps the search ability
+            { text: 'Tipo', value: 'tipo', align: ' d-none' }, // ' d-none' hides the column but keeps the search ability
             { text: 'Subir', value: 'sub', groupable: false },
             { text: '', value: 'data-table-expand', groupable: false, width: "5%" },
           ],

@@ -379,8 +379,6 @@ class Animal extends Clase {
       this.addModificadores(o.listaMods[key]);
     }
 
-
-
     // for (let key in o.mods) {
     //   for( let m in o.mods[key])
     //   console.log(o.mods[key][m])
