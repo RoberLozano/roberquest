@@ -69,6 +69,27 @@
             border-radius: 3px;
             z-index: 1000;
         }
+
+        #contextMenu {
+            position: absolute;
+            display: none;
+            background: white;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+        #contextMenu ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        #contextMenu li {
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+        #contextMenu li:hover {
+            background: #eee;
+        }
     </style>
 </head>
 <body>
@@ -85,6 +106,13 @@
         <div id="distance"></div>
     </div>
 
+    <div id="contextMenu">
+        <ul>
+            <li id="menuOption1">Opción 1</li>
+            <li id="menuOption2">Opción 2</li>
+        </ul>
+    </div>
+
     <script>
         let scale = 1;
         let dragStart = { x: 0, y: 0 };
@@ -93,12 +121,14 @@
         let pathPoints = [];
         let isDrawingPath = false;
         let lastTouchDistance = 0;
+        let contextMenuTimeout;
         
         const mapContainer = document.getElementById('mapContainer');
         const mapBg = document.getElementById('mapBg');
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         const tooltip = document.getElementById('tooltip');
+        const contextMenu = document.getElementById('contextMenu');
 
         // Establecer tamaño del canvas
         function resizeCanvas() {
@@ -250,6 +280,35 @@
     //         }
     //     }
     // });
+
+        // Mostrar menú contextual con click derecho
+        mapContainer.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            contextMenu.style.display = 'block';
+            contextMenu.style.left = `${e.clientX}px`;
+            contextMenu.style.top = `${e.clientY}px`;
+        });
+
+        // Ocultar menú contextual al hacer click en cualquier lugar
+        window.addEventListener('click', () => {
+            contextMenu.style.display = 'none';
+        });
+
+        // Mostrar menú contextual con pulsación larga en dispositivos táctiles
+        mapContainer.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 1) {
+                contextMenuTimeout = setTimeout(() => {
+                    const touch = e.touches[0];
+                    contextMenu.style.display = 'block';
+                    contextMenu.style.left = `${touch.clientX}px`;
+                    contextMenu.style.top = `${touch.clientY}px`;
+                }, 500); // 500ms para detectar pulsación larga
+            }
+        });
+
+        mapContainer.addEventListener('touchend', () => {
+            clearTimeout(contextMenuTimeout);
+        });
 
         // Cargar imagen de fondo
         document.getElementById('bgInput').addEventListener('change', (e) => {
