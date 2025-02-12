@@ -131,6 +131,34 @@
             isDragging = false;
         });
 
+        // Funcionalidad de arrastre del mapa en móviles
+        mapContainer.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 1) {
+                isDragging = true;
+                const touch = e.touches[0];
+                dragStart = {
+                    x: touch.clientX - currentPos.x,
+                    y: touch.clientY - currentPos.y
+                };
+            }
+        });
+
+        mapContainer.addEventListener('touchmove', (e) => {
+            if (isDragging && e.touches.length === 1) {
+                e.preventDefault();
+                const touch = e.touches[0];
+                currentPos = {
+                    x: touch.clientX - dragStart.x,
+                    y: touch.clientY - dragStart.y
+                };
+                mapBg.style.transform = `translate(${currentPos.x}px, ${currentPos.y}px) scale(${scale})`;
+            }
+        });
+
+        mapContainer.addEventListener('touchend', () => {
+            isDragging = false;
+        });
+
     function adjustZoom(delta, mouseX, mouseY) {
         let oldScale = scale;
         scale = Math.max(0.5, Math.min(100, scale + delta));
@@ -266,6 +294,33 @@
             });
 
             window.addEventListener('mouseup', () => {
+                isDraggingChar = false;
+            });
+
+            // Funcionalidad de arrastre de personajes en móviles
+            char.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 1) {
+                    e.stopPropagation();
+                    isDraggingChar = true;
+                    const touch = e.touches[0];
+                    charPos = {
+                        x: touch.clientX - char.offsetLeft,
+                        y: touch.clientY - char.offsetTop
+                    };
+                }
+            });
+
+            char.addEventListener('touchmove', (e) => {
+                if (isDraggingChar && e.touches.length === 1) {
+                    e.preventDefault();
+                    const touch = e.touches[0];
+                    char.style.left = (touch.clientX - charPos.x) + 'px';
+                    char.style.top = (touch.clientY - charPos.y) + 'px';
+                    updateDistance();
+                }
+            });
+
+            char.addEventListener('touchend', () => {
                 isDraggingChar = false;
             });
         }
