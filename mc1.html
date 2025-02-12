@@ -94,6 +94,19 @@
             float: right;
             color: #888;
         }
+        .character.moving {
+            opacity: 0.8;
+        }
+        .selection-box {
+            position: absolute;
+            border: 2px dashed #fff;
+            background: rgba(255, 255, 255, 0.1);
+            pointer-events: none;
+        }
+        .character.selected {
+            box-shadow: 0 0 10px 3px #00ff00;
+            border-radius: 50%;
+        }
     </style>
 </head>
 <body>
@@ -140,6 +153,13 @@
         const ctx = canvas.getContext('2d');
         const tooltip = document.getElementById('tooltip');
         const contextMenu = document.getElementById('contextMenu');
+        let activeCharacter = null;
+        let offsetX, offsetY;
+        let initialAngle = 0;
+        let startX = 0, startY = 0;
+        let selectedCharacters = new Set();
+        let movingCharacters = [];
+        let movingOffsets = [];
 
         // Establecer tamaño del canvas
         function resizeCanvas() {
@@ -151,25 +171,139 @@
 
         // Funcionalidad de arrastre del mapa
         mapContainer.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            dragStart = {
-                x: e.clientX - currentPos.x,
-                y: e.clientY - currentPos.y
-            };
-        });
-
-        window.addEventListener('mousemove', (e) => {
-            if (isDragging) {
-                currentPos = {
-                    x: e.clientX - dragStart.x,
-                    y: e.clientY - dragStart.y
-                };
-                mapBg.style.transform = `translate(${currentPos.x}px, ${currentPos.y}px) scale(${scale})`;
+            if (e.shiftKey && e.button === 0) {
+                e.preventDefault();
+                isSelecting = true;
+                selectionStart.x = e.pageX;
+                selectionStart.y = e.pageY;
+                selectionBox = document.createElement('div');
+                selectionBox.className = 'selection-box';
+                selectionBox.style.left = e.pageX + 'px';
+                selectionBox.style.top = e.pageY + 'px';
+                document.body.appendChild(selectionBox);
+            } else if (e.target.classList.contains('character')) {
+                if (!e.shiftKey && !selectedCharacters.has(e.target)) {
+                    selectedCharacters.forEach(char => char.classList.remove('selected'));
+                    selectedCharacters.clear();
+                }
+                if (!selectedCharacters.has(e.target)) {
+                    selectedCharacters.add(e.target);
+                    e.target.classList.add('selected');
+                }
+                movingCharacters = Array.from(selectedCharacters);
+                movingOffsets = movingCharacters.map(char => ({
+                    x: e.clientX - char.getBoundingClientRect().left,
+                    y: e.clientY - char.getBoundingClientRect().top
+                }));
+                activeCharacter = e.target;
+                offsetX = e.clientX - activeCharacter.getBoundingClientRect().left;
+                offsetY = e.clientY - activeCharacter.getBoundingClientRect().top;
+                startX = activeCharacter.getBoundingClientRect().left + activeCharacter.width/2;
+                startY = activeCharacter.getBoundingClientRect().top + activeCharacter.height/2;
+                pathPoints = [[startX, startY]];
+                isDrawingPath = true;
+                movingCharacters.forEach(char => char.classList.add('moving'));
+            } else {
+                if (!e.shiftKey) {
+                    selectedCharacters.forEach(char => char.classList.remove('selected'));
+                    selectedCharacters.clear();
+                }
             }
         });
 
-        window.addEventListener('mouseup', () => {
-            isDragging = false;
+        window.addEventListener('mousemove', (e) => {
+            if (isSelecting && selectionBox) {
+                const width = e.pageX - selectionStart.x;
+                const height = e.pageY - selectionStart.y;
+                selectionBox.style.width = Math.abs(width) + 'px';
+                selectionBox.style.height = Math.abs(height) + 'px';
+                selectionBox.style.left = (width < 0 ? e.pageX : selectionStart.x) + 'px';
+                selectionBox.style.top = (height < 0 ? e.pageY : selectionStart.y) + 'px';
+            }
+            if (activeCharacter) {
+                activeCharacter.style.left = `${e.clientX - offsetX}px`;
+                activeCharacter.style.top = `${e.clientY - offsetY}px`;
+                updateDistance();
+                const currentX = activeCharacter.getBoundingClientRect().left + activeCharacter.width/2;
+                const currentY = activeCharacter.getBoundingClientRect().top + activeCharacter.height/2;
+                if (isDrawingPath) {
+                    pathPoints.push([currentX, currentY]);
+                }
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.beginPath();
+                ctx.setLineDash([5, 5]);
+                ctx.strokeStyle = 'red';
+                ctx.lineWidth = 2;
+                if (pathPoints.length > 0) {
+                    ctx.moveTo(pathPoints[0][0], pathPoints[0][1]);
+                    for (let i = 1; i < pathPoints.length - 2; i++) {
+                        const xc = (pathPoints[i][0] + pathPoints[i + 1][0]) / 2;
+                        const yc = (pathPoints[i][1] + pathPoints[i + 1][1]) / 2;
+                        ctx.quadraticCurveTo(pathPoints[i][0], pathPoints[i][1], xc, yc);
+                    }
+                    if (pathPoints.length > 2) {
+                        ctx.quadraticCurveTo(
+                            pathPoints[pathPoints.length-2][0],
+                            pathPoints[pathPoints.length-2][1],
+                            pathPoints[pathPoints.length-1][0],
+                            pathPoints[pathPoints.length-1][1]
+                        );
+                    }
+                }
+                ctx.stroke();
+                ctx.setLineDash([]);
+                let totalDistance = 0;
+                for (let i = 1; i < pathPoints.length; i++) {
+                    totalDistance += Math.sqrt(
+                        Math.pow(pathPoints[i][0] - pathPoints[i-1][0], 2) + 
+                        Math.pow(pathPoints[i][1] - pathPoints[i-1][1], 2)
+                    );
+                }
+                tooltip.textContent = `Moved: ${Math.round(totalDistance)}px`;
+                tooltip.style.display = 'block';
+                tooltip.style.left = `${currentX - tooltip.offsetWidth/2}px`;
+                tooltip.style.top = `${currentY + activeCharacter.height + 5}px`;
+            }
+            if (movingCharacters.length > 0) {
+                movingCharacters.forEach((char, index) => {
+                    const offset = movingOffsets[index];
+                    char.style.left = `${e.clientX - offset.x}px`;
+                    char.style.top = `${e.clientY - offset.y}px`;
+                });
+            }
+        });
+
+        window.addEventListener('mouseup', (e) => {
+            if (isSelecting) {
+                isSelecting = false;
+                const boxRect = selectionBox.getBoundingClientRect();
+                document.querySelectorAll('.character').forEach(char => {
+                    const charRect = char.getBoundingClientRect();
+                    if (isRectOverlap(boxRect, charRect)) {
+                        if (!e.shiftKey) {
+                            selectedCharacters.forEach(char => char.classList.remove('selected'));
+                            selectedCharacters.clear();
+                        }
+                        selectedCharacters.add(char);
+                        char.classList.add('selected');
+                    }
+                });
+                selectionBox.remove();
+                selectionBox = null;
+            }
+            if (activeCharacter) {
+                activeCharacter.style.cursor = 'grab';
+                activeCharacter = null;
+                isDrawingPath = false;
+                setTimeout(() => {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    tooltip.style.display = 'none';
+                    pathPoints = [];
+                }, 1500);
+            }
+            movingCharacters.forEach(char => char.classList.remove('moving'));
+            movingCharacters = [];
+            movingOffsets = [];
         });
 
         // Funcionalidad de arrastre del mapa en móviles
@@ -481,6 +615,24 @@
     document.addEventListener('wheel', adjustCharacterSize);
     document.addEventListener('touchmove', adjustCharacterSize);
     document.addEventListener('pointermove', adjustCharacterSize);
+
+    function getRotationAngle(element) {
+        const st = window.getComputedStyle(element, null);
+        const tr = st.getPropertyValue("transform");
+        if (tr === "none") return 0;
+        const values = tr.split('(')[1].split(')')[0].split(',');
+        const a = values[0];
+        const b = values[1];
+        const angle = Math.round(Math.atan2(b, a) * (180 / Math.PI));
+        return angle;
+    }
+
+    function isRectOverlap(rect1, rect2) {
+        return !(rect1.right < rect2.left || 
+                rect1.left > rect2.right || 
+                rect1.bottom < rect2.top || 
+                rect1.top > rect2.bottom);
+    }
     </script>
 </body>
 </html>
