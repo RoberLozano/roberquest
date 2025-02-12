@@ -90,6 +90,10 @@
         #contextMenu li:hover {
             background: #eee;
         }
+        #contextMenu li span.shortcut {
+            float: right;
+            color: #888;
+        }
     </style>
 </head>
 <body>
@@ -110,6 +114,10 @@
         <ul>
             <li id="menuOption1">Opción 1</li>
             <li id="menuOption2">Opción 2</li>
+            <li id="measureDistance">Medir Distancia
+                <span class="shortcut" style="margin-left: 10px;">D</span>
+                
+            </li>
         </ul>
     </div>
 
@@ -122,6 +130,9 @@
         let isDrawingPath = false;
         let lastTouchDistance = 0;
         let contextMenuTimeout;
+        let measuringDistance = false;
+        let startPoint = null;
+        const pxToKmRatio = 0.1; // Ratio de conversión de píxeles a kilómetros (ajustar según sea necesario)
         
         const mapContainer = document.getElementById('mapContainer');
         const mapBg = document.getElementById('mapBg');
@@ -230,7 +241,7 @@
             e.preventDefault();
             const touch1 = e.touches[0];
             const touch2 = e.touches[1];
-            const currentTouchDistance = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
+            const currentTouchDistance = Math.hypot(touch2.clientX - touch1.clientX, touch1.clientY - touch2.clientY);
 
             if (lastTouchDistance) {
                 const delta = (currentTouchDistance - lastTouchDistance) / 100;
@@ -254,6 +265,8 @@
             adjustZoom(0.1, window.innerWidth / 2, window.innerHeight / 2);
         } else if (e.key === '-') {
             adjustZoom(-0.1, window.innerWidth / 2, window.innerHeight / 2);
+        } else if (e.key === 'd' || e.key === 'D') {
+            startMeasuringDistance();
         }
     });
 
@@ -308,6 +321,56 @@
 
         mapContainer.addEventListener('touchend', () => {
             clearTimeout(contextMenuTimeout);
+        });
+
+        // Iniciar medición de distancia
+        document.getElementById('measureDistance').addEventListener('click', startMeasuringDistance);
+
+        function startMeasuringDistance() {
+            measuringDistance = true;
+            startPoint = null;
+            contextMenu.style.display = 'none';
+        }
+
+        mapContainer.addEventListener('click', (e) => {
+            if (measuringDistance) {
+                if (!startPoint) {
+                    startPoint = { x: e.clientX, y: e.clientY };
+                } else {
+                    const endPoint = { x: e.clientX, y: e.clientY };
+                    const distance = Math.sqrt(
+                        Math.pow((endPoint.x - startPoint.x) / scale, 2) + 
+                        Math.pow((endPoint.y - startPoint.y) / scale, 2)
+                    ) * pxToKmRatio;
+                    alert(`Distancia: ${distance.toFixed(2)} km`);
+                    measuringDistance = false;
+                    startPoint = null;
+                }
+            }
+        });
+
+        mapContainer.addEventListener('mousemove', (e) => {
+            if (measuringDistance && startPoint) {
+                const endPoint = { x: e.clientX, y: e.clientY };
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.beginPath();
+                ctx.moveTo(startPoint.x, startPoint.y);
+                ctx.lineTo(endPoint.x, endPoint.y);
+                ctx.strokeStyle = 'red';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                const distance = Math.sqrt(
+                    Math.pow((endPoint.x - startPoint.x) / scale, 2) + 
+                    Math.pow((endPoint.y - startPoint.y) / scale, 2)
+                ) * pxToKmRatio;
+                tooltip.style.display = 'block';
+                tooltip.style.left = `${endPoint.x + 10}px`;
+                tooltip.style.top = `${endPoint.y + 10}px`;
+                tooltip.innerText = `Distancia: ${distance.toFixed(2)} km`;
+            } else {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                tooltip.style.display = 'none';
+            }
         });
 
         // Cargar imagen de fondo
@@ -398,11 +461,11 @@
                 const char1 = chars[0].getBoundingClientRect();
                 const char2 = chars[1].getBoundingClientRect();
                 const distance = Math.sqrt(
-                    Math.pow(char2.left - char1.left, 2) + 
-                    Math.pow(char2.top - char1.top, 2)
-                );
+                    Math.pow((char2.left - char1.left) / scale, 2) + 
+                    Math.pow((char2.top - char1.top) / scale, 2)
+                ) * pxToKmRatio;
                 document.getElementById('distance').innerText = 
-                    `Distancia: ${Math.round(distance)}px`;
+                    `Distancia: ${distance.toFixed(2)} km`;
             }
         }
 
