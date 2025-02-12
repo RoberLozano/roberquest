@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Interactive Map with Characters</title>
+    <title>Mapa Interactivo con Personajes</title>
     <style>
         .map-container {
             position: fixed;
@@ -92,6 +92,7 @@
         let isDragging = false;
         let pathPoints = [];
         let isDrawingPath = false;
+        let lastTouchDistance = 0;
         
         const mapContainer = document.getElementById('mapContainer');
         const mapBg = document.getElementById('mapBg');
@@ -99,7 +100,7 @@
         const ctx = canvas.getContext('2d');
         const tooltip = document.getElementById('tooltip');
 
-        // Set canvas size
+        // Establecer tamaño del canvas
         function resizeCanvas() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
@@ -107,7 +108,7 @@
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
-        // Map pan functionality
+        // Funcionalidad de arrastre del mapa
         mapContainer.addEventListener('mousedown', (e) => {
             isDragging = true;
             dragStart = {
@@ -135,10 +136,10 @@
         scale = Math.max(0.5, Math.min(100, scale + delta));
         
         if (oldScale !== scale) {
-            // Calculate how much the zoom has changed
+            // Calcular cuánto ha cambiado el zoom
             const scaleRatio = scale / oldScale;
             
-            // Adjust position to zoom towards mouse point
+            // Ajustar posición para hacer zoom hacia el punto del ratón
             currentPos.x = mouseX - (mouseX - currentPos.x) * scaleRatio;
             currentPos.y = mouseY - (mouseY - currentPos.y) * scaleRatio;
             
@@ -148,7 +149,7 @@
         console.log("scale:"+scale);
     }
 
-    // Update wheel event listener
+    // Actualizar el listener del evento de la rueda del ratón
     mapContainer.addEventListener('wheel', (e) => {
         if (!e.ctrlKey && !e.shiftKey && !e.altKey) {
             e.preventDefault();
@@ -158,12 +159,71 @@
             console.log("wdelta:"+e.wheelDelta+"\n"+e.deltaY+"\n");
             
             // adjustZoom(e.deltaY > 0 ? -0.1 : 0.1, mouseX, mouseY);
-            //para que dependa de la cantidfad de pixeles que se mueve el scroll
+            // para que dependa de la cantidad de píxeles que se mueve el scroll
             adjustZoom(-e.deltaY/120, mouseX, mouseY);
         }
     });
 
-        // Background image loading
+    // Añadir soporte para el gesto de pellizcar en pantallas táctiles
+    mapContainer.addEventListener('touchmove', (e) => {
+        console.log("touchmove"+e.touches.length);
+        
+        if (e.touches.length === 2) {
+            e.preventDefault();
+            const touch1 = e.touches[0];
+            const touch2 = e.touches[1];
+            const currentTouchDistance = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
+
+            if (lastTouchDistance) {
+                const delta = (currentTouchDistance - lastTouchDistance) / 100;
+                const rect = mapContainer.getBoundingClientRect();
+                const mouseX = (touch1.clientX + touch2.clientX) / 2 - rect.left;
+                const mouseY = (touch1.clientY + touch2.clientY) / 2 - rect.top;
+                adjustZoom(delta, mouseX, mouseY);
+            }
+
+            lastTouchDistance = currentTouchDistance;
+        }
+    });
+
+    mapContainer.addEventListener('touchend', () => {
+        lastTouchDistance = 0;
+    });
+
+    // Añadir soporte para las teclas + y -
+    window.addEventListener('keydown', (e) => {
+        if (e.key === '+' || e.key === '=') {
+            adjustZoom(0.1, window.innerWidth / 2, window.innerHeight / 2);
+        } else if (e.key === '-') {
+            adjustZoom(-0.1, window.innerWidth / 2, window.innerHeight / 2);
+        }
+    });
+
+    // Añadir soporte para dispositivos táctiles que actúan como ratón
+    // mapContainer.addEventListener('pointermove', (e) => {
+    //     console.log("pointermove"+e.pointerType);
+        
+    //     if (e.pointerType === 'touch' && e.isPrimary) {
+    //         if (e.touches && e.touches.length === 2) {
+    //             e.preventDefault();
+    //             const touch1 = e.touches[0];
+    //             const touch2 = e.touches[1];
+    //             const currentTouchDistance = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
+
+    //             if (lastTouchDistance) {
+    //                 const delta = (currentTouchDistance - lastTouchDistance) / 100;
+    //                 const rect = mapContainer.getBoundingClientRect();
+    //                 const mouseX = (touch1.clientX + touch2.clientX) / 2 - rect.left;
+    //                 const mouseY = (touch1.clientY + touch2.clientY) / 2 - rect.top;
+    //                 adjustZoom(delta, mouseX, mouseY);
+    //             }
+
+    //             lastTouchDistance = currentTouchDistance;
+    //         }
+    //     }
+    // });
+
+        // Cargar imagen de fondo
         document.getElementById('bgInput').addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
@@ -177,7 +237,7 @@
             }
         });
 
-        // Character creation and movement
+        // Creación y movimiento de personajes
         function createCharacter(src) {
             const char = document.createElement('img');
             char.src = src;
@@ -228,11 +288,11 @@
                     Math.pow(char2.top - char1.top, 2)
                 );
                 document.getElementById('distance').innerText = 
-                    `Distance: ${Math.round(distance)}px`;
+                    `Distancia: ${Math.round(distance)}px`;
             }
         }
 
-    // Adjust character size based on zoom level
+    // Ajustar tamaño de los personajes basado en el nivel de zoom
     function adjustCharacterSize() {
         const characters = document.querySelectorAll('.character');
         characters.forEach(character => {
@@ -240,8 +300,10 @@
         });
     }
 
-    // Call adjustCharacterSize whenever the zoom level changes
+    // Llamar a adjustCharacterSize cada vez que cambie el nivel de zoom
     document.addEventListener('wheel', adjustCharacterSize);
+    document.addEventListener('touchmove', adjustCharacterSize);
+    document.addEventListener('pointermove', adjustCharacterSize);
     </script>
 </body>
 </html>
