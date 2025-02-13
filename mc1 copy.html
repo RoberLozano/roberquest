@@ -94,6 +94,31 @@
             float: right;
             color: #888;
         }
+        .character.moving {
+            opacity: 0.8;
+        }
+        .selection-box {
+            position: absolute;
+            border: 2px dashed #fff;
+            background: rgba(255, 255, 255, 0.1);
+            pointer-events: none;
+        }
+        .character.selected {
+            box-shadow: 0 0 10px 3px #00ff00;
+            border-radius: 50%;
+        }
+        .tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 12px;
+            pointer-events: none;
+            display: none;
+            max-width: 200px;
+            white-space: pre-wrap;
+        }
     </style>
 </head>
 <body>
@@ -102,7 +127,7 @@
     </div>
 
     <canvas id="canvas"></canvas>
-    <div id="tooltip"></div>
+    <div id="tooltip" class="tooltip"></div>
 
     <div class="controls">
         <input type="file" id="bgInput" accept="image/*" />
@@ -114,7 +139,10 @@
         <ul>
             <li id="menuOption1">Opción 1</li>
             <li id="menuOption2">Opción 2</li>
-            <li id="measureDistance">Medir Distancia <span class="shortcut">D</span></li>
+            <li id="measureDistance">Medir Distancia
+                <span class="shortcut" style="margin-left: 10px;">D</span>
+                
+            </li>
         </ul>
     </div>
 
@@ -137,6 +165,13 @@
         const ctx = canvas.getContext('2d');
         const tooltip = document.getElementById('tooltip');
         const contextMenu = document.getElementById('contextMenu');
+        let activeCharacter = null;
+        let offsetX, offsetY;
+        let initialAngle = 0;
+        let startX = 0, startY = 0;
+        let selectedCharacters = new Set();
+        let movingCharacters = [];
+        let movingOffsets = [];
 
         // Establecer tamaño del canvas
         function resizeCanvas() {
@@ -148,25 +183,117 @@
 
         // Funcionalidad de arrastre del mapa
         mapContainer.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            dragStart = {
-                x: e.clientX - currentPos.x,
-                y: e.clientY - currentPos.y
-            };
-        });
-
-        window.addEventListener('mousemove', (e) => {
-            if (isDragging) {
-                currentPos = {
-                    x: e.clientX - dragStart.x,
-                    y: e.clientY - dragStart.y
-                };
-                mapBg.style.transform = `translate(${currentPos.x}px, ${currentPos.y}px) scale(${scale})`;
+            if (e.shiftKey && e.button === 0) {
+                e.preventDefault();
+                isSelecting = true;
+                selectionStart.x = e.pageX;
+                selectionStart.y = e.pageY;
+                selectionBox = document.createElement('div');
+                selectionBox.className = 'selection-box';
+                selectionBox.style.left = e.pageX + 'px';
+                selectionBox.style.top = e.pageY + 'px';
+                document.body.appendChild(selectionBox);
+            } else if (e.target.classList.contains('character')) {
+                if (!e.shiftKey && !selectedCharacters.has(e.target)) {
+                    selectedCharacters.forEach(char => char.classList.remove('selected'));
+                    selectedCharacters.clear();
+                }
+                if (!selectedCharacters.has(e.target)) {
+                    selectedCharacters.add(e.target);
+                    e.target.classList.add('selected');
+                }
+                movingCharacters = Array.from(selectedCharacters);
+                movingOffsets = movingCharacters.map(char => ({
+                    x: e.clientX - char.getBoundingClientRect().left,
+                    y: e.clientY - char.getBoundingClientRect().top
+                }));
+                activeCharacter = e.target;
+                offsetX = e.clientX - activeCharacter.getBoundingClientRect().left;
+                offsetY = e.clientY - activeCharacter.getBoundingClientRect().top;
+                startX = activeCharacter.getBoundingClientRect().left + activeCharacter.width/2;
+                startY = activeCharacter.getBoundingClientRect().top + activeCharacter.height/2;
+                pathPoints = [[startX, startY]];
+                isDrawingPath = true;
+                movingCharacters.forEach(char => char.classList.add('moving'));
+            } else {
+                if (!e.shiftKey) {
+                    selectedCharacters.forEach(char => char.classList.remove('selected'));
+                    selectedCharacters.clear();
+                }
             }
         });
 
-        window.addEventListener('mouseup', () => {
-            isDragging = false;
+        window.addEventListener('mousemove', (e) => {
+            if (isSelecting && selectionBox) {
+                const width = e.pageX - selectionStart.x;
+                const height = e.pageY - selectionStart.y;
+                selectionBox.style.width = Math.abs(width) + 'px';
+                selectionBox.style.height = Math.abs(height) + 'px';
+                selectionBox.style.left = (width < 0 ? e.pageX : selectionStart.x) + 'px';
+                selectionBox.style.top = (height < 0 ? e.pageY : selectionStart.y) + 'px';
+            }
+            if (activeCharacter) {
+                e.preventDefault();
+            
+                // Mover todos los personajes seleccionados
+                movingCharacters.forEach((char, index) => {
+                    const offset = movingOffsets[index];
+                    char.style.left = `${(e.clientX - offset.x) / scale}px`;
+                    char.style.top = `${(e.clientY - offset.y) / scale}px`;
+                });
+
+                // Dibujar el camino
+                if (isDrawingPath) {
+                    const currentX = activeCharacter.offsetLeft + activeCharacter.width/2;
+                    const currentY = activeCharacter.offsetTop + activeCharacter.height/2;
+                    pathPoints.push([currentX * scale, currentY * scale]);
+                    
+                    drawPath();
+                }
+                
+                updateDistance();
+            }
+            if (movingCharacters.length > 0) {
+                movingCharacters.forEach((char, index) => {
+                    const offset = movingOffsets[index];
+                    char.style.left = `${e.clientX - offset.x}px`;
+                    char.style.top = `${e.clientY - offset.y}px`;
+                });
+            }
+        });
+
+        window.addEventListener('mouseup', (e) => {
+            if (isSelecting) {
+                isSelecting = false;
+                const boxRect = selectionBox.getBoundingClientRect();
+                document.querySelectorAll('.character').forEach(char => {
+                    const charRect = char.getBoundingClientRect();
+                    if (isRectOverlap(boxRect, charRect)) {
+                        if (!e.shiftKey) {
+                            selectedCharacters.forEach(char => char.classList.remove('selected'));
+                            selectedCharacters.clear();
+                        }
+                        selectedCharacters.add(char);
+                        char.classList.add('selected');
+                    }
+                });
+                selectionBox.remove();
+                selectionBox = null;
+            }
+            if (activeCharacter) {
+                movingCharacters.forEach(char => char.classList.remove('moving'));
+                activeCharacter = null;
+                isDrawingPath = false;
+                
+                // Ocultar camino y tooltip después de un delay
+                setTimeout(() => {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    tooltip.style.display = 'none';
+                    pathPoints = [];
+                }, 1500);
+            }
+            movingCharacters = [];
+            movingOffsets = [];
         });
 
         // Funcionalidad de arrastre del mapa en móviles
@@ -392,55 +519,37 @@
             char.draggable = false;
             mapBg.appendChild(char);
 
-            let charPos = { x: 0, y: 0 };
-            let isDraggingChar = false;
-
             char.addEventListener('mousedown', (e) => {
+                if (e.shiftKey && e.button === 0) {
+                    if (!selectedCharacters.has(char)) {
+                        selectedCharacters.add(char);
+                        char.classList.add('selected');
+                    }
+                } else {
+                    if (!selectedCharacters.has(char)) {
+                        selectedCharacters.forEach(c => c.classList.remove('selected'));
+                        selectedCharacters.clear();
+                        selectedCharacters.add(char);
+                        char.classList.add('selected');
+                    }
+                }
+
+                activeCharacter = char;
+                offsetX = e.clientX - char.offsetLeft;
+                offsetY = e.clientY - char.offsetTop;
+                startX = char.offsetLeft + char.width/2;
+                startY = char.offsetTop + char.height/2;
+                pathPoints = [[startX, startY]];
+                isDrawingPath = true;
+                
+                movingCharacters = Array.from(selectedCharacters);
+                movingOffsets = movingCharacters.map(c => ({
+                    x: e.clientX - c.offsetLeft,
+                    y: e.clientY - c.offsetTop
+                }));
+                
+                movingCharacters.forEach(c => c.classList.add('moving'));
                 e.stopPropagation();
-                isDraggingChar = true;
-                charPos = {
-                    x: e.clientX - char.offsetLeft,
-                    y: e.clientY - char.offsetTop
-                };
-            });
-
-            window.addEventListener('mousemove', (e) => {
-                if (isDraggingChar) {
-                    char.style.left = (e.clientX - charPos.x) + 'px';
-                    char.style.top = (e.clientY - charPos.y) + 'px';
-                    updateDistance();
-                }
-            });
-
-            window.addEventListener('mouseup', () => {
-                isDraggingChar = false;
-            });
-
-            // Funcionalidad de arrastre de personajes en móviles
-            char.addEventListener('touchstart', (e) => {
-                if (e.touches.length === 1) {
-                    e.stopPropagation();
-                    isDraggingChar = true;
-                    const touch = e.touches[0];
-                    charPos = {
-                        x: touch.clientX - char.offsetLeft,
-                        y: touch.clientY - char.offsetTop
-                    };
-                }
-            });
-
-            char.addEventListener('touchmove', (e) => {
-                if (isDraggingChar && e.touches.length === 1) {
-                    e.preventDefault();
-                    const touch = e.touches[0];
-                    char.style.left = (touch.clientX - charPos.x) + 'px';
-                    char.style.top = (touch.clientY - charPos.y) + 'px';
-                    updateDistance();
-                }
-            });
-
-            char.addEventListener('touchend', () => {
-                isDraggingChar = false;
             });
         }
 
@@ -478,6 +587,68 @@
     document.addEventListener('wheel', adjustCharacterSize);
     document.addEventListener('touchmove', adjustCharacterSize);
     document.addEventListener('pointermove', adjustCharacterSize);
+
+    function getRotationAngle(element) {
+        const st = window.getComputedStyle(element, null);
+        const tr = st.getPropertyValue("transform");
+        if (tr === "none") return 0;
+        const values = tr.split('(')[1].split(')')[0].split(',');
+        const a = values[0];
+        const b = values[1];
+        const angle = Math.round(Math.atan2(b, a) * (180 / Math.PI));
+        return angle;
+    }
+
+    function isRectOverlap(rect1, rect2) {
+        return !(rect1.right < rect2.left || 
+                rect1.left > rect2.right || 
+                rect1.bottom < rect2.top || 
+                rect1.top > rect2.bottom);
+    }
+
+    // Añadir función para dibujar el camino
+    function drawPath() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (pathPoints.length < 2) return;
+
+        ctx.beginPath();
+        ctx.setLineDash([5, 5]);
+        ctx.strokeStyle = 'red';
+        ctx.lineWidth = 2;
+        
+        ctx.moveTo(pathPoints[0][0], pathPoints[0][1]);
+        for (let i = 1; i < pathPoints.length - 2; i++) {
+            const xc = (pathPoints[i][0] + pathPoints[i + 1][0]) / 2;
+            const yc = (pathPoints[i][1] + pathPoints[i + 1][1]) / 2;
+            ctx.quadraticCurveTo(pathPoints[i][0], pathPoints[i][1], xc, yc);
+        }
+        
+        if (pathPoints.length > 2) {
+            ctx.quadraticCurveTo(
+                pathPoints[pathPoints.length-2][0],
+                pathPoints[pathPoints.length-2][1],
+                pathPoints[pathPoints.length-1][0],
+                pathPoints[pathPoints.length-1][1]
+            );
+        }
+        
+        ctx.stroke();
+        
+        // Mostrar distancia recorrida
+        let totalDistance = 0;
+        for (let i = 1; i < pathPoints.length; i++) {
+            totalDistance += Math.sqrt(
+                Math.pow(pathPoints[i][0] - pathPoints[i-1][0], 2) + 
+                Math.pow(pathPoints[i][1] - pathPoints[i-1][1], 2)
+            );
+        }
+        
+        const distanceInKm = (totalDistance / scale) * pxToKmRatio;
+        tooltip.textContent = `Distancia recorrida: ${distanceInKm.toFixed(2)} km`;
+        tooltip.style.display = 'block';
+        tooltip.style.left = `${pathPoints[pathPoints.length-1][0]}px`;
+        tooltip.style.top = `${pathPoints[pathPoints.length-1][1] + 20}px`;
+    }
     </script>
 </body>
 </html>
