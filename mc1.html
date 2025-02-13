@@ -92,6 +92,7 @@
         }
         #contextMenu li span.shortcut {
             float: right;
+            margin-left: 10px;
             color: #888;
         }
     </style>
@@ -112,9 +113,8 @@
 
     <div id="contextMenu">
         <ul>
-            <li id="menuOption1">Opción 1</li>
-            <li id="menuOption2">Opción 2</li>
             <li id="measureDistance">Medir Distancia <span class="shortcut">D</span></li>
+            <li id="drawPath">Dibujar Camino <span class="shortcut" >C</span></li>
         </ul>
     </div>
 
@@ -148,11 +148,20 @@
 
         // Funcionalidad de arrastre del mapa
         mapContainer.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            dragStart = {
-                x: e.clientX - currentPos.x,
-                y: e.clientY - currentPos.y
-            };
+            if (isDrawingPath) {
+                e.preventDefault();
+                pathPoints = [{ x: e.clientX, y: e.clientY }];
+                ctx.beginPath();
+                ctx.moveTo(e.clientX, e.clientY);
+                ctx.strokeStyle = 'blue';
+                ctx.lineWidth = 2;
+            } else if (!measuringDistance) {
+                isDragging = true;
+                dragStart = {
+                    x: e.clientX - currentPos.x,
+                    y: e.clientY - currentPos.y
+                };
+            }
         });
 
         window.addEventListener('mousemove', (e) => {
@@ -163,9 +172,60 @@
                 };
                 mapBg.style.transform = `translate(${currentPos.x}px, ${currentPos.y}px) scale(${scale})`;
             }
+            if (isDrawingPath && pathPoints.length > 0) {
+                // Clear previous drawing
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Redraw entire path
+                ctx.beginPath();
+                ctx.moveTo(pathPoints[0].x, pathPoints[0].y);
+                let totalDistance = 0;
+                
+                for (let i = 1; i < pathPoints.length; i++) {
+                    ctx.lineTo(pathPoints[i].x, pathPoints[i].y);
+                    const dx = (pathPoints[i].x - pathPoints[i-1].x) / scale;
+                    const dy = (pathPoints[i].y - pathPoints[i-1].y) / scale;
+                    totalDistance += Math.sqrt(dx * dx + dy * dy) * pxToKmRatio;
+                }
+                
+                // Draw current line segment
+                ctx.lineTo(e.clientX, e.clientY);
+                ctx.strokeStyle = 'blue';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // Calculate final segment distance
+                const lastPoint = pathPoints[pathPoints.length - 1];
+                const dx = (e.clientX - lastPoint.x) / scale;
+                const dy = (e.clientY - lastPoint.y) / scale;
+                totalDistance += Math.sqrt(dx * dx + dy * dy) * pxToKmRatio;
+                
+                // Show tooltip with total distance
+                tooltip.style.display = 'block';
+                tooltip.style.left = `${e.clientX + 10}px`;
+                tooltip.style.top = `${e.clientY + 10}px`;
+                tooltip.innerText = `Distancia: ${totalDistance.toFixed(2)} km`;
+                
+                pathPoints.push({ x: e.clientX, y: e.clientY });
+            }
         });
 
         window.addEventListener('mouseup', () => {
+            if (isDrawingPath) {
+                isDrawingPath = false;
+                tooltip.style.display = 'none';
+                // Calculate final total path length
+                let totalDistance = 0;
+                for (let i = 1; i < pathPoints.length; i++) {
+                    const dx = (pathPoints[i].x - pathPoints[i-1].x) / scale;
+                    const dy = (pathPoints[i].y - pathPoints[i-1].y) / scale;
+                    totalDistance += Math.sqrt(dx * dx + dy * dy) * pxToKmRatio;
+                }
+                if (totalDistance > 0) {
+                    alert(`Longitud total del camino: ${totalDistance.toFixed(2)} km`);
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            }
             isDragging = false;
         });
 
@@ -264,6 +324,8 @@
             adjustZoom(-0.1, window.innerWidth / 2, window.innerHeight / 2);
         } else if (e.key === 'd' || e.key === 'D') {
             startMeasuringDistance();
+        } else if (e.key === 'c' || e.key === 'C') {
+            startPathDrawing();
         }
     });
 
@@ -478,6 +540,17 @@
     document.addEventListener('wheel', adjustCharacterSize);
     document.addEventListener('touchmove', adjustCharacterSize);
     document.addEventListener('pointermove', adjustCharacterSize);
+
+    // Add new function for path drawing
+    function startPathDrawing() {
+        isDrawingPath = true;
+        pathPoints = [];
+        measuringDistance = false;
+        contextMenu.style.display = 'none';
+    }
+
+    // Add click handler for new menu option
+    document.getElementById('drawPath').addEventListener('click', startPathDrawing);
     </script>
 </body>
 </html>
