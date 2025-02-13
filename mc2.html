@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mapa Interactivo con Personajes</title>
+    <style>
+        .map-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+        
+        .map-bg {
+            min-width: 100%;
+            min-height: 100%;
+            transform-origin: 0 0;
+            position: absolute;
+        }
+        
+        #zoomControls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+        
+        .zoom-btn {
+            padding: 8px 12px;
+            margin: 0 4px;
+            cursor: pointer;
+        }
+
+        #canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .character {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            cursor: move;
+            z-index: 2;
+            transform-origin: center;
+        }
+
+        .controls {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        #tooltip {
+            position: fixed;
+            display: none;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px;
+            border-radius: 3px;
+            z-index: 1000;
+        }
+
+        #contextMenu {
+            position: absolute;
+            display: none;
+            background: white;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+        #contextMenu ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        #contextMenu li {
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+        #contextMenu li:hover {
+            background: #eee;
+        }
+        #contextMenu li span.shortcut {
+            float: right;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="map-container" id="mapContainer">
+        <div class="map-bg" id="mapBg"></div>
+    </div>
+
+    <canvas id="canvas"></canvas>
+    <div id="tooltip"></div>
+
+    <div class="controls">
+        <input type="file" id="bgInput" accept="image/*" />
+        <input type="file" id="characterInput" accept="image/*" multiple />
+        <div id="distance"></div>
+    </div>
+
+    <div id="contextMenu">
+        <ul>
+            <li id="menuOption1">Opción 1</li>
+            <li id="menuOption2">Opción 2</li>
+            <li id="measureDistance">Medir Distancia <span class="shortcut">D</span></li>
+        </ul>
+    </div>
+
+    <script>
+        let scale = 1;
+        let dragStart = { x: 0, y: 0 };
+        let currentPos = { x: 0, y: 0 };
+        let isDragging = false;
+        let pathPoints = [];
+        let isDrawingPath = false;
+        let lastTouchDistance = 0;
+        let contextMenuTimeout;
+        let measuringDistance = false;
+        let startPoint = null;
+        const pxToKmRatio = 0.1; // Ratio de conversión de píxeles a kilómetros (ajustar según sea necesario)
+        
+        const mapContainer = document.getElementById('mapContainer');
+        const mapBg = document.getElementById('mapBg');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const tooltip = document.getElementById('tooltip');
+        const contextMenu = document.getElementById('contextMenu');
+
+        // Establecer tamaño del canvas
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class MouseManager {
+            constructor(mapContainer, mapBg, scale, currentPos) {
+                this.mapContainer = mapContainer;
+                this.mapBg = mapBg;
+                this.scale = scale;
+                this.currentPos = currentPos;
+                this.isDragging = false;
+                this.dragStart = { x: 0, y: 0 };
+                this.setupEventListeners();
+            }
+
+            setupEventListeners() {
+                // Mouse events
+                this.mapContainer.addEventListener('mousedown', (e) => this.handleDragStart(e));
+                window.addEventListener('mousemove', (e) => this.handleDrag(e));
+                window.addEventListener('mouseup', () => this.handleDragEnd());
+
+                // Touch events
+                this.mapContainer.addEventListener('touchstart', (e) => this.handleTouchStart(e));
+                this.mapContainer.addEventListener('touchmove', (e) => this.handleTouchMove(e));
+                this.mapContainer.addEventListener('touchend', () => this.handleDragEnd());
+            }
+
+            handleDragStart(e) {
+                if (e.target.classList.contains('character')) return;
+                this.isDragging = true;
+                this.dragStart = {
+                    x: (e.clientX || e.touches[0].clientX) - this.currentPos.x,
+                    y: (e.clientY || e.touches[0].clientY) - this.currentPos.y
+                };
+            }
+
+            handleDrag(e) {
+                if (!this.isDragging) return;
+                const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+                const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+                
+                this.currentPos = {
+                    x: clientX - this.dragStart.x,
+                    y: clientY - this.dragStart.y
+                };
+                
+                this.updateMapPosition();
+            }
+
+            handleDragEnd() {
+                this.isDragging = false;
+            }
+
+            handleTouchStart(e) {
+                if (e.touches.length === 1) {
+                    this.handleDragStart(e);
+                }
+            }
+
+            handleTouchMove(e) {
+                if (e.touches.length === 1) {
+                    e.preventDefault();
+                    this.handleDrag(e);
+                }
+            }
+
+            updateMapPosition() {
+                this.mapBg.style.transform = `translate(${this.currentPos.x}px, ${this.currentPos.y}px) scale(${scale})`;
+            }
+        }
+
+        class CharacterManager {
+            constructor(mapBg) {
+                this.mapBg = mapBg;
+                this.activeCharacters = new Set();
+                this.selectedCharacters = new Set();
+                this.pathPoints = [];
+                this.isDrawingPath = false;
+            }
+
+            createCharacter(src) {
+                const char = document.createElement('img');
+                char.src = src;
+                char.className = 'character';
+                char.draggable = false;
+                this.mapBg.appendChild(char);
+
+                this.setupCharacterEvents(char);
+                this.activeCharacters.add(char);
+                return char;
+            }
+
+            setupCharacterEvents(char) {
+                let startPos = { x: 0, y: 0 };
+                
+                const handleStart = (e) => {
+                    e.stopPropagation();
+                    const pos = this.getEventPosition(e);
+                    startPos = {
+                        x: pos.x - char.offsetLeft,
+                        y: pos.y - char.offsetTop
+                    };
+                    this.handleCharacterSelect(char, e);
+                };
+
+                const handleMove = (e) => {
+                    if (this.selectedCharacters.has(char)) {
+                        const pos = this.getEventPosition(e);
+                        char.style.left = `${(pos.x - startPos.x) / scale}px`;
+                        char.style.top = `${(pos.y - startPos.y) / scale}px`;
+                        this.updatePath(char);
+                        updateDistance();
+                    }
+                };
+
+                char.addEventListener('mousedown', handleStart);
+                char.addEventListener('touchstart', handleStart);
+                window.addEventListener('mousemove', handleMove);
+                window.addEventListener('touchmove', handleMove);
+            }
+
+            getEventPosition(e) {
+                return {
+                    x: e.clientX || (e.touches && e.touches[0].clientX),
+                    y: e.clientY || (e.touches && e.touches[0].clientY)
+                };
+            }
+
+            handleCharacterSelect(char, e) {
+                if (!e.shiftKey) {
+                    this.selectedCharacters.forEach(c => c.classList.remove('selected'));
+                    this.selectedCharacters.clear();
+                }
+                this.selectedCharacters.add(char);
+                char.classList.add('selected');
+            }
+
+            updatePath(char) {
+                if (this.isDrawingPath) {
+                    const pos = {
+                        x: char.offsetLeft + char.width/2,
+                        y: char.offsetTop + char.height/2
+                    };
+                    this.pathPoints.push([pos.x * scale, pos.y * scale]);
+                    drawPath(this.pathPoints);
+                }
+            }
+        }
+
+        // Inicializar managers
+        const mouseManager = new MouseManager(mapContainer, mapBg, scale, currentPos);
+        const characterManager = new CharacterManager(mapBg);
+
+        function adjustZoom(delta, mouseX, mouseY) {
+            let oldScale = scale;
+            scale = Math.max(0.5, Math.min(100, scale + delta));
+            
+            if (oldScale !== scale) {
+                // Calcular cuánto ha cambiado el zoom
+                const scaleRatio = scale / oldScale;
+                
+                // Ajustar posición para hacer zoom hacia el punto del ratón
+                currentPos.x = mouseX - (mouseX - currentPos.x) * scaleRatio;
+                currentPos.y = mouseY - (mouseY - currentPos.y) * scaleRatio;
+                
+                mapBg.style.transform = `translate(${currentPos.x}px, ${currentPos.y}px) scale(${scale})`;
+                adjustCharacterSize();
+            }
+            console.log("scale:"+scale);
+        }
+
+        // Actualizar el listener del evento de la rueda del ratón
+        mapContainer.addEventListener('wheel', (e) => {
+            if (!e.ctrlKey && !e.shiftKey && !e.altKey) {
+                e.preventDefault();
+                const rect = mapContainer.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+                console.log("wdelta:"+e.wheelDelta+"\n"+e.deltaY+"\n");
+                
+                // adjustZoom(e.deltaY > 0 ? -0.1 : 0.1, mouseX, mouseY);
+                // para que dependa de la cantidad de píxeles que se mueve el scroll
+                adjustZoom(-e.deltaY/120, mouseX, mouseY);
+            }
+        });
+
+        // Añadir soporte para el gesto de pellizcar en pantallas táctiles
+        mapContainer.addEventListener('touchmove', (e) => {
+            console.log("touchmove"+e.touches.length);
+            
+            if (e.touches.length === 2) {
+                e.preventDefault();
+                const touch1 = e.touches[0];
+                const touch2 = e.touches[1];
+                const currentTouchDistance = Math.hypot(touch2.clientX - touch1.clientX, touch1.clientY - touch2.clientY);
+
+                if (lastTouchDistance) {
+                    const delta = (currentTouchDistance - lastTouchDistance) / 100;
+                    const rect = mapContainer.getBoundingClientRect();
+                    const mouseX = (touch1.clientX + touch2.clientX) / 2 - rect.left;
+                    const mouseY = (touch1.clientY + touch2.clientY) / 2 - rect.top;
+                    adjustZoom(delta, mouseX, mouseY);
+                }
+
+                lastTouchDistance = currentTouchDistance;
+            }
+        });
+
+        mapContainer.addEventListener('touchend', () => {
+            lastTouchDistance = 0;
+        });
+
+        // Añadir soporte para las teclas + y -
+        window.addEventListener('keydown', (e) => {
+            if (e.key === '+' || e.key === '=') {
+                adjustZoom(0.1, window.innerWidth / 2, window.innerHeight / 2);
+            } else if (e.key === '-') {
+                adjustZoom(-0.1, window.innerWidth / 2, window.innerHeight / 2);
+            } else if (e.key === 'd' || e.key === 'D') {
+                startMeasuringDistance();
+            }
+        });
+
+        // Añadir soporte para dispositivos táctiles que actúan como ratón
+        // mapContainer.addEventListener('pointermove', (e) => {
+        //     console.log("pointermove"+e.pointerType);
+            
+        //     if (e.pointerType === 'touch' && e.isPrimary) {
+        //         if (e.touches && e.touches.length === 2) {
+        //             e.preventDefault();
+        //             const touch1 = e.touches[0];
+        //             const touch2 = e.touches[1];
+        //             const currentTouchDistance = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
+
+        //             if (lastTouchDistance) {
+        //                 const delta = (currentTouchDistance - lastTouchDistance) / 100;
+        //                 const rect = mapContainer.getBoundingClientRect();
+        //                 const mouseX = (touch1.clientX + touch2.clientX) / 2 - rect.left;
+        //                 const mouseY = (touch1.clientY + touch2.clientY) / 2 - rect.top;
+        //                 adjustZoom(delta, mouseX, mouseY);
+        //             }
+
+        //             lastTouchDistance = currentTouchDistance;
+        //         }
+        //     }
+        // });
+
+        // Mostrar menú contextual con click derecho
+        mapContainer.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            contextMenu.style.display = 'block';
+            contextMenu.style.left = `${e.clientX}px`;
+            contextMenu.style.top = `${e.clientY}px`;
+        });
+
+        // Ocultar menú contextual al hacer click en cualquier lugar
+        window.addEventListener('click', () => {
+            contextMenu.style.display = 'none';
+        });
+
+        // Mostrar menú contextual con pulsación larga en dispositivos táctiles
+        mapContainer.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 1) {
+                contextMenuTimeout = setTimeout(() => {
+                    const touch = e.touches[0];
+                    contextMenu.style.display = 'block';
+                    contextMenu.style.left = `${touch.clientX}px`;
+                    contextMenu.style.top = `${touch.clientY}px`;
+                }, 500); // 500ms para detectar pulsación larga
+            }
+        });
+
+        mapContainer.addEventListener('touchend', () => {
+            clearTimeout(contextMenuTimeout);
+        });
+
+        // Iniciar medición de distancia
+        document.getElementById('measureDistance').addEventListener('click', startMeasuringDistance);
+
+        function startMeasuringDistance() {
+            measuringDistance = true;
+            startPoint = null;
+            contextMenu.style.display = 'none';
+        }
+
+        mapContainer.addEventListener('click', (e) => {
+            if (measuringDistance) {
+                if (!startPoint) {
+                    startPoint = { x: e.clientX, y: e.clientY };
+                } else {
+                    const endPoint = { x: e.clientX, y: e.clientY };
+                    const distance = Math.sqrt(
+                        Math.pow((endPoint.x - startPoint.x) / scale, 2) + 
+                        Math.pow((endPoint.y - startPoint.y) / scale, 2)
+                    ) * pxToKmRatio;
+                    alert(`Distancia: ${distance.toFixed(2)} km`);
+                    measuringDistance = false;
+                    startPoint = null;
+                }
+            }
+        });
+
+        mapContainer.addEventListener('mousemove', (e) => {
+            if (measuringDistance && startPoint) {
+                const endPoint = { x: e.clientX, y: e.clientY };
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.beginPath();
+                ctx.moveTo(startPoint.x, startPoint.y);
+                ctx.lineTo(endPoint.x, endPoint.y);
+                ctx.strokeStyle = 'red';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                const distance = Math.sqrt(
+                    Math.pow((endPoint.x - startPoint.x) / scale, 2) + 
+                    Math.pow((endPoint.y - startPoint.y) / scale, 2)
+                ) * pxToKmRatio;
+                tooltip.style.display = 'block';
+                tooltip.style.left = `${endPoint.x + 10}px`;
+                tooltip.style.top = `${endPoint.y + 10}px`;
+                tooltip.innerText = `Distancia: ${distance.toFixed(2)} km`;
+            } else {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                tooltip.style.display = 'none';
+            }
+        });
+
+        // Cargar imagen de fondo
+        document.getElementById('bgInput').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    mapBg.style.backgroundImage = `url(${event.target.result})`;
+                    mapBg.style.backgroundSize = 'contain';
+                    mapBg.style.backgroundRepeat = 'no-repeat';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Creación y movimiento de personajes
+        function createCharacter(src) {
+            const char = document.createElement('img');
+            char.src = src;
+            char.className = 'character';
+            char.draggable = false;
+            mapBg.appendChild(char);
+
+            let charPos = { x: 0, y: 0 };
+            let isDraggingChar = false;
+
+            char.addEventListener('mousedown', (e) => {
+                e.stopPropagation();
+                isDraggingChar = true;
+                charPos = {
+                    x: e.clientX - char.offsetLeft,
+                    y: e.clientY - char.offsetTop
+                };
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (isDraggingChar) {
+                    char.style.left = (e.clientX - charPos.x) + 'px';
+                    char.style.top = (e.clientY - charPos.y) + 'px';
+                    updateDistance();
+                }
+            });
+
+            window.addEventListener('mouseup', () => {
+                isDraggingChar = false;
+            });
+
+            // Funcionalidad de arrastre de personajes en móviles
+            char.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 1) {
+                    e.stopPropagation();
+                    isDraggingChar = true;
+                    const touch = e.touches[0];
+                    charPos = {
+                        x: touch.clientX - char.offsetLeft,
+                        y: touch.clientY - char.offsetTop
+                    };
+                }
+            });
+
+            char.addEventListener('touchmove', (e) => {
+                if (isDraggingChar && e.touches.length === 1) {
+                    e.preventDefault();
+                    const touch = e.touches[0];
+                    char.style.left = (touch.clientX - charPos.x) + 'px';
+                    char.style.top = (touch.clientY - charPos.y) + 'px';
+                    updateDistance();
+                }
+            });
+
+            char.addEventListener('touchend', () => {
+                isDraggingChar = false;
+            });
+        }
+
+        document.getElementById('characterInput').addEventListener('change', (e) => {
+            Array.from(e.target.files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (event) => createCharacter(event.target.result);
+                reader.readAsDataURL(file);
+            });
+        });
+
+        function updateDistance() {
+            const chars = document.getElementsByClassName('character');
+            if (chars.length >= 2) {
+                const char1 = chars[0].getBoundingClientRect();
+                const char2 = chars[1].getBoundingClientRect();
+                const distance = Math.sqrt(
+                    Math.pow((char2.left - char1.left) / scale, 2) + 
+                    Math.pow((char2.top - char1.top) / scale, 2)
+                ) * pxToKmRatio;
+                document.getElementById('distance').innerText = 
+                    `Distancia: ${distance.toFixed(2)} km`;
+            }
+        }
+
+    // Ajustar tamaño de los personajes basado en el nivel de zoom
+    function adjustCharacterSize() {
+        const characters = document.querySelectorAll('.character');
+        characters.forEach(character => {
+            character.style.transform = `scale(${1 / scale})`;
+        });
+    }
+
+    // Llamar a adjustCharacterSize cada vez que cambie el nivel de zoom
+    document.addEventListener('wheel', adjustCharacterSize);
+    document.addEventListener('touchmove', adjustCharacterSize);
+    document.addEventListener('pointermove', adjustCharacterSize);
+    </script>
+</body>
+</html>
