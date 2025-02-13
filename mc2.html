@@ -146,150 +146,248 @@
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
-        // Funcionalidad de arrastre del mapa
-        mapContainer.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            dragStart = {
-                x: e.clientX - currentPos.x,
-                y: e.clientY - currentPos.y
-            };
-        });
+        class MouseManager {
+            constructor(mapContainer, mapBg, scale, currentPos) {
+                this.mapContainer = mapContainer;
+                this.mapBg = mapBg;
+                this.scale = scale;
+                this.currentPos = currentPos;
+                this.isDragging = false;
+                this.dragStart = { x: 0, y: 0 };
+                this.setupEventListeners();
+            }
 
-        window.addEventListener('mousemove', (e) => {
-            if (isDragging) {
-                currentPos = {
-                    x: e.clientX - dragStart.x,
-                    y: e.clientY - dragStart.y
+            setupEventListeners() {
+                // Mouse events
+                this.mapContainer.addEventListener('mousedown', (e) => this.handleDragStart(e));
+                window.addEventListener('mousemove', (e) => this.handleDrag(e));
+                window.addEventListener('mouseup', () => this.handleDragEnd());
+
+                // Touch events
+                this.mapContainer.addEventListener('touchstart', (e) => this.handleTouchStart(e));
+                this.mapContainer.addEventListener('touchmove', (e) => this.handleTouchMove(e));
+                this.mapContainer.addEventListener('touchend', () => this.handleDragEnd());
+            }
+
+            handleDragStart(e) {
+                if (e.target.classList.contains('character')) return;
+                this.isDragging = true;
+                this.dragStart = {
+                    x: (e.clientX || e.touches[0].clientX) - this.currentPos.x,
+                    y: (e.clientY || e.touches[0].clientY) - this.currentPos.y
                 };
+            }
+
+            handleDrag(e) {
+                if (!this.isDragging) return;
+                const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+                const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+                
+                this.currentPos = {
+                    x: clientX - this.dragStart.x,
+                    y: clientY - this.dragStart.y
+                };
+                
+                this.updateMapPosition();
+            }
+
+            handleDragEnd() {
+                this.isDragging = false;
+            }
+
+            handleTouchStart(e) {
+                if (e.touches.length === 1) {
+                    this.handleDragStart(e);
+                }
+            }
+
+            handleTouchMove(e) {
+                if (e.touches.length === 1) {
+                    e.preventDefault();
+                    this.handleDrag(e);
+                }
+            }
+
+            updateMapPosition() {
+                this.mapBg.style.transform = `translate(${this.currentPos.x}px, ${this.currentPos.y}px) scale(${scale})`;
+            }
+        }
+
+        class CharacterManager {
+            constructor(mapBg) {
+                this.mapBg = mapBg;
+                this.activeCharacters = new Set();
+                this.selectedCharacters = new Set();
+                this.pathPoints = [];
+                this.isDrawingPath = false;
+            }
+
+            createCharacter(src) {
+                const char = document.createElement('img');
+                char.src = src;
+                char.className = 'character';
+                char.draggable = false;
+                this.mapBg.appendChild(char);
+
+                this.setupCharacterEvents(char);
+                this.activeCharacters.add(char);
+                return char;
+            }
+
+            setupCharacterEvents(char) {
+                let startPos = { x: 0, y: 0 };
+                
+                const handleStart = (e) => {
+                    e.stopPropagation();
+                    const pos = this.getEventPosition(e);
+                    startPos = {
+                        x: pos.x - char.offsetLeft,
+                        y: pos.y - char.offsetTop
+                    };
+                    this.handleCharacterSelect(char, e);
+                };
+
+                const handleMove = (e) => {
+                    if (this.selectedCharacters.has(char)) {
+                        const pos = this.getEventPosition(e);
+                        char.style.left = `${(pos.x - startPos.x) / scale}px`;
+                        char.style.top = `${(pos.y - startPos.y) / scale}px`;
+                        this.updatePath(char);
+                        updateDistance();
+                    }
+                };
+
+                char.addEventListener('mousedown', handleStart);
+                char.addEventListener('touchstart', handleStart);
+                window.addEventListener('mousemove', handleMove);
+                window.addEventListener('touchmove', handleMove);
+            }
+
+            getEventPosition(e) {
+                return {
+                    x: e.clientX || (e.touches && e.touches[0].clientX),
+                    y: e.clientY || (e.touches && e.touches[0].clientY)
+                };
+            }
+
+            handleCharacterSelect(char, e) {
+                if (!e.shiftKey) {
+                    this.selectedCharacters.forEach(c => c.classList.remove('selected'));
+                    this.selectedCharacters.clear();
+                }
+                this.selectedCharacters.add(char);
+                char.classList.add('selected');
+            }
+
+            updatePath(char) {
+                if (this.isDrawingPath) {
+                    const pos = {
+                        x: char.offsetLeft + char.width/2,
+                        y: char.offsetTop + char.height/2
+                    };
+                    this.pathPoints.push([pos.x * scale, pos.y * scale]);
+                    drawPath(this.pathPoints);
+                }
+            }
+        }
+
+        // Inicializar managers
+        const mouseManager = new MouseManager(mapContainer, mapBg, scale, currentPos);
+        const characterManager = new CharacterManager(mapBg);
+
+        function adjustZoom(delta, mouseX, mouseY) {
+            let oldScale = scale;
+            scale = Math.max(0.5, Math.min(100, scale + delta));
+            
+            if (oldScale !== scale) {
+                // Calcular cuánto ha cambiado el zoom
+                const scaleRatio = scale / oldScale;
+                
+                // Ajustar posición para hacer zoom hacia el punto del ratón
+                currentPos.x = mouseX - (mouseX - currentPos.x) * scaleRatio;
+                currentPos.y = mouseY - (mouseY - currentPos.y) * scaleRatio;
+                
                 mapBg.style.transform = `translate(${currentPos.x}px, ${currentPos.y}px) scale(${scale})`;
+                adjustCharacterSize();
             }
-        });
+            console.log("scale:"+scale);
+        }
 
-        window.addEventListener('mouseup', () => {
-            isDragging = false;
-        });
-
-        // Funcionalidad de arrastre del mapa en móviles
-        mapContainer.addEventListener('touchstart', (e) => {
-            if (e.touches.length === 1) {
-                isDragging = true;
-                const touch = e.touches[0];
-                dragStart = {
-                    x: touch.clientX - currentPos.x,
-                    y: touch.clientY - currentPos.y
-                };
-            }
-        });
-
-        mapContainer.addEventListener('touchmove', (e) => {
-            if (isDragging && e.touches.length === 1) {
+        // Actualizar el listener del evento de la rueda del ratón
+        mapContainer.addEventListener('wheel', (e) => {
+            if (!e.ctrlKey && !e.shiftKey && !e.altKey) {
                 e.preventDefault();
-                const touch = e.touches[0];
-                currentPos = {
-                    x: touch.clientX - dragStart.x,
-                    y: touch.clientY - dragStart.y
-                };
-                mapBg.style.transform = `translate(${currentPos.x}px, ${currentPos.y}px) scale(${scale})`;
+                const rect = mapContainer.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+                console.log("wdelta:"+e.wheelDelta+"\n"+e.deltaY+"\n");
+                
+                // adjustZoom(e.deltaY > 0 ? -0.1 : 0.1, mouseX, mouseY);
+                // para que dependa de la cantidad de píxeles que se mueve el scroll
+                adjustZoom(-e.deltaY/120, mouseX, mouseY);
+            }
+        });
+
+        // Añadir soporte para el gesto de pellizcar en pantallas táctiles
+        mapContainer.addEventListener('touchmove', (e) => {
+            console.log("touchmove"+e.touches.length);
+            
+            if (e.touches.length === 2) {
+                e.preventDefault();
+                const touch1 = e.touches[0];
+                const touch2 = e.touches[1];
+                const currentTouchDistance = Math.hypot(touch2.clientX - touch1.clientX, touch1.clientY - touch2.clientY);
+
+                if (lastTouchDistance) {
+                    const delta = (currentTouchDistance - lastTouchDistance) / 100;
+                    const rect = mapContainer.getBoundingClientRect();
+                    const mouseX = (touch1.clientX + touch2.clientX) / 2 - rect.left;
+                    const mouseY = (touch1.clientY + touch2.clientY) / 2 - rect.top;
+                    adjustZoom(delta, mouseX, mouseY);
+                }
+
+                lastTouchDistance = currentTouchDistance;
             }
         });
 
         mapContainer.addEventListener('touchend', () => {
-            isDragging = false;
+            lastTouchDistance = 0;
         });
 
-    function adjustZoom(delta, mouseX, mouseY) {
-        let oldScale = scale;
-        scale = Math.max(0.5, Math.min(100, scale + delta));
-        
-        if (oldScale !== scale) {
-            // Calcular cuánto ha cambiado el zoom
-            const scaleRatio = scale / oldScale;
-            
-            // Ajustar posición para hacer zoom hacia el punto del ratón
-            currentPos.x = mouseX - (mouseX - currentPos.x) * scaleRatio;
-            currentPos.y = mouseY - (mouseY - currentPos.y) * scaleRatio;
-            
-            mapBg.style.transform = `translate(${currentPos.x}px, ${currentPos.y}px) scale(${scale})`;
-            adjustCharacterSize();
-        }
-        console.log("scale:"+scale);
-    }
-
-    // Actualizar el listener del evento de la rueda del ratón
-    mapContainer.addEventListener('wheel', (e) => {
-        if (!e.ctrlKey && !e.shiftKey && !e.altKey) {
-            e.preventDefault();
-            const rect = mapContainer.getBoundingClientRect();
-            const mouseX = e.clientX - rect.left;
-            const mouseY = e.clientY - rect.top;
-            console.log("wdelta:"+e.wheelDelta+"\n"+e.deltaY+"\n");
-            
-            // adjustZoom(e.deltaY > 0 ? -0.1 : 0.1, mouseX, mouseY);
-            // para que dependa de la cantidad de píxeles que se mueve el scroll
-            adjustZoom(-e.deltaY/120, mouseX, mouseY);
-        }
-    });
-
-    // Añadir soporte para el gesto de pellizcar en pantallas táctiles
-    mapContainer.addEventListener('touchmove', (e) => {
-        console.log("touchmove"+e.touches.length);
-        
-        if (e.touches.length === 2) {
-            e.preventDefault();
-            const touch1 = e.touches[0];
-            const touch2 = e.touches[1];
-            const currentTouchDistance = Math.hypot(touch2.clientX - touch1.clientX, touch1.clientY - touch2.clientY);
-
-            if (lastTouchDistance) {
-                const delta = (currentTouchDistance - lastTouchDistance) / 100;
-                const rect = mapContainer.getBoundingClientRect();
-                const mouseX = (touch1.clientX + touch2.clientX) / 2 - rect.left;
-                const mouseY = (touch1.clientY + touch2.clientY) / 2 - rect.top;
-                adjustZoom(delta, mouseX, mouseY);
+        // Añadir soporte para las teclas + y -
+        window.addEventListener('keydown', (e) => {
+            if (e.key === '+' || e.key === '=') {
+                adjustZoom(0.1, window.innerWidth / 2, window.innerHeight / 2);
+            } else if (e.key === '-') {
+                adjustZoom(-0.1, window.innerWidth / 2, window.innerHeight / 2);
+            } else if (e.key === 'd' || e.key === 'D') {
+                startMeasuringDistance();
             }
+        });
 
-            lastTouchDistance = currentTouchDistance;
-        }
-    });
+        // Añadir soporte para dispositivos táctiles que actúan como ratón
+        // mapContainer.addEventListener('pointermove', (e) => {
+        //     console.log("pointermove"+e.pointerType);
+            
+        //     if (e.pointerType === 'touch' && e.isPrimary) {
+        //         if (e.touches && e.touches.length === 2) {
+        //             e.preventDefault();
+        //             const touch1 = e.touches[0];
+        //             const touch2 = e.touches[1];
+        //             const currentTouchDistance = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
 
-    mapContainer.addEventListener('touchend', () => {
-        lastTouchDistance = 0;
-    });
+        //             if (lastTouchDistance) {
+        //                 const delta = (currentTouchDistance - lastTouchDistance) / 100;
+        //                 const rect = mapContainer.getBoundingClientRect();
+        //                 const mouseX = (touch1.clientX + touch2.clientX) / 2 - rect.left;
+        //                 const mouseY = (touch1.clientY + touch2.clientY) / 2 - rect.top;
+        //                 adjustZoom(delta, mouseX, mouseY);
+        //             }
 
-    // Añadir soporte para las teclas + y -
-    window.addEventListener('keydown', (e) => {
-        if (e.key === '+' || e.key === '=') {
-            adjustZoom(0.1, window.innerWidth / 2, window.innerHeight / 2);
-        } else if (e.key === '-') {
-            adjustZoom(-0.1, window.innerWidth / 2, window.innerHeight / 2);
-        } else if (e.key === 'd' || e.key === 'D') {
-            startMeasuringDistance();
-        }
-    });
-
-    // Añadir soporte para dispositivos táctiles que actúan como ratón
-    // mapContainer.addEventListener('pointermove', (e) => {
-    //     console.log("pointermove"+e.pointerType);
-        
-    //     if (e.pointerType === 'touch' && e.isPrimary) {
-    //         if (e.touches && e.touches.length === 2) {
-    //             e.preventDefault();
-    //             const touch1 = e.touches[0];
-    //             const touch2 = e.touches[1];
-    //             const currentTouchDistance = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
-
-    //             if (lastTouchDistance) {
-    //                 const delta = (currentTouchDistance - lastTouchDistance) / 100;
-    //                 const rect = mapContainer.getBoundingClientRect();
-    //                 const mouseX = (touch1.clientX + touch2.clientX) / 2 - rect.left;
-    //                 const mouseY = (touch1.clientY + touch2.clientY) / 2 - rect.top;
-    //                 adjustZoom(delta, mouseX, mouseY);
-    //             }
-
-    //             lastTouchDistance = currentTouchDistance;
-    //         }
-    //     }
-    // });
+        //             lastTouchDistance = currentTouchDistance;
+        //         }
+        //     }
+        // });
 
         // Mostrar menú contextual con click derecho
         mapContainer.addEventListener('contextmenu', (e) => {
