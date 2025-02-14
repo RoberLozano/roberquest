@@ -225,7 +225,7 @@
                     totalDistance += Math.sqrt(dx * dx + dy * dy) * pxToKmRatio;
                 }
                 if (totalDistance > 0) {
-                    alert(`Longitud total del camino: ${totalDistance.toFixed(2)} km`);
+                    //alert(`Longitud total del camino: ${totalDistance.toFixed(2)} km`);
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
                 }
             }
@@ -382,7 +382,7 @@
                         Math.pow((endPoint.x - startPoint.x) / scale, 2) + 
                         Math.pow((endPoint.y - startPoint.y) / scale, 2)
                     ) * pxToKmRatio;
-                    alert(`Distancia: ${distance.toFixed(2)} km`);
+                    // alert(`Distancia: ${distance.toFixed(2)} km`);
                     measuringDistance = false;
                     startPoint = null;
                 }
