@@ -129,7 +129,7 @@
         let contextMenuTimeout;
         let measuringDistance = false;
         let startPoint = null;
-        const pxToKmRatio = 0.1; // Ratio de conversión de píxeles a kilómetros (ajustar según sea necesario)
+        var pxToKmRatio = 0.1; // Ratio de conversión de píxeles a kilómetros (ajustar según sea necesario)
         
         const mapContainer = document.getElementById('mapContainer');
         const mapBg = document.getElementById('mapBg');
@@ -329,29 +329,6 @@
         }
     });
 
-    // Añadir soporte para dispositivos táctiles que actúan como ratón
-    // mapContainer.addEventListener('pointermove', (e) => {
-    //     console.log("pointermove"+e.pointerType);
-        
-    //     if (e.pointerType === 'touch' && e.isPrimary) {
-    //         if (e.touches && e.touches.length === 2) {
-    //             e.preventDefault();
-    //             const touch1 = e.touches[0];
-    //             const touch2 = e.touches[1];
-    //             const currentTouchDistance = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
-
-    //             if (lastTouchDistance) {
-    //                 const delta = (currentTouchDistance - lastTouchDistance) / 100;
-    //                 const rect = mapContainer.getBoundingClientRect();
-    //                 const mouseX = (touch1.clientX + touch2.clientX) / 2 - rect.left;
-    //                 const mouseY = (touch1.clientY + touch2.clientY) / 2 - rect.top;
-    //                 adjustZoom(delta, mouseX, mouseY);
-    //             }
-
-    //             lastTouchDistance = currentTouchDistance;
-    //         }
-    //     }
-    // });
 
         // Mostrar menú contextual con click derecho
         mapContainer.addEventListener('contextmenu', (e) => {
@@ -436,13 +413,29 @@
         document.getElementById('bgInput').addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
-                const reader = new FileReader();
+                    let reader;
+                    // Verificar si el archivo es un SVG y leer la escala si es necesario
+                if (file.type === 'image/svg+xml') {
+                    reader = new FileReader();
+                    reader.onload = (event) => {
+                        const svgContent = event.target.result;
+                        const scale = getSvgScale(svgContent);
+                        if (scale) {
+                            pxToKmRatio = scale;
+                            console.log("pxToKmRatio:"+pxToKmRatio);                      
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+                reader = new FileReader();
                 reader.onload = (event) => {
                     mapBg.style.backgroundImage = `url(${event.target.result})`;
                     mapBg.style.backgroundSize = 'contain';
                     mapBg.style.backgroundRepeat = 'no-repeat';
                 };
                 reader.readAsDataURL(file);
+
+             
             }
         });
 
@@ -527,6 +520,22 @@
                     `Distancia: ${distance.toFixed(2)} km`;
             }
         }
+
+    function getSvgScale(svgContent) {
+    const parser = new DOMParser();
+    const svgDoc = parser.parseFromString(svgContent, 'image/svg+xml');
+    const metadata = svgDoc.querySelector('metadata');
+    
+    if (metadata) {
+        const scaleElement = metadata.querySelector('variable[name="escala"]');
+        if (scaleElement) {
+            console.log(scaleElement.getAttribute('value'));
+            return parseFloat(scaleElement.getAttribute('value'));
+        }
+    }
+    
+    return null; // Return null if the scale is not found
+}
 
     // Ajustar tamaño de los personajes basado en el nivel de zoom
     function adjustCharacterSize() {
