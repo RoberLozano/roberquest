@@ -120,6 +120,9 @@
 
     <script>
         let scale = 1;
+        var minScale = 0.5;
+        var maxScale = 300;
+
         let dragStart = { x: 0, y: 0 };
         let currentPos = { x: 0, y: 0 };
         let isDragging = false;
@@ -259,7 +262,8 @@
 
     function adjustZoom(delta, mouseX, mouseY) {
         let oldScale = scale;
-        scale = Math.max(0.5, Math.min(100, scale + delta));
+
+        scale = Math.max(minScale, Math.min(maxScale, scale + delta));
         
         if (oldScale !== scale) {
             // Calcular cuánto ha cambiado el zoom
