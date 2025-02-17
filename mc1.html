@@ -141,6 +141,8 @@
         const tooltip = document.getElementById('tooltip');
         const contextMenu = document.getElementById('contextMenu');
 
+        var char = document.createElement('img');
+
         // Establecer tamaño del canvas
         function resizeCanvas() {
             canvas.width = window.innerWidth;
@@ -347,6 +349,22 @@
             contextMenu.style.display = 'none';
         });
 
+        // Mostrar menú contextual con pulsación larga en dispositivos táctiles
+        mapContainer.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 1) {
+                contextMenuTimeout = setTimeout(() => {
+                    const touch = e.touches[0];
+                    contextMenu.style.display = 'block';
+                    contextMenu.style.left = `${touch.clientX}px`;
+                    contextMenu.style.top = `${touch.clientY}px`;
+                }, 500); // 500ms para detectar pulsación larga
+            }
+        });
+
+        mapContainer.addEventListener('touchend', () => {
+            clearTimeout(contextMenuTimeout);
+        });
+
         // Iniciar medición de distancia
         document.getElementById('measureDistance').addEventListener('click', startMeasuringDistance);
 
@@ -357,19 +375,6 @@
         }
 
         mapContainer.addEventListener('click', (e) => {
-            // Mostrar coordenadas en pantalla
-            console.log('Screen coordinates:', {
-                x: e.clientX,
-                y: e.clientY
-            });
-
-            
-
-            // Convertir y mostrar coordenadas del mapa
-            const mapCoords = screenToMapCoordinates(e.clientX, e.clientY);
-            console.log('Map coordinates:', mapCoords);
-
-            // Mantener el código existente para la medición de distancia
             if (measuringDistance) {
                 if (!startPoint) {
                     startPoint = { x: e.clientX, y: e.clientY };
@@ -442,70 +447,67 @@
 
         // Creación y movimiento de personajes
         function createCharacter(src) {
-            const char = document.createElement('img');
+            char = document.createElement('img');
             char.src = src;
             char.className = 'character';
             char.draggable = false;
             mapBg.appendChild(char);
 
-            let charPos = { x: 0, y: 0 };
             let isDraggingChar = false;
+            let charPos = { x: 0, y: 0 };
+            let startOffset = { x: 0, y: 0 };
 
             char.addEventListener('mousedown', (e) => {
                 e.stopPropagation();
                 isDraggingChar = true;
                 
-                charPos = {
-                    x: e.clientX - char.offsetLeft,
-                    y: e.clientY - char.offsetTop
+                // Obtener la posición actual del transform
+                const transform = char.style.transform || '';
+                const currentTranslate = transform.match(/translate\(([-\d.]+)px,\s*([-\d.]+)px\)/) || [0, 0, 0];
+                charPos.x = parseFloat(currentTranslate[1]) || 0;
+                charPos.y = parseFloat(currentTranslate[2]) || 0;
+                
+                startOffset = {
+                    x: (e.clientX - currentPos.x) / scale - charPos.x,
+                    y: (e.clientY - currentPos.y) / scale - charPos.y
                 };
             });
 
             window.addEventListener('mousemove', (e) => {
                 if (isDraggingChar) {
-                    // console.log("char:"+char.offsetLeft+" "+char.offsetTop);
-                    console.log("charPos:"+charPos.x+" "+charPos.y);
-                    // char.style.left = (e.clientX - charPos.x) + 'px';
-                    // char.style.top = (e.clientY - charPos.y) + 'px';
-                    // console.log("scale:"+scale);
+                    // Calcular la nueva posición con precisión decimal
+                    const x = (e.clientX - currentPos.x) / scale - startOffset.x;
+                    const y = (e.clientY - currentPos.y) / scale - startOffset.y;
                     
-                    // console.log("char:"+char.offsetLeft+" "+char.offsetTop);
-                    // console.log("move:"+e.movementX+" "+e.movementY);
-                    // console.log("charPos:"+charPos.x+" "+charPos.y);
-
-                    let mc= screenToMapCoordinates(e.clientX , e.clientY);
-                    const rect = mapContainer.getBoundingClientRect();
-                    const mouseX = e.clientX - rect.left;
-                    const mouseY = e.clientY - rect.top;
-                    mc=screenToMapCoordinates(mouseX,mouseY);
-                    console.log("mc:"+mc.x+" "+mc.y);
-                    
-                    // char.style.left = (mc.x.toFixed(4)) + 'px';
-                    // char.style.top = (mc.y) + 'px';
-             
-                    char.style.left = (e.clientX - charPos.x) + 'px';
-                    char.style.top = (e.clientY - charPos.y) + 'px';
-                    
-                    console.log("mc:"+mc.x+" "+mc.y);
-                    console.log("char:"+char.offsetLeft+" "+char.offsetTop);
-                    
+                    // Usar transform para un movimiento más suave
+                    char.style.transform = `translate(${x}px, ${y}px) scale(${1/scale})`;
+                    charPos = { x, y };
                     updateDistance();
                 }
             });
 
             window.addEventListener('mouseup', () => {
                 isDraggingChar = false;
+                if (char) {
+                    char.style.cursor = 'grab';
+                }
             });
 
-            // Funcionalidad de arrastre de personajes en móviles
+            // Actualizar el manejo táctil de manera similar
             char.addEventListener('touchstart', (e) => {
                 if (e.touches.length === 1) {
                     e.stopPropagation();
                     isDraggingChar = true;
                     const touch = e.touches[0];
-                    charPos = {
-                        x: touch.clientX - char.offsetLeft,
-                        y: touch.clientY - char.offsetTop
+                    
+                    const transform = char.style.transform || '';
+                    const currentTranslate = transform.match(/translate\(([-\d.]+)px,\s*([-\d.]+)px\)/) || [0, 0, 0];
+                    charPos.x = parseFloat(currentTranslate[1]) || 0;
+                    charPos.y = parseFloat(currentTranslate[2]) || 0;
+                    
+                    startOffset = {
+                        x: (touch.clientX - currentPos.x) / scale - charPos.x,
+                        y: (touch.clientY - currentPos.y) / scale - charPos.y
                     };
                 }
             });
@@ -514,17 +516,36 @@
                 if (isDraggingChar && e.touches.length === 1) {
                     e.preventDefault();
                     const touch = e.touches[0];
-                    char.style.left = (touch.clientX - charPos.x) + 'px';
-                    char.style.top = (touch.clientY - charPos.y) + 'px';
-                  
                     
+                    const x = (touch.clientX - currentPos.x) / scale - startOffset.x;
+                    const y = (touch.clientY - currentPos.y) / scale - startOffset.y;
                     
+                    char.style.transform = `translate(${x}px, ${y}px) scale(${1/scale})`;
+                    charPos = { x, y };
                     updateDistance();
                 }
             });
 
-            char.addEventListener('touchend', () => {
+            char.addEventListener('touchend', (e) => {
                 isDraggingChar = false;
+                if (char) {
+                    char.style.cursor = 'grab';
+                }
+            });
+
+            char.addEventListener('touchcancel', (e) => {
+                isDraggingChar = false;
+                if (char) {
+                    char.style.cursor = 'grab'; 
+                }
+            });
+
+            window.addEventListener('touchend', () => {
+                isDraggingChar = false;
+            });
+
+            window.addEventListener('touchcancel', () => {
+                isDraggingChar = false; 
             });
         }
 
@@ -570,7 +591,11 @@
     function adjustCharacterSize() {
         const characters = document.querySelectorAll('.character');
         characters.forEach(character => {
-            character.style.transform = `scale(${1 / scale})`;
+            const transform = character.style.transform || '';
+            const currentTranslate = transform.match(/translate\(([-\d.]+)px,\s*([-\d.]+)px\)/) || [0, 0, 0];
+            const x = parseFloat(currentTranslate[1]) || 0;
+            const y = parseFloat(currentTranslate[2]) || 0;
+            character.style.transform = `translate(${x}px, ${y}px) scale(${1/scale})`;
         });
     }
 
@@ -589,14 +614,6 @@
 
     // Add click handler for new menu option
     document.getElementById('drawPath').addEventListener('click', startPathDrawing);
-
-    // Agregar después de las declaraciones de variables
-    function screenToMapCoordinates(screenX, screenY) {
-        // Ajustar por el desplazamiento y el zoom
-        const mapX = (screenX - currentPos.x) / scale;
-        const mapY = (screenY - currentPos.y) / scale;
-        return { x: mapX, y: mapY };
-    }
     </script>
 </body>
 </html>
