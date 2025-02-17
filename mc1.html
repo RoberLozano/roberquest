@@ -363,6 +363,8 @@
                 y: e.clientY
             });
 
+            
+
             // Convertir y mostrar coordenadas del mapa
             const mapCoords = screenToMapCoordinates(e.clientX, e.clientY);
             console.log('Map coordinates:', mapCoords);
@@ -462,7 +464,7 @@
             window.addEventListener('mousemove', (e) => {
                 if (isDraggingChar) {
                     // console.log("char:"+char.offsetLeft+" "+char.offsetTop);
-                    // console.log("charPos:"+charPos.x+" "+charPos.y);
+                    console.log("charPos:"+charPos.x+" "+charPos.y);
                     // char.style.left = (e.clientX - charPos.x) + 'px';
                     // char.style.top = (e.clientY - charPos.y) + 'px';
                     // console.log("scale:"+scale);
@@ -472,11 +474,18 @@
                     // console.log("charPos:"+charPos.x+" "+charPos.y);
 
                     let mc= screenToMapCoordinates(e.clientX , e.clientY);
-                    char.style.left = (mc.x) + 'px';
-                    char.style.top = (mc.y) + 'px';
-
-                      char.style.left = (e.clientX - charPos.x) + 'px';
+                    const rect = mapContainer.getBoundingClientRect();
+                    const mouseX = e.clientX - rect.left;
+                    const mouseY = e.clientY - rect.top;
+                    mc=screenToMapCoordinates(mouseX,mouseY);
+                    console.log("mc:"+mc.x+" "+mc.y);
+                    
+                    // char.style.left = (mc.x.toFixed(4)) + 'px';
+                    // char.style.top = (mc.y) + 'px';
+             
+                    char.style.left = (e.clientX - charPos.x) + 'px';
                     char.style.top = (e.clientY - charPos.y) + 'px';
+                    
                     console.log("mc:"+mc.x+" "+mc.y);
                     console.log("char:"+char.offsetLeft+" "+char.offsetTop);
                     
