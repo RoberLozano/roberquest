@@ -141,7 +141,8 @@
         const tooltip = document.getElementById('tooltip');
         const contextMenu = document.getElementById('contextMenu');
 
-        var char = document.createElement('img');
+        // Reemplazar la variable char global por un array
+        let characters = [];
 
         // Establecer tamaño del canvas
         function resizeCanvas() {
@@ -431,21 +432,33 @@
 
         // Creación y movimiento de personajes
         function createCharacter(src) {
-            char = document.createElement('img');
+            const char = document.createElement('img');
             char.src = src;
             char.className = 'character';
             char.draggable = false;
             mapBg.appendChild(char);
+            characters.push(char); // Añadir al array de personajes
 
             let isDraggingChar = false;
             let charPos = { x: 0, y: 0 };
             let startOffset = { x: 0, y: 0 };
+            let rotation = 0;
+
+            // Añadir rotación con Shift + rueda del ratón
+            char.addEventListener('wheel', (e) => {
+                if (e.shiftKey) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    rotation += e.deltaY > 0 ? 15 : -15;
+                    updateCharacterTransform(char, charPos.x, charPos.y, rotation);
+                }
+            });
 
             char.addEventListener('mousedown', (e) => {
                 e.stopPropagation();
                 isDraggingChar = true;
                 
-                // Obtener la posición actual del transform
+                // Obtener posición actual incluyendo rotación
                 const transform = char.style.transform || '';
                 const currentTranslate = transform.match(/translate\(([-\d.]+)px,\s*([-\d.]+)px\)/) || [0, 0, 0];
                 charPos.x = parseFloat(currentTranslate[1]) || 0;
@@ -455,6 +468,8 @@
                     x: (e.clientX - currentPos.x) / scale - charPos.x,
                     y: (e.clientY - currentPos.y) / scale - charPos.y
                 };
+                
+                char.style.cursor = 'grabbing';
             });
 
             window.addEventListener('mousemove', (e) => {
@@ -464,7 +479,7 @@
                     const y = (e.clientY - currentPos.y) / scale - startOffset.y;
                     
                     // Usar transform para un movimiento más suave
-                    char.style.transform = `translate(${x}px, ${y}px) scale(${1/scale})`;
+                    char.style.transform = `translate(${x}px, ${y}px) rotate(${rotation}deg) scale(${1/scale})`;
                     charPos = { x, y };
                     updateDistance();
                 }
@@ -504,7 +519,7 @@
                     const x = (touch.clientX - currentPos.x) / scale - startOffset.x;
                     const y = (touch.clientY - currentPos.y) / scale - startOffset.y;
                     
-                    char.style.transform = `translate(${x}px, ${y}px) scale(${1/scale})`;
+                    char.style.transform = `translate(${x}px, ${y}px) rotate(${rotation}deg) scale(${1/scale})`;
                     charPos = { x, y };
                     updateDistance();
                 }
@@ -531,12 +546,20 @@
             window.addEventListener('touchcancel', () => {
                 isDraggingChar = false; 
             });
+
+            return char;
         }
 
         document.getElementById('characterInput').addEventListener('change', (e) => {
             Array.from(e.target.files).forEach(file => {
                 const reader = new FileReader();
-                reader.onload = (event) => createCharacter(event.target.result);
+                reader.onload = (event) => {
+                    const char = createCharacter(event.target.result);
+                    // Posicionar cada nuevo personaje en una ubicación ligeramente diferente
+                    const x = 50 + Math.random() * 100;
+                    const y = 50 + Math.random() * 100;
+                    updateCharacterTransform(char, x, y, 0);
+                };
                 reader.readAsDataURL(file);
             });
         });
@@ -544,14 +567,19 @@
         function updateDistance() {
             const chars = document.getElementsByClassName('character');
             if (chars.length >= 2) {
-                const char1 = chars[0].getBoundingClientRect();
-                const char2 = chars[1].getBoundingClientRect();
-                const distance = Math.sqrt(
-                    Math.pow((char2.left - char1.left) / scale, 2) + 
-                    Math.pow((char2.top - char1.top) / scale, 2)
-                ) * pxToKmRatio;
-                document.getElementById('distance').innerText = 
-                    `Distancia: ${distance.toFixed(2)} km`;
+                let distances = [];
+                for (let i = 0; i < chars.length; i++) {
+                    for (let j = i + 1; j < chars.length; j++) {
+                        const char1 = chars[i].getBoundingClientRect();
+                        const char2 = chars[j].getBoundingClientRect();
+                        const distance = Math.sqrt(
+                            Math.pow((char2.left - char1.left) / scale, 2) + 
+                            Math.pow((char2.top - char1.top) / scale, 2)
+                        ) * pxToKmRatio;
+                        distances.push(`${i+1}-${j+1}: ${distance.toFixed(2)}km`);
+                    }
+                }
+                document.getElementById('distance').innerText = distances.join(' | ');
             }
         }
 
@@ -573,13 +601,14 @@
 
     // Ajustar tamaño de los personajes basado en el nivel de zoom
     function adjustCharacterSize() {
-        const characters = document.querySelectorAll('.character');
-        characters.forEach(character => {
-            const transform = character.style.transform || '';
+        characters.forEach(char => {
+            const transform = char.style.transform || '';
             const currentTranslate = transform.match(/translate\(([-\d.]+)px,\s*([-\d.]+)px\)/) || [0, 0, 0];
+            const rotation = transform.match(/rotate\(([-\d.]+)deg\)/) || [0, 0];
             const x = parseFloat(currentTranslate[1]) || 0;
             const y = parseFloat(currentTranslate[2]) || 0;
-            character.style.transform = `translate(${x}px, ${y}px) scale(${1/scale})`;
+            const r = parseFloat(rotation[1]) || 0;
+            updateCharacterTransform(char, x, y, r);
         });
     }
 
@@ -598,6 +627,11 @@
 
     // Add click handler for new menu option
     document.getElementById('drawPath').addEventListener('click', startPathDrawing);
+
+    // Función helper para actualizar transform
+    function updateCharacterTransform(char, x, y, rotation) {
+        char.style.transform = `translate(${x}px, ${y}px) rotate(${rotation}deg) scale(${1/scale})`;
+    }
     </script>
 </body>
 </html>
