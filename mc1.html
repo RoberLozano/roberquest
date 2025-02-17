@@ -347,22 +347,6 @@
             contextMenu.style.display = 'none';
         });
 
-        // Mostrar menú contextual con pulsación larga en dispositivos táctiles
-        mapContainer.addEventListener('touchstart', (e) => {
-            if (e.touches.length === 1) {
-                contextMenuTimeout = setTimeout(() => {
-                    const touch = e.touches[0];
-                    contextMenu.style.display = 'block';
-                    contextMenu.style.left = `${touch.clientX}px`;
-                    contextMenu.style.top = `${touch.clientY}px`;
-                }, 500); // 500ms para detectar pulsación larga
-            }
-        });
-
-        mapContainer.addEventListener('touchend', () => {
-            clearTimeout(contextMenuTimeout);
-        });
-
         // Iniciar medición de distancia
         document.getElementById('measureDistance').addEventListener('click', startMeasuringDistance);
 
@@ -373,6 +357,17 @@
         }
 
         mapContainer.addEventListener('click', (e) => {
+            // Mostrar coordenadas en pantalla
+            console.log('Screen coordinates:', {
+                x: e.clientX,
+                y: e.clientY
+            });
+
+            // Convertir y mostrar coordenadas del mapa
+            const mapCoords = screenToMapCoordinates(e.clientX, e.clientY);
+            console.log('Map coordinates:', mapCoords);
+
+            // Mantener el código existente para la medición de distancia
             if (measuringDistance) {
                 if (!startPoint) {
                     startPoint = { x: e.clientX, y: e.clientY };
@@ -457,6 +452,7 @@
             char.addEventListener('mousedown', (e) => {
                 e.stopPropagation();
                 isDraggingChar = true;
+                
                 charPos = {
                     x: e.clientX - char.offsetLeft,
                     y: e.clientY - char.offsetTop
@@ -465,8 +461,25 @@
 
             window.addEventListener('mousemove', (e) => {
                 if (isDraggingChar) {
-                    char.style.left = (e.clientX - charPos.x) + 'px';
+                    // console.log("char:"+char.offsetLeft+" "+char.offsetTop);
+                    // console.log("charPos:"+charPos.x+" "+charPos.y);
+                    // char.style.left = (e.clientX - charPos.x) + 'px';
+                    // char.style.top = (e.clientY - charPos.y) + 'px';
+                    // console.log("scale:"+scale);
+                    
+                    // console.log("char:"+char.offsetLeft+" "+char.offsetTop);
+                    // console.log("move:"+e.movementX+" "+e.movementY);
+                    // console.log("charPos:"+charPos.x+" "+charPos.y);
+
+                    let mc= screenToMapCoordinates(e.clientX , e.clientY);
+                    char.style.left = (mc.x) + 'px';
+                    char.style.top = (mc.y) + 'px';
+
+                      char.style.left = (e.clientX - charPos.x) + 'px';
                     char.style.top = (e.clientY - charPos.y) + 'px';
+                    console.log("mc:"+mc.x+" "+mc.y);
+                    console.log("char:"+char.offsetLeft+" "+char.offsetTop);
+                    
                     updateDistance();
                 }
             });
@@ -494,6 +507,9 @@
                     const touch = e.touches[0];
                     char.style.left = (touch.clientX - charPos.x) + 'px';
                     char.style.top = (touch.clientY - charPos.y) + 'px';
+                  
+                    
+                    
                     updateDistance();
                 }
             });
@@ -564,6 +580,14 @@
 
     // Add click handler for new menu option
     document.getElementById('drawPath').addEventListener('click', startPathDrawing);
+
+    // Agregar después de las declaraciones de variables
+    function screenToMapCoordinates(screenX, screenY) {
+        // Ajustar por el desplazamiento y el zoom
+        const mapX = (screenX - currentPos.x) / scale;
+        const mapY = (screenY - currentPos.y) / scale;
+        return { x: mapX, y: mapY };
+    }
     </script>
 </body>
 </html>
