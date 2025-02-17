@@ -349,22 +349,6 @@
             contextMenu.style.display = 'none';
         });
 
-        // Mostrar menú contextual con pulsación larga en dispositivos táctiles
-        mapContainer.addEventListener('touchstart', (e) => {
-            if (e.touches.length === 1) {
-                contextMenuTimeout = setTimeout(() => {
-                    const touch = e.touches[0];
-                    contextMenu.style.display = 'block';
-                    contextMenu.style.left = `${touch.clientX}px`;
-                    contextMenu.style.top = `${touch.clientY}px`;
-                }, 500); // 500ms para detectar pulsación larga
-            }
-        });
-
-        mapContainer.addEventListener('touchend', () => {
-            clearTimeout(contextMenuTimeout);
-        });
-
         // Iniciar medición de distancia
         document.getElementById('measureDistance').addEventListener('click', startMeasuringDistance);
 
