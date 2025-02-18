@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mapa Interactivo con Varios Personajes</title>
+    <style>
+        /* ...existing styles from mc1.html... */
+        .map-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+        
+        .map-bg {
+            min-width: 100%;
+            min-height: 100%;
+            transform-origin: 0 0;
+            position: absolute;
+        }
+        
+        #zoomControls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+        
+        .zoom-btn {
+            padding: 8px 12px;
+            margin: 0 4px;
+            cursor: pointer;
+        }
+
+        #canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .character {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            cursor: move;
+            z-index: 2;
+            transform-origin: center;
+        }
+
+        .controls {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        #tooltip {
+            position: fixed;
+            display: none;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px;
+            border-radius: 3px;
+            z-index: 1000;
+        }
+
+        #contextMenu {
+            position: absolute;
+            display: none;
+            background: white;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+        #contextMenu ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        #contextMenu li {
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+        #contextMenu li:hover {
+            background: #eee;
+        }
+        #contextMenu li span.shortcut {
+            float: right;
+            margin-left: 10px;
+            color: #888;
+        }
+        .character.selected {
+            box-shadow: 0 0 10px 3px #00ff00;
+            border-radius: 50%;
+        }
+        .selection-box {
+            position: absolute;
+            border: 1px dashed #333;
+            background: rgba(0, 0, 255, 0.1);
+            z-index: 150;
+        }
+    </style>
+</head>
+<body>
+    <div class="map-container" id="mapContainer">
+        <div class="map-bg" id="mapBg"></div>
+    </div>
+
+    <canvas id="canvas"></canvas>
+    <div id="tooltip"></div>
+
+    <div class="controls">
+        <input type="file" id="bgInput" accept="image/*" />
+        <input type="file" id="characterInput" accept="image/*" multiple />
+        <div id="distance"></div>
+    </div>
+
+    <div id="contextMenu">
+        <ul>
+            <li id="measureDistance">Medir Distancia <span class="shortcut">D</span></li>
+            <li id="drawPath">Dibujar Camino <span class="shortcut">C</span></li>
+        </ul>
+    </div>
+
+    <script>
+        let scale = 1;
+        var minScale = 0.5;
+        var maxScale = 300;
+
+        let dragStart = { x: 0, y: 0 };
+        let currentPos = { x: 0, y: 0 };
+        let isDragging = false;
+        let pathPoints = [];
+        let isDrawingPath = false;
+        let lastTouchDistance = 0;
+        let measuringDistance = false;
+        let startPoint = null;
+        var pxToKmRatio = 0.1; // Ratio de conversión de píxeles a kilómetros (ajustar según sea necesario)
+        
+        const mapContainer = document.getElementById('mapContainer');
+        const mapBg = document.getElementById('mapBg');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const tooltip = document.getElementById('tooltip');
+        const contextMenu = document.getElementById('contextMenu');
+
+        // Reemplazar la variable char global por un array
+        let characters = [];
+        // NUEVAS VARIABLES PARA LA SELECCIÓN Y MOVIMIENTO MÚLTIPLE:
+        let selectedCharacters = new Set(),
+            isDraggingMultiple = false,
+            dragOffsets = new Map();
+
+        // NUEVAS VARIABLES PARA SELECCIÓN POR CUADRO
+        let isSelecting = false;
+        let selectionStart = { x: 0, y: 0 };
+        let selectionBox = null;
+
+        // Establecer tamaño del canvas
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Funcionalidad de arrastre del mapa
+        mapContainer.addEventListener('mousedown', (e) => {
+            if (isDrawingPath) {
+                e.preventDefault();
+                pathPoints = [{ x: e.clientX, y: e.clientY }];
+                ctx.beginPath();
+                ctx.moveTo(e.clientX, e.clientY);
+                ctx.strokeStyle = 'blue';
+                ctx.lineWidth = 2;
+            } else if (!measuringDistance && !e.ctrlKey && selectedCharacters.size === 0) {
+                // Only start map drag if not selecting (ctrl pressed) and no characters are selected for group dragging
+                isDragging = true;
+                dragStart = {
+                    x: e.clientX - currentPos.x,
+                    y: e.clientY - currentPos.y
+                };
+            }
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                currentPos = {
+                    x: e.clientX - dragStart.x,
+                    y: e.clientY - dragStart.y
+                };
+                mapBg.style.transform = `translate(${currentPos.x}px, ${currentPos.y}px) scale(${scale})`;
+            }
+            if (isDrawingPath && pathPoints.length > 0) {
+                // Clear previous drawing
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Redraw entire path
+                ctx.beginPath();
+                ctx.moveTo(pathPoints[0].x, pathPoints[0].y);
+                let totalDistance = 0;
+                
+                for (let i = 1; i < pathPoints.length; i++) {
+                    ctx.lineTo(pathPoints[i].x, pathPoints[i].y);
+                    const dx = (pathPoints[i].x - pathPoints[i-1].x) / scale;
+                    const dy = (pathPoints[i].y - pathPoints[i-1].y) / scale;
+                    totalDistance += Math.sqrt(dx * dx + dy * dy) * pxToKmRatio;
+                }
+                
+                // Draw current line segment
+                ctx.lineTo(e.clientX, e.clientY);
+                ctx.strokeStyle = 'blue';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // Calculate final segment distance
+                const lastPoint = pathPoints[pathPoints.length - 1];
+                const dx = (e.clientX - lastPoint.x) / scale;
+                const dy = (e.clientY - lastPoint.y) / scale;
+                totalDistance += Math.sqrt(dx * dx + dy * dy) * pxToKmRatio;
+                
+                // Show tooltip with total distance
+                tooltip.style.display = 'block';
+                tooltip.style.left = `${e.clientX + 10}px`;
+                tooltip.style.top = `${e.clientY + 10}px`;
+                tooltip.innerText = `Distancia: ${totalDistance.toFixed(2)} km`;
+                
+                pathPoints.push({ x: e.clientX, y: e.clientY });
+            }
+        });
+
+        window.addEventListener('mouseup', () => {
+            if (isDrawingPath) {
+                isDrawingPath = false;
+                tooltip.style.display = 'none';
+                // Calculate final total path length
+                let totalDistance = 0;
+                for (let i = 1; i < pathPoints.length; i++) {
+                    const dx = (pathPoints[i].x - pathPoints[i-1].x) / scale;
+                    const dy = (pathPoints[i].y - pathPoints[i-1].y) / scale;
+                    totalDistance += Math.sqrt(dx * dx + dy * dy) * pxToKmRatio;
+                }
+                if (totalDistance > 0) {
+                    //alert(`Longitud total del camino: ${totalDistance.toFixed(2)} km`);
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            }
+            isDragging = false;
+        });
+
+        // Funcionalidad de arrastre del mapa en móviles
+        mapContainer.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 1) {
+                isDragging = true;
+                const touch = e.touches[0];
+                dragStart = {
+                    x: touch.clientX - currentPos.x,
+                    y: touch.clientY - currentPos.y
+                };
+            }
+        });
+
+        mapContainer.addEventListener('touchmove', (e) => {
+            if (isDragging && e.touches.length === 1) {
+                e.preventDefault();
+                const touch = e.touches[0];
+                currentPos = {
+                    x: touch.clientX - dragStart.x,
+                    y: touch.clientY - dragStart.y
+                };
+                mapBg.style.transform = `translate(${currentPos.x}px, ${currentPos.y}px) scale(${scale})`;
+            }
+        });
+
+        mapContainer.addEventListener('touchend', () => {
+            isDragging = false;
+        });
+
+    function adjustZoom(delta, mouseX, mouseY) {
+        let oldScale = scale;
+
+        scale = Math.max(minScale, Math.min(maxScale, scale + delta));
+        
+        if (oldScale !== scale) {
+            // Calcular cuánto ha cambiado el zoom
+            const scaleRatio = scale / oldScale;
+            
+            // Ajustar posición para hacer zoom hacia el punto del ratón
+            currentPos.x = mouseX - (mouseX - currentPos.x) * scaleRatio;
+            currentPos.y = mouseY - (mouseY - currentPos.y) * scaleRatio;
+            
+            mapBg.style.transform = `translate(${currentPos.x}px, ${currentPos.y}px) scale(${scale})`;
+            adjustCharacterSize();
+        }
+        console.log("scale:"+scale);
+    }
+
+    // Actualizar el listener del evento de la rueda del ratón
+    mapContainer.addEventListener('wheel', (e) => {
+        if (!e.ctrlKey && !e.shiftKey && !e.altKey) {
+            e.preventDefault();
+            const rect = mapContainer.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+            console.log("wdelta:"+e.wheelDelta+"\n"+e.deltaY+"\n");
+            
+            // adjustZoom(e.deltaY > 0 ? -0.1 : 0.1, mouseX, mouseY);
+            // para que dependa de la cantidad de píxeles que se mueve el scroll
+            adjustZoom(-e.deltaY/120, mouseX, mouseY);
+        }
+    });
+
+    // Añadir soporte para el gesto de pellizcar en pantallas táctiles
+    mapContainer.addEventListener('touchmove', (e) => {
+        console.log("touchmove"+e.touches.length);
+        
+        if (e.touches.length === 2) {
+            e.preventDefault();
+            const touch1 = e.touches[0];
+            const touch2 = e.touches[1];
+            const currentTouchDistance = Math.hypot(touch2.clientX - touch1.clientX, touch1.clientY - touch2.clientY);
+
+            if (lastTouchDistance) {
+                const delta = (currentTouchDistance - lastTouchDistance) / 100;
+                const rect = mapContainer.getBoundingClientRect();
+                const mouseX = (touch1.clientX + touch2.clientX) / 2 - rect.left;
+                const mouseY = (touch1.clientY + touch2.clientY) / 2 - rect.top;
+                adjustZoom(delta, mouseX, mouseY);
+            }
+
+            lastTouchDistance = currentTouchDistance;
+        }
+    });
+
+    mapContainer.addEventListener('touchend', () => {
+        lastTouchDistance = 0;
+    });
+
+    // Añadir soporte para las teclas + y - 
+    window.addEventListener('keydown', (e) => {
+        if (e.key === '+' || e.key === '=') {
+            adjustZoom(0.1, window.innerWidth / 2, window.innerHeight / 2);
+        } else if (e.key === '-') {
+            adjustZoom(-0.1, window.innerWidth / 2, window.innerHeight / 2);
+        } else if (e.key === 'd' || e.key === 'D') {
+            startMeasuringDistance();
+        } else if (e.key === 'c' || e.key === 'C') {
+            startPathDrawing();
+        }
+    });
+
+        // Mostrar menú contextual con click derecho
+        mapContainer.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            contextMenu.style.display = 'block';
+            contextMenu.style.left = `${e.clientX}px`;
+            contextMenu.style.top = `${e.clientY}px`;
+        });
+
+        // Ocultar menú contextual al hacer click en cualquier lugar
+        window.addEventListener('click', () => {
+            contextMenu.style.display = 'none';
+        });
+
+        // Iniciar medición de distancia
+        document.getElementById('measureDistance').addEventListener('click', startMeasuringDistance);
+
+        function startMeasuringDistance() {
+            measuringDistance = true;
+            startPoint = null;
+            contextMenu.style.display = 'none';
+        }
+
+        mapContainer.addEventListener('click', (e) => {
+            if (measuringDistance) {
+                if (!startPoint) {
+                    startPoint = { x: e.clientX, y: e.clientY };
+                } else {
+                    const endPoint = { x: e.clientX, y: e.clientY };
+                    const distance = Math.sqrt(
+                        Math.pow((endPoint.x - startPoint.x) / scale, 2) + 
+                        Math.pow((endPoint.y - startPoint.y) / scale, 2)
+                    ) * pxToKmRatio;
+                    // alert(`Distancia: ${distance.toFixed(2)} km`);
+                    measuringDistance = false;
+                    startPoint = null;
+                }
+            }
+        });
+
+        mapContainer.addEventListener('mousemove', (e) => {
+            if (measuringDistance && startPoint) {
+                const endPoint = { x: e.clientX, y: e.clientY };
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.beginPath();
+                ctx.moveTo(startPoint.x, startPoint.y);
+                ctx.lineTo(endPoint.x, endPoint.y);
+                ctx.strokeStyle = 'red';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                const distance = Math.sqrt(
+                    Math.pow((endPoint.x - startPoint.x) / scale, 2) + 
+                    Math.pow((endPoint.y - startPoint.y) / scale, 2)
+                ) * pxToKmRatio;
+                tooltip.style.display = 'block';
+                tooltip.style.left = `${endPoint.x + 10}px`;
+                tooltip.style.top = `${endPoint.y + 10}px`;
+                tooltip.innerText = `Distancia: ${distance.toFixed(2)} km`;
+            } else {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                tooltip.style.display = 'none';
+            }
+        });
+
+        // Cargar imagen de fondo
+        document.getElementById('bgInput').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                    let reader;
+                    // Verificar si el archivo es un SVG y leer la escala si es necesario
+                if (file.type === 'image/svg+xml') {
+                    reader = new FileReader();
+                    reader.onload = (event) => {
+                        const svgContent = event.target.result;
+                        const scale = getSvgScale(svgContent);
+                        if (scale) {
+                            pxToKmRatio = scale;
+                            console.log("pxToKmRatio:"+pxToKmRatio);                      
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+                reader = new FileReader();
+                reader.onload = (event) => {
+                    mapBg.style.backgroundImage = `url(${event.target.result})`;
+                    mapBg.style.backgroundSize = 'contain';
+                    mapBg.style.backgroundRepeat = 'no-repeat';
+                };
+                reader.readAsDataURL(file);
+
+             
+            }
+        });
+
+        // Creación y movimiento de personajes
+        function createCharacter(src) {
+            const char = document.createElement('img');
+            char.src = src;
+            char.className = 'character';
+            char.draggable = false;
+            mapBg.appendChild(char);
+            characters.push(char); // Añadir al array de personajes
+
+            let isDraggingChar = false;
+            let charPos = { x: 0, y: 0 };
+            let startOffset = { x: 0, y: 0 };
+            let rotation = 0;
+
+            // Modified wheel event: if char is selected, do not apply individual rotation.
+            char.addEventListener('wheel', (e) => {
+                if (e.shiftKey) {
+                    if (selectedCharacters.has(char)) return;
+                    e.preventDefault();
+                    e.stopPropagation();
+                    rotation += e.deltaY > 0 ? 15 : -15;
+                    updateCharacterTransform(char, charPos.x, charPos.y, rotation);
+                }
+            });
+
+            // Modified mousedown: if char is selected, skip individual dragging to enable group dragging.
+            char.addEventListener('mousedown', (e) => {
+                if (selectedCharacters.has(char)) return;
+                e.stopPropagation();
+                isDraggingChar = true;
+                
+                // Obtener posición actual incluyendo rotación
+                const transform = char.style.transform || '';
+                const currentTranslate = transform.match(/translate\(([-\d.]+)px,\s*([-\d.]+)px\)/) || [0, 0, 0];
+                charPos.x = parseFloat(currentTranslate[1]) || 0;
+                charPos.y = parseFloat(currentTranslate[2]) || 0;
+                
+                startOffset = {
+                    x: (e.clientX - currentPos.x) / scale - charPos.x,
+                    y: (e.clientY - currentPos.y) / scale - charPos.y
+                };
+                
+                char.style.cursor = 'grabbing';
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (isDraggingChar) {
+                    // Calcular la nueva posición con precisión decimal
+                    const x = (e.clientX - currentPos.x) / scale - startOffset.x;
+                    const y = (e.clientY - currentPos.y) / scale - startOffset.y;
+                    charPos = { x, y };
+                    updateCharacterTransform(char, x, y, rotation);
+                }
+            });
+
+            window.addEventListener('mouseup', () => {
+                isDraggingChar = false;
+                char.style.cursor = 'grab';
+            });
+
+            return char;
+        }
+
+        function updateCharacterTransform(char, x, y, rotation) {
+            // Apply inverse scaling so characters remain constant in size at any zoom level.
+            char.style.transform = `translate(${x}px, ${y}px) scale(${1/scale}) rotate(${rotation}deg)`;
+        }
+
+        // Ajustar el tamaño de los personajes al hacer zoom
+        function adjustCharacterSize() {
+            characters.forEach(char => {
+                const transform = char.style.transform || '';
+                const currentTranslate = transform.match(/translate\(([-\d.]+)px,\s*([-\d.]+)px\)/) || [0, 0, 0];
+                const x = parseFloat(currentTranslate[1]) || 0;
+                const y = parseFloat(currentTranslate[2]) || 0;
+                const rotation = parseFloat(transform.match(/rotate\(([-\d.]+)deg\)/)?.[1]) || 0;
+                updateCharacterTransform(char, x, y, rotation);
+            });
+        }
+
+        // Cargar personajes desde archivos
+        document.getElementById('characterInput').addEventListener('change', (e) => {
+            const files = e.target.files;
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    createCharacter(event.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Iniciar dibujo de camino
+        document.getElementById('drawPath').addEventListener('click', startPathDrawing);
+
+        function startPathDrawing() {
+            isDrawingPath = true;
+            pathPoints = [];
+            contextMenu.style.display = 'none';
+        }
+
+        // Selección y movimiento múltiple de personajes
+        mapContainer.addEventListener('mousedown', (e) => {
+            if (e.shiftKey) {
+                const char = e.target.closest('.character');
+                if (char) {
+                    if (selectedCharacters.has(char)) {
+                        selectedCharacters.delete(char);
+                        char.classList.remove('selected');
+                    } else {
+                        selectedCharacters.add(char);
+                        char.classList.add('selected');
+                    }
+                }
+            } else if (selectedCharacters.size > 0) {
+                isDraggingMultiple = true;
+                selectedCharacters.forEach(char => {
+                    const transform = char.style.transform || '';
+                    const currentTranslate = transform.match(/translate\(([-\d.]+)px,\s*([-\d.]+)px\)/) || [0, 0, 0];
+                    const x = parseFloat(currentTranslate[1]) || 0;
+                    const y = parseFloat(currentTranslate[2]) || 0;
+                    dragOffsets.set(char, {
+                        x: (e.clientX - currentPos.x) / scale - x,
+                        y: (e.clientY - currentPos.y) / scale - y
+                    });
+                });
+            }
+        });
+
+        // Iniciar selección por cuadro al presionar Ctrl y no hacer click en un personaje
+        mapContainer.addEventListener('mousedown', (e) => {
+            if (e.ctrlKey && !e.target.closest('.character')) {
+                isSelecting = true;
+                selectionStart = { x: e.clientX, y: e.clientY };
+                selectionBox = document.createElement('div');
+                selectionBox.className = 'selection-box';
+                selectionBox.style.left = `${selectionStart.x}px`;
+                selectionBox.style.top = `${selectionStart.y}px`;
+                document.body.appendChild(selectionBox);
+            }
+        });
+
+        // Actualizar selección por cuadro
+        window.addEventListener('mousemove', (e) => {
+            if (isSelecting) {
+                const x = Math.min(e.clientX, selectionStart.x);
+                const y = Math.min(e.clientY, selectionStart.y);
+                const width = Math.abs(e.clientX - selectionStart.x);
+                const height = Math.abs(e.clientY - selectionStart.y);
+                selectionBox.style.left = `${x}px`;
+                selectionBox.style.top = `${y}px`;
+                selectionBox.style.width = `${width}px`;
+                selectionBox.style.height = `${height}px`;
+            }
+        });
+
+        // Finalizar selección y agregar personajes dentro del rectángulo
+        window.addEventListener('mouseup', (e) => {
+            if (isSelecting) {
+                const rect = selectionBox.getBoundingClientRect();
+                characters.forEach(char => {
+                    const charRect = char.getBoundingClientRect();
+                    // Chequear si el centro del personaje está dentro del rectángulo de selección
+                    const charCenterX = charRect.left + charRect.width / 2;
+                    const charCenterY = charRect.top + charRect.height / 2;
+                    if (isInsideRect(charCenterX, charCenterY, rect)) {
+                        selectedCharacters.add(char);
+                        char.classList.add('selected');
+                    }
+                });
+                // Remover el cuadro de selección
+                selectionBox.parentElement.removeChild(selectionBox);
+                selectionBox = null;
+                isSelecting = false;
+            }
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (isDraggingMultiple) {
+                selectedCharacters.forEach(char => {
+                    const offset = dragOffsets.get(char);
+                    const x = (e.clientX - currentPos.x) / scale - offset.x;
+                    const y = (e.clientY - currentPos.y) / scale - offset.y;
+                    const transform = char.style.transform || '';
+                    const rotation = parseFloat(transform.match(/rotate\(([-\d.]+)deg\)/)?.[1]) || 0;
+                    updateCharacterTransform(char, x, y, rotation);
+                });
+            }
+        });
+
+        window.addEventListener('mouseup', () => {
+            isDraggingMultiple = false;
+        });
+
+        // Add group rotation functionality for multiple selected characters
+        window.addEventListener('wheel', (e) => {
+            // Only proceed if multiple characters are selected and Shift is held
+            if (selectedCharacters.size > 1 && e.shiftKey) {
+                e.preventDefault();
+                e.stopPropagation();
+                selectedCharacters.forEach(char => {
+                    const transform = char.style.transform || '';
+                    const translateMatch = transform.match(/translate\(([-\d.]+)px,\s*([-\d.]+)px\)/);
+                    const rotateMatch = transform.match(/rotate\(([-\d.]+)deg\)/);
+                    const x = translateMatch ? parseFloat(translateMatch[1]) : 0;
+                    const y = translateMatch ? parseFloat(translateMatch[2]) : 0;
+                    const currentRotation = rotateMatch ? parseFloat(rotateMatch[1]) : 0;
+                    const newRotation = currentRotation + (e.deltaY > 0 ? 15 : -15);
+                    updateCharacterTransform(char, x, y, newRotation);
+                });
+            }
+        }, { passive: false });
+
+        // Función para verificar si una posición está dentro de un rectángulo
+        function isInsideRect(x, y, rect) {
+            return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+        }
+
+        // Add new event handler to clear selection on background click
+        mapContainer.addEventListener('click', (e) => {
+            // If not measuring distance and the click target isn't a character,
+            // clear selected characters.
+            if (!measuringDistance && !e.target.closest('.character')) {
+                selectedCharacters.forEach((char) => {
+                    char.classList.remove('selected');
+                });
+                selectedCharacters.clear();
+            }
+        });
+    </script>
+</body>
+</html>
