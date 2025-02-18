@@ -236,6 +236,8 @@
 
         function zoomToText(text) {
             if (!svgElement) return;
+            scale=1;
+            setTransform();
 
             const elements = svgElement.querySelectorAll('text');
             elements.forEach(element => {
@@ -243,8 +245,10 @@
                 
                 if (element.textContent.includes(text)) {
                     const bbox = element.getBBox();
+                    
                     const centerX = bbox.x + bbox.width / 2;
                     const centerY = bbox.y + bbox.height / 2;
+                    console.log(centerX, centerY);
 
                     //scale = 5; // Ajustar el nivel de zoom según sea necesario
                     pointX = -centerX * scale + mapContainer.clientWidth / 2;
