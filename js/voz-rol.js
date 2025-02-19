@@ -1,4 +1,3 @@
-
 //#region Reconocimiento de voz
 
 var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition
@@ -76,7 +75,6 @@ function hablar() {
     }
     console.log('Botón de hablar pulsado');
     escuchar();
-
 
 
 
@@ -303,6 +301,18 @@ function voz(dictado) {
         daño(textoaNumero(d[1]), d[2]);
     }
 
+    if (dictado.includes('inventario')) {
+        cambiarTab('Inventario');
+    } else if (dictado.includes('habilidades')) {
+        cambiarTab('Habilidades');
+    } else if (dictado.includes('combate')) {
+        cambiarTab('Combate');
+    } else if (dictado.includes('magia')) {
+        cambiarTab('Magia');
+    } else if (dictado.includes('personaje')) {
+        cambiarTab('Personaje');
+    }
+
 }
 
 function buscar(busqueda) {
@@ -493,4 +503,14 @@ function textoaNumero(s) {
         }
     }
 
+}
+
+function cambiarTab(tabName) {
+    const app = document.getElementById('app').__vue__;
+    if (app && app.tab !== undefined) {
+        app.tab = tabName;
+        console.log(`Cambiando a la pestaña: ${tabName}`);
+    } else {
+        console.error('No se pudo cambiar la pestaña. La instancia de Vue no se encontró o la propiedad "tab" no está definida.');
+    }
 }
