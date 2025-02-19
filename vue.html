@@ -189,8 +189,12 @@
                   <v-list-item-title>Dados</v-list-item-title>
                 </v-list-item>
 
-                <li><a class="waves-effect" id="dictar" onclick="hablar(true)">Dictar comando<i
-                  class="material-icons">mic</i></a></li>
+                <v-list-item  @click="hablar(true)">
+                  <v-list-item-icon>
+                    <v-icon>mdi-microphone</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-title>Dictar comando</v-list-item-title>
+                </v-list-item>
 
 
 
