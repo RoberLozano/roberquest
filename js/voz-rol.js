@@ -316,11 +316,11 @@ function voz(dictado) {
 }
 
 function buscar(busqueda) {
-    // se muestra el buscador
-    iuBuscar();
-    // $("#buscar").val(busqueda)
-    document.getElementById('buscar').value = busqueda;
-    iniciarBusqueda(busqueda)
+    const app = document.getElementById('app').__vue__;
+    if (app) {
+        app.iuBuscar();
+        app.iniciarBusqueda(busqueda);
+    }
 }
 
 function localizacion(valor) {
