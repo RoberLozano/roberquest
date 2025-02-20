@@ -312,6 +312,18 @@ function voz(dictado) {
     } else if (dictado.includes('personaje')) {
         cambiarTab('Personaje');
     }
+    
+    var cargarOnline = dictado.match(/cargar online (.*)/i);
+    if (cargarOnline) {
+        console.log("CARGAR ONLINE");
+        cargarPersonajeOnlineParecido(cargarOnline[1]);
+    }
+
+    var cargarLocal = dictado.match(/cargar local (.*)/i);
+    if (cargarLocal) {
+        console.log("CARGAR LOCAL");
+        cargarPersonajeLocalParecido(cargarLocal[1]);
+    }
 
 }
 

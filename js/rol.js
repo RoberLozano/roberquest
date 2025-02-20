@@ -2305,6 +2305,8 @@ function cargaLocalObjeto(nombre) {
 
 }
 
+
+
 function cargarPersonajeOnline(nombre) {
   try {
     let ruta = `personajes/${nombre}/`;
@@ -2342,6 +2344,66 @@ function cargarPersonajeOnline(nombre) {
 
   }
 
+}
+
+/**
+ * Carga un personaje online buscando el nombre más parecido en Firebase.
+ * @param {string} nombre El nombre del personaje a buscar.
+ */
+function cargarPersonajeOnlineParecido(nombre) {
+    return new Promise((resolve, reject) => {
+        const ref = database.ref('personajes');
+        ref.once('value', (snapshot) => {
+            const personajes = snapshot.val();
+            if (personajes) {
+                const nombres = Object.keys(personajes);
+                const parecido = nombres.reduce((prev, curr) => {
+                    const prevSimilitud = jaroWrinker(nombre, prev);
+                    const currSimilitud = jaroWrinker(nombre, curr);
+                    return currSimilitud > prevSimilitud ? curr : prev;
+                }, nombres[0]);
+                cargarPersonajeOnline(parecido);
+                resolve(parecido);
+            } else {
+                reject('No se encontraron personajes.');
+            }
+        }, (error) => {
+            reject(error);
+        });
+    });
+}
+
+/**
+ * Carga un personaje local buscando el nombre más parecido en localStorage.
+ * @param {string} nombre El nombre del personaje a buscar.
+ */
+function cargarPersonajeLocalParecido(nombre) {
+    return new Promise((resolve, reject) => {
+        const nombres = [];
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            try {
+                const item = JSON.parse(localStorage.getItem(key));
+                if (item && item.clase && (item.clase === 'Humanoide' || item.clase === 'Animal')) {
+                    nombres.push(key);
+                }
+            } catch (e) {
+                console.warn(`No se pudo parsear el objeto con clave ${key}`);
+            }
+        }
+
+        if (nombres.length > 0) {
+            const parecido = nombres.reduce((prev, curr) => {
+                const prevSimilitud = jaroWrinker(nombre, prev);
+                const currSimilitud = jaroWrinker(nombre, curr);
+                return currSimilitud > prevSimilitud ? curr : prev;
+            }, nombres[0]);
+            cargarPersonaje(parecido);
+            resolve(parecido);
+        } else {
+            reject('No se encontraron personajes guardados localmente.');
+        }
+    });
 }
 
 function historial( valor,campo='habilidades') {
@@ -2415,5 +2477,5 @@ function mago(personaje, nivel = 5) {
 // let armanat = new ArmaNatural("puño", "1d3C", "Brazo D");
 // console.log(armanat);
 // console.log(new ArmaNatural("puño", "1d3F", "Brazo D"));
-// console.log(new ArmaNatural("puño", "1d3f", "Brazo D"));
 // console.log(new ArmaNatural("puño", "1d  f", "Brazo D"));
+// console.log(new ArmaNatural("puño", "1d3f", "Brazo D"));

@@ -1504,6 +1504,9 @@ function monitorizarCuerpo(nombre) {
   
 }
 
+
+
+
 function cargarPersonajeOnline(nombre){
   try {
     let ruta = `personajes/${nombre}/`;

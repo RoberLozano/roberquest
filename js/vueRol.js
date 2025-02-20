@@ -1,4 +1,4 @@
-// var chaleco = new Pieza(["Pecho", "Abdomen"], 3);
+    // var chaleco = new Pieza(["Pecho", "Abdomen"], 3);
     // var vestidoDragon = new Armadura(
     //   [new Pieza(dartodasLocalizaciones(pj, 'Craneo', 'Cara', 'Pie I', 'Pie D', 'Mano I', 'Mano D'), 7),
     //     chaleco]
@@ -446,19 +446,6 @@
             var editor = document.getElementById("editor");
             editor.innerHTML = "";
             editor.appendChild(new InputCustom(objeto));
-          },
-  
-          iuBuscar() {
-            // Implement the logic to show the search input in vue.html
-            // For example, you can toggle a boolean to show/hide the input
-            this.verBuscar = true;
-          },
-  
-          iniciarBusqueda(busqueda) {
-            // Implement the search logic here
-            // This method will be called with the search term
-            this.search = busqueda;
-            console.log(`Realizando búsqueda en Vue: ${busqueda}`);
           }
   
   
@@ -626,4 +613,5 @@
   
         }
       })
-
+  
+  
