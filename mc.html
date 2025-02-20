@@ -100,12 +100,6 @@
             box-shadow: 0 0 10px 3px #00ff00;
             border-radius: 50%;
         }
-        .selection-box {
-            position: absolute;
-            border: 1px dashed #333;
-            background: rgba(0, 0, 255, 0.1);
-            z-index: 150;
-        }
     </style>
 </head>
 <body>
@@ -158,11 +152,6 @@
             isDraggingMultiple = false,
             dragOffsets = new Map();
 
-        // NUEVAS VARIABLES PARA SELECCIÓN POR CUADRO
-        let isSelecting = false;
-        let selectionStart = { x: 0, y: 0 };
-        let selectionBox = null;
-
         // Establecer tamaño del canvas
         function resizeCanvas() {
             canvas.width = window.innerWidth;
@@ -180,8 +169,7 @@
                 ctx.moveTo(e.clientX, e.clientY);
                 ctx.strokeStyle = 'blue';
                 ctx.lineWidth = 2;
-            } else if (!measuringDistance && !e.ctrlKey && selectedCharacters.size === 0) {
-                // Only start map drag if not selecting (ctrl pressed) and no characters are selected for group dragging
+            } else if (!measuringDistance) {
                 isDragging = true;
                 dragStart = {
                     x: e.clientX - currentPos.x,
@@ -463,10 +451,9 @@
             let startOffset = { x: 0, y: 0 };
             let rotation = 0;
 
-            // Modified wheel event: if char is selected, do not apply individual rotation.
+            // Añadir rotación con Shift + rueda del ratón
             char.addEventListener('wheel', (e) => {
                 if (e.shiftKey) {
-                    if (selectedCharacters.has(char)) return;
                     e.preventDefault();
                     e.stopPropagation();
                     rotation += e.deltaY > 0 ? 15 : -15;
@@ -474,9 +461,7 @@
                 }
             });
 
-            // Modified mousedown: if char is selected, skip individual dragging to enable group dragging.
             char.addEventListener('mousedown', (e) => {
-                if (selectedCharacters.has(char)) return;
                 e.stopPropagation();
                 isDraggingChar = true;
                 
@@ -513,8 +498,7 @@
         }
 
         function updateCharacterTransform(char, x, y, rotation) {
-            // Apply inverse scaling so characters remain constant in size at any zoom level.
-            char.style.transform = `translate(${x}px, ${y}px) scale(${1/scale}) rotate(${rotation}deg)`;
+            char.style.transform = `translate(${x}px, ${y}px) rotate(${rotation}deg)`;
         }
 
         // Ajustar el tamaño de los personajes al hacer zoom
@@ -579,54 +563,6 @@
             }
         });
 
-        // Iniciar selección por cuadro al presionar Ctrl y no hacer click en un personaje
-        mapContainer.addEventListener('mousedown', (e) => {
-            if (e.ctrlKey && !e.target.closest('.character')) {
-                isSelecting = true;
-                selectionStart = { x: e.clientX, y: e.clientY };
-                selectionBox = document.createElement('div');
-                selectionBox.className = 'selection-box';
-                selectionBox.style.left = `${selectionStart.x}px`;
-                selectionBox.style.top = `${selectionStart.y}px`;
-                document.body.appendChild(selectionBox);
-            }
-        });
-
-        // Actualizar selección por cuadro
-        window.addEventListener('mousemove', (e) => {
-            if (isSelecting) {
-                const x = Math.min(e.clientX, selectionStart.x);
-                const y = Math.min(e.clientY, selectionStart.y);
-                const width = Math.abs(e.clientX - selectionStart.x);
-                const height = Math.abs(e.clientY - selectionStart.y);
-                selectionBox.style.left = `${x}px`;
-                selectionBox.style.top = `${y}px`;
-                selectionBox.style.width = `${width}px`;
-                selectionBox.style.height = `${height}px`;
-            }
-        });
-
-        // Finalizar selección y agregar personajes dentro del rectángulo
-        window.addEventListener('mouseup', (e) => {
-            if (isSelecting) {
-                const rect = selectionBox.getBoundingClientRect();
-                characters.forEach(char => {
-                    const charRect = char.getBoundingClientRect();
-                    // Chequear si el centro del personaje está dentro del rectángulo de selección
-                    const charCenterX = charRect.left + charRect.width / 2;
-                    const charCenterY = charRect.top + charRect.height / 2;
-                    if (isInsideRect(charCenterX, charCenterY, rect)) {
-                        selectedCharacters.add(char);
-                        char.classList.add('selected');
-                    }
-                });
-                // Remover el cuadro de selección
-                selectionBox.parentElement.removeChild(selectionBox);
-                selectionBox = null;
-                isSelecting = false;
-            }
-        });
-
         window.addEventListener('mousemove', (e) => {
             if (isDraggingMultiple) {
                 selectedCharacters.forEach(char => {
@@ -642,42 +578,6 @@
 
         window.addEventListener('mouseup', () => {
             isDraggingMultiple = false;
-        });
-
-        // Add group rotation functionality for multiple selected characters
-        window.addEventListener('wheel', (e) => {
-            // Only proceed if multiple characters are selected and Shift is held
-            if (selectedCharacters.size > 1 && e.shiftKey) {
-                e.preventDefault();
-                e.stopPropagation();
-                selectedCharacters.forEach(char => {
-                    const transform = char.style.transform || '';
-                    const translateMatch = transform.match(/translate\(([-\d.]+)px,\s*([-\d.]+)px\)/);
-                    const rotateMatch = transform.match(/rotate\(([-\d.]+)deg\)/);
-                    const x = translateMatch ? parseFloat(translateMatch[1]) : 0;
-                    const y = translateMatch ? parseFloat(translateMatch[2]) : 0;
-                    const currentRotation = rotateMatch ? parseFloat(rotateMatch[1]) : 0;
-                    const newRotation = currentRotation + (e.deltaY > 0 ? 15 : -15);
-                    updateCharacterTransform(char, x, y, newRotation);
-                });
-            }
-        }, { passive: false });
-
-        // Función para verificar si una posición está dentro de un rectángulo
-        function isInsideRect(x, y, rect) {
-            return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
-        }
-
-        // Add new event handler to clear selection on background click
-        mapContainer.addEventListener('click', (e) => {
-            // If not measuring distance and the click target isn't a character,
-            // clear selected characters.
-            if (!measuringDistance && !e.target.closest('.character')) {
-                selectedCharacters.forEach((char) => {
-                    char.classList.remove('selected');
-                });
-                selectedCharacters.clear();
-            }
         });
     </script>
 </body>
