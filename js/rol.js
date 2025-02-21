@@ -2063,6 +2063,79 @@ class Humano extends Humanoide {
   }
 }
 
+class Elfo extends Humanoide {
+  constructor() {
+    super({ FUE: new Dado('2d6+7').tirar(),
+      DES: new Dado('3d6+6').tirar(),
+      ASP: new Dado('3d6+6').tirar() });
+    this.nombre = 'Legolas';
+    this.peso = 60;
+    this.haBasicas();
+    this.crearCuerpo(); 
+  } 
+
+  haBasicas() {
+    //generado con AI
+    // Habilidades básicas
+      this.setHabilidad(new Habilidad("Esquivar", Agilidad, 50));
+      this.setHabilidad(new Habilidad("Montar", Agilidad, 40));
+
+        this.setHabilidad(new Habilidad("Remar", Agilidad, 30));
+        this.setHabilidad(new Habilidad("Nadar", Agilidad, 25));
+        this.setHabilidad(new Habilidad("Trepar", Agilidad, 40));
+        this.setHabilidad(new Habilidad("Correr", Agilidad, 50));
+        this.setHabilidad(new Habilidad("Saltar", Agilidad, 30)); 
+        this.setHabilidad(new Habilidad("Esconderse", Sigilo, 40));
+        this.setHabilidad(new Habilidad("Deslizarse en Silencio", Sigilo, 40));
+        this.setHabilidad(new Habilidad("Buscar", Percepción, 50));
+        this.setHabilidad(new Habilidad("Escuchar", Percepción, 50));
+        this.setHabilidad(new Habilidad("Otear", Percepción, 50));
+        this.setHabilidad(new Habilidad("Rastrear", Percepción, 40));
+        this.setHabilidad(new Habilidad("Oler", Percepción, 30));
+        this.setHabilidad(new Habilidad("Orientación", Percepción, 40));
+        this.setHabilidad(new Habilidad("Cantar", Comunicación, 40));
+        this.setHabilidad(new Habilidad("Actuar", Comunicación, 30));
+        this.setHabilidad(new Habilidad("Intimidar", Comunicación, 20));
+        this.setHabilidad(new Habilidad("Regatear", Comunicación, 30));
+        this.setHabilidad(new Habilidad("Enseñar", Comunicación, 30));
+        this.setHabilidad(new Habilidad("Silbar", Comunicación, 20));
+        this.setHabilidad(new Habilidad("Seducir", Comunicación, 30));
+        this.setHabilidad(new Habilidad("Animal", Conocimiento, 30));
+        this.setHabilidad(new Habilidad("Vegetal", Conocimiento, 50));
+        this.setHabilidad(new Habilidad("Mineral", Conocimiento, 20));
+        this.setHabilidad(new Habilidad("Mundo", Conocimiento, 30));
+        this.setHabilidad(new Habilidad("Raza Propia", Conocimiento, 50));
+        this.setHabilidad(new Habilidad("Otras Razas", Conocimiento, 30));
+        this.setHabilidad(new Habilidad("Leer y escribir", Conocimiento, 40));
+        this.setHabilidad(new Habilidad("Navegación", Conocimiento, 30));
+        this.setHabilidad(new Habilidad("Primeros Auxilios", Conocimiento, 30));
+        this.setHabilidad(new Habilidad("Tasación", Conocimiento, 30));
+        this.setHabilidad(new Habilidad("Inventar", Conocimiento, 30));
+        this.setHabilidad(new Habilidad("Lanzar", Manipulación, 30));
+        this.setHabilidad(new Habilidad("Construir", Manipulación, 30));
+        
+        // Habilidades de combate
+        this.setHabilidad(new HabilidadMarcial("Arco", Manipulación, 60, true));
+        this.setHabilidad(new HabilidadMarcial("Espada", Manipulación, 50, true));
+        this.setHabilidad(new HabilidadMarcial("Daga", Manipulación, 40, true));
+        this.setHabilidad(new HabilidadMarcial("Puño", Manipulación, 30, true));
+        this.setHabilidad(new HabilidadMarcial("Patada", Manipulación, 25, true));
+        
+        //Artes de magía, como en habilidades.js
+        this.setHabilidad(new Arte("Intensidad", Magia, 20));
+        this.setHabilidad(new Arte("Duración", Magia, 20));
+        this.setHabilidad(new Arte("Alcance", Magia, 20));
+
+        //Hechizos
+        this.setHabilidad(new Hechizo("Luz", Magia, 20));
+        this.setHabilidad(new Hechizo("Curación", Magia, 20)); 
+        this.setHabilidad(new Hechizo("Bola de Fuego", Magia, 20));
+  }
+}
+
+        
+      
+
 class Enano extends Humanoide {
   constructor() {
     super({ FUE: new Dado('3d6+6').tirar(), CON: new Dado('3d6+6').tirar() });
