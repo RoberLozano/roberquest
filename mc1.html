@@ -95,6 +95,10 @@
             margin-left: 10px;
             color: #888;
         }
+        .icon {
+            width: 50px;
+            height: 50px;
+        }
     </style>
 </head>
 <body>
@@ -106,8 +110,14 @@
     <div id="tooltip"></div>
 
     <div class="controls">
-        <input type="file" id="bgInput" accept="image/*" />
-        <input type="file" id="characterInput" accept="image/*" multiple />
+        <label for="characterInput">
+            <img src="character-icon.png" class="icon" alt="Add Character">
+        </label>
+        <input type="file" id="characterInput" accept="image/*" multiple style="display: none;">
+        <label for="bgInput">
+            <img src="map-icon.png" class="icon" alt="Add Background">
+        </label>
+        <input type="file" id="bgInput" accept="image/*" style="display: none;">
         <div id="distance"></div>
     </div>
 
@@ -142,6 +152,24 @@
 
         // Reemplazar la variable char global por un array
         let characters = [];
+        let characterPathPoints = new Map(); // Almacenar puntos de ruta para cada personaje
+        let characterObjects = new Map();  // Para almacenar datos de personajes
+        let activeCharacter = null;        // Para el personaje actualmente seleccionado
+
+        // Añadir después de las variables globales existentes
+        let charTooltip = document.createElement('div');
+        charTooltip.style.cssText = `
+            position: fixed;
+            display: none;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px;
+            border-radius: 3px;
+            font-size: 12px;
+            pointer-events: none;
+            z-index: 1000;
+        `;
+        document.body.appendChild(charTooltip);
 
         // Establecer tamaño del canvas
         function resizeCanvas() {
@@ -232,6 +260,16 @@
                 }
             }
             isDragging = false;
+            if (activeCharacter) {
+                const pathPoints = characterPathPoints.get(activeCharacter);
+                if (pathPoints && pathPoints.length > 0) {
+                    setTimeout(() => {
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        tooltip.style.display = 'none';
+                        characterPathPoints.delete(activeCharacter);
+                    }, 1500);
+                }
+            }
         });
 
         // Funcionalidad de arrastre del mapa en móviles
@@ -430,11 +468,14 @@
         });
 
         // Creación y movimiento de personajes
-        function createCharacter(src) {
+        function createCharacter(file,src) {
             const char = document.createElement('img');
             char.src = src;
             char.className = 'character';
             char.draggable = false;
+            char.nombre=file.split('/').pop().split('.')[0];
+            console.log("nombre:"+char.nombre);
+            
             mapBg.appendChild(char);
             characters.push(char); // Añadir al array de personajes
 
@@ -456,6 +497,7 @@
             char.addEventListener('mousedown', (e) => {
                 e.stopPropagation();
                 isDraggingChar = true;
+                activeCharacter = char; // Establecer el personaje activo
                 
                 // Obtener posición actual incluyendo rotación
                 const transform = char.style.transform || '';
@@ -469,6 +511,7 @@
                 };
                 
                 char.style.cursor = 'grabbing';
+                characterPathPoints.set(char, [{ x: e.clientX, y: e.clientY }]);
             });
 
             window.addEventListener('mousemove', (e) => {
@@ -481,6 +524,7 @@
                     char.style.transform = `translate(${x}px, ${y}px) rotate(${rotation}deg) scale(${1/scale})`;
                     charPos = { x, y };
                     updateDistance();
+                    handleCharacterMove(char, e.clientX, e.clientY, startOffset);
                 }
             });
 
@@ -546,14 +590,35 @@
                 isDraggingChar = false; 
             });
 
+            // Modificar los eventos del tooltip dentro de createCharacter
+            char.addEventListener('mouseover', (e) => {
+                if (char.nombre) {
+                    charTooltip.textContent = char.nombre;
+                    charTooltip.style.display = 'block';
+                    charTooltip.style.left = `${e.pageX - charTooltip.offsetWidth - 10}px`; // Mover a la izquierda
+                    charTooltip.style.top = `${e.pageY + 10}px`;
+                }
+            });
+
+            char.addEventListener('mousemove', (e) => {
+                if (char.nombre && charTooltip.style.display === 'block') {
+                    charTooltip.style.left = `${e.pageX - charTooltip.offsetWidth - 10}px`; // Mover a la izquierda
+                    charTooltip.style.top = `${e.pageY + 10}px`;
+                }
+            });
+
+            char.addEventListener('mouseout', () => {
+                charTooltip.style.display = 'none';
+            });
+
             return char;
         }
 
         document.getElementById('characterInput').addEventListener('change', (e) => {
             Array.from(e.target.files).forEach(file => {
                 const reader = new FileReader();
-                reader.onload = (event) => {
-                    const char = createCharacter(event.target.result);
+                reader.onload = (event) => {                   
+                    const char = createCharacter(file.name, event.target.result);
                     // Posicionar cada nuevo personaje en una ubicación ligeramente diferente
                     const x = 50 + Math.random() * 100;
                     const y = 50 + Math.random() * 100;
@@ -630,6 +695,64 @@
     // Función helper para actualizar transform
     function updateCharacterTransform(char, x, y, rotation) {
         char.style.transform = `translate(${x}px, ${y}px) rotate(${rotation}deg) scale(${1/scale})`;
+    }
+
+    // Modificar la función handleCharacterMove para incluir el dibujo del camino
+    function handleCharacterMove(char, clientX, clientY, offset) {
+        const x = (clientX - currentPos.x) / scale - offset.x;
+        const y = (clientY - currentPos.y) / scale - offset.y;
+        
+        // Guardar la posición en el objeto del personaje
+        const charData = characterObjects.get(char) || {};
+        charData.mapX = x;
+        charData.mapY = y;
+        characterObjects.set(char, charData);
+        
+        // Actualizar la transformación
+        updateCharacterTransform(char, x, y, charData.rotation || 0);
+
+        // Actualizar el camino
+        if (!characterPathPoints.has(char)) {
+            characterPathPoints.set(char, []);
+        }
+        const pathPoints = characterPathPoints.get(char);
+        pathPoints.push({ x: clientX, y: clientY });
+
+        // Dibujar el camino
+        drawCharacterPath(char, pathPoints);
+    }
+
+    // Añadir función para dibujar el camino del personaje
+    function drawCharacterPath(char, points) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        if (points.length < 2) return;
+
+        // Dibujar el camino
+        ctx.beginPath();
+        ctx.setLineDash([5, 5]);
+        ctx.strokeStyle = 'blue';
+        ctx.lineWidth = 2;
+        
+        ctx.moveTo(points[0].x, points[0].y);
+        for (let i = 1; i < points.length; i++) {
+            ctx.lineTo(points[i].x, points[i].y);
+        }
+        ctx.stroke();
+
+        // Calcular y mostrar la distancia
+        let totalDistance = 0;
+        for (let i = 1; i < points.length; i++) {
+            const dx = (points[i].x - points[i-1].x) / scale;
+            const dy = (points[i].y - points[i-1].y) / scale;
+            totalDistance += Math.sqrt(dx * dx + dy * dy) * pxToKmRatio;
+        }
+
+        // Actualizar tooltip con la distancia
+        tooltip.style.display = 'block';
+        tooltip.style.left = `${points[points.length-1].x + 10}px`;
+        tooltip.style.top = `${points[points.length-1].y + 10}px`;
+        tooltip.innerText = `Distancia: ${totalDistance.toFixed(2)} km`;
     }
     </script>
 </body>

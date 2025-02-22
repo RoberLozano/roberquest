@@ -1,0 +1,1 @@
+Haz que la imagen de fondo pase a ser un mapa sobre el cual se pueda hacer zoom. Que tenga todas las funciones de zoom y contexto de 'mc1.html' y que los personajes escalen como en 'mc1.html'. Manten las funcionalidades de selección y dibujo de trayectorias ya existentes en 'move-characters.html'
