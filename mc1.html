@@ -1038,27 +1038,43 @@
         if (!activeCharacter || !activeCharacter.p) return;
     
         // Calcular las dimensiones manteniendo la proporción 500x900
-        const ratio = 500/900;
+        const originalRatio = 500/900;
         const windowHeight = window.innerHeight;
         const windowWidth = window.innerWidth;
         
         let width, height;
         
-        // Si el alto escalado es menor que el ancho disponible
-        if (windowHeight * ratio < windowWidth) {
-            height = windowHeight;
-            width = height * ratio;
+        // Calcular dimensiones máximas manteniendo margen del 5%
+        const maxWidth = windowWidth * 0.95;
+        const maxHeight = windowHeight * 0.95;
+        
+        // Calcular dimensiones basadas en el espacio disponible
+        if (maxHeight * originalRatio <= maxWidth) {
+            // Si limitamos por altura
+            height = maxHeight;
+            width = height * originalRatio;
         } else {
-            // Si el ancho es el limitante
-            width = windowWidth;
-            height = width / ratio;
+            // Si limitamos por ancho
+            width = maxWidth;
+            height = width / originalRatio;
+        }
+        
+        // Verificar que no sea demasiado pequeño en ninguna dimensión
+        const minSize = Math.min(windowWidth, windowHeight) * 0.5; // Mínimo 50% de la dimensión menor
+        if (width < minSize) {
+            width = minSize;
+            height = width / originalRatio;
+        }
+        if (height < minSize) {
+            height = minSize;
+            width = height * originalRatio;
         }
         
         // Ajustar dimensiones del canvas
         bodyCanvas.width = width;
         bodyCanvas.height = height;
         
-        // Calcular el zoom basado en la altura original de 900
+        // Calcular el zoom basado en las dimensiones originales
         const zoomCuerpo = height / 900;
         
         console.log("Dibujando cuerpo con zoom:", zoomCuerpo);
