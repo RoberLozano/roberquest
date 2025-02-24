@@ -147,6 +147,17 @@
             color: white;
         }
 
+        /* Excepción para el modal de daño */
+        #damageModal .modal-content {
+            margin: 15% auto; /* Restaurar margen */
+            padding: 20px;    /* Restaurar padding */
+            border: 1px solid #666;
+            width: 80%;
+            max-width: 500px;
+            height: auto;     /* Altura automática */
+            display: block;   /* Display normal */
+        }
+
         .close {
             color: #aaa;
             float: right;
@@ -1011,9 +1022,11 @@
             console.log("Mostrando cuerpo de:", activeCharacter.p.nombre);
             bodyModal.style.display = 'block';
             
-            // Retrasar un poco el dibujado para asegurar que el modal está visible
+            // Retrasar el primer dibujado para asegurar que el modal está visible
             setTimeout(() => {
                 showBody();
+                // Recargar después de 200ms para asegurar que se dibuja bien
+                setTimeout(showBody, 200);
             }, 100);
         } else {
             console.log("No hay personaje activo o no está cargado correctamente");
@@ -1134,6 +1147,24 @@
             damageModal.style.display = 'none';
         }
     });
+
+    // Modificar el evento de click para el modal del cuerpo
+    bodyModal.addEventListener('click', (e) => {
+        bodyModal.style.display = 'none';
+    });
+
+    // Evitar que el click en los controles cierre el modal
+    bodyCanvas.addEventListener('click', (e) => {
+        e.stopPropagation();
+    });
+
+    reloadBody.addEventListener('click', (e) => {
+        e.stopPropagation();
+    });
+
+    // Remover los otros eventos de cerrado del modal del cuerpo que ya no son necesarios
+    closeModal.removeEventListener('click', () => {});
+    window.removeEventListener('click', () => {});
     </script>
 </body>
 </html>
