@@ -248,6 +248,23 @@ class Armadura {
 
     }
 
+    /**
+     * Devuelve los PA que cubren esa localización
+     * @param {string} localizacion la localización
+     * @returns {int} los PA que cubren esa localización
+     * @memberof Armadura
+     *   
+     *  */
+
+    daPA(localizacion) {
+        let lista = this.daPiezas(localizacion);
+        let pa = 0;
+        lista.forEach(l => {
+            pa += l.pa;
+        });
+        return pa;
+    };
+
     atacar(daño, tipo, localizacion) {
         let d = daño;
         let lista = this.daPiezas(localizacion);

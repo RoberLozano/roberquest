@@ -2032,22 +2032,31 @@ class Humanoide extends Animal {
         // ctx.fill();
         // ctx.stroke();
 
+
+        //PA
+        // let pa=pj.cuerpo.darLocalizacion(l.nombre).pa;
+        //CUIDADO VAYA O NO FUNCIONE BIEN
+        let pa=l.pa;
+        if (this.cuerpo?.armadura) { //PETA AL NO HABER ARMADURA?
+          pa+= this.cuerpo.armadura.daPA(l.nombre);
+          
+        }
         ctx.globalAlpha = 0.77
         ctx.beginPath();
-        ctx.arc(l.x * scale, l.y * scale, l.pg * 5 * scale, 0, Math.PI, false);
+        ctx.arc(l.x * scale, l.y * scale, pa * 5 * scale, 0, Math.PI, false);
         ctx.fillStyle = "grey";
         ctx.fill();
 
         ctx.globalAlpha = 1
-        ctx.font = (l.daño * 2 + 20) * scale + 'px Sans-serif';
+        ctx.font = (pa * 2 + 20) * scale + 'px Sans-serif';
         ctx.strokeStyle = 'black';
         ctx.textAlign = "center"
         ctx.textBaseline = "top";
         // ctx.textAlign = "end" 
         ctx.lineWidth = 5;
-        ctx.strokeText(l.daño, l.x * scale, l.y * scale);
+        ctx.strokeText(pa, l.x * scale, l.y * scale);
         ctx.fillStyle = 'white';
-        ctx.fillText(l.daño, l.x * scale, l.y * scale);
+        ctx.fillText(pa, l.x * scale, l.y * scale);
         ctx.globalAlpha = 1;
       }
 

@@ -99,6 +99,125 @@
             width: 50px;
             height: 50px;
         }
+
+        #characterContextMenu {
+            position: absolute;
+            display: none;
+            background: white;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+        #characterContextMenu ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        #characterContextMenu li {
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+        #characterContextMenu li:hover {
+            background: #eee;
+        }
+
+        /* Estilos del modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #000000;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #666;
+            width: 80%;
+            max-width: 500px;
+            color: white;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #bodyCanvas {
+            background-color: #000000;
+        }
+
+        #reloadBody {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: background-color 0.3s;
+        }
+
+        #reloadBody:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        #reloadBody svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+
+        .damage-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            padding: 1rem 0;
+        }
+
+        .damage-controls input,
+        .damage-controls select {
+            background: #333;
+            color: white;
+            border: 1px solid #666;
+            padding: 0.5rem;
+            border-radius: 4px;
+            margin-left: 1rem;
+        }
+
+        .damage-controls button {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        .damage-controls button:hover {
+            background: #d32f2f;
+        }
+
+        .char-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 1px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            padding-bottom: 1px;
+        }
+
+        .char-damage {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
     </style>
 </head>
 <body>
@@ -126,6 +245,48 @@
             <li id="measureDistance">Medir Distancia <span class="shortcut">D</span></li>
             <li id="drawPath">Dibujar Camino <span class="shortcut" >C</span></li>
         </ul>
+    </div>
+
+    <!-- Añadir el menú contextual para personajes -->
+    <div id="characterContextMenu">
+        <ul>
+            <li id="showBody">Ver cuerpo</li>
+            <li id="damageCharacter">Dañar personaje</li>
+        </ul>
+    </div>
+
+    <!-- Añadir el modal del cuerpo -->
+    <div id="bodyModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <canvas id="bodyCanvas" width="500" height="900"></canvas>
+            <button id="reloadBody" onclick="showBody()">
+                <span aria-hidden="true" class="v-icon notranslate theme--light">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" aria-hidden="true" class="v-icon__svg">
+                        <path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z"></path>
+                    </svg>
+                </span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Añadir el modal de daño después del modal del cuerpo -->
+    <div id="damageModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>Aplicar daño</h3>
+            <div class="damage-controls">
+                <div>
+                    <label for="damageAmount">Cantidad de daño:</label>
+                    <input type="number" id="damageAmount" min="1" value="1">
+                </div>
+                <div>
+                    <label for="damageLocation">Localización:</label>
+                    <select id="damageLocation"></select>
+                </div>
+                <button id="applyDamage" onclick="applyDamage()">Aplicar daño</button>
+            </div>
+        </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
@@ -484,16 +645,31 @@
             char.src = src;
             char.className = 'character';
             char.draggable = false;
-            char.nombre=file.split('/').pop().split('.')[0];
-            console.log("nombre:"+char.nombre);
+            char.nombre = file.split('/').pop().split('.')[0];
+            console.log("nombre:" + char.nombre);
 
-            let p=cargarPersonajeOnline(char.nombre);
-            if(p!=null){
-                char.p=p;
-            }
+            // Cargar personaje de forma asíncrona
+            let ruta = `personajes/${char.nombre}/`;
+            fbActual = database.ref(ruta);
+            
+            fbActual.once('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    console.log("Personaje cargado:", data);
+                    // Convertir los datos a un objeto de personaje
+                    if (data.clase) {
+                        char.p = Clase.convertir(data);
+                    } else {
+                        char.p = new Humanoide({});
+                    }
+                    char.p.setAll(data);
+                    char.p.act();
+                    console.log("Personaje guardado en char.p:", char.p);
+                }
+            });
             
             mapBg.appendChild(char);
-            characters.push(char); // Añadir al array de personajes
+            characters.push(char);
 
             let isDraggingChar = false;
             let charPos = { x: 0, y: 0 };
@@ -609,9 +785,33 @@
             // Modificar los eventos del tooltip dentro de createCharacter
             char.addEventListener('mouseover', (e) => {
                 if (char.nombre) {
-                    charTooltip.textContent = char.nombre;
+                    let tooltipText = char.nombre;
+                    // if (char.p && char.p.pg) 
+                        tooltipText += ` (${char.p.pg}/${char.p.getMaxPuntos('PG')})`;
+                    
+                    
+                    // Añadir información de daño si el personaje tiene localizaciones dañadas
+                    if (char.p && char.p.cuerpo) {
+                        const locDañadas = char.p.cuerpo.todas().filter(loc => loc.daño > 0);
+                        if (locDañadas.length > 0) {
+                            tooltipText =
+                            `<div class="char-name">${char.nombre}  <span style="font-size:0.8em; font-weight:normal;">
+                                (${char.p.pg}/${char.p.getMaxPuntos('PG')})
+                                </span></div>`;
+                            tooltipText += '<div class="char-damage">';
+                            locDañadas.forEach(loc => {
+                                let style = loc.daño >= loc.pg ? `style="color:red; font-weight:bold;"`:"";
+                                
+                                tooltipText += `${loc.nombre}: <span ${style};">${loc.daño}</span>/${loc.pg}<br>`;
+                            });
+                            tooltipText += '</div>';
+                        }
+                    }
+                    
+                    charTooltip.style.whiteSpace = 'pre-line'; // Para que respete los saltos de línea
+                    charTooltip.innerHTML = tooltipText; // Cambiado de textContent a innerHTML
                     charTooltip.style.display = 'block';
-                    charTooltip.style.left = `${e.pageX - charTooltip.offsetWidth - 10}px`; // Mover a la izquierda
+                    charTooltip.style.left = `${e.pageX - charTooltip.offsetWidth - 10}px`;
                     charTooltip.style.top = `${e.pageY + 10}px`;
                 }
             });
@@ -625,6 +825,23 @@
 
             char.addEventListener('mouseout', () => {
                 charTooltip.style.display = 'none';
+            });
+
+            // Añadir evento contextmenu para personajes
+            char.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Ocultar menú contextual general
+                contextMenu.style.display = 'none';
+                
+                // Mostrar menú contextual de personajes
+                characterContextMenu.style.display = 'block';
+                characterContextMenu.style.left = `${e.clientX}px`;
+                characterContextMenu.style.top = `${e.clientY}px`;
+                
+                // Guardar referencia al personaje actualmente seleccionado
+                activeCharacter = char;
             });
 
             return char;
@@ -770,6 +987,121 @@
         tooltip.style.top = `${points[points.length-1].y + 10}px`;
         tooltip.innerText = `Distancia: ${totalDistance.toFixed(2)} km`;
     }
+
+    // Añadir variables para el modal y menús
+    const characterContextMenu = document.getElementById('characterContextMenu');
+    const bodyModal = document.getElementById('bodyModal');
+    const closeModal = document.querySelector('.close');
+    const bodyCanvas = document.getElementById('bodyCanvas');
+
+    // Evento para mostrar el cuerpo
+    document.getElementById('showBody').addEventListener('click', () => {
+        console.log("Click en showBody, activeCharacter:", activeCharacter);
+        if (activeCharacter && activeCharacter.p) {
+            console.log("Mostrando cuerpo de:", activeCharacter.p.nombre);
+            bodyModal.style.display = 'block';
+            
+            // Retrasar un poco el dibujado para asegurar que el modal está visible
+            setTimeout(() => {
+                showBody();
+            }, 100);
+        } else {
+            console.log("No hay personaje activo o no está cargado correctamente");
+        }
+    });
+
+    // Nueva función para mostrar el cuerpo (separada para poder llamarla desde el botón)
+    function showBody() {
+        // Calcular la escala basada en la altura de la ventana
+        let h = window.innerHeight;
+        let zoomCuerpo = h / 900 * 0.95;
+        
+        // Ajustar dimensiones del canvas
+        bodyCanvas.width = 500 * zoomCuerpo;
+        bodyCanvas.height = 900 * zoomCuerpo;
+        
+        // Asegurarse que el canvas está visible
+        bodyCanvas.style.display = 'block';
+        
+        // Llamar a cuerpoDaño con la escala calculada
+        if (activeCharacter && activeCharacter.p) {
+            console.log("Dibujando cuerpo con zoom:", zoomCuerpo);
+            activeCharacter.p.cuerpoDaño('bodyCanvas', zoomCuerpo);
+        }
+    }
+
+    // Añadir el listener para el botón de recarga usando el ID correcto
+    document.getElementById('reloadBody').addEventListener('click', showBody);
+
+    // Modificar los eventos de cerrar el modal
+    closeModal.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevenir que el click se propague
+        bodyModal.style.display = 'none';
+    });
+
+    // Cerrar el modal al hacer click fuera
+    window.addEventListener('click', (e) => {
+        if (e.target === bodyModal) {
+            bodyModal.style.display = 'none';
+        }
+    });
+
+    // Ocultar menús contextuales al hacer click
+    window.addEventListener('click', () => {
+        contextMenu.style.display = 'none';
+        characterContextMenu.style.display = 'none';
+    });
+
+    // Añadir las variables para el modal de daño
+    const damageModal = document.getElementById('damageModal');
+    const damageLocation = document.getElementById('damageLocation');
+    const damageCloseBtn = damageModal.querySelector('.close');
+
+    // Evento para mostrar el modal de daño
+    document.getElementById('damageCharacter').addEventListener('click', () => {
+        if (activeCharacter && activeCharacter.p) {
+            // Limpiar y llenar el selector de localizaciones
+            damageLocation.innerHTML = '';
+            activeCharacter.p.cuerpo.todas().forEach(loc => {
+                const option = document.createElement('option');
+                option.value = loc.nombre;
+                option.textContent = `${loc.nombre} (${loc.daño}/${loc.pg})`;
+                damageLocation.appendChild(option);
+            });
+            
+            damageModal.style.display = 'block';
+        }
+    });
+
+    // Función para aplicar el daño
+    function applyDamage() {
+        if (!activeCharacter || !activeCharacter.p) return;
+        
+        const amount = parseInt(document.getElementById('damageAmount').value);
+        const location = damageLocation.value;
+        
+        if (amount && location) {
+            activeCharacter.p.cuerpo.dañarLocalizacion(amount, location);
+            // Actualizar el canvas del cuerpo si está visible
+            if (bodyModal.style.display === 'block') {
+                showBody();
+            }
+            damageModal.style.display = 'none';
+        }
+    }
+
+    // Cerrar el modal de daño
+    damageCloseBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        damageModal.style.display = 'none';
+    });
+
+    // Incluir el modal de daño en el cierre al hacer click fuera
+    window.addEventListener('click', (e) => {
+        if (e.target === damageModal) {
+            damageModal.style.display = 'none';
+        }
+    });
     </script>
 </body>
 </html>
