@@ -2549,6 +2549,3 @@ function mago(personaje, nivel = 5) {
 
 // let armanat = new ArmaNatural("puño", "1d3C", "Brazo D");
 // console.log(armanat);
-// console.log(new ArmaNatural("puño", "1d3F", "Brazo D"));
-// console.log(new ArmaNatural("puño", "1d  f", "Brazo D"));
-// console.log(new ArmaNatural("puño", "1d3f", "Brazo D"));
