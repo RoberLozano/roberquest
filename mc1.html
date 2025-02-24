@@ -128,6 +128,17 @@
         </ul>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
+
+    <script src='js/coor.js'></script>
+    <script src='js/utils.js'></script>
+    <script src='js/D.js'></script>
+    <script src='js/habilidades.js'></script>
+    <script src='js/inventario.js'></script>
+    <script src='js/localizaciones.js'></script>
+    <script src='js/armaduras.js'></script>
+    <script src='js/rol.js'></script>
+
     <script>
         let scale = 1;
         var minScale = 0.5;
@@ -475,6 +486,11 @@
             char.draggable = false;
             char.nombre=file.split('/').pop().split('.')[0];
             console.log("nombre:"+char.nombre);
+
+            let p=cargarPersonajeOnline(char.nombre);
+            if(p!=null){
+                char.p=p;
+            }
             
             mapBg.appendChild(char);
             characters.push(char); // Añadir al array de personajes
