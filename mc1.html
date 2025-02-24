@@ -135,11 +135,11 @@
 
         .modal-content {
             background-color: #000000;
-            margin: 15% auto;
-            padding: 20px;
+            margin: 15% auto;  /* Restaurar margen */
+            padding: 20px; /* Restaurar padding */
             border: 1px solid #666;
             width: 80%;
-            max-width: 500px;
+            max-width: 500px; /* Restaurar límite de ancho */
             color: white;
         }
 
@@ -149,13 +149,16 @@
             font-size: 28px;
             font-weight: bold;
             cursor: pointer;
+            display: block; /* Mostrar el botón de cerrar */
         }
 
         #bodyCanvas {
             background-color: #000000;
+            cursor: pointer; /* Indicar que es clickeable */
         }
 
         #reloadBody {
+            position: static; /* Restaurar posición */
             background: none;
             border: none;
             color: white;
@@ -1012,23 +1015,25 @@
 
     // Nueva función para mostrar el cuerpo (separada para poder llamarla desde el botón)
     function showBody() {
-        // Calcular la escala basada en la altura de la ventana
-        let h = window.innerHeight;
-        let zoomCuerpo = h / 900 * 0.95;
+        if (!activeCharacter || !activeCharacter.p) return;
+    
+        // Calcular la escala basada en la altura de la ventana, pero limitándola
+        // let h = Math.min(window.innerHeight * 0.7, 900); // Limitar al 70% del alto de la ventana
+        let h = Math.min(window.innerHeight , 900); // Limitar al 80% del alto de la ventana
+        // let h = window.innerHeight;
         
-        // Ajustar dimensiones del canvas
+        let zoomCuerpo = h / 900;
+        
+        // Ajustar dimensiones del canvas manteniendo la proporción
         bodyCanvas.width = 500 * zoomCuerpo;
         bodyCanvas.height = 900 * zoomCuerpo;
         
-        // Asegurarse que el canvas está visible
-        bodyCanvas.style.display = 'block';
-        
-        // Llamar a cuerpoDaño con la escala calculada
-        if (activeCharacter && activeCharacter.p) {
-            console.log("Dibujando cuerpo con zoom:", zoomCuerpo);
-            activeCharacter.p.cuerpoDaño('bodyCanvas', zoomCuerpo);
-        }
+        console.log("Dibujando cuerpo con zoom:", zoomCuerpo);
+        activeCharacter.p.cuerpoDaño('bodyCanvas', zoomCuerpo);
     }
+
+    // Añadir evento de click al canvas para cerrar
+    bodyCanvas.removeEventListener('click', () => {});
 
     // Añadir el listener para el botón de recarga usando el ID correcto
     document.getElementById('reloadBody').addEventListener('click', showBody);
