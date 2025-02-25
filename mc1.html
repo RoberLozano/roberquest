@@ -279,6 +279,21 @@
             text-align: center;
             width: 4em;
         }
+
+        .location-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #locationRoll {
+            width: 60px;
+            background: #333;
+            color: white;
+            border: 1px solid #666;
+            padding: 0.5rem;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
@@ -313,6 +328,8 @@
         <ul>
             <li id="showBody">Ver cuerpo</li>
             <li id="damageCharacter">Dañar personaje</li>
+            <li id="sanar" onclick="activeCharacter.p.cuerpo.sanar(100)">Sanar</li>
+            <li id="deleteCharacter" style="color: #f44336;">Eliminar personaje</li>
         </ul>
     </div>
 
@@ -345,9 +362,13 @@
                     <label for="damageAmount">Cantidad de daño:</label>
                     <input type="number" id="damageAmount" min="1" value="1">
                 </div>
-                <div>
+                <div class="location-input">
                     <label for="damageLocation">Localización:</label>
-                    <select id="damageLocation"></select>
+                    <select id="damageLocation"></select>       
+                    <input type="number" id="locationRoll" min="1" max="100" value="1">
+                    <span style="cursor:pointer; padding:5px;">
+                        <img src="img/10_sided_die.svg" width="30" height="30" onclick="document.getElementById('locationRoll').value = Math.floor(Math.random() * 100) + 1; document.getElementById('locationRoll').dispatchEvent(new Event('input'));">
+                    </span>
                 </div>
                 <button id="applyDamage" onclick="applyDamage()">Aplicar daño</button>
             </div>
@@ -1159,10 +1180,40 @@
                 const option = document.createElement('option');
                 option.value = loc.nombre;
                 option.textContent = `${loc.nombre} (${loc.daño}/${loc.pg})`;
+                option.dataset.min = loc.min;
+                option.dataset.max = loc.max;
                 damageLocation.appendChild(option);
             });
             
+            // Actualizar el valor del roll con el rango de la primera localización
+            const firstOption = damageLocation.firstElementChild;
+            if (firstOption) {
+                document.getElementById('locationRoll').value = firstOption.dataset.min;
+            }
+            
             damageModal.style.display = 'block';
+        }
+    });
+
+    // Añadir evento para actualizar el roll cuando cambie la localización
+    document.getElementById('damageLocation').addEventListener('change', (e) => {
+        const option = e.target.selectedOptions[0];
+        document.getElementById('locationRoll').value = option.dataset.min;
+    });
+
+    // Añadir evento para actualizar la localización cuando cambie el roll
+    document.getElementById('locationRoll').addEventListener('input', (e) => {
+        const roll = parseInt(e.target.value);
+        const options = damageLocation.options;
+        
+        for(let i = 0; i < options.length; i++) {
+            const min = parseInt(options[i].dataset.min);
+            const max = parseInt(options[i].dataset.max);
+            
+            if (roll >= min && roll <= max) {
+                damageLocation.selectedIndex = i;
+                break;
+            }
         }
     });
 
@@ -1278,6 +1329,37 @@
             }, 100);
         }
     });
+
+    // Función para eliminar personaje
+    document.getElementById('deleteCharacter').addEventListener('click', () => {
+        if (activeCharacter) {
+            // Remover del array de personajes
+            const index = characters.indexOf(activeCharacter);
+            if (index > -1) {
+                characters.splice(index, 1);
+            }
+            
+            // Remover el elemento del DOM
+            activeCharacter.remove();
+            
+            // Limpiar la referencia al personaje activo
+            activeCharacter = null;
+            
+            // Ocultar el menú contextual
+            characterContextMenu.style.display = 'none';
+
+            // Actualizar la lista de personajes disponibles
+            updateCharacterList();
+        }
+    });
+
+    function updateCharacterList() {
+        // Limpiar la lista actual
+        const characterInput = document.getElementById('characterInput');
+        characterInput.value = ''; // Resetear el input file
+        
+    
+    }
     </script>
 </body>
 </html>
