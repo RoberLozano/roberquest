@@ -254,26 +254,6 @@
             color: white;
         }
 
-        .slider {
-            writing-mode: bt-lr; /* Orientación vertical, IE */
-            -webkit-appearance: slider-vertical; /* Chrome */
-            width: 25px;
-            height: 150px;
-            background: rgba(255,255,255,0.1);
-            outline: none;
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        .slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 25px;
-            height: 25px;
-            border-radius: 50%;
-            background: white;
-            cursor: pointer;
-            border: 4px solid #333;
-        }
 
         #scaleValue {
             text-align: center;
@@ -340,7 +320,8 @@
             <canvas id="bodyCanvas" width="100%" height="100%"></canvas>
             <div class="scale-controls">
                 <span id="scaleValue">100%</span>
-                <input type="range" id="scaleSlider" min="50" max="150" value="100" class="slider">
+                <!-- <input type="range" id="scaleSlider" min="50" max="150" value="100" class="slider"> -->
+                <input type=range id="scaleSlider" min="50" max="150" value="100" style="writing-mode: vertical-lr; direction: rtl"> 
             </div>
             <button id="reloadBody" onclick="showBody()">
                 <span aria-hidden="true" class="v-icon notranslate theme--light">
