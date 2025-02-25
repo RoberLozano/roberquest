@@ -291,6 +291,8 @@ class Localizacion extends Localizaciones {
      * @param {number} min el valor minimo de tirada para esa localización
      * @param {number} max el valor máximo de tirada para esa localización
      * @param {number} [pa=0] los puntos de armadura naturales
+     * @param {number} [x=null] coordenada x de la imagen Body
+     * @param {number} [y=null] coordenada y de la imagen Body
      * @memberof localizacion
      */
     constructor(nombre, mpg, min, max, pa = 0,x=null,y=null) {

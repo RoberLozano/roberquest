@@ -982,7 +982,7 @@ function atP(personaje = "Enemigo", rol = "PNJ") {
     
         <input id="zoom" type="range" min="0" max="1" step="any" onchange="zoomCuerpo=this.value;atDaños()"
             style="width: 100%;">
-        <canvas id="canvas${rol}" width="500" height="900" style="background-color: black;border:1px solid #d3d3d3;">
+        <canvas id="canvas${rol}" width="500" height="1000" style="background-color: black;border:1px solid #d3d3d3;">
             Your browser does not support the HTML5 canvas tag.</canvas>
         <div style="display:none;"><img id="cuerpo" src="Body.png" alt="Cuerpo"></div>
     
@@ -1041,9 +1041,9 @@ function cuerpoModal(rol) {
   console.log('rol:' + rol);
   let canvas = document.getElementById('canvas');
   let h = alto();
-  zoomCuerpo = h / 900 * 0.95;
+  zoomCuerpo = h / 1000 * 0.95;
   canvas.width = 500 * zoomCuerpo;
-  canvas.height = 900 * zoomCuerpo;
+  canvas.height = 1000 * zoomCuerpo;
   p.cuerpoDaño("canvas", zoomCuerpo);
   $("#mCuerpo").modal('open');
 
@@ -1076,7 +1076,7 @@ function atDaños(params) {
 
   let canvas = document.getElementById('canvasPNJ');
   canvas.width = 500 * zoomCuerpo;
-  canvas.height = 900 * zoomCuerpo;
+  canvas.height = 1000 * zoomCuerpo;
   pnj[$('#nombreEnemigo').val()].cuerpoDaño("canvasPNJ", zoomCuerpo);
 
   pnj[$('#nombreEnemigo').val()].cuerpo.todosDaños(todos);
@@ -1103,7 +1103,7 @@ function atDaños(params) {
   pj.cuerpo.todosDaños(todos);
   canvas = document.getElementById('canvasPJ');
   canvas.width = 500 * zoomCuerpo;
-  canvas.height = 900 * zoomCuerpo;
+  canvas.height = 1000 * zoomCuerpo;
   pj.cuerpoDaño("canvasPJ", zoomCuerpo);
 
 

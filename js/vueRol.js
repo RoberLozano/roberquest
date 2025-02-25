@@ -19,9 +19,9 @@
         console.log('rol:' + rol);
         let canvas = document.getElementById('canvas');
         let h = alto();
-        let zoomCuerpo = h / 900 * 0.95;
+        let zoomCuerpo = h / 1000 * 0.95;
         canvas.width = 500 * zoomCuerpo;
-        canvas.height = 900 * zoomCuerpo;
+        canvas.height = 1000 * zoomCuerpo;
         p.cuerpoDaño("canvas", zoomCuerpo);
   
       }

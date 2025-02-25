@@ -139,7 +139,7 @@
             padding: 0; /* Quitar padding */
             border: none;
             width: 100%;
-            height: 100vh; /* Ocupar toda la altura de la ventana */
+            height: 100%; /* Cambiar de 100vh a 100% */
             max-width: none; /* Quitar límite de ancho */
             display: flex;
             justify-content: center;
@@ -168,9 +168,10 @@
         }
 
         #bodyCanvas {
-            max-height: 100vh; /* Limitar al alto de la ventana */
-            width: auto;      /* Mantener proporción */
-            height: auto;
+            max-height: 100%; /* Cambiar de 100vh a 100% */
+            max-width: 100%;  /* Añadir max-width */
+            width: auto;      
+            height: auto;     /* Cambiar a auto */
             background-color: #000000;
             cursor: pointer; /* Indicar que es clickeable */
         }
@@ -239,6 +240,45 @@
             font-size: 0.9em;
             opacity: 0.9;
         }
+
+        .scale-controls {
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            color: white;
+        }
+
+        .slider {
+            writing-mode: bt-lr; /* Orientación vertical, IE */
+            -webkit-appearance: slider-vertical; /* Chrome */
+            width: 25px;
+            height: 150px;
+            background: rgba(255,255,255,0.1);
+            outline: none;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            border: 4px solid #333;
+        }
+
+        #scaleValue {
+            text-align: center;
+            width: 4em;
+        }
     </style>
 </head>
 <body>
@@ -280,7 +320,11 @@
     <div id="bodyModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
-            <canvas id="bodyCanvas" width="500" height="900"></canvas>
+            <canvas id="bodyCanvas" width="100%" height="100%"></canvas>
+            <div class="scale-controls">
+                <span id="scaleValue">100%</span>
+                <input type="range" id="scaleSlider" min="50" max="150" value="100" class="slider">
+            </div>
             <button id="reloadBody" onclick="showBody()">
                 <span aria-hidden="true" class="v-icon notranslate theme--light">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" aria-hidden="true" class="v-icon__svg">
@@ -1036,38 +1080,26 @@
     // Nueva función para mostrar el cuerpo (separada para poder llamarla desde el botón)
     function showBody() {
         if (!activeCharacter || !activeCharacter.p) return;
-    
-        // Calcular las dimensiones manteniendo la proporción 500x900
-        const originalRatio = 500/900;
-        const windowHeight = window.innerHeight;
-        const windowWidth = window.innerWidth;
+
+        // Obtener dimensiones del contenedor modal
+        const modalContent = bodyModal.querySelector('.modal-content');
+        const containerWidth = modalContent.clientWidth;
+        const containerHeight = modalContent.clientHeight;
+        
+        // Calcular las dimensiones manteniendo la proporción 500x1000
+        const originalRatio = 500/1000;
         
         let width, height;
         
-        // Calcular dimensiones máximas manteniendo margen del 5%
-        const maxWidth = windowWidth * 0.95;
-        const maxHeight = windowHeight * 0.95;
-        
         // Calcular dimensiones basadas en el espacio disponible
-        if (maxHeight * originalRatio <= maxWidth) {
+        if (containerHeight * originalRatio <= containerWidth) {
             // Si limitamos por altura
-            height = maxHeight;
+            height = containerHeight;
             width = height * originalRatio;
         } else {
             // Si limitamos por ancho
-            width = maxWidth;
+            width = containerWidth;
             height = width / originalRatio;
-        }
-        
-        // Verificar que no sea demasiado pequeño en ninguna dimensión
-        const minSize = Math.min(windowWidth, windowHeight) * 0.5; // Mínimo 50% de la dimensión menor
-        if (width < minSize) {
-            width = minSize;
-            height = width / originalRatio;
-        }
-        if (height < minSize) {
-            height = minSize;
-            width = height * originalRatio;
         }
         
         // Ajustar dimensiones del canvas
@@ -1075,7 +1107,7 @@
         bodyCanvas.height = height;
         
         // Calcular el zoom basado en las dimensiones originales
-        const zoomCuerpo = height / 900;
+        const zoomCuerpo = height / 1000;
         
         console.log("Dibujando cuerpo con zoom:", zoomCuerpo);
         activeCharacter.p.cuerpoDaño('bodyCanvas', zoomCuerpo);
@@ -1181,6 +1213,71 @@
     // Remover los otros eventos de cerrado del modal del cuerpo que ya no son necesarios
     closeModal.removeEventListener('click', () => {});
     window.removeEventListener('click', () => {});
+
+    // Añadir variables para el escalado
+    let baseWidth = 0;
+    let baseHeight = 0;
+    let currentScale = 1;
+
+    // Modificar la función showBody
+    function showBody() {
+        if (!activeCharacter || !activeCharacter.p) return;
+
+        const modalContent = bodyModal.querySelector('.modal-content');
+        const containerWidth = modalContent.clientWidth;
+        const containerHeight = modalContent.clientHeight;
+        const originalRatio = 500/1000;
+        
+        // Calcular las dimensiones base (solo la primera vez)
+        if (baseWidth === 0) {
+            if (containerHeight * originalRatio <= containerWidth) {
+                baseHeight = containerHeight;
+                baseWidth = baseHeight * originalRatio;
+            } else {
+                baseWidth = containerWidth;
+                baseHeight = baseWidth / originalRatio;
+            }
+        }
+        
+        // Aplicar escala actual
+        const width = baseWidth * (currentScale);
+        const height = baseHeight * (currentScale);
+        
+        bodyCanvas.width = width;
+        bodyCanvas.height = height;
+        
+        const zoomCuerpo = height / 1000;
+        activeCharacter.p.cuerpoDaño('bodyCanvas', zoomCuerpo);
+    }
+
+    // Añadir el listener para el slider
+    const scaleSlider = document.getElementById('scaleSlider');
+    const scaleValue = document.getElementById('scaleValue');
+
+    scaleSlider.addEventListener('input', (e) => {
+        currentScale = e.target.value / 100;
+        scaleValue.textContent = `${e.target.value}%`;
+        showBody();
+    });
+
+    // Modificar el evento para mostrar el cuerpo incluyendo reset del escalado
+    document.getElementById('showBody').addEventListener('click', () => {
+        console.log("Click en showBody, activeCharacter:", activeCharacter);
+        if (activeCharacter && activeCharacter.p) {
+            // Reset escala al abrir
+            currentScale = 1;
+            baseWidth = 0;
+            baseHeight = 0;
+            scaleSlider.value = 100;
+            scaleValue.textContent = '100%';
+            
+            bodyModal.style.display = 'block';
+            setTimeout(() => {
+                showBody();
+                setTimeout(showBody, 200);
+            }, 100);
+        }
+    });
     </script>
 </body>
 </html>

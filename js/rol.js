@@ -1441,7 +1441,7 @@ class Animal extends Clase {
     var ctx = canvas.getContext("2d");
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
     // var img = document.getElementById("cuerpo");
-    // ctx.drawImage(img, 0, 0, 500 * scale, 900 * scale);
+    // ctx.drawImage(img, 0, 0, 500 * scale,  * scale);
     let todos = [];
     console.log("cuerpoDano de " + this.nombre);
 
@@ -1924,38 +1924,72 @@ class Humanoide extends Animal {
     // <area shape="circle" coords="242,60,40" alt="cara" title="cara" onclick="console.log('Hostia en cara')">
     // <area shape="circle" coords="243,19,20" alt="craneo" title="craneo" onclick="console.log('Hostia en craneo');">
 
-    cabeza.add(new Localizacion("Cráneo", 1, 1, 4, 0, 243, 19))
-    cabeza.add(new Localizacion("Cara", 1, 5, 7, 0, 242, 60))
-    cabeza.add(new Localizacion("Cuello", 1, 8, 9, 0, 243, 130))
+    cabeza.add(new Localizacion("Cráneo", 1, 1, 4, 0, 243, 69))
+    cabeza.add(new Localizacion("Cara", 1, 5, 7, 0, 242, 110))
+    cabeza.add(new Localizacion("Cuello", 1, 8, 9, 0, 243, 180))
 
-    brazoD.add(new Localizacion("Hombro D", 1, 10, 13, 0, 155, 177))
-    brazoD.add(new Localizacion("Biceps D", 1, 14, 18, 0, 144, 258))
-    brazoD.add(new Localizacion("Antebrazo D", 1, 19, 23, 0, 126, 355))
-    brazoD.add(new Localizacion("Codo D", 1, 24, 24, 0, 137, 307))
-    brazoD.add(new Localizacion("Mano D", 1, 25, 26, 0, 97, 446))
+    brazoD.add(new Localizacion("Hombro D", 1, 10, 13, 0, 155, 227))
+    brazoD.add(new Localizacion("Biceps D", 1, 14, 18, 0, 144, 308))
+    brazoD.add(new Localizacion("Antebrazo D", 1, 19, 23, 0, 126, 405))
+    brazoD.add(new Localizacion("Codo D", 1, 24, 24, 0, 137, 357))
+    brazoD.add(new Localizacion("Mano D", 1, 25, 26, 0, 97, 496))
 
-    brazoI.add(new Localizacion("Hombro I", 1, 27, 30, 0, 335, 177))
-    brazoI.add(new Localizacion("Biceps I", 1, 31, 35, 0, 343, 261))
-    brazoI.add(new Localizacion("Antebrazo I", 1, 36, 40, 0, 362, 355))
-    brazoI.add(new Localizacion("Codo I", 1, 41, 41, 0, 354, 307))
-    brazoI.add(new Localizacion("Mano I", 1, 42, 43, 0, 389, 446))
+    brazoI.add(new Localizacion("Hombro I", 1, 27, 30, 0, 335, 227))
+    brazoI.add(new Localizacion("Biceps I", 1, 31, 35, 0, 343, 311))
+    brazoI.add(new Localizacion("Antebrazo I", 1, 36, 40, 0, 362, 405))
+    brazoI.add(new Localizacion("Codo I", 1, 41, 41, 0, 354, 357))
+    brazoI.add(new Localizacion("Mano I", 1, 42, 43, 0, 389, 496))
 
-    abdomen.add(new Localizacion("Vientre", 1, 59, 65, 0, 243, 348))
-    abdomen.add(new Localizacion("Cadera D", 1, 66, 68, 0, 183, 390))
-    abdomen.add(new Localizacion("Ingle", 1, 69, 69, 0, 243, 448))
-    abdomen.add(new Localizacion("Cadera I", 1, 70, 72, 0, 306, 390))
+    abdomen.add(new Localizacion("Vientre", 1, 59, 65, 0, 243, 398))
+    abdomen.add(new Localizacion("Cadera D", 1, 66, 68, 0, 183, 440))
+    abdomen.add(new Localizacion("Ingle", 1, 69, 69, 0, 243, 498))
+    abdomen.add(new Localizacion("Cadera I", 1, 70, 72, 0, 306, 440))
 
-    piernaD.add(new Localizacion("Muslo Sup D", 1, 73, 77, 0, 195, 503))
-    piernaD.add(new Localizacion("Muslo Inf D", 1, 78, 80, 0, 203, 557))
-    piernaD.add(new Localizacion("Rodilla D", 1, 81, 81, 0, 207, 630))
-    piernaD.add(new Localizacion("Pierna Inf D", 1, 82, 85, 0, 207, 737))
-    piernaD.add(new Localizacion("Pie D", 1, 86, 86, 0, 205, 850))
+    piernaD.add(new Localizacion("Muslo Sup D", 1, 73, 77, 0, 195, 553))
+    piernaD.add(new Localizacion("Muslo Inf D", 1, 78, 80, 0, 203, 607))
+    piernaD.add(new Localizacion("Rodilla D", 1, 81, 81, 0, 207, 680))
+    piernaD.add(new Localizacion("Pierna Inf D", 1, 82, 85, 0, 207, 787))
+    piernaD.add(new Localizacion("Pie D", 1, 86, 86, 0, 205, 900))
 
-    piernaI.add(new Localizacion("Muslo Sup I", 1, 87, 91, 0, 287, 503))
-    piernaI.add(new Localizacion("Muslo Inf I", 1, 92, 94, 0, 282, 557))
-    piernaI.add(new Localizacion("Rodilla I", 1, 95, 95, 0, 282, 630))
-    piernaI.add(new Localizacion("Pierna Inf I", 1, 96, 99, 0, 277, 737))
-    piernaI.add(new Localizacion("Pie I", 1, 100, 100, 0, 283, 850))
+    piernaI.add(new Localizacion("Muslo Sup I", 1, 87, 91, 0, 287, 553))
+    piernaI.add(new Localizacion("Muslo Inf I", 1, 92, 94, 0, 282, 607))
+    piernaI.add(new Localizacion("Rodilla I", 1, 95, 95, 0, 282, 680))
+    piernaI.add(new Localizacion("Pierna Inf I", 1, 96, 99, 0, 277, 787))
+    piernaI.add(new Localizacion("Pie I", 1, 100, 100, 0, 283, 900))
+
+    //Valores de antes de hacer la imagen más alta
+    // cabeza.add(new Localizacion("Cráneo", 1, 1, 4, 0, 243, 19))
+    // cabeza.add(new Localizacion("Cara", 1, 5, 7, 0, 242, 60))
+    // cabeza.add(new Localizacion("Cuello", 1, 8, 9, 0, 243, 130))
+
+    // brazoD.add(new Localizacion("Hombro D", 1, 10, 13, 0, 155, 177))
+    // brazoD.add(new Localizacion("Biceps D", 1, 14, 18, 0, 144, 258))
+    // brazoD.add(new Localizacion("Antebrazo D", 1, 19, 23, 0, 126, 355))
+    // brazoD.add(new Localizacion("Codo D", 1, 24, 24, 0, 137, 307))
+    // brazoD.add(new Localizacion("Mano D", 1, 25, 26, 0, 97, 446))
+
+    // brazoI.add(new Localizacion("Hombro I", 1, 27, 30, 0, 335, 177))
+    // brazoI.add(new Localizacion("Biceps I", 1, 31, 35, 0, 343, 261))
+    // brazoI.add(new Localizacion("Antebrazo I", 1, 36, 40, 0, 362, 355))
+    // brazoI.add(new Localizacion("Codo I", 1, 41, 41, 0, 354, 307))
+    // brazoI.add(new Localizacion("Mano I", 1, 42, 43, 0, 389, 446))
+
+    // abdomen.add(new Localizacion("Vientre", 1, 59, 65, 0, 243, 348))
+    // abdomen.add(new Localizacion("Cadera D", 1, 66, 68, 0, 183, 390))
+    // abdomen.add(new Localizacion("Ingle", 1, 69, 69, 0, 243, 448))
+    // abdomen.add(new Localizacion("Cadera I", 1, 70, 72, 0, 306, 390))
+
+    // piernaD.add(new Localizacion("Muslo Sup D", 1, 73, 77, 0, 195, 503))
+    // piernaD.add(new Localizacion("Muslo Inf D", 1, 78, 80, 0, 203, 557))
+    // piernaD.add(new Localizacion("Rodilla D", 1, 81, 81, 0, 207, 630))
+    // piernaD.add(new Localizacion("Pierna Inf D", 1, 82, 85, 0, 207, 737))
+    // piernaD.add(new Localizacion("Pie D", 1, 86, 86, 0, 205, 850))
+
+    // piernaI.add(new Localizacion("Muslo Sup I", 1, 87, 91, 0, 287, 503))
+    // piernaI.add(new Localizacion("Muslo Inf I", 1, 92, 94, 0, 282, 557))
+    // piernaI.add(new Localizacion("Rodilla I", 1, 95, 95, 0, 282, 630))
+    // piernaI.add(new Localizacion("Pierna Inf I", 1, 96, 99, 0, 277, 737))
+    // piernaI.add(new Localizacion("Pie I", 1, 100, 100, 0, 283, 850))
 
     this.cuerpo.add(cabeza);
     this.cuerpo.add(brazoD);
