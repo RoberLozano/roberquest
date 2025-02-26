@@ -816,21 +816,21 @@
             char.addEventListener('touchmove', (e) => {
                 if (isDraggingChar && e.touches.length === 1) {
                     e.preventDefault();
-                    const touch = e.touches[0];
-                    
-                    const x = (touch.clientX - currentPos.x) / scale - startOffset.x;
-                    const y = (touch.clientY - currentPos.y) / scale - startOffset.y;
-                    
-                    char.style.transform = `translate(${x}px, ${y}px) rotate(${rotation}deg) scale(${1/scale})`;
-                    charPos = { x, y };
-                    updateDistance();
+                    handleCharacterMove(char, e, null, startOffset, true);
                 }
             });
 
             char.addEventListener('touchend', (e) => {
-                isDraggingChar = false;
-                if (char) {
+                if (isDraggingChar) {
+                    isDraggingChar = false;
                     char.style.cursor = 'grab';
+                    
+                    // Limpiar el camino después de un tiempo
+                    setTimeout(() => {
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        tooltip.style.display = 'none';
+                        characterPathPoints.delete(char);
+                    }, 1500);
                 }
             });
 

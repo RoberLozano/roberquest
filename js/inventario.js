@@ -930,6 +930,7 @@ function filtroArmas(array, precioMax, tipoDaño) {
     array = array.filter(item => item.valor <= precioMax)
   }
   if (tipoDaño) {
+
     array = array.filter(item => item.daños.some(d => d.tipo === tipoDaño))
     // array = array.filter(item => item.daño.tipo == tipoDaño)
   }
