@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diario de Aventuras</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            background-color: #121212;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .main-container {
+            display: flex;
+            flex: 1;
+        }
+
+        #sidebar {
+            width: 300px;
+            min-width: 300px;
+            background-color: #1e1e1e;
+            border-right: 1px solid #444;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        #editor-container {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #entryList {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .entry-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        #characterSelect {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .entry-date {
+            padding: 8px 12px;
+            margin-bottom: 4px;
+            border-radius: 4px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 300px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            resize: none;
+            background-color: #1e1e1e;
+            color: #ffffff;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button.save {
+            background-color: #4CAF50;
+            color: white;
+        }
+        button.load {
+            background-color: #008CBA;
+            color: white;
+        }
+        button.upload {
+            background-color: #f39c12;
+            color: white;
+        }
+        #fileInput {
+            display: none;
+        }
+        input[type="date"] {
+            background-color: #1e1e1e;
+            color: #ffffff;
+            border: 1px solid #444;
+            border-radius: 5px;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Diario de Aventuras</h1>
+    </header>
+    
+    <div class="main-container">
+        <div id="sidebar">
+            <select id="characterSelect" onchange="loadEntries()"></select>
+            <div class="entry-controls">
+                <input type="date" id="entryDate">
+                <button class="upload" onclick="document.getElementById('fileInput').click()">Subir Archivo</button>
+                <input type="file" id="fileInput" accept=".txt" onchange="handleFileUpload(event)">
+            </div>
+            <div id="entryList"></div>
+        </div>
+        
+        <div id="editor-container">
+            <div id="editor">
+                <textarea id="diaryEntry" placeholder="Escribe lo que pasó hoy..."></textarea>
+            </div>
+            <div class="entry-controls">
+                <button class="save" onclick="saveEntry()">Guardar Entrada</button>
+                <button class="load" onclick="loadEntry()">Cargar Entrada</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
+    <script src="js/rol.js"></script>
+    <script>
+        // Configuración de Firebase
+        var config = {
+            apiKey: "AIzaSyAuYTgzpd8BydHMLmx4mNhDb-bKGYVZfNo",
+            authDomain: "compras-rls777.firebaseapp.com",
+            databaseURL: "https://compras-rls777.firebaseio.com/",
+            projectId: "compras-rls777",
+            storageBucket: "compras-rls777.appspot.com",
+        };
+        firebase.initializeApp(config);
+        var database = firebase.database();
+
+        // Cargar personajes en el selector
+        function loadCharacters() {
+            const characterSelect = document.getElementById('characterSelect');
+            database.ref('personajes').once('value').then((snapshot) => {
+                const characters = snapshot.val();
+                for (const key in characters) {
+                    const option = document.createElement('option');
+                    option.value = key;
+                    option.textContent = key;
+                    characterSelect.appendChild(option);
+                }
+            }).catch((error) => {
+                console.error('Error al cargar personajes:', error);
+            });
+        }
+
+        function loadEntries() {
+            const character = document.getElementById('characterSelect').value;
+            const entryList = document.getElementById('entryList');
+            entryList.innerHTML = '';
+            if (character) {
+                database.ref('diario/' + character).once('value').then((snapshot) => {
+                    const entries = snapshot.val();
+                    for (const date in entries) {
+                        const div = document.createElement('div');
+                        div.className = 'entry-date';
+                        div.textContent = date;
+                        div.onclick = () => {
+                            document.getElementById('entryDate').value = date;
+                            document.getElementById('diaryEntry').value = entries[date].entry;
+                        };
+                        entryList.appendChild(div);
+                    }
+                }).catch((error) => {
+                    console.error('Error al cargar las entradas:', error);
+                });
+            }
+        }
+
+        function saveEntry() {
+            const character = document.getElementById('characterSelect').value;
+            const date = document.getElementById('entryDate').value;
+            const entry = document.getElementById('diaryEntry').value;
+            if (character && date && entry) {
+                database.ref('diario/' + character + '/' + date).set({
+                    entry: entry
+                }).then(() => {
+                    alert('Entrada guardada correctamente.');
+                    loadEntries(); // Actualizar la lista de entradas
+                }).catch((error) => {
+                    console.error('Error al guardar la entrada:', error);
+                });
+            } else {
+                alert('Por favor, selecciona un personaje, completa la fecha y la entrada.');
+            }
+        }
+
+        function loadEntry() {
+            const character = document.getElementById('characterSelect').value;
+            const date = document.getElementById('entryDate').value;
+            if (character && date) {
+                database.ref('diario/' + character + '/' + date).once('value').then((snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        document.getElementById('diaryEntry').value = data.entry;
+                    } else {
+                        alert('No hay entrada para esta fecha.');
+                    }
+                }).catch((error) => {
+                    console.error('Error al cargar la entrada:', error);
+                });
+            } else {
+                alert('Por favor, selecciona un personaje y una fecha.');
+            }
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const content = e.target.result;
+                    processFileContent(content);
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        function processFileContent(content) {
+            const character = document.getElementById('characterSelect').value;
+            if (!character) {
+                alert('Por favor, selecciona un personaje.');
+                return;
+            }
+
+            const lines = content.split('\n');
+            let currentDate = null;
+            let currentEntry = '';
+            console.log(lines);
+            
+
+            lines.forEach(line => {
+
+                const dateMatch = line.match(/^(\d{1,2})-(\d{1,2})-(\d{3,4})\r$/);
+                if (dateMatch) {
+                    
+                    currentDate= new Date(dateMatch[3], dateMatch[2]-1, dateMatch[1])
+                    currentDate=currentDate.toISOString().split('T')[0]
+                    
+                    if (currentDate && currentEntry) {
+                        saveEntryToFirebase(character, currentDate, currentEntry);
+                    }
+                    
+                    // currentDate = `${dateMatch[3]}-${dateMatch[2].padStart(2, '0')}-${dateMatch[1].padStart(2, '0')}`;
+                    currentEntry = '';
+                    
+                } else {
+                    currentEntry += line + '\n';
+                }
+            });
+
+        }
+
+        function saveEntryToFirebase(character, date, entry) {
+            database.ref('diario/' + character + '/' + date).set({
+                entry: entry.trim()
+            }).then(() => {
+                console.log(`Entrada guardada para ${date}`);
+                loadEntries(); // Actualizar la lista de entradas
+            }).catch((error) => {
+                console.error(`Error al guardar la entrada para ${date}:`, error);
+            });
+        }
+
+        // Cargar personajes al iniciar
+        window.onload = loadCharacters;
+    </script>
+</body>
+</html>
