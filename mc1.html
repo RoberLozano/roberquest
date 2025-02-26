@@ -285,7 +285,7 @@
     <div id="tooltip"></div>
 
     <div class="controls">
-        v0.0
+        v0.01
         <label for="characterInput">
             <img src="character-icon.png" class="icon" alt="Add Character">
         </label>
@@ -576,7 +576,6 @@
 
     // Añadir soporte para el gesto de pellizcar en pantallas táctiles
     mapContainer.addEventListener('touchmove', (e) => {
-        console.log("touchmove"+e.touches.length);
         
         if (e.touches.length === 2) {
             e.preventDefault();
@@ -811,6 +810,9 @@
                         x: (touch.clientX - currentPos.x) / scale - charPos.x,
                         y: (touch.clientY - currentPos.y) / scale - charPos.y
                     };
+
+                    char.style.cursor = 'grabbing';
+                    characterPathPoints.set(char, [{ x: touch.clientX, y: touch.clientY }]);
                 }
             });
 
@@ -825,6 +827,8 @@
                     char.style.transform = `translate(${x}px, ${y}px) rotate(${rotation}deg) scale(${1/scale})`;
                     charPos = { x, y };
                     updateDistance();
+                    
+                    handleCharacterMove(char, touch.clientX, touch.clientY, startOffset);
                 }
             });
 
@@ -1002,6 +1006,8 @@
     function handleCharacterMove(char, clientX, clientY, offset) {
         const x = (clientX - currentPos.x) / scale - offset.x;
         const y = (clientY - currentPos.y) / scale - offset.y;
+        console.log("x:"+x+" y:"+y);
+        
         
         // Guardar la posición en el objeto del personaje
         const charData = characterObjects.get(char) || {};
