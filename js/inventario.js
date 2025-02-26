@@ -877,3 +877,67 @@ class Credito extends Deposito {
 
 
 // console.log("Carga:"+contenedor.carga + " , Peso libre"+contenedor.pesoLibre());
+
+//#region Armas
+var armas = [];
+armas.push(new Arma("Hacha de combate", 1, 100, new Daño('1d8', 'L')));
+armas.push(new Arma("Hacha de mano", 0.5, 25, new Daño('1d6', 'L')));
+armas.push(new Arma("Gran hacha", 2, 120, new Daño('2d6', 'L')));
+armas.push(new Arma("Alabarda", 3, 250, new Daño('3d6', 'P')));
+armas.push(new Arma("Hacha danesa", 2.5, 150, new Daño('3d6', 'L')));
+armas.push(new Arma("Daga", 0.5, 33, new Daño('1d4', 'P')));
+armas.push(new Arma("Cuchillo", 0.2, 10, new Daño('1d3', 'L')));
+armas.push(new Arma("Main gauche", 0.5, 55, new Daño('1d4', 'P')));
+armas.push(new Arma("Sai", 1, 60, new Daño('1d6', 'C')));
+armas.push(new Arma("Bola y cadena", 2, 250, new Daño('1d10', 'C')));
+armas.push(new Arma("Triple cadena", 2, 240, new Daño('1d6', 'C')));
+armas.push(new Arma("Maza de grano", 1, 10, new Daño('1d6', 'C')));
+armas.push(new Arma("Martillo de guerra", 2, 150, new Daño('1d6', 'C')));
+armas.push(new Arma("Gran martillo", 2.5, 250, new Daño('2d6', 'C')));
+armas.push(new Arma("Maza pesada", 2.5, 220, new Daño('1d10', 'C')));
+armas.push(new Arma("Maza ligera", 1, 100, new Daño('1d8', 'C')));
+armas.push(new Arma("Palo de madera", 0.5, 4, new Daño('1d6', 'C')));
+armas.push(new Arma("Vara", 0.5, 10, new Daño('1d6', 'C')));
+armas.push(new Arma("Maza pesada", 2.5, 220, new Daño('1d10', 'C')));
+armas.push(new Arma("Cayado", 1.5, 20, new Daño('1d8', 'C')));
+armas.push(new Arma("Garrote de guerra", 2.5, 150, new Daño('1d10', 'C')));
+armas.push(new Arma("Garrote de trabajo", 4, 150, new Daño('2d6', 'C')));
+armas.push(new Arma("Garrote de troll", 5.5, 50, new Daño('2d8', 'C')));
+armas.push(new Arma("Rapier", 1, 100, new Daño('1d6', 'P')));
+armas.push(new Arma("Kukri", 0.5, 120, new Daño('1d4', 'L')));
+armas.push(new Arma("Gladius", 1, 100, new Daño('1d6', 'P')));
+armas.push(new Arma("Jabalina", 1.5, 100, new Daño('1d6', 'P')));
+armas.push(new Arma("Pilum", 2, 125, new Daño('1d6', 'P')));
+armas.push(new Arma("Lanza de torneo", 3.5, 150, new Daño('1d10', 'P')));
+armas.push(new Arma("Lanza corta", 2, 20, new Daño('1d8', 'P')));
+armas.push(new Arma("Lanza larga", 2, 30, new Daño('1d10', 'P')));
+armas.push(new Arma("Pica", 3.5, 65, new Daño('2d6', 'P')));
+armas.push(new Arma("Naginata", 2, 150, new Daño('2d6', 'P')));
+armas.push(new Arma("Espada bastarda", 2, 230, new Daño('1d10', 'L'), new Daño('1d6', 'P')));
+armas.push(new Arma("Espada ancha", 1.5, 175, new Daño('1d8', 'L')));
+armas.push(new Arma("Cimitarra", 1.5, 200, new Daño('1d6', 'L')));
+armas.push(new Arma("Espada de doble puño", 3.5, 320, new Daño('2d8', 'L')));
+armas.push(new Arma("Azadón", 2, 5, new Daño('1d6', 'C')));
+armas.push(new Arma("Guadaña", 2.5, 50, new Daño('2d6', 'L')));
+armas.push(new Arma("Hoz", 0.5, 40, new Daño('1d6', 'L')));
+armas.push(new Arma("Pala", 1.5, 20, new Daño('1d6', 'C')));
+armas.push(new Arma("Cesto pesado", 1.5, 100, new Daño('1d3', 'C')));
+armas.push(new Arma("Cesto ligero", 1, 100, new Daño('1d3', 'C')));
+armas.push(new Arma("Garra de lucha", 0.1, 100, new Daño('1d4', 'L')));
+
+function filtroArmas(array, precioMax, tipoDaño) {
+  if (precioMax) {
+    array = array.filter(item => item.valor <= precioMax)
+  }
+  if (tipoDaño) {
+
+    array = array.filter(item => item.daños.some(d => d.tipo === tipoDaño))
+    // array = array.filter(item => item.daño.tipo == tipoDaño)
+  }
+  //DEBUG: DEVUELVE UN ARRAY CON LOS NOMBRES
+  console.log(array.map(item => item.nombre));
+   
+  return array;
+}
+
+//#endregion

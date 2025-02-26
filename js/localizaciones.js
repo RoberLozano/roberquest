@@ -281,7 +281,7 @@ class Localizaciones {
 /**
  * La clase de cada localización concreta
  *
- * @class localizacion
+ * @class Localizacion
  */
 class Localizacion extends Localizaciones {
     /**
@@ -293,7 +293,7 @@ class Localizacion extends Localizaciones {
      * @param {number} [pa=0] los puntos de armadura naturales
      * @param {number} [x=null] coordenada x de la imagen Body
      * @param {number} [y=null] coordenada y de la imagen Body
-     * @memberof localizacion
+     * @memberof Localizacion
      */
     constructor(nombre, mpg, min, max, pa = 0,x=null,y=null) {
         super();
