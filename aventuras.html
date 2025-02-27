@@ -102,6 +102,142 @@
             border-radius: 5px;
             padding: 10px;
         }
+
+        /* Estilos para el autocomplete del sidebar */
+        .date-search {
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .date-search input {
+            width: 100%;
+            padding: 8px;
+            background-color: #2a2a2a;
+            border: 1px solid #444;
+            color: #fff;
+            border-radius: 4px;
+        }
+
+        #entryList {
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #444 #1e1e1e;
+        }
+
+        #entryList::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #entryList::-webkit-scrollbar-track {
+            background: #1e1e1e;
+        }
+
+        #entryList::-webkit-scrollbar-thumb {
+            background-color: #444;
+            border-radius: 4px;
+        }
+
+        .entry-date {
+            cursor: pointer;
+            padding: 8px 12px;
+            margin: 2px 0;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .entry-date:hover {
+            background-color: #2a2a2a;
+        }
+
+        .entry-date.filtered {
+            display: none;
+        }
+
+        .entry-date.active {
+            background-color: #444;
+            border-left: 3px solid #4CAF50;
+        }
+
+        .entry-date.active:hover {
+            background-color: #444;
+        }
+
+        .text-search {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .text-search input {
+            flex: 1;
+            padding: 8px;
+            background-color: #2a2a2a;
+            border: 1px solid #444;
+            color: #fff;
+            border-radius: 4px;
+        }
+
+        .text-search button {
+            background: none;
+            border: none;
+            color: #ccc;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .text-search button:hover {
+            color: #fff;
+        }
+
+        .format-controls {
+            background: #2a2a2a;
+            padding: 10px;
+            border-radius: 5px 5px 0 0;
+            border: 1px solid #444;
+            border-bottom: none;
+        }
+
+        .format-controls button, .format-controls select {
+            background: #1e1e1e;
+            color: #fff;
+            border: 1px solid #444;
+            padding: 5px 10px;
+            margin-right: 5px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .format-controls button:hover {
+            background: #333;
+        }
+
+        .editor-content {
+            min-height: 300px;
+            padding: 10px;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            border: 1px solid #444;
+            border-radius: 0 0 5px 5px;
+            overflow-y: auto;
+            font-family: Arial, sans-serif;
+        }
+
+        .editor-content:empty:before {
+            content: attr(placeholder);
+            color: #666;
+        }
+
+        .editor-content:focus {
+            outline: none;
+        }
+
+        .highlight {
+            background-color: rgba(255, 200, 0, 0.3);
+            border-radius: 2px;
+        }
     </style>
 </head>
 <body>
@@ -112,6 +248,17 @@
     <div class="main-container">
         <div id="sidebar">
             <select id="characterSelect" onchange="loadEntries()"></select>
+            <div class="date-search">
+                <input type="text" id="dateSearch" placeholder="Buscar fecha...">
+            </div>
+            <div class="text-search">
+                <input type="text" id="textSearch" placeholder="Buscar en entradas..." autocomplete="off">
+                <button id="clearTextSearch" onclick="clearTextSearch()">×</button>
+                <label style="font-size:0.9em; color:#ccc;">
+                    <input type="checkbox" id="regexToggle" onchange="filterEntries()">
+                    Regex
+                </label>
+            </div>
             <div class="entry-controls">
                 <input type="date" id="entryDate">
                 <button class="upload" onclick="document.getElementById('fileInput').click()">Subir Archivo</button>
@@ -122,7 +269,19 @@
         
         <div id="editor-container">
             <div id="editor">
-                <textarea id="diaryEntry" placeholder="Escribe lo que pasó hoy..."></textarea>
+                <div class="format-controls">
+                    <button onclick="formatText('bold')" title="Negrita"><b>B</b></button>
+                    <button onclick="formatText('italic')" title="Cursiva"><i>I</i></button>
+                    <button onclick="formatText('underline')" title="Subrayado"><u>U</u></button>
+                    <button onclick="formatText('strikeThrough')" title="Tachado"><s>S</s></button>
+                    <select onchange="formatText('heading', this.value)" title="Encabezado">
+                        <option value="">Normal</option>
+                        <option value="h1">H1</option>
+                        <option value="h2">H2</option>
+                        <option value="h3">H3</option>
+                    </select>
+                </div>
+                <div id="diaryEntry" contenteditable="true" class="editor-content" placeholder="Escribe lo que pasó hoy..."></div>
             </div>
             <div class="entry-controls">
                 <button class="save" onclick="saveEntry()">Guardar Entrada</button>
@@ -132,18 +291,11 @@
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/coor.js"></script>
     <script src="js/rol.js"></script>
     <script>
         // Configuración de Firebase
-        var config = {
-            apiKey: "AIzaSyAuYTgzpd8BydHMLmx4mNhDb-bKGYVZfNo",
-            authDomain: "compras-rls777.firebaseapp.com",
-            databaseURL: "https://compras-rls777.firebaseio.com/",
-            projectId: "compras-rls777",
-            storageBucket: "compras-rls777.appspot.com",
-        };
-        firebase.initializeApp(config);
-        var database = firebase.database();
 
         // Cargar personajes en el selector
         function loadCharacters() {
@@ -164,36 +316,145 @@
         function loadEntries() {
             const character = document.getElementById('characterSelect').value;
             const entryList = document.getElementById('entryList');
+            const currentDate = document.getElementById('entryDate').value;
             entryList.innerHTML = '';
+            
             if (character) {
                 database.ref('diario/' + character).once('value').then((snapshot) => {
                     const entries = snapshot.val();
-                    for (const date in entries) {
+                    const dates = Object.keys(entries).sort().reverse();
+                    dates.forEach(date => {
                         const div = document.createElement('div');
                         div.className = 'entry-date';
+                        if (date === currentDate) {
+                            div.classList.add('active');
+                        }
                         div.textContent = date;
-                        div.onclick = () => {
-                            document.getElementById('entryDate').value = date;
-                            document.getElementById('diaryEntry').value = entries[date].entry;
-                        };
+                        div.onclick = () => loadEntryForDate(date, div);
                         entryList.appendChild(div);
-                    }
+                    });
                 }).catch((error) => {
                     console.error('Error al cargar las entradas:', error);
                 });
             }
         }
 
+        // Nueva función para cargar entrada por fecha
+        function loadEntryForDate(date, clickedDiv) {
+            // Remove active class from all entries
+            document.querySelectorAll('.entry-date').forEach(div => {
+                div.classList.remove('active');
+            });
+            
+            // Add active class to clicked entry
+            if (clickedDiv) {
+                clickedDiv.classList.add('active');
+            }
+            
+            document.getElementById('entryDate').value = date;
+            loadEntry();
+        }
+
+        // Añadir listener para el cambio de fecha
+        document.getElementById('entryDate').addEventListener('change', (e) => {
+            const newDate = e.target.value;
+            const entries = document.querySelectorAll('.entry-date');
+            
+            entries.forEach(div => {
+                div.classList.remove('active');
+                if (div.textContent === newDate) {
+                    div.classList.add('active');
+                }
+            });
+            
+            loadEntry();
+        });
+
+        // Añadir función de búsqueda para las fechas
+        document.getElementById('dateSearch').addEventListener('input', (e) => {
+            const searchText = e.target.value.toLowerCase();
+            const entries = document.getElementsByClassName('entry-date');
+            
+            Array.from(entries).forEach(entry => {
+                const date = entry.textContent.toLowerCase();
+                if (date.includes(searchText)) {
+                    entry.classList.remove('filtered');
+                } else {
+                    entry.classList.add('filtered');
+                }
+            });
+        });
+
+        // Añadir listener para filtrar las entradas según el buscador de texto
+        document.getElementById('textSearch').addEventListener('input', () => {
+            filterEntries();
+            highlightSearchText();
+        });
+
+        function filterEntries() {
+            const searchValue = document.getElementById('textSearch').value;
+            const useRegex = document.getElementById('regexToggle').checked;
+            const character = document.getElementById('characterSelect').value;
+            const entryList = document.getElementById('entryList');
+
+            if (!character) {
+                alert('Por favor, selecciona un personaje.');
+                return;
+            }
+
+            database.ref('diario/' + character).once('value').then((snapshot) => {
+                const entries = snapshot.val();
+                entryList.innerHTML = '';
+
+                for (const date in entries) {
+                    const entryText = entries[date].entry;
+                    let match = false;
+
+                    if (searchValue.trim() === '') {
+                        match = true;
+                    } else if (useRegex) {
+                        try {
+                            const reg = new RegExp(searchValue, 'i');
+                            match = reg.test(entryText);
+                        } catch (error) {
+                            match = false;
+                        }
+                    } else {
+                        match = entryText.toLowerCase().includes(searchValue.toLowerCase());
+                    }
+
+                    const div = document.createElement('div');
+                    div.className = 'entry-date';
+                    if (!match) {
+                        div.classList.add('filtered');
+                    }
+                    div.textContent = date;
+                    div.onclick = () => loadEntryForDate(date, div);
+                    entryList.appendChild(div);
+                }
+            }).catch((error) => {
+                console.error('Error al cargar las entradas:', error);
+            });
+        }
+
+        function clearTextSearch() {
+            const input = document.getElementById('textSearch');
+            input.value = '';
+            filterEntries();
+            highlightSearchText();
+        }
+
         function saveEntry() {
             const character = document.getElementById('characterSelect').value;
             const date = document.getElementById('entryDate').value;
-            const entry = document.getElementById('diaryEntry').value;
+            const entry = document.getElementById('diaryEntry').innerHTML;
+            
             if (character && date && entry) {
                 database.ref('diario/' + character + '/' + date).set({
                     entry: entry
                 }).then(() => {
                     alert('Entrada guardada correctamente.');
-                    loadEntries(); // Actualizar la lista de entradas
+                    loadEntries();
                 }).catch((error) => {
                     console.error('Error al guardar la entrada:', error);
                 });
@@ -208,16 +469,35 @@
             if (character && date) {
                 database.ref('diario/' + character + '/' + date).once('value').then((snapshot) => {
                     const data = snapshot.val();
-                    if (data) {
-                        document.getElementById('diaryEntry').value = data.entry;
-                    } else {
-                        alert('No hay entrada para esta fecha.');
-                    }
+                    document.getElementById('diaryEntry').innerHTML = data ? data.entry : '';
+                    highlightSearchText(); // Aplicar resaltado después de cargar
                 }).catch((error) => {
                     console.error('Error al cargar la entrada:', error);
                 });
+            }
+        }
+
+        function highlightSearchText() {
+            const searchValue = document.getElementById('textSearch').value;
+            const useRegex = document.getElementById('regexToggle').checked;
+            const content = document.getElementById('diaryEntry');
+            
+            // Primero eliminar resaltados anteriores
+            const html = content.innerHTML.replace(/<mark class="highlight">(.*?)<\/mark>/g, '$1');
+            content.innerHTML = html;
+
+            if (!searchValue.trim()) return;
+
+            if (useRegex) {
+                try {
+                    const regex = new RegExp(`(${searchValue})`, 'gi');
+                    content.innerHTML = content.innerHTML.replace(regex, '<mark class="highlight">$1</mark>');
+                } catch(e) {
+                    console.error('Expresión regular inválida');
+                }
             } else {
-                alert('Por favor, selecciona un personaje y una fecha.');
+                const regex = new RegExp(searchValue.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+                content.innerHTML = content.innerHTML.replace(regex, '<mark class="highlight">$&</mark>');
             }
         }
 
@@ -281,6 +561,17 @@
 
         // Cargar personajes al iniciar
         window.onload = loadCharacters;
+
+        function formatText(command, value = null) {
+            document.execCommand(command, false, value);
+            document.getElementById('diaryEntry').focus();
+        }
+
+        // Añadir limpieza de resaltado al cambiar el modo regex
+        document.getElementById('regexToggle').addEventListener('change', () => {
+            filterEntries();
+            highlightSearchText();
+        });
     </script>
 </body>
 </html>
