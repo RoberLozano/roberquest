@@ -127,7 +127,6 @@
                 document.title = pj.nombre;
                 this.nombrePersonaje = pj.nombre;
                 console.log("CARGADO:" + this.nombrePersonaje);
-                console.log(personajesOnline);
                 
                 //TODO: ver si es necesario, act() no funciona desde aquí
                 document.getElementById('loadOnline').click()
