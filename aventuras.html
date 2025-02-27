@@ -297,9 +297,17 @@
     <script>
         // Configuración de Firebase
 
+        // Función para obtener parámetros de la URL
+        function getUrlParameter(name) {
+            const params = new URLSearchParams(window.location.search);
+            return params.get(name);
+        }
+
         // Cargar personajes en el selector
         function loadCharacters() {
             const characterSelect = document.getElementById('characterSelect');
+            const urlCharacter = getUrlParameter('p');
+
             database.ref('personajes').once('value').then((snapshot) => {
                 const characters = snapshot.val();
                 for (const key in characters) {
@@ -307,6 +315,17 @@
                     option.value = key;
                     option.textContent = key;
                     characterSelect.appendChild(option);
+                    
+                    // Si el personaje de la URL coincide, seleccionarlo
+                    if (urlCharacter && key.toLowerCase() === urlCharacter.toLowerCase()) {
+                        console.log('Personaje encontrado:', key);                  
+                        option.selected = true;
+                    }
+                }
+                
+                // Si se encontró un personaje válido en la URL, cargar sus entradas
+                if (urlCharacter && characterSelect.value) {
+                    loadEntries();
                 }
             }).catch((error) => {
                 console.error('Error al cargar personajes:', error);
