@@ -70,16 +70,27 @@ const TipoHabilidades =
 // firebase.initializeApp(config);
 // var database = firebase.database();
 
+var personajesOnline = new Set();
 //Cargo el firebase
 try {
   var config = JSON.parse(de(coor));
   firebase.initializeApp(config);
   var database = firebase.database();
-  console.log('firebase iniciado')
+  console.log('firebase iniciado');
+
+  database.ref('personajes').once('value').then((snapshot) => {
+    const characters = snapshot.val();
+    for (const key in characters) {
+      personajesOnline.add(key);
+    }
+  });
+
 } catch (error) {
   // alert('Error en firebase')
   console.log('Error en firebase')
 }
+
+
 
 class Efecto {
   // constructor(nombre, efecto, obj, fecha = 0) {
@@ -186,7 +197,7 @@ class Modificaciones extends Clase {
   buscarMod(string = this.efectos) {
     //para que multiplique con * tambien
     string = string.replace('*', 'x');
-    
+
     // var av = string.match(/\s*(\+|-|x|\/)\s*(\d+\.?\d*|(\d+d\d+)?([+|-](\d+|(\d+d\d+))))([ECPG])?\s*(.*)/i);
     // var av = string.match(/\s*(\+|-|x|\/)\s*(\d+\.?\d*|\d+d\d+\+?d*)([ECPG])?\s*(.*)/i);
     var av = string.match(/\s*(\+|-|x|\/)\s*(\d+[\.\d+]*)([ECPG])?\s*(.*)/i);
@@ -230,12 +241,12 @@ class Mod extends Clase {
     // console.log(v);
 
     // console.log(this.id+". V:"+v);
-    
-    if (Array.isArray(v)){
+
+    if (Array.isArray(v)) {
       // console.log((this.ctd));
       // console.log(v.concat(+this.ctd));
       // if(v.length==0) return v.concat(this.ctd);
-      return v.concat(parseInt(this.op+this.ctd));
+      return v.concat(parseInt(this.op + this.ctd));
     }
     //TODO: si no es number hacer otros
     if (isNumber(v)) {
@@ -759,23 +770,23 @@ class Animal extends Clase {
 
 
   //#endregion
-/**
- * Hace una tirada contando con la suerte total de personaje
- * @param {Habilidad|string} habilidad La habilidad o su nombre
- * @param {number} dados la tirada, si vacía se hace una nueva 1d100
- * @returns {number} el número correspondiente a la tirada
- */
-  tirarHabilidad(habilidad,dados = new D(1, 100).norm()) {
+  /**
+   * Hace una tirada contando con la suerte total de personaje
+   * @param {Habilidad|string} habilidad La habilidad o su nombre
+   * @param {number} dados la tirada, si vacía se hace una nueva 1d100
+   * @returns {number} el número correspondiente a la tirada
+   */
+  tirarHabilidad(habilidad, dados = new D(1, 100).norm()) {
     if (typeof habilidad === 'string')
       var h = this.getHabilidad(habilidad);
     else
       if (habilidad instanceof Habilidad)
         var h = habilidad;
 
-      let tirada = h.tirada(dados, this.getTotal('suerte'));
-      return tirada
+    let tirada = h.tirada(dados, this.getTotal('suerte'));
+    return tirada
 
-    }
+  }
 
 
 
@@ -2081,10 +2092,10 @@ class Humanoide extends Animal {
         //PA
         // let pa=pj.cuerpo.darLocalizacion(l.nombre).pa;
         //CUIDADO VAYA O NO FUNCIONE BIEN
-        let pa=l.pa;
+        let pa = l.pa;
         if (this.cuerpo?.armadura) { //PETA AL NO HABER ARMADURA?
-          pa+= this.cuerpo.armadura.daPA(l.nombre);
-          
+          pa += this.cuerpo.armadura.daPA(l.nombre);
+
         }
         ctx.globalAlpha = 0.77
         ctx.beginPath();
@@ -2119,76 +2130,78 @@ class Humano extends Humanoide {
 
 class Elfo extends Humanoide {
   constructor() {
-    super({ FUE: new Dado('2d6+7').tirar(),
+    super({
+      FUE: new Dado('2d6+7').tirar(),
       DES: new Dado('3d6+6').tirar(),
-      ASP: new Dado('3d6+6').tirar() });
+      ASP: new Dado('3d6+6').tirar()
+    });
     this.nombre = 'Legolas';
     this.peso = 60;
     this.haBasicas();
-    this.crearCuerpo(); 
-  } 
+    this.crearCuerpo();
+  }
 
   haBasicas() {
     //generado con AI
     // Habilidades básicas
-      this.setHabilidad(new Habilidad("Esquivar", Agilidad, 50));
-      this.setHabilidad(new Habilidad("Montar", Agilidad, 40));
+    this.setHabilidad(new Habilidad("Esquivar", Agilidad, 50));
+    this.setHabilidad(new Habilidad("Montar", Agilidad, 40));
 
-        this.setHabilidad(new Habilidad("Remar", Agilidad, 30));
-        this.setHabilidad(new Habilidad("Nadar", Agilidad, 25));
-        this.setHabilidad(new Habilidad("Trepar", Agilidad, 40));
-        this.setHabilidad(new Habilidad("Correr", Agilidad, 50));
-        this.setHabilidad(new Habilidad("Saltar", Agilidad, 30)); 
-        this.setHabilidad(new Habilidad("Esconderse", Sigilo, 40));
-        this.setHabilidad(new Habilidad("Deslizarse en Silencio", Sigilo, 40));
-        this.setHabilidad(new Habilidad("Buscar", Percepción, 50));
-        this.setHabilidad(new Habilidad("Escuchar", Percepción, 50));
-        this.setHabilidad(new Habilidad("Otear", Percepción, 50));
-        this.setHabilidad(new Habilidad("Rastrear", Percepción, 40));
-        this.setHabilidad(new Habilidad("Oler", Percepción, 30));
-        this.setHabilidad(new Habilidad("Orientación", Percepción, 40));
-        this.setHabilidad(new Habilidad("Cantar", Comunicación, 40));
-        this.setHabilidad(new Habilidad("Actuar", Comunicación, 30));
-        this.setHabilidad(new Habilidad("Intimidar", Comunicación, 20));
-        this.setHabilidad(new Habilidad("Regatear", Comunicación, 30));
-        this.setHabilidad(new Habilidad("Enseñar", Comunicación, 30));
-        this.setHabilidad(new Habilidad("Silbar", Comunicación, 20));
-        this.setHabilidad(new Habilidad("Seducir", Comunicación, 30));
-        this.setHabilidad(new Habilidad("Animal", Conocimiento, 30));
-        this.setHabilidad(new Habilidad("Vegetal", Conocimiento, 50));
-        this.setHabilidad(new Habilidad("Mineral", Conocimiento, 20));
-        this.setHabilidad(new Habilidad("Mundo", Conocimiento, 30));
-        this.setHabilidad(new Habilidad("Raza Propia", Conocimiento, 50));
-        this.setHabilidad(new Habilidad("Otras Razas", Conocimiento, 30));
-        this.setHabilidad(new Habilidad("Leer y escribir", Conocimiento, 40));
-        this.setHabilidad(new Habilidad("Navegación", Conocimiento, 30));
-        this.setHabilidad(new Habilidad("Primeros Auxilios", Conocimiento, 30));
-        this.setHabilidad(new Habilidad("Tasación", Conocimiento, 30));
-        this.setHabilidad(new Habilidad("Inventar", Conocimiento, 30));
-        this.setHabilidad(new Habilidad("Lanzar", Manipulación, 30));
-        this.setHabilidad(new Habilidad("Construir", Manipulación, 30));
-        
-        // Habilidades de combate
-        this.setHabilidad(new HabilidadMarcial("Arco", Manipulación, 60, true));
-        this.setHabilidad(new HabilidadMarcial("Espada", Manipulación, 50, true));
-        this.setHabilidad(new HabilidadMarcial("Daga", Manipulación, 40, true));
-        this.setHabilidad(new HabilidadMarcial("Puño", Manipulación, 30, true));
-        this.setHabilidad(new HabilidadMarcial("Patada", Manipulación, 25, true));
-        
-        //Artes de magía, como en habilidades.js
-        this.setHabilidad(new Arte("Intensidad", Magia, 20));
-        this.setHabilidad(new Arte("Duración", Magia, 20));
-        this.setHabilidad(new Arte("Alcance", Magia, 20));
+    this.setHabilidad(new Habilidad("Remar", Agilidad, 30));
+    this.setHabilidad(new Habilidad("Nadar", Agilidad, 25));
+    this.setHabilidad(new Habilidad("Trepar", Agilidad, 40));
+    this.setHabilidad(new Habilidad("Correr", Agilidad, 50));
+    this.setHabilidad(new Habilidad("Saltar", Agilidad, 30));
+    this.setHabilidad(new Habilidad("Esconderse", Sigilo, 40));
+    this.setHabilidad(new Habilidad("Deslizarse en Silencio", Sigilo, 40));
+    this.setHabilidad(new Habilidad("Buscar", Percepción, 50));
+    this.setHabilidad(new Habilidad("Escuchar", Percepción, 50));
+    this.setHabilidad(new Habilidad("Otear", Percepción, 50));
+    this.setHabilidad(new Habilidad("Rastrear", Percepción, 40));
+    this.setHabilidad(new Habilidad("Oler", Percepción, 30));
+    this.setHabilidad(new Habilidad("Orientación", Percepción, 40));
+    this.setHabilidad(new Habilidad("Cantar", Comunicación, 40));
+    this.setHabilidad(new Habilidad("Actuar", Comunicación, 30));
+    this.setHabilidad(new Habilidad("Intimidar", Comunicación, 20));
+    this.setHabilidad(new Habilidad("Regatear", Comunicación, 30));
+    this.setHabilidad(new Habilidad("Enseñar", Comunicación, 30));
+    this.setHabilidad(new Habilidad("Silbar", Comunicación, 20));
+    this.setHabilidad(new Habilidad("Seducir", Comunicación, 30));
+    this.setHabilidad(new Habilidad("Animal", Conocimiento, 30));
+    this.setHabilidad(new Habilidad("Vegetal", Conocimiento, 50));
+    this.setHabilidad(new Habilidad("Mineral", Conocimiento, 20));
+    this.setHabilidad(new Habilidad("Mundo", Conocimiento, 30));
+    this.setHabilidad(new Habilidad("Raza Propia", Conocimiento, 50));
+    this.setHabilidad(new Habilidad("Otras Razas", Conocimiento, 30));
+    this.setHabilidad(new Habilidad("Leer y escribir", Conocimiento, 40));
+    this.setHabilidad(new Habilidad("Navegación", Conocimiento, 30));
+    this.setHabilidad(new Habilidad("Primeros Auxilios", Conocimiento, 30));
+    this.setHabilidad(new Habilidad("Tasación", Conocimiento, 30));
+    this.setHabilidad(new Habilidad("Inventar", Conocimiento, 30));
+    this.setHabilidad(new Habilidad("Lanzar", Manipulación, 30));
+    this.setHabilidad(new Habilidad("Construir", Manipulación, 30));
 
-        //Hechizos
-        this.setHabilidad(new Hechizo("Luz", Magia, 20));
-        this.setHabilidad(new Hechizo("Curación", Magia, 20)); 
-        this.setHabilidad(new Hechizo("Bola de Fuego", Magia, 20));
+    // Habilidades de combate
+    this.setHabilidad(new HabilidadMarcial("Arco", Manipulación, 60, true));
+    this.setHabilidad(new HabilidadMarcial("Espada", Manipulación, 50, true));
+    this.setHabilidad(new HabilidadMarcial("Daga", Manipulación, 40, true));
+    this.setHabilidad(new HabilidadMarcial("Puño", Manipulación, 30, true));
+    this.setHabilidad(new HabilidadMarcial("Patada", Manipulación, 25, true));
+
+    //Artes de magía, como en habilidades.js
+    this.setHabilidad(new Arte("Intensidad", Magia, 20));
+    this.setHabilidad(new Arte("Duración", Magia, 20));
+    this.setHabilidad(new Arte("Alcance", Magia, 20));
+
+    //Hechizos
+    this.setHabilidad(new Hechizo("Luz", Magia, 20));
+    this.setHabilidad(new Hechizo("Curación", Magia, 20));
+    this.setHabilidad(new Hechizo("Bola de Fuego", Magia, 20));
   }
 }
 
-        
-      
+
+
 
 class Enano extends Humanoide {
   constructor() {
@@ -2263,7 +2276,7 @@ class Enano extends Humanoide {
 var pj = new Enano();
 let ballesta = new Arco('Ballesta', 3, 1, new Daño('1d8', 'P'), 35, 200);
 let virote = new Municion('Virote de vuelo', 0.08, 0, 10, '-1',
-   "*1.2 alcanceRecto, *1.3 alcance")
+  "*1.2 alcanceRecto, *1.3 alcance")
 virote.ctd = 100;
 pj.inventario.add(ballesta)
 pj.inventario.add(virote)
@@ -2469,26 +2482,26 @@ function cargarPersonajeOnline(nombre) {
  * @param {string} nombre El nombre del personaje a buscar.
  */
 function cargarPersonajeOnlineParecido(nombre) {
-    return new Promise((resolve, reject) => {
-        const ref = database.ref('personajes');
-        ref.once('value', (snapshot) => {
-            const personajes = snapshot.val();
-            if (personajes) {
-                const nombres = Object.keys(personajes);
-                const parecido = nombres.reduce((prev, curr) => {
-                    const prevSimilitud = jaroWrinker(nombre, prev);
-                    const currSimilitud = jaroWrinker(nombre, curr);
-                    return currSimilitud > prevSimilitud ? curr : prev;
-                }, nombres[0]);
-                cargarPersonajeOnline(parecido);
-                resolve(parecido);
-            } else {
-                reject('No se encontraron personajes.');
-            }
-        }, (error) => {
-            reject(error);
-        });
+  return new Promise((resolve, reject) => {
+    const ref = database.ref('personajes');
+    ref.once('value', (snapshot) => {
+      const personajes = snapshot.val();
+      if (personajes) {
+        const nombres = Object.keys(personajes);
+        const parecido = nombres.reduce((prev, curr) => {
+          const prevSimilitud = jaroWrinker(nombre, prev);
+          const currSimilitud = jaroWrinker(nombre, curr);
+          return currSimilitud > prevSimilitud ? curr : prev;
+        }, nombres[0]);
+        cargarPersonajeOnline(parecido);
+        resolve(parecido);
+      } else {
+        reject('No se encontraron personajes.');
+      }
+    }, (error) => {
+      reject(error);
     });
+  });
 }
 
 /**
@@ -2496,39 +2509,39 @@ function cargarPersonajeOnlineParecido(nombre) {
  * @param {string} nombre El nombre del personaje a buscar.
  */
 function cargarPersonajeLocalParecido(nombre) {
-    return new Promise((resolve, reject) => {
-        const nombres = [];
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            try {
-                const item = JSON.parse(localStorage.getItem(key));
-                if (item && item.clase && (item.clase === 'Humanoide' || item.clase === 'Animal')) {
-                    nombres.push(key);
-                }
-            } catch (e) {
-                console.warn(`No se pudo parsear el objeto con clave ${key}`);
-            }
+  return new Promise((resolve, reject) => {
+    const nombres = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      try {
+        const item = JSON.parse(localStorage.getItem(key));
+        if (item && item.clase && (item.clase === 'Humanoide' || item.clase === 'Animal')) {
+          nombres.push(key);
         }
+      } catch (e) {
+        console.warn(`No se pudo parsear el objeto con clave ${key}`);
+      }
+    }
 
-        if (nombres.length > 0) {
-            const parecido = nombres.reduce((prev, curr) => {
-                const prevSimilitud = jaroWrinker(nombre, prev);
-                const currSimilitud = jaroWrinker(nombre, curr);
-                return currSimilitud > prevSimilitud ? curr : prev;
-            }, nombres[0]);
-            cargarPersonaje(parecido);
-            resolve(parecido);
-        } else {
-            reject('No se encontraron personajes guardados localmente.');
-        }
-    });
+    if (nombres.length > 0) {
+      const parecido = nombres.reduce((prev, curr) => {
+        const prevSimilitud = jaroWrinker(nombre, prev);
+        const currSimilitud = jaroWrinker(nombre, curr);
+        return currSimilitud > prevSimilitud ? curr : prev;
+      }, nombres[0]);
+      cargarPersonaje(parecido);
+      resolve(parecido);
+    } else {
+      reject('No se encontraron personajes guardados localmente.');
+    }
+  });
 }
 
-function historial( valor,campo='habilidades') {
-  console.log("guardando en historial: personajes" + pj.nombre + ("habilidades") );
-      database.ref("historial").child(campo).child(pj.nombre).child(valor.nombre).set(valor);
+function historial(valor, campo = 'habilidades') {
+  console.log("guardando en historial: personajes" + pj.nombre + ("habilidades"));
+  database.ref("historial").child(campo).child(pj.nombre).child(valor.nombre).set(valor);
 
-  
+
 }
 
 function guerrero(personaje, nivel, ...armas) {

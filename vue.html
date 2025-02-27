@@ -158,7 +158,7 @@
                     <v-icon>mdi-account</v-icon> <v-icon>mdi-wifi</v-icon>
                   </v-list-item-icon>
 
-                  <v-combobox v-model="nombrePersonajeOnline" :items="ls('personajes')" label="Personaje"
+                  <v-combobox v-model="nombrePersonajeOnline" :items="[...personajesOnline]" label="Personaje"
                     @change="cargarOnline(nombrePersonajeOnline);pj.actTodosBonHab();p=pj; contenedor=pj.inventario">
                   </v-combobox>
                 </v-list-item>

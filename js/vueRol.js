@@ -1,4 +1,4 @@
-    // var chaleco = new Pieza(["Pecho", "Abdomen"], 3);
+// var chaleco = new Pieza(["Pecho", "Abdomen"], 3);
     // var vestidoDragon = new Armadura(
     //   [new Pieza(dartodasLocalizaciones(pj, 'Craneo', 'Cara', 'Pie I', 'Pie D', 'Mano I', 'Mano D'), 7),
     //     chaleco]
@@ -8,6 +8,11 @@
 
     var fh=null;
 
+    // Agregar función para obtener parámetros de la URL
+    function getUrlParameter(name) {
+      const params = new URLSearchParams(window.location.search);
+      return params.get(name);
+  }
 
     function cuerpoModal(rol) {
         let p = null;
@@ -120,8 +125,10 @@
                 this.p = pj;
   
                 document.title = pj.nombre;
-  
-                console.log(pj);
+                this.nombrePersonaje = pj.nombre;
+                console.log("CARGADO:" + this.nombrePersonaje);
+                console.log(personajesOnline);
+                
                 //TODO: ver si es necesario, act() no funciona desde aquí
                 document.getElementById('loadOnline').click()
   
@@ -476,6 +483,26 @@
           // this.colHabSel = this.colHab;
           this.colHabSel = this.headers;
           console.log(this.selectedHeaders);
+
+          // Si en la URL se pasa el parámetro "pj", intenta cargar ese personaje
+          const urlCharacter = getUrlParameter('pj');
+          if (urlCharacter) {
+            if (window.firebase && window.database) {
+              // Cargar desde Firebase
+              this.cargarOnline(urlCharacter);
+              console.log("Cargando personaje de Firebase de inicio:", urlCharacter);
+              
+            } else {
+              // Si Firebase no está disponible o falla, usar función local de utils.js
+              cargarPersonajeLocalParecido(urlCharacter)
+                .then(character => {
+                  pj = character;
+                  this.p = pj;
+                  document.title = pj.nombre;
+                })
+                .catch(err => console.error("Error cargando personaje local:", err));
+            }
+          }
         },
         data: {
 
@@ -613,5 +640,4 @@
   
         }
       })
-  
-  
+

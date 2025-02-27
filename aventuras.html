@@ -315,7 +315,9 @@
                     option.value = key;
                     option.textContent = key;
                     characterSelect.appendChild(option);
-                    
+                    //guardo en personajesOnline, ya deberia estar de rol
+                    // personajesOnline.add(key);
+                   
                     // Si el personaje de la URL coincide, seleccionarlo
                     if (urlCharacter && key.toLowerCase() === urlCharacter.toLowerCase()) {
                         console.log('Personaje encontrado:', key);                  
@@ -331,6 +333,7 @@
                 console.error('Error al cargar personajes:', error);
             });
         }
+
 
         function loadEntries() {
             const character = document.getElementById('characterSelect').value;
