@@ -103,21 +103,6 @@
             padding: 10px;
         }
 
-        /* Estilos para el autocomplete del sidebar */
-        .date-search {
-            position: relative;
-            margin-bottom: 10px;
-        }
-
-        .date-search input {
-            width: 100%;
-            padding: 8px;
-            background-color: #2a2a2a;
-            border: 1px solid #444;
-            color: #fff;
-            border-radius: 4px;
-        }
-
         #entryList {
             max-height: calc(100vh - 200px);
             overflow-y: auto;
@@ -249,6 +234,28 @@
             font-size: 1.1em;
             color: #ddd;
             z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-date-btn {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            padding: 5px;
+            font-size: 1.2em;
+            transition: color 0.3s;
+        }
+
+        .nav-date-btn:hover {
+            color: #fff;
+        }
+
+        .nav-date-btn:disabled {
+            color: #444;
+            cursor: not-allowed;
         }
     </style>
 </head>
@@ -259,13 +266,12 @@
     
     <div class="main-container">
         <div class="current-date">
+            <button class="nav-date-btn" onclick="navigateDate(1)" id="nextDate">&lt;</button>
             <span id="worldDate"></span>
+            <button class="nav-date-btn" onclick="navigateDate(-1)" id="prevDate">&gt;</button>
         </div>
         <div id="sidebar">
             <select id="characterSelect" onchange="loadEntries()"></select>
-            <div class="date-search">
-                <input type="text" id="dateSearch" placeholder="Buscar fecha...">
-            </div>
             <div class="text-search">
                 <input type="text" id="textSearch" placeholder="Buscar en entradas..." autocomplete="off">
                 <button id="clearTextSearch" onclick="clearTextSearch()">×</button>
@@ -390,6 +396,7 @@
             
             document.getElementById('entryDate').value = date;
             loadEntry();
+            updateNavigationButtons();
         }
 
         // Añadir listener para el cambio de fecha
@@ -405,21 +412,6 @@
             });
             
             loadEntry();
-        });
-
-        // Añadir función de búsqueda para las fechas
-        document.getElementById('dateSearch').addEventListener('input', (e) => {
-            const searchText = e.target.value.toLowerCase();
-            const entries = document.getElementsByClassName('entry-date');
-            
-            Array.from(entries).forEach(entry => {
-                const date = entry.textContent.toLowerCase();
-                if (date.includes(searchText)) {
-                    entry.classList.remove('filtered');
-                } else {
-                    entry.classList.add('filtered');
-                }
-            });
         });
 
         // Añadir listener para filtrar las entradas según el buscador de texto
@@ -469,6 +461,7 @@
                     div.onclick = () => loadEntryForDate(date, div);
                     entryList.appendChild(div);
                 }
+                updateNavigationButtons();
             }).catch((error) => {
                 console.error('Error al cargar las entradas:', error);
             });
@@ -622,6 +615,31 @@
             const actualDate = new Date(date + 'T00:00:00');
             const formattedDate = actualDate.toLocaleDateString('es-ES', options);
             document.getElementById('worldDate').textContent = formattedDate;
+        }
+
+        function navigateDate(direction) {
+            const entries = Array.from(document.querySelectorAll('.entry-date:not(.filtered)'));
+            const currentDate = document.getElementById('entryDate').value;
+            const currentIndex = entries.findIndex(entry => entry.textContent === currentDate);
+            
+            if (currentIndex === -1) return;
+            
+            const nextIndex = currentIndex + direction;
+            if (nextIndex >= 0 && nextIndex < entries.length) {
+                const nextEntry = entries[nextIndex];
+                loadEntryForDate(nextEntry.textContent, nextEntry);
+            }
+            
+            updateNavigationButtons();
+        }
+
+        function updateNavigationButtons() {
+            const entries = Array.from(document.querySelectorAll('.entry-date:not(.filtered)'));
+            const currentDate = document.getElementById('entryDate').value;
+            const currentIndex = entries.findIndex(entry => entry.textContent === currentDate);
+            
+            document.getElementById('prevDate').disabled = currentIndex <= 0;
+            document.getElementById('nextDate').disabled = currentIndex >= entries.length - 1;
         }
     </script>
 </body>
