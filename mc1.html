@@ -274,6 +274,50 @@
             padding: 0.5rem;
             border-radius: 4px;
         }
+
+        #characterPositions {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 8px;
+            border-radius: 4px;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+
+        .char-position {
+            margin: 4px 0;
+            color: #fff;
+        }
+
+        .wifi-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .wifi-button svg {
+            width: 24px;
+            height: 24px;
+            fill: #666;
+        }
+
+        .wifi-button.online svg {
+            fill: #4CAF50;
+        }
+
+        .wifi-button:hover {
+            background: rgba(0, 0, 0, 0.9);
+        }
     </style>
 </head>
 <body>
@@ -295,7 +339,14 @@
         </label>
         <input type="file" id="bgInput" accept="image/*" style="display: none;">
         <div id="distance"></div>
+        <div id="characterPositions"></div>
     </div>
+
+    <button class="wifi-button" id="syncButton" title="Modo offline">
+        <svg viewBox="0 0 24 24">
+            <path d="M12,21L15.6,16.2C14.6,15.45 13.35,15 12,15C10.65,15 9.4,15.45 8.4,16.2L12,21M12,3C7.95,3 4.21,4.34 1.2,6.6L3,9C5.5,7.12 8.62,6 12,6C15.38,6 18.5,7.12 21,9L22.8,6.6C19.79,4.34 16.05,3 12,3M12,9C9.3,9 6.81,9.89 4.8,11.4L6.6,13.8C8.1,12.67 9.97,12 12,12C14.03,12 15.9,12.67 17.4,13.8L19.2,11.4C17.19,9.89 14.7,9 12,9Z" />
+        </svg>
+    </button>
 
     <div id="contextMenu">
         <ul>
@@ -771,6 +822,7 @@
                 
                 char.style.cursor = 'grabbing';
                 characterPathPoints.set(char, [{ x: e.clientX, y: e.clientY }]);
+                char.isMoving = true;
             });
 
             window.addEventListener('mousemove', (e) => {
@@ -791,6 +843,7 @@
                 isDraggingChar = false;
                 if (char) {
                     char.style.cursor = 'grab';
+                    char.isMoving = false;
                 }
             });
 
@@ -813,6 +866,7 @@
 
                     char.style.cursor = 'grabbing';
                     characterPathPoints.set(char, [{ x: touch.clientX, y: touch.clientY }]);
+                    char.isMoving = true;
                 }
             });
 
@@ -836,6 +890,7 @@
                 isDraggingChar = false;
                 if (char) {
                     char.style.cursor = 'grab';
+                    char.isMoving = false;
                 }
             });
 
@@ -843,6 +898,7 @@
                 isDraggingChar = false;
                 if (char) {
                     char.style.cursor = 'grab'; 
+                    char.isMoving = false;
                 }
             });
 
@@ -915,6 +971,8 @@
                 // Guardar referencia al personaje actualmente seleccionado
                 activeCharacter = char;
             });
+
+            updateCharacterPositions();
 
             return char;
         }
@@ -1027,6 +1085,12 @@
 
         // Dibujar el camino
         drawCharacterPath(char, pathPoints);
+
+        updateCharacterPositions();
+
+        if (isOnline) {
+            saveMapState();
+        }
     }
 
     // Añadir función para dibujar el camino del personaje
@@ -1060,6 +1124,24 @@
         tooltip.style.left = `${points[points.length-1].x + 10}px`;
         tooltip.style.top = `${points[points.length-1].y + 10}px`;
         tooltip.innerText = `Distancia: ${totalDistance.toFixed(2)} km`;
+    }
+
+    // Añadir función para actualizar posiciones de personajes
+    function updateCharacterPositions() {
+        const positionsDiv = document.getElementById('characterPositions');
+        positionsDiv.innerHTML = '';
+        
+        characters.forEach(char => {
+            const data = characterObjects.get(char) || {};
+            if (data.mapX !== undefined && data.mapY !== undefined) {
+                const posDiv = document.createElement('div');
+                posDiv.className = 'char-position';
+                const x = data.mapX.toFixed(3);
+                const y = data.mapY.toFixed(3);
+                posDiv.textContent = `${char.nombre}: (${x}, ${y})`;
+                positionsDiv.appendChild(posDiv);
+            }
+        });
     }
 
     // Añadir variables para el modal y menús
@@ -1348,6 +1430,64 @@
         
     
     }
+
+    let isOnline = false;
+    const syncButton = document.getElementById('syncButton');
+    
+    function toggleOnlineMode() {
+        isOnline = !isOnline;
+        syncButton.classList.toggle('online');
+        syncButton.title = isOnline ? 'Modo online' : 'Modo offline';
+        
+        if (isOnline) {
+            startSync();
+        } else {
+            stopSync();
+        }
+    }
+
+    function startSync() {
+        // Guardar el estado inicial del mapa
+        saveMapState();
+        
+        // Iniciar escucha de cambios
+        database.ref('mapas/actual').on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (!data) return;
+            
+            // Actualizar posiciones solo si no soy yo quien mueve
+            characters.forEach(char => {
+                if (data[char.nombre] && !char.isMoving) {
+                    const pos = data[char.nombre];
+                    updateCharacterTransform(char, pos.x, pos.y, pos.rotation || 0);
+                }
+            });
+        });
+    }
+
+    function stopSync() {
+        // Detener escucha de cambios
+        database.ref('mapas/actual').off();
+    }
+
+    function saveMapState() {
+        if (!isOnline) return;
+        
+        const state = {};
+        characters.forEach(char => {
+            const data = characterObjects.get(char) || {};
+            state[char.nombre] = {
+                x: data.mapX,
+                y: data.mapY,
+                rotation: data.rotation || 0
+            };
+        });
+        
+        database.ref('mapas/actual').set(state);
+    }
+
+    // Añadir listener para el botón
+    syncButton.addEventListener('click', toggleOnlineMode);
     </script>
 </body>
 </html>
