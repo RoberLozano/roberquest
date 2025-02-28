@@ -793,14 +793,21 @@
             let charPos = { x: 0, y: 0 };
             let startOffset = { x: 0, y: 0 };
             let rotation = 0;
+            char.rotation = rotation; // Añadir la rotación como propiedad del char
 
             // Añadir rotación con Shift + rueda del ratón
             char.addEventListener('wheel', (e) => {
                 if (e.shiftKey) {
                     e.preventDefault();
                     e.stopPropagation();
-                    rotation += e.deltaY > 0 ? 15 : -15;
-                    updateCharacterTransform(char, charPos.x, charPos.y, rotation);
+                    char.rotation += e.deltaY > 0 ? 15 : -15; // Actualizar rotación
+                    const charData = characterObjects.get(char) || {};
+                    charData.rotation = char.rotation;
+                    characterObjects.set(char, charData);
+                    updateCharacterTransform(char, charData.mapX || 0, charData.mapY || 0, char.rotation);
+                    if (isOnline) {
+                        saveMapState();
+                    }
                 }
             });
 
@@ -983,8 +990,8 @@
                 reader.onload = (event) => {                   
                     const char = createCharacter(file.name, event.target.result);
                     // Posicionar cada nuevo personaje en una ubicación ligeramente diferente
-                    const x = 50 + Math.random() * 100;
-                    const y = 50 + Math.random() * 100;
+                    const x = 0;
+                    const y = 0;
                     updateCharacterTransform(char, x, y, 0);
                 };
                 reader.readAsDataURL(file);
@@ -1071,10 +1078,11 @@
         const charData = characterObjects.get(char) || {};
         charData.mapX = x;
         charData.mapY = y;
+        charData.rotation = char.rotation || 0; // Mantener la rotación actual
         characterObjects.set(char, charData);
         
         // Actualizar la transformación
-        updateCharacterTransform(char, x, y, charData.rotation || 0);
+        updateCharacterTransform(char, x, y, charData.rotation);
 
         // Actualizar el camino
         if (!characterPathPoints.has(char)) {
@@ -1447,19 +1455,25 @@
     }
 
     function startSync() {
-        // Guardar el estado inicial del mapa
         saveMapState();
         
-        // Iniciar escucha de cambios
         database.ref('mapas/actual').on('value', (snapshot) => {
             const data = snapshot.val();
             if (!data) return;
             
-            // Actualizar posiciones solo si no soy yo quien mueve
             characters.forEach(char => {
                 if (data[char.nombre] && !char.isMoving) {
                     const pos = data[char.nombre];
+                    char.rotation = pos.rotation || 0; // Actualizar la rotación del char
                     updateCharacterTransform(char, pos.x, pos.y, pos.rotation || 0);
+                    
+                    const charData = characterObjects.get(char) || {};
+                    charData.mapX = pos.x;
+                    charData.mapY = pos.y;
+                    charData.rotation = pos.rotation || 0;
+                    characterObjects.set(char, charData);
+                    
+                    updateCharacterPositions();
                 }
             });
         });
