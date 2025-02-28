@@ -1502,6 +1502,116 @@
 
     // Añadir listener para el botón
     syncButton.addEventListener('click', toggleOnlineMode);
+
+    // Añadir después de las variables globales
+    async function loadMapFromURL(url) {
+        console.log('Intentando cargar mapa desde:', url);
+        try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            
+            const blob = await response.blob();
+            const file = new File([blob], url.split('/').pop(), { type: blob.type });
+            
+            return new Promise((resolve, reject) => {
+                // Crear dos FileReaders diferentes
+                const svgReader = new FileReader();
+                const imageReader = new FileReader();
+                
+                // Primero leer como texto si es SVG para obtener la escala
+                if (file.type === 'image/svg+xml') {
+                    svgReader.onload = (event) => {
+                        const svgContent = event.target.result;
+                        const scale = getSvgScale(svgContent);
+                        if (scale) {
+                            console.log('Escala del mapa detectada:', scale);
+                            pxToKmRatio = scale;
+                        }
+                        
+                        // Después de leer el SVG, leer como URL de datos
+                        imageReader.onload = (event) => {
+                            mapBg.style.backgroundImage = `url(${event.target.result})`;
+                            mapBg.style.backgroundSize = 'contain';
+                            mapBg.style.backgroundRepeat = 'no-repeat';
+                            console.log('Mapa cargado exitosamente');
+                            resolve();
+                        };
+                        imageReader.onerror = reject;
+                        imageReader.readAsDataURL(file);
+                    };
+                    svgReader.onerror = reject;
+                    svgReader.readAsText(file);
+                } else {
+                    // Si no es SVG, solo leer como URL de datos
+                    imageReader.onload = (event) => {
+                        mapBg.style.backgroundImage = `url(${event.target.result})`;
+                        mapBg.style.backgroundSize = 'contain';
+                        mapBg.style.backgroundRepeat = 'no-repeat';
+                        console.log('Mapa cargado exitosamente');
+                        resolve();
+                    };
+                    imageReader.onerror = reject;
+                    imageReader.readAsDataURL(file);
+                }
+            });
+        } catch (error) {
+            console.error('Error cargando el mapa:', error);
+            try {
+                await loadMapFromURL('img/Elahiun.svg');
+            } catch (error2) {
+                console.error('Error en ruta alternativa:', error2);
+            }
+        }
+    }
+
+    async function loadCharacterFromURL(url) {
+        console.log('Intentando cargar personaje desde:', url);
+        try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            
+            const blob = await response.blob();
+            const file = new File([blob], url.split('/').pop(), { type: blob.type });
+            
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const char = createCharacter(file.name, event.target.result);
+                    console.log('Personaje cargado:', char.nombre);
+                    resolve(char);
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        } catch (error) {
+            console.error('Error cargando el personaje:', error);
+            // Intenta cargar una ruta alternativa
+            console.log('Intentando ruta alternativa...');
+            try {
+                await loadCharacterFromURL('personajes/Rossel.png');
+            } catch (error2) {
+                console.error('Error en ruta alternativa:', error2);
+            }
+        }
+    }
+
+    // Función de inicialización mejorada
+    async function initMap() {
+        console.log('Iniciando carga del mapa y personaje...');
+        try {
+            await loadMapFromURL('mapas/Elahiun.svg');
+            await loadCharacterFromURL('img/tokens/Rossel.png');
+            console.log('Carga inicial completada');
+        } catch (error) {
+            console.error('Error en initMap:', error);
+        }
+    }
+
+    // Modificar el evento load para asegurar que se ejecuta después de que todo esté listo
+    window.addEventListener('DOMContentLoaded', () => {
+        console.log('DOM cargado, iniciando initMap...');
+        initMap();
+    });
     </script>
 </body>
 </html>
