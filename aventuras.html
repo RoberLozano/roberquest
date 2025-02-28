@@ -23,14 +23,14 @@
         }
 
         #sidebar {
-            width: 300px;
-            min-width: 300px;
+            width: 250px;
+            min-width: 250px;
             background-color: #1e1e1e;
             border-right: 1px solid #444;
-            padding: 20px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 10px;
         }
 
         #editor-container {
@@ -43,22 +43,24 @@
         #entryList {
             flex: 1;
             overflow-y: auto;
+            max-height: 30vh;
         }
 
         .entry-controls {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 5px;
+            margin-bottom: 10px;
         }
 
         #characterSelect {
-            font-size: 18px;
-            margin-bottom: 20px;
+            font-size: 16px;
+            margin-bottom: 10px;
+            padding: 5px;
         }
 
         .entry-date {
-            padding: 8px 12px;
-            margin-bottom: 4px;
+            padding: 4px 8px;
+            margin: 1px 0;
             border-radius: 4px;
         }
 
@@ -125,8 +127,8 @@
 
         .entry-date {
             cursor: pointer;
-            padding: 8px 12px;
-            margin: 2px 0;
+            padding: 4px 8px;
+            margin: 1px 0;
             border-radius: 4px;
             transition: all 0.2s ease;
         }
@@ -152,13 +154,13 @@
             position: relative;
             display: flex;
             align-items: center;
-            gap: 8px;
-            margin-bottom: 10px;
+            gap: 4px;
+            margin-bottom: 5px;
         }
 
         .text-search input {
             flex: 1;
-            padding: 8px;
+            padding: 6px;
             background-color: #2a2a2a;
             border: 1px solid #444;
             color: #fff;
@@ -168,13 +170,31 @@
         .text-search button {
             background: none;
             border: none;
-            color: #ccc;
-            font-size: 18px;
+            color: #999;
+            padding: 0 4px;
+            font-size: 16px;
             cursor: pointer;
+            display: flex;
+            align-items: center;
         }
 
         .text-search button:hover {
             color: #fff;
+        }
+
+        .text-search label {
+            display: flex;
+            align-items: center;
+            font-size: 0.8em;
+            color: #999;
+            gap: 2px;
+            user-select: none;
+            cursor: pointer;
+        }
+
+        .text-search input[type="checkbox"] {
+            margin: 0;
+            cursor: pointer;
         }
 
         .format-controls {
@@ -200,7 +220,7 @@
         }
 
         .editor-content {
-            min-height: 300px;
+            min-height: 50vh;
             padding: 10px;
             background-color: #1e1e1e;
             color: #ffffff;
@@ -257,6 +277,44 @@
             color: #444;
             cursor: not-allowed;
         }
+
+        /* Añadir media queries para móviles */
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+
+            #sidebar {
+                width: 100%;
+                min-width: 100%;
+                max-height: 25vh;
+                padding: 5px;
+            }
+
+            #editor-container {
+                flex: 1;
+                padding: 10px;
+            }
+
+            #entryList {
+                max-height: 12vh;
+            }
+
+            .editor-content {
+                min-height: 50vh;
+            }
+
+            .entry-controls {
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+
+            .entry-controls button, 
+            .entry-controls input {
+                flex: 1;
+                min-width: 120px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -273,11 +331,11 @@
         <div id="sidebar">
             <select id="characterSelect" onchange="loadEntries()"></select>
             <div class="text-search">
-                <input type="text" id="textSearch" placeholder="Buscar en entradas..." autocomplete="off">
-                <button id="clearTextSearch" onclick="clearTextSearch()">×</button>
-                <label style="font-size:0.9em; color:#ccc;">
+                <input type="text" id="textSearch" placeholder="Buscar..." autocomplete="off">
+                <button id="clearTextSearch" onclick="clearTextSearch()" title="Limpiar">×</button>
+                <label title="Usar expresión regular">
                     <input type="checkbox" id="regexToggle" onchange="filterEntries()">
-                    Regex
+                    rx
                 </label>
             </div>
             <div class="entry-controls">
