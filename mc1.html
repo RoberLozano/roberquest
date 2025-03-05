@@ -1069,8 +1069,8 @@
 
     // Modificar la función handleCharacterMove para incluir el dibujo del camino
     function handleCharacterMove(char, clientX, clientY, offset) {
-        const x = (clientX - currentPos.x) / scale - offset.x;
-        const y = (clientY - currentPos.y) / scale - offset.y;
+        const x = (clientX - currentPos.x) / scale - offset.x + dx;
+        const y = (clientY - currentPos.y) / scale - offset.y + dy;
         console.log("x:"+x+" y:"+y);
         
         
@@ -1082,7 +1082,7 @@
         characterObjects.set(char, charData);
         
         // Actualizar la transformación
-        updateCharacterTransform(char, x, y, charData.rotation);
+        updateCharacterTransform(char, x - dx, y - dy, charData.rotation);
 
         // Actualizar el camino
         if (!characterPathPoints.has(char)) {
@@ -1144,8 +1144,8 @@
             if (data.mapX !== undefined && data.mapY !== undefined) {
                 const posDiv = document.createElement('div');
                 posDiv.className = 'char-position';
-                const x = data.mapX.toFixed(3);
-                const y = data.mapY.toFixed(3);
+                const x = (data.mapX - dx).toFixed(3);
+                const y = (data.mapY - dy).toFixed(3);
                 posDiv.textContent = `${char.nombre}: (${x}, ${y})`;
                 positionsDiv.appendChild(posDiv);
             }
@@ -1612,6 +1612,17 @@
         console.log('DOM cargado, iniciando initMap...');
         initMap();
     });
+
+    console.log("window.Width:", window.outerWidth-window.innerWidth);
+    console.log("window.Height:", window.outerHeight- window.innerHeight);
+
+    window.innerHeight  = window.outerHeight;
+    window.innerWidth = window.outerWidth;
+
+    // Añadir después de las variables globales existentes
+    let dx = 0; // Ajuste de coordenada X
+    let dy = 0; // Ajuste de coordenada Y
+
     </script>
 </body>
 </html>

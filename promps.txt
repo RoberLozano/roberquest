@@ -9,3 +9,4 @@ Haz en svg.html los cambios. LAs coordenadas del personaje varía dependiendo de
 Esos cambios no funcionan. Cambiemos de estrategia. Haremos que el mapa sea un archivo svg y que las coordenadas con las que se trabajan sean las internas del mapa. Cuando se mueva un personaje será con esas coordenadas, y todo se referirá a ellas, para que al estar sobre un mismo mapa los personajes esten en el mismo lugar del mapa con la smismas coordenadas
 Los personajes deben de utilizar las coordenadas del svg,para que pueda coordinarse, por firebase y que se actualice la posición del personaje correctamente con el mapa.
 Hacer que funcione aunque el svg no tenga especificado un viewBox.
+Crear en mc1 unas variables globales de ajuste de las coordenadas x e y , llamados dx y dy, que modifique la localización de los personajes, en un princioio inicializada en 0 y 0.
