@@ -1076,6 +1076,8 @@
         
         // Guardar la posición en el objeto del personaje
         const charData = characterObjects.get(char) || {};
+        lastX = charData.mapX;
+        lastY = charData.mapY;
         charData.mapX = x;
         charData.mapY = y;
         charData.rotation = char.rotation || 0; // Mantener la rotación actual
@@ -1146,7 +1148,10 @@
                 posDiv.className = 'char-position';
                 const x = (data.mapX - dx).toFixed(3);
                 const y = (data.mapY - dy).toFixed(3);
-                posDiv.textContent = `${char.nombre}: (${x}, ${y})`;
+                posDiv.textContent = `${char.nombre}: (${x}, ${y})
+                                        Width: ${window.outerWidth- window.innerWidth}
+                                        Height: ${window.outerHeight- window.innerHeight}
+                                        `;
                 positionsDiv.appendChild(posDiv);
             }
         });
@@ -1613,15 +1618,26 @@
         initMap();
     });
 
-    console.log("window.Width:", window.outerWidth-window.innerWidth);
-    console.log("window.Height:", window.outerHeight- window.innerHeight);
+    // console.log("window.Width:", window.outerWidth-window.innerWidth);
+    // console.log("window.Height:", window.outerHeight- window.innerHeight);
 
-    window.innerHeight  = window.outerHeight;
-    window.innerWidth = window.outerWidth;
 
     // Añadir después de las variables globales existentes
     let dx = 0; // Ajuste de coordenada X
     let dy = 0; // Ajuste de coordenada Y
+
+    function d(x,y) {
+        dx = lastX - x;
+        dy = lastY - y;
+        
+        updateCharacterPositions();       
+    }
+    function d2(x,y) {
+        dy = y-lastY;
+        dx = x-lastX;
+            
+        updateCharacterPositions();       
+    }
 
     </script>
 </body>
