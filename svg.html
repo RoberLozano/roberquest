@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SVG Map Viewer</title>
+    <style>
+        #container {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+        #svgMap {
+            position: absolute;
+            transform-origin: 0 0;
+        }
+        .character {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: red;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="svgMap"></div>
+    </div>
+
+    <script>
+        let svgElement = null;
+        let currentScale = 1;
+        let offsetX = 0;
+        let offsetY = 0;
+        let isDragging = false;
+        let startX = 0;
+        let startY = 0;
+        let viewBox = { x: 0, y: 0, width: 0, height: 0 };
+        
+        // Load SVG file
+        async function loadSVG(url) {
+            const response = await fetch(url);
+            const svgText = await response.text();
+            document.getElementById('svgMap').innerHTML = svgText;
+            svgElement = document.querySelector('svg');
+            
+            // Get viewBox or set from SVG dimensions
+            const vb = svgElement.getAttribute('viewBox');
+            if (vb) {
+                const [x, y, w, h] = vb.split(' ').map(Number);
+                viewBox = { x, y, width: w, height: h };
+            } else {
+                viewBox = {
+                    x: 0,
+                    y: 0,
+                    width: svgElement.width.baseVal.value,
+                    height: svgElement.height.baseVal.value
+                };
+            }
+            
+            setupEventListeners();
+        }
+
+        function setupEventListeners() {
+            const container = document.getElementById('container');
+            
+            container.addEventListener('wheel', handleZoom);
+            container.addEventListener('mousedown', startDrag);
+            container.addEventListener('mousemove', drag);
+            container.addEventListener('mouseup', stopDrag);
+            container.addEventListener('mouseleave', stopDrag);
+
+            svgElement.addEventListener('click', function(event) {
+                const rect = container.getBoundingClientRect();
+                const x = event.clientX - rect.left;
+                const y = event.clientY - rect.top;
+
+                const svgCoords = screenToSvgCoordinates(x, y);
+                console.log('SVG Coordinates: x=' + svgCoords.x + ', y=' + svgCoords.y);
+            });
+        }
+
+        function handleZoom(e) {
+            e.preventDefault();
+            const container = document.getElementById('container');
+            const rect = container.getBoundingClientRect();
+            
+            // Get mouse position relative to container
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            // Calculate zoom
+            const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
+            const newScale = currentScale * zoomFactor;
+            
+            if (newScale >= 0.5 && newScale <= 5) {
+                // Adjust offset to zoom towards mouse position
+                offsetX = mouseX - (mouseX - offsetX) * zoomFactor;
+                offsetY = mouseY - (mouseY - offsetY) * zoomFactor;
+                currentScale = newScale;
+                updateTransform();
+            }
+        }
+
+        function startDrag(e) {
+            isDragging = true;
+            startX = e.clientX - offsetX;
+            startY = e.clientY - offsetY;
+        }
+
+        function drag(e) {
+            if (isDragging) {
+                offsetX = e.clientX - startX;
+                offsetY = e.clientY - startY;
+                updateTransform();
+            }
+        }
+
+        function stopDrag() {
+            isDragging = false;
+        }
+
+        function updateTransform() {
+            svgElement.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${currentScale})`;
+        }
+
+        function zoomToElement(elementId) {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+
+            const bbox = element.getBBox();
+            const container = document.getElementById('container');
+            const padding = 50;
+
+            // Calculate scale to fit element
+            const scaleX = (container.clientWidth - padding * 2) / bbox.width;
+            const scaleY = (container.clientHeight - padding * 2) / bbox.height;
+            currentScale = Math.min(scaleX, scaleY, 5);
+
+            // Calculate center position
+            offsetX = (container.clientWidth - bbox.width * currentScale) / 2 - bbox.x * currentScale;
+            offsetY = (container.clientHeight - bbox.height * currentScale) / 2 - bbox.y * currentScale;
+
+            updateTransform();
+        }
+
+
+
+        function zoomTo(text) {
+
+            const elements = Array.from(svgElement.querySelectorAll('*'));
+            const element = elements.find(el => el.textContent.includes(text));
+
+            if (!element) {
+                console.log('Element with text "' + text + '" not found.');
+                return;
+            }
+            console.log(element);
+            
+
+            const bbox = element.getBBox();
+            const container = document.getElementById('container');
+            const padding = 50;
+
+            // Calculate scale to fit element
+            const scaleX = (container.clientWidth - padding * 2) / bbox.width;
+            const scaleY = (container.clientHeight - padding * 2) / bbox.height;
+            currentScale = Math.min(scaleX, scaleY, 5);
+
+            // Calculate center position
+            offsetX = (container.clientWidth - bbox.width * currentScale) / 2 - bbox.x * currentScale;
+            offsetY = (container.clientHeight - bbox.height * currentScale) / 2 - bbox.y * currentScale;
+
+            updateTransform();
+        }
+
+        function svgToScreenCoordinates(x, y) {
+            return {
+                x: x * currentScale + offsetX,
+                y: y * currentScale + offsetY
+            };
+        }
+
+        function screenToSvgCoordinates(x, y) {
+            return {
+                x: (x - offsetX) / currentScale,
+                y: (y - offsetY) / currentScale
+            };
+        }
+
+        function moveCharacter(characterElement, svgX, svgY) {
+            const screenPos = svgToScreenCoordinates(svgX, svgY);
+            characterElement.style.left = `${screenPos.x}px`;
+            characterElement.style.top = `${screenPos.y}px`;
+        }
+
+        // Initialize the map
+        loadSVG('/mapas/Elahiun.svg');
+    </script>
+</body>
+</html>
