@@ -352,6 +352,7 @@
         <ul>
             <li id="measureDistance">Medir Distancia <span class="shortcut">D</span></li>
             <li id="drawPath">Dibujar Camino <span class="shortcut" >C</span></li>
+            <li id="showCoordinates">Mostrar Coordenadas <span class="shortcut">X</span></li>
         </ul>
     </div>
 
@@ -660,6 +661,8 @@
             startMeasuringDistance();
         } else if (e.key === 'c' || e.key === 'C') {
             startPathDrawing();
+        } else if (e.key === 'x' || e.key === 'X') {
+            showingCoordinates = true;
         }
     });
 
@@ -700,6 +703,23 @@
                     measuringDistance = false;
                     startPoint = null;
                 }
+            }
+            if (showingCoordinates) {
+                const x = (e.clientX - currentPos.x) / scale - dx;
+                const y = (e.clientY - currentPos.y) / scale - dy;
+                
+                tooltip.style.display = 'block';
+                tooltip.style.left = `${e.clientX + 10}px`;
+                tooltip.style.top = `${e.clientY + 10}px`;
+                tooltip.innerHTML = `Coordenadas del mapa:<br>X: ${x.toFixed(2)}<br>Y: ${y.toFixed(2)}`;
+                
+                // Desactivar después de mostrar
+                showingCoordinates = false;
+                
+                // Ocultar tooltip después de 3 segundos
+                setTimeout(() => {
+                    tooltip.style.display = 'none';
+                }, 3000);
             }
         });
 
@@ -1638,6 +1658,16 @@
             
         updateCharacterPositions();       
     }
+
+    // Añadir después de las variables globales existentes
+    let showingCoordinates = false;
+
+    // Añadir el evento click para la nueva opción
+    document.getElementById('showCoordinates').addEventListener('click', () => {
+        showingCoordinates = true;
+        startPoint = null;
+        contextMenu.style.display = 'none';
+    });
 
     </script>
 </body>
