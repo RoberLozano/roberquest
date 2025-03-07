@@ -72,6 +72,47 @@
             left: 0;
             overflow: hidden;
         }
+
+        #layersPanel {
+            position: fixed;
+            top: 100px;
+            right: 10px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 5px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        /* Añadir estilos para el campo de búsqueda */
+        #layerSearch {
+            width: calc(100% - 16px);
+            padding: 5px 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 14px;
+        }
+
+        .layer-item.hidden {
+            display: none;
+        }
+
+        .layer-item {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+        }
+
+        .layer-item input {
+            margin-right: 8px;
+        }
+
+        .layer-item label {
+            cursor: pointer;
+            user-select: none;
+        }
     </style>
 </head>
 
@@ -90,6 +131,11 @@
         <div id="searchBox">
             <input type="text" id="searchInput" placeholder="Enter name to zoom">
             <button class="map-button" id="searchButton">Zoom</button>
+        </div>
+        <div id="layersPanel">
+            <h3>Capas</h3>
+            <input type="text" id="layerSearch" placeholder="Buscar capas...">
+            <div id="layersList"></div>
         </div>
     </div>
 
@@ -306,9 +352,63 @@
                 pointY = 0;
                 scale = 1;
                 setTransform();
+                setupLayers();
             }
         }
 
+        function setupLayers() {
+            if (!svgElement) return;
+            
+            const layersList = document.getElementById('layersList');
+            const searchInput = document.getElementById('layerSearch');
+            layersList.innerHTML = '';
+            
+            // Obtener todos los grupos del SVG
+            const groups = svgElement.querySelectorAll('g');
+            const processedIds = new Set();
+            const layerItems = []; // Array para almacenar las referencias a los items
+            
+            groups.forEach(group => {
+                let id = group.getAttribute('id');
+                if (!id || processedIds.has(id)) return;
+                
+                processedIds.add(id);
+                
+                const div = document.createElement('div');
+                div.className = 'layer-item';
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = `layer-${id}`;
+                checkbox.checked = true;
+                
+                const label = document.createElement('label');
+                label.htmlFor = `layer-${id}`;
+                label.textContent = id;
+                
+                div.appendChild(checkbox);
+                div.appendChild(label);
+                
+                checkbox.addEventListener('change', () => {
+                    group.style.display = checkbox.checked ? 'inline' : 'none';
+                });
+                
+                layersList.appendChild(div);
+                layerItems.push({ element: div, id: id.toLowerCase() }); // Guardar referencia
+            });
+
+            // Añadir funcionalidad de búsqueda
+            searchInput.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                layerItems.forEach(item => {
+                    if (item.id.includes(searchTerm)) {
+                        item.element.classList.remove('hidden');
+                    } else {
+                        item.element.classList.add('hidden');
+                    }
+                });
+            });
+        }
 
         function getPointInSVG(screenX, screenY) {
             if (!svgElement) return null;
