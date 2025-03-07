@@ -192,43 +192,39 @@
             panning = false;
         });
 
-        document.addEventListener('keydown', function(e) {
-            if (e.key === '+') {
-                scale *= 1.2;
-                scale = Math.min(100, scale); // Permitir hasta 100x zoom
-                setTransform();
-            }
-            if (e.key === '-') {
-                scale *= 0.8;
-                scale = Math.max(0.1, scale);
-                setTransform();
-            }
-        });
-        mapContainer.addEventListener('wheel', function(e) {
-            e.preventDefault();
-            
-            // Obtener coordenadas SVG del punto antes del zoom
-            const svgPointBefore = getPointInSVG(e.clientX, e.clientY);
-            if (!svgPointBefore) return;
 
-            // Calcular nuevo zoom
-            const zoomFactor = e.deltaY < 0 ? 1.2 : 0.8;
-            const newScale = Math.min(Math.max(0.1, scale * zoomFactor), 100);
+        function handleWheelZoom(e) {
+            e.preventDefault();
+            // console.log(e);
             
-            // Aplicar nuevo zoom
+            
+            const svgPointBefore = getPointInSVG(e.clientX, e.clientY);
+            
+            
+            if (!svgPointBefore){
+                return;
+            } 
+
+            console.log(svgPointBefore);
+
+                // Zoom con rueda del raton
+            let zoomFactor = e.deltaY < 0 ? 1.2 : 0.8;
+
+            const newScale = Math.min(Math.max(0.1, scale * zoomFactor), 100);
             scale = newScale;
             
             setTransform();
-            // Obtener coordenadas SVG del punto después del zoom
+
             const svgPointAfter = getPointInSVG(e.clientX, e.clientY);
             if (!svgPointAfter) return;
 
-            // Ajustar la traslación para mantener el punto fijo
             pointX += (svgPointAfter.x - svgPointBefore.x) * scale;
             pointY += (svgPointAfter.y - svgPointBefore.y) * scale;
 
             setTransform();
-        });
+        }
+
+        mapContainer.addEventListener('wheel', handleWheelZoom);
 
         // Button handlers
         document.getElementById('zoomIn').addEventListener('click', function() {
@@ -240,7 +236,7 @@
         document.getElementById('zoomOut').addEventListener('click', function() {
             scale *= 0.8;
             scale = Math.max(0.1, scale);
-            setTransform();
+            setTransform();        
         });
 
         document.getElementById('resetView').addEventListener('click', function() {
@@ -313,6 +309,7 @@
                 setTransform();
             }
         }
+
 
         function getPointInSVG(screenX, screenY) {
             if (!svgElement) return null;
