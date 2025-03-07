@@ -168,6 +168,12 @@
                 x: e.clientX - pointX,
                 y: e.clientY - pointY
             };
+
+            // Obtener el punto en coordenadas SVG
+            const svgPoint = getPointInSVG(e.clientX, e.clientY);
+            if (svgPoint) {
+                console.log('Coordenadas SVG:', svgPoint.x, svgPoint.y);
+            }
         });
 
         mapContainer.addEventListener('mousemove', function(e) {
@@ -189,15 +195,26 @@
         // Wheel handler for zoom
         mapContainer.addEventListener('wheel', function(e) {
             e.preventDefault();
+            const rect = mapContainer.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+
             const zoomFactor = e.deltaY < 0 ? 1.2 : 0.8;
-            const centerX = mapContainer.clientWidth / 2;
-            const centerY = mapContainer.clientHeight / 2;
+            // const centerX = mapContainer.clientWidth / 2;
+            // const centerY = mapContainer.clientHeight / 2;
 
             const newScale = Math.min(Math.max(0.1, scale * zoomFactor), 100);
             const scaleChange = newScale / scale;
 
-            pointX = centerX - (centerX - pointX) * scaleChange;
-            pointY = centerY - (centerY - pointY) * scaleChange;
+            // pointX = centerX - (centerX - pointX) * scaleChange;
+            // pointY = centerY - (centerY - pointY) * scaleChange;
+            console.log(mouseX, mouseY, pointX, pointY);
+            
+
+            // Ajustar posición para hacer zoom hacia el punto del ratón
+            pointX = mouseX - (mouseX - pointX) * scaleChange;
+            pointY = mouseY - (mouseY - pointY) * scaleChange;
 
             scale = newScale;
             setTransform();
@@ -281,6 +298,35 @@
                 pointY = 0;
                 scale = 1;
                 setTransform();
+            }
+        }
+
+        function getPointInSVG(screenX, screenY) {
+            if (!svgElement) return null;
+
+            // Crear un punto SVG
+            const svgPoint = svgElement.createSVGPoint();
+            
+            // Ajustar las coordenadas al punto de la pantalla
+            svgPoint.x = screenX;
+            svgPoint.y = screenY;
+            
+            // Obtener la matriz de transformación actual del SVG
+            const CTM = svgElement.getScreenCTM();
+            if (!CTM) return null;
+
+            // Invertir la matriz y transformar el punto
+            try {
+                const invertedCTM = CTM.inverse();
+                const transformedPoint = svgPoint.matrixTransform(invertedCTM);
+                
+                return {
+                    x: transformedPoint.x,
+                    y: transformedPoint.y
+                };
+            } catch (e) {
+                console.error('Error transforming point:', e);
+                return null;
             }
         }
     </script>
