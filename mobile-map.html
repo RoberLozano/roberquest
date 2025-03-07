@@ -192,31 +192,41 @@
             panning = false;
         });
 
-        // Wheel handler for zoom
+        document.addEventListener('keydown', function(e) {
+            if (e.key === '+') {
+                scale *= 1.2;
+                scale = Math.min(100, scale); // Permitir hasta 100x zoom
+                setTransform();
+            }
+            if (e.key === '-') {
+                scale *= 0.8;
+                scale = Math.max(0.1, scale);
+                setTransform();
+            }
+        });
         mapContainer.addEventListener('wheel', function(e) {
             e.preventDefault();
-            const rect = mapContainer.getBoundingClientRect();
-            const mouseX = e.clientX - rect.left;
-            const mouseY = e.clientY - rect.top;
-
-
-            const zoomFactor = e.deltaY < 0 ? 1.2 : 0.8;
-            // const centerX = mapContainer.clientWidth / 2;
-            // const centerY = mapContainer.clientHeight / 2;
-
-            const newScale = Math.min(Math.max(0.1, scale * zoomFactor), 100);
-            const scaleChange = newScale / scale;
-
-            // pointX = centerX - (centerX - pointX) * scaleChange;
-            // pointY = centerY - (centerY - pointY) * scaleChange;
-            console.log(mouseX, mouseY, pointX, pointY);
             
+            // Obtener coordenadas SVG del punto antes del zoom
+            const svgPointBefore = getPointInSVG(e.clientX, e.clientY);
+            if (!svgPointBefore) return;
 
-            // Ajustar posición para hacer zoom hacia el punto del ratón
-            pointX = mouseX - (mouseX - pointX) * scaleChange;
-            pointY = mouseY - (mouseY - pointY) * scaleChange;
-
+            // Calcular nuevo zoom
+            const zoomFactor = e.deltaY < 0 ? 1.2 : 0.8;
+            const newScale = Math.min(Math.max(0.1, scale * zoomFactor), 100);
+            
+            // Aplicar nuevo zoom
             scale = newScale;
+            
+            setTransform();
+            // Obtener coordenadas SVG del punto después del zoom
+            const svgPointAfter = getPointInSVG(e.clientX, e.clientY);
+            if (!svgPointAfter) return;
+
+            // Ajustar la traslación para mantener el punto fijo
+            pointX += (svgPointAfter.x - svgPointBefore.x) * scale;
+            pointY += (svgPointAfter.y - svgPointBefore.y) * scale;
+
             setTransform();
         });
 
@@ -277,13 +287,16 @@
                     console.log(transformedCenter.x, transformedCenter.y);
                     
 
-                    //scale = 5; // Ajustar el nivel de zoom según sea necesario
+                    // scale = 5; // Ajustar el nivel de zoom según sea necesario
                     // pointX = -centerX * scale + mapContainer.clientWidth / 2;
                     // pointY = -centerY * scale + mapContainer.clientHeight / 2;
 
                     pointX = -transformedCenter.x * scale + mapContainer.clientWidth / 2;
                     pointY = -transformedCenter.y * scale + mapContainer.clientHeight / 2;
+
                     setTransform();
+
+                    
                 }
             });
         }
