@@ -235,6 +235,7 @@
         }
 
         function zoomToText(text) {
+
             if (!svgElement) return;
             scale=1;
             setTransform();
@@ -244,15 +245,27 @@
                 console.log(element.textContent);
                 
                 if (element.textContent.includes(text)) {
+
                     const bbox = element.getBBox();
                     
-                    const centerX = bbox.x + bbox.width / 2;
-                    const centerY = bbox.y + bbox.height / 2;
-                    console.log(centerX, centerY);
+                    const matrix = element.getCTM();
+                    const transformedPoint = svgElement.createSVGPoint();
+                    transformedPoint.x = bbox.x + bbox.width / 2;
+                    transformedPoint.y = bbox.y + bbox.height / 2;
+                    const transformedCenter = transformedPoint.matrixTransform(matrix);
+
+                    // const centerX = bbox.x + bbox.width / 2;
+                    // const centerY = bbox.y + bbox.height / 2;
+                    // console.log(centerX, centerY);
+                    console.log(transformedCenter.x, transformedCenter.y);
+                    
 
                     //scale = 5; // Ajustar el nivel de zoom según sea necesario
-                    pointX = -centerX * scale + mapContainer.clientWidth / 2;
-                    pointY = -centerY * scale + mapContainer.clientHeight / 2;
+                    // pointX = -centerX * scale + mapContainer.clientWidth / 2;
+                    // pointY = -centerY * scale + mapContainer.clientHeight / 2;
+
+                    pointX = -transformedCenter.x * scale + mapContainer.clientWidth / 2;
+                    pointY = -transformedCenter.y * scale + mapContainer.clientHeight / 2;
                     setTransform();
                 }
             });
