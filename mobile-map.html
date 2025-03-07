@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mobile Map</title>
     <style>
-        html, body {
+        html,
+        body {
             margin: 0;
             padding: 0;
             width: 100%;
@@ -102,13 +103,13 @@
 
         const mapContainer = document.getElementById("map-container");
         const svgContainer = document.getElementById("svg-container");
-        
+
         // File input handler
-        document.getElementById('fileInput').addEventListener('change', function(e) {
+        document.getElementById('fileInput').addEventListener('change', function (e) {
             const file = e.target.files[0];
             if (file && file.type === "image/svg+xml") {
                 const reader = new FileReader();
-                reader.onload = function(event) {
+                reader.onload = function (event) {
                     svgContainer.innerHTML = event.target.result;
                     svgElement = svgContainer.querySelector('svg');
                     adjustContainerToSVG();
@@ -120,18 +121,18 @@
         });
 
         // Touch handlers
-        mapContainer.addEventListener('touchstart', function(e) {
+        mapContainer.addEventListener('touchstart', function (e) {
             e.preventDefault();
             if (e.touches.length === 1) {
                 panning = true;
-                start = { 
+                start = {
                     x: e.touches[0].clientX - pointX,
                     y: e.touches[0].clientY - pointY
                 };
             }
         });
 
-        mapContainer.addEventListener('touchmove', function(e) {
+        mapContainer.addEventListener('touchmove', function (e) {
             e.preventDefault();
             if (e.touches.length === 1 && panning) {
                 pointX = e.touches[0].clientX - start.x;
@@ -145,7 +146,7 @@
                     touch2.clientX - touch1.clientX,
                     touch2.clientY - touch1.clientY
                 );
-                
+
                 if (this.lastDist) {
                     const delta = dist - this.lastDist;
                     scale += delta * 0.01;
@@ -156,15 +157,15 @@
             }
         });
 
-        mapContainer.addEventListener('touchend', function(e) {
+        mapContainer.addEventListener('touchend', function (e) {
             panning = false;
             this.lastDist = null;
         });
 
         // Mouse handlers
-        mapContainer.addEventListener('mousedown', function(e) {
+        mapContainer.addEventListener('mousedown', function (e) {
             panning = true;
-            start = { 
+            start = {
                 x: e.clientX - pointX,
                 y: e.clientY - pointY
             };
@@ -176,7 +177,7 @@
             }
         });
 
-        mapContainer.addEventListener('mousemove', function(e) {
+        mapContainer.addEventListener('mousemove', function (e) {
             if (panning) {
                 pointX = e.clientX - start.x;
                 pointY = e.clientY - start.y;
@@ -184,11 +185,11 @@
             }
         });
 
-        mapContainer.addEventListener('mouseup', function() {
+        mapContainer.addEventListener('mouseup', function () {
             panning = false;
         });
 
-        mapContainer.addEventListener('mouseleave', function() {
+        mapContainer.addEventListener('mouseleave', function () {
             panning = false;
         });
 
@@ -196,23 +197,21 @@
         function handleWheelZoom(e) {
             e.preventDefault();
             // console.log(e);
-            
-            
+
             const svgPointBefore = getPointInSVG(e.clientX, e.clientY);
-            
-            
-            if (!svgPointBefore){
+
+            if (!svgPointBefore) {
                 return;
-            } 
+            }
 
             console.log(svgPointBefore);
 
-                // Zoom con rueda del raton
+            // Zoom con rueda del raton
             let zoomFactor = e.deltaY < 0 ? 1.2 : 0.8;
 
             const newScale = Math.min(Math.max(0.1, scale * zoomFactor), 100);
             scale = newScale;
-            
+
             setTransform();
 
             const svgPointAfter = getPointInSVG(e.clientX, e.clientY);
@@ -227,26 +226,26 @@
         mapContainer.addEventListener('wheel', handleWheelZoom);
 
         // Button handlers
-        document.getElementById('zoomIn').addEventListener('click', function() {
+        document.getElementById('zoomIn').addEventListener('click', function () {
             scale *= 1.2;
             scale = Math.min(100, scale); // Permitir hasta 100x zoom
             setTransform();
         });
 
-        document.getElementById('zoomOut').addEventListener('click', function() {
+        document.getElementById('zoomOut').addEventListener('click', function () {
             scale *= 0.8;
             scale = Math.max(0.1, scale);
-            setTransform();        
+            setTransform();
         });
 
-        document.getElementById('resetView').addEventListener('click', function() {
+        document.getElementById('resetView').addEventListener('click', function () {
             scale = 1;
             pointX = 0;
             pointY = 0;
             setTransform();
         });
 
-        document.getElementById('searchButton').addEventListener('click', function() {
+        document.getElementById('searchButton').addEventListener('click', function () {
             const searchText = document.getElementById('searchInput').value;
             zoomToText(searchText);
         });
@@ -260,17 +259,17 @@
         function zoomToText(text) {
 
             if (!svgElement) return;
-            scale=1;
+            scale = 1;
             setTransform();
 
             const elements = svgElement.querySelectorAll('text');
             elements.forEach(element => {
                 console.log(element.textContent);
-                
+
                 if (element.textContent.includes(text)) {
 
                     const bbox = element.getBBox();
-                    
+
                     const matrix = element.getCTM();
                     const transformedPoint = svgElement.createSVGPoint();
                     transformedPoint.x = bbox.x + bbox.width / 2;
@@ -281,7 +280,7 @@
                     // const centerY = bbox.y + bbox.height / 2;
                     // console.log(centerX, centerY);
                     console.log(transformedCenter.x, transformedCenter.y);
-                    
+
 
                     // scale = 5; // Ajustar el nivel de zoom según sea necesario
                     // pointX = -centerX * scale + mapContainer.clientWidth / 2;
@@ -292,7 +291,7 @@
 
                     setTransform();
 
-                    
+
                 }
             });
         }
@@ -316,11 +315,11 @@
 
             // Crear un punto SVG
             const svgPoint = svgElement.createSVGPoint();
-            
+
             // Ajustar las coordenadas al punto de la pantalla
             svgPoint.x = screenX;
             svgPoint.y = screenY;
-            
+
             // Obtener la matriz de transformación actual del SVG
             const CTM = svgElement.getScreenCTM();
             if (!CTM) return null;
@@ -329,7 +328,7 @@
             try {
                 const invertedCTM = CTM.inverse();
                 const transformedPoint = svgPoint.matrixTransform(invertedCTM);
-                
+
                 return {
                     x: transformedPoint.x,
                     y: transformedPoint.y
@@ -341,4 +340,5 @@
         }
     </script>
 </body>
+
 </html>
