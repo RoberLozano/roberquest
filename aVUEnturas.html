@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <!-- ...existing meta tags... -->
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diario de Aventuras</title>
+  <!-- Incluir Vuetify 2 y Vue -->
+  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+  <style>
+    /* Se pueden agregar estilos personalizados si se requieren */
+    body { margin: 0; }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- Agregar la propiedad dark al v-app -->
+    <v-app dark>
+      <v-container fluid style="background-color: #000000; color: #ffffff;">
+        <v-toolbar color="primary" dark>
+          <v-toolbar-title>Diario de Aventuras</v-toolbar-title>
+        </v-toolbar>
+        <v-row>
+          <v-col cols="12" md="3">
+            <!-- Panel lateral -->
+            <v-select
+              v-model="selectedCharacter"
+              :items="characters"
+              label="Personaje"
+              outlined
+              @change="loadEntries"
+            ></v-select>
+            <v-text-field
+              v-model="textSearch"
+              label="Buscar..."
+              clearable
+              outlined
+              @input="filterEntries"
+            ></v-text-field>
+            <v-file-input
+              label="Subir Archivo"
+              accept=".txt"
+              prepend-icon="mdi-upload"
+              outlined
+              @change="handleFileUpload"
+            ></v-file-input>
+            <v-menu
+              ref="menu"
+              v-model="menu"
+              :close-on-content-click="false"
+              transition="scale-transition"
+              offset-y
+              max-width="290px"
+              min-width="auto"
+            >
+              <template v-slot:activator="{ on, attrs }">
+                <v-text-field
+                  v-model="entryDate"
+                  label="Fecha de entrada"
+                  readonly
+                  v-bind="attrs"
+                  v-on="on"
+                  outlined
+                ></v-text-field>
+              </template>
+              <v-date-picker
+                v-model="entryDate"
+                :events="hasEntryEvent"
+                event-color="green lighten-1"
+                locale="es"
+                @input="menu = false; loadEntry()"
+              ></v-date-picker>
+            </v-menu>
+            <v-btn color="primary" @click="navigateDate(1)" class="ma-2">Anterior</v-btn>
+            <v-btn color="primary" @click="navigateDate(-1)" class="ma-2">Siguiente</v-btn>
+            <!-- Listado de entradas filtradas -->
+            <v-list>
+              <v-list-item
+                v-for="(entry, date) in filteredEntries"
+                :key="date"
+                @click="loadEntryForDate(date)"
+                :color="date === entryDate ? 'grey lighten-2' : ''"
+              >
+                <v-list-item-content>
+                  <v-list-item-title>{{ date }}</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list>
+          </v-col>
+          <v-col cols="12" md="9">
+            <!-- Editor principal -->
+            <v-card>
+              <v-card-title>
+                <span id="worldDate">{{ displayDate }}</span>
+              </v-card-title>
+              <v-card-text>
+                <!-- Editable div con resaltado. Actualiza diaryEntry con updateDiaryEntry -->
+                <div 
+                  id="diaryEntry" 
+                  class="editor-content" 
+                  contenteditable="true" 
+                  v-html="highlightedDiaryEntry" 
+                  @input="updateDiaryEntry($event)"
+                ></div>
+              </v-card-text>
+              <v-card-actions>
+                <v-btn color="success" @click="saveEntry">Guardar Entrada</v-btn>
+                <v-btn color="info" @click="loadEntry">Cargar Entrada</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-app>
+  </div>
+
+  <!-- Firebase JS -->
+  <script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
+<script src="js/utils.js"></script>
+    <script src="js/coor.js"></script>
+    <script src="js/rol.js"></script>
+  <script>
+    // Configuración de Firebase
+    // ...existing firebase config...
+    var firebaseConfig = {
+      // Coloca aquí tu configuración de firebase
+    };
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    var database = firebase.database();
+
+    new Vue({
+      el: '#app',
+      vuetify: new Vuetify({
+        theme: {
+          dark: true,
+          themes: {
+            dark: {
+              primary: '#000000', // Negro muy oscuro para la primaria
+              background: '#000000',
+              accent: '#424242',
+              secondary: '#000000',
+              info: '#26A69A',
+              warning: '#FFC107',
+              error: '#FF5252',
+              success: '#4CAF50'
+            }
+          }
+        }
+      }),
+      data: () => ({
+        selectedCharacter: '',
+        characters: [],
+        textSearch: '',
+        regexToggle: false, // Nuevo: togglear búsqueda regex
+        entryDate: '',
+        diaryEntry: '',
+        entries: {},
+        entryDates: [], // Array de fechas con entrada (para el date-picker)
+        displayDate: '',
+        menu: false  // Controla la visibilidad del date-picker
+      }),
+      computed: {
+        filteredEntries() {
+          if (!this.textSearch.trim()) {
+            return this.entries;
+          }
+          const search = this.textSearch;
+          const useRegex = this.regexToggle; // Asegurarse de tener data.regexToggle (default false)
+          const out = {};
+          Object.keys(this.entries).forEach(date => {
+            const entryText = this.entries[date].entry;
+            let match = false;
+            if (useRegex) {
+              try {
+                const reg = new RegExp(search, 'i');
+                match = reg.test(entryText);
+              } catch(e) {
+                match = false;
+              }
+            } else {
+              match = entryText.toLowerCase().includes(search.toLowerCase());
+            }
+            if (match) out[date] = this.entries[date];
+          });
+          return out;
+        },
+        highlightedDiaryEntry() {
+          if (!this.textSearch.trim()) {
+            return this.diaryEntry;
+          }
+          let content = this.diaryEntry;
+          // Escapar caracteres especiales en la búsqueda
+          const escapeRegExp = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          if (this.regexToggle) {
+            try {
+              const regex = new RegExp(`(${this.textSearch})`, 'gi');
+              content = content.replace(regex, '<mark class="highlight">$1</mark>');
+            } catch(e) {
+              // Si la regex es inválida, no se resalta
+            }
+          } else {
+            const regex = new RegExp(escapeRegExp(this.textSearch), 'gi');
+            content = content.replace(regex, '<mark class="highlight">$&</mark>');
+          }
+          return content;
+        }
+      },
+      methods: {
+        loadCharacters() {
+          database.ref('personajes').once('value')
+            .then(snapshot => {
+              const chars = snapshot.val();
+              for (const key in chars) {
+                this.characters.push(key);
+              }
+            })
+            .catch(error => console.error('Error al cargar personajes:', error));
+        },
+        loadEntries() {
+          if (!this.selectedCharacter) {
+            alert('Por favor, selecciona un personaje.');
+            return;
+          }
+          database.ref('diario/' + this.selectedCharacter).once('value')
+            .then(snapshot => {
+              this.entries = snapshot.val() || {};
+              // Mapear las fechas: crear un Date con la fecha y extraer la parte ISO (YYYY-MM-DD)
+              this.entryDates = Object.keys(this.entries).map(date => {
+                return new Date(date).toISOString().substr(0, 10);
+              });
+              console.log(this.entryDates);
+            })
+            .catch(error => console.error('Error al cargar las entradas:', error));
+        },
+        normalizeDate(date) {
+          let parts = date.split('-');
+          if (parts.length === 3) {
+            parts[0] = parts[0].padStart(4, '0');
+            parts[1] = parts[1].padStart(2, '0');
+            parts[2] = parts[2].padStart(2, '0');
+          }
+          return parts.join('-');
+        },
+        loadEntry() {
+          if (!this.selectedCharacter || !this.entryDate) return;
+          let normalizedDate = this.normalizeDate(this.entryDate);
+          database.ref('diario/' + this.selectedCharacter + '/' + normalizedDate).once('value')
+            .then(snapshot => {
+              const data = snapshot.val();
+              this.diaryEntry = data ? data.entry : '';
+              this.updateDisplayDate(normalizedDate);
+            })
+            .catch(error => console.error('Error al cargar la entrada:', error));
+        },
+        loadEntryForDate(date) {
+          this.entryDate = this.normalizeDate(date);
+          this.loadEntry();
+        },
+        saveEntry() {
+          if (!this.selectedCharacter || !this.entryDate || !this.diaryEntry) {
+            alert('Por favor, selecciona un personaje, fecha y escribe la entrada.');
+            return;
+          }
+          database.ref('diario/' + this.selectedCharacter + '/' + this.entryDate)
+            .set({ entry: this.diaryEntry })
+            .then(() => {
+              alert('Entrada guardada correctamente.');
+              this.loadEntries();
+            })
+            .catch(error => console.error('Error al guardar la entrada:', error));
+        },
+        handleFileUpload(file) {
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              const content = e.target.result;
+              this.processFileContent(content);
+            };
+            reader.readAsText(file);
+          }
+        },
+        processFileContent(content) {
+          if (!this.selectedCharacter) {
+            alert('Por favor, selecciona un personaje.');
+            return;
+          }
+          const lines = content.split('\n');
+          let currentDate = null;
+          let currentEntry = '';
+          const promises = [];
+          for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            const dateMatch = line.match(/^(\d{1,2})-(\d{1,2})-(\d{3,4})$/);
+            if (dateMatch) {
+              if (currentDate && currentEntry.trim()) {
+                promises.push(this.saveEntryToFirebase(currentDate, currentEntry));
+              }
+              const newDate = new Date(dateMatch[3], dateMatch[2] - 1, dateMatch[1]);
+              currentDate = newDate.toISOString().split('T')[0];
+              currentEntry = '';
+            } else {
+              currentEntry += line + '\n';
+            }
+          }
+          if (currentDate && currentEntry.trim()) {
+            promises.push(this.saveEntryToFirebase(currentDate, currentEntry));
+          }
+          Promise.all(promises).then(() => this.loadEntries());
+        },
+        saveEntryToFirebase(date, entry) {
+          return database.ref('diario/' + this.selectedCharacter + '/' + date)
+            .set({ entry: entry.trim() });
+        },
+        filterEntries() {
+          // Se puede ampliar la lógica de filtrado si se desea.
+          // Por simplicidad, este ejemplo no filtra el date-picker.
+        },
+        updateDisplayDate(date) {
+          const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+          const actualDate = new Date(date + 'T00:00:00');
+          this.displayDate = actualDate.toLocaleDateString('es-ES', options);
+        },
+        navigateDate(direction) {
+          const sortedDates = this.entryDates.sort();
+          const currentIndex = sortedDates.indexOf(this.entryDate);
+          const newIndex = currentIndex + direction;
+          if (newIndex >= 0 && newIndex < sortedDates.length) {
+            this.entryDate = sortedDates[newIndex];
+            this.loadEntry();
+          }
+        },
+        hasEntryEvent(date) {
+          // Normaliza la fecha del date-picker a formato ISO (YYYY-MM-DD)
+          const normalized = new Date(date).toISOString().substr(0, 10);
+          // Comprueba si existe alguna entrada cuya fecha normalizada coincida.
+          return Object.keys(this.entries).some(d => {
+            return new Date(d).toISOString().substr(0, 10) === normalized;
+          });
+        },
+        updateDiaryEntry(event) {
+          // Actualiza diaryEntry conservando el HTML sin las etiquetas <mark>
+          const temp = event.target.innerHTML;
+          // Remover etiquetas de resaltado
+          this.diaryEntry = temp.replace(/<mark class="highlight">(.*?)<\/mark>/g, '$1');
+        }
+      },
+      mounted() {
+        this.loadCharacters();
+      }
+    });
+  </script>
+</body>
+</html>
