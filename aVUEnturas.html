@@ -69,17 +69,21 @@
               <v-date-picker
                 v-model="entryDate"
                 :events="hasEntryEvent"
-                event-color="green lighten-1"
+                :event-color="textSearch? 'red' : 'green lighten-1'"
                 locale="es"
                 @input="menu = false; loadEntry()"
               ></v-date-picker>
             </v-menu>
-            <v-btn color="primary" @click="navigateDate(1)" class="ma-2">Anterior</v-btn>
-            <v-btn color="primary" @click="navigateDate(-1)" class="ma-2">Siguiente</v-btn>
-            <!-- Listado de entradas filtradas -->
+            <v-btn color="primary" @click="navigateDate(-1)" class="ma-2">Anterior</v-btn>
+            <v-btn color="primary" @click="navigateDate(1)" class="ma-2">Siguiente</v-btn>
+            <!-- Botón para alternar orden de listado -->
+            <v-btn color="secondary" @click="orderAsc = !orderAsc" class="ma-2">
+              Orden: {{ orderAsc ? 'Ascendente' : 'Descendente' }}
+            </v-btn>
+            <!-- Listado de entradas filtradas usando sortedDisplayDates -->
             <v-list>
               <v-list-item
-                v-for="(entry, date) in filteredEntries"
+                v-for="date in sortedDisplayDates"
                 :key="date"
                 @click="loadEntryForDate(date)"
                 :color="date === entryDate ? 'grey lighten-2' : ''"
@@ -140,7 +144,9 @@
           dark: true,
           themes: {
             dark: {
-              primary: '#000000', // Negro muy oscuro para la primaria
+               
+             //rojo para el primario
+              primary: '#FF0000',
               background: '#000000',
               accent: '#424242',
               secondary: '#000000',
@@ -162,7 +168,8 @@
         entries: {},
         entryDates: [], // Array de fechas con entrada (para el date-picker)
         displayDate: '',
-        menu: false  // Controla la visibilidad del date-picker
+        menu: false,  // Controla la visibilidad del date-picker
+        orderAsc: true  // Nuevo: controla el orden de listado (ascendente o descendente)
       }),
       computed: {
         filteredEntries() {
@@ -189,6 +196,13 @@
           });
           return out;
         },
+        filteredEventDates() {
+          // Si hay búsqueda, solo marcar las fechas de las entradas filtradas; sino, usar todas
+          if (this.textSearch.trim()) {
+            return Object.keys(this.filteredEntries).map(date => new Date(date).toISOString().substr(0, 10));
+          }
+          return this.entryDates;
+        },
         highlightedDiaryEntry() {
           if (!this.textSearch.trim()) {
             return this.diaryEntry;
@@ -208,6 +222,18 @@
             content = content.replace(regex, '<mark class="highlight">$&</mark>');
           }
           return content;
+        },
+        sortedDisplayDates() {
+          // Usa las entradas filtradas: si no hay búsqueda, filteredEntries es this.entries
+          let keys = Object.keys(this.filteredEntries);
+          keys.sort();  // ISO strings se ordenan cronológicamente
+          return this.orderAsc ? keys : keys.reverse();
+        },
+        ascDates() {
+          // Siempre obtiene las fechas en orden cronológico (ascendente)
+          let keys = Object.keys(this.entries);
+          keys.sort();
+          return keys;
         }
       },
       methods: {
@@ -326,21 +352,28 @@
           this.displayDate = actualDate.toLocaleDateString('es-ES', options);
         },
         navigateDate(direction) {
-          const sortedDates = this.entryDates.sort();
-          const currentIndex = sortedDates.indexOf(this.entryDate);
-          const newIndex = currentIndex + direction;
-          if (newIndex >= 0 && newIndex < sortedDates.length) {
-            this.entryDate = sortedDates[newIndex];
+          // Usa ascDates para navegación cronológica
+          const asc = this.ascDates;
+          const currentIndex = asc.indexOf(this.entryDate);
+          if (direction < 0 && currentIndex > 0) {
+            this.entryDate = asc[currentIndex - 1];
+            this.loadEntry();
+          } else if (direction > 0 && currentIndex < asc.length - 1) {
+            this.entryDate = asc[currentIndex + 1];
             this.loadEntry();
           }
         },
         hasEntryEvent(date) {
           // Normaliza la fecha del date-picker a formato ISO (YYYY-MM-DD)
           const normalized = new Date(date).toISOString().substr(0, 10);
-          // Comprueba si existe alguna entrada cuya fecha normalizada coincida.
-          return Object.keys(this.entries).some(d => {
-            return new Date(d).toISOString().substr(0, 10) === normalized;
-          });
+          if (this.textSearch.trim()) {
+            // Si hay búsqueda, marcar solo si la fecha aparece en los eventos filtrados
+            return this.filteredEventDates.includes(normalized);
+          }
+          // Si no hay búsqueda, marcar según todas las entradas
+          return Object.keys(this.entries).some(d =>
+            new Date(d).toISOString().substr(0, 10) === normalized
+          );
         },
         updateDiaryEntry(event) {
           // Actualiza diaryEntry conservando el HTML sin las etiquetas <mark>
