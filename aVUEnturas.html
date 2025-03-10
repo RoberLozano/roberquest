@@ -11,42 +11,103 @@
   <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
   <style>
-    /* Se pueden agregar estilos personalizados si se requieren */
     body { margin: 0; }
+    .compact-form {
+      font-size: 14px !important;
+      background-color: #000000 !important;
+    }
+    .compact-form .v-input {
+      margin-top: 2px !important;
+      margin-bottom: 2px !important;
+    }
+    .compact-form .v-input__slot {
+      min-height: 32px !important;
+    }
+    .compact-form .v-text-field__details {
+      display: none !important;
+    }
+    .compact-form .v-btn {
+      height: 24px !important;
+      margin: 2px !important;
+      padding: 0 8px !important;
+    }
+    .compact-form .v-list-item {
+      min-height: 24px !important;
+      padding: 0 4px !important;
+    }
+    .compact-form .v-input input {
+      line-height: 1 !important;
+      padding: 4px 8px !important;
+    }
+    .compact-form .v-select__slot {
+      height: 32px !important;
+    }
+    .compact-form .v-list {
+      padding: 0 !important;
+    }
+    .compact-form .v-list-item__content {
+      padding: 4px 0 !important;
+    }
   </style>
 </head>
 <body>
   <div id="app">
-    <!-- Agregar la propiedad dark al v-app -->
     <v-app dark>
-      <v-container fluid style="background-color: #000000; color: #ffffff;">
-        <v-toolbar color="primary" dark>
-          <v-toolbar-title>Diario de Aventuras</v-toolbar-title>
-        </v-toolbar>
-        <v-row>
-          <v-col cols="12" md="3">
-            <!-- Panel lateral -->
+      <v-app-bar app color="primary" dark>
+        <v-app-bar-nav-icon @click="drawer = !drawer"> ≡ </v-app-bar-nav-icon>
+        <v-toolbar-title>Diario de Aventuras</v-toolbar-title>
+      </v-app-bar>
+
+      <v-navigation-drawer
+        v-model="drawer"
+        app
+        class="compact-form"
+        :mini-variant="mini"
+        width="300"
+        color="black"
+      >
+        <v-list-item class="px-1" dense>
+          <v-list-item-title>Panel de Control</v-list-item-title>
+          <v-btn icon @click.stop="drawer = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-list-item>
+
+        <v-divider class="my-1"></v-divider>
+
+        <v-list dense nav class="py-0">
+          <!-- Contenido existente del panel lateral, ahora dentro del drawer -->
+          <v-list-item>
             <v-select
+              dense
               v-model="selectedCharacter"
               :items="characters"
               label="Personaje"
               outlined
               @change="loadEntries"
             ></v-select>
+          </v-list-item>
+          <v-list-item>
             <v-text-field
+              dense
               v-model="textSearch"
               label="Buscar..."
               clearable
               outlined
               @input="filterEntries"
             ></v-text-field>
+          </v-list-item>
+          <v-list-item>
             <v-file-input
+              dense
               label="Subir Archivo"
               accept=".txt"
               prepend-icon="mdi-upload"
               outlined
               @change="handleFileUpload"
             ></v-file-input>
+          </v-list-item>
+          <v-list-item>
             <v-menu
               ref="menu"
               v-model="menu"
@@ -58,6 +119,7 @@
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-text-field
+                  dense
                   v-model="entryDate"
                   label="Fecha de entrada"
                   readonly
@@ -74,13 +136,15 @@
                 @input="menu = false; loadEntry()"
               ></v-date-picker>
             </v-menu>
-            <v-btn color="primary" @click="navigateDate(-1)" class="ma-2">Anterior</v-btn>
-            <v-btn color="primary" @click="navigateDate(1)" class="ma-2">Siguiente</v-btn>
-            <!-- Botón para alternar orden de listado -->
-            <v-btn color="secondary" @click="orderAsc = !orderAsc" class="ma-2">
-              Orden: {{ orderAsc ? 'Ascendente' : 'Descendente' }}
+          </v-list-item>
+          <v-list-item class="d-flex justify-space-around py-1">
+            <v-btn color="primary" @click="navigateDate(-1)">←</v-btn>
+            <v-btn color="primary" @click="navigateDate(1)">→</v-btn>
+            <v-btn color="secondary" @click="orderAsc = !orderAsc">
+              {{ orderAsc ? '↓' : '↑' }}
             </v-btn>
-            <!-- Listado de entradas filtradas usando sortedDisplayDates -->
+          </v-list-item>
+          <v-list-item>
             <v-list>
               <v-list-item
                 v-for="date in sortedDisplayDates"
@@ -93,31 +157,34 @@
                 </v-list-item-content>
               </v-list-item>
             </v-list>
-          </v-col>
-          <v-col cols="12" md="9">
-            <!-- Editor principal -->
-            <v-card>
-              <v-card-title>
-                <span id="worldDate">{{ displayDate }}</span>
-              </v-card-title>
-              <v-card-text>
-                <!-- Editable div con resaltado. Actualiza diaryEntry con updateDiaryEntry -->
-                <div 
-                  id="diaryEntry" 
-                  class="editor-content" 
-                  contenteditable="true" 
-                  v-html="highlightedDiaryEntry" 
-                  @input="updateDiaryEntry($event)"
-                ></div>
-              </v-card-text>
-              <v-card-actions>
-                <v-btn color="success" @click="saveEntry">Guardar Entrada</v-btn>
-                <v-btn color="info" @click="loadEntry">Cargar Entrada</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-container>
+          </v-list-item>
+        </v-list>
+      </v-navigation-drawer>
+
+      <v-main>
+        <v-container fluid>
+          <!-- Contenido del editor principal -->
+          <v-card>
+            <v-card-title>
+              <span id="worldDate">{{ displayDate }}</span>
+            </v-card-title>
+            <v-card-text>
+              <!-- Editable div con resaltado. Actualiza diaryEntry con updateDiaryEntry -->
+              <div 
+                id="diaryEntry" 
+                class="editor-content" 
+                contenteditable="true" 
+                v-html="highlightedDiaryEntry" 
+                @input="updateDiaryEntry($event)"
+              ></div>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn color="success" @click="saveEntry">Guardar Entrada</v-btn>
+              <v-btn color="info" @click="loadEntry">Cargar Entrada</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-container>
+      </v-main>
     </v-app>
   </div>
 
@@ -149,7 +216,7 @@
               primary: '#FF0000',
               background: '#000000',
               accent: '#424242',
-              secondary: '#000000',
+              secondary: '#00000',
               info: '#26A69A',
               warning: '#FFC107',
               error: '#FF5252',
@@ -159,6 +226,7 @@
         }
       }),
       data: () => ({
+        drawer: true,  // Controla la visibilidad del drawer
         selectedCharacter: '',
         characters: [],
         textSearch: '',
