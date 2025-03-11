@@ -63,7 +63,7 @@
         app
         class="compact-form"
         :mini-variant="mini"
-        width="300"
+        width="250"
         color="black"
       >
         <v-list-item class="px-1" dense>
@@ -166,7 +166,7 @@
           <!-- Contenido del editor principal -->
           <v-card>
             <v-card-title>
-              <span id="worldDate">{{ displayDate }}</span>
+              <span id="worldDate" @click="menu = !menu">{{ displayDate }}</span>
             </v-card-title>
             <v-card-text>
               <!-- Editable div con resaltado. Actualiza diaryEntry con updateDiaryEntry -->
