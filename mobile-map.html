@@ -184,6 +184,10 @@
                 Load Map
             </label>
             <input type="file" id="fileInput" accept="image/svg+xml">
+            <label for="characterInput" class="map-button">
+                Add Character
+            </label>
+            <input type="file" id="characterInput" accept="image/*" style="display: none;">
             <button class="map-button" id="zoomIn">+</button>
             <button class="map-button" id="zoomOut">-</button>
             <button class="map-button" id="resetView">Reset</button>
@@ -208,6 +212,8 @@
         let pointY = 0;
         let start = { x: 0, y: 0 };
         let svgElement = null;
+        let draggedCharacter = null;
+        let characters = new Map(); // Para mantener registro de personajes
 
         const mapContainer = document.getElementById("map-container");
         const svgContainer = document.getElementById("svg-container");
@@ -225,6 +231,18 @@
                 reader.readAsText(file);
             } else {
                 alert("Please upload a valid SVG file.");
+            }
+        });
+
+        // Character input handler
+        document.getElementById('characterInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    addCharacterToMap(event.target.result);
+                }
+                reader.readAsDataURL(file);
             }
         });
 
@@ -329,6 +347,7 @@
             pointY += (svgPointAfter.y - svgPointBefore.y) * scale;
 
             setTransform();
+
         }
 
         mapContainer.addEventListener('wheel', handleWheelZoom);
@@ -361,6 +380,20 @@
         function setTransform() {
             if (svgElement) {
                 svgElement.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
+                
+                // Ajustar tamaño de personajes para mantener 50px en pantalla
+                const characters = svgElement.querySelectorAll('.character image');
+                characters.forEach(char => {
+                    // El tamaño base es 50/scale para que al aplicar el scale del SVG quede en 50px
+                    const size = 50 / scale;
+                    char.setAttribute('width', size);
+                    char.setAttribute('height', size);
+                    // Ajustar la posición para mantener el centro del personaje en el mismo punto
+                    const x = parseFloat(char.getAttribute('data-x') || char.getAttribute('x'));
+                    const y = parseFloat(char.getAttribute('data-y') || char.getAttribute('y'));
+                    char.setAttribute('x', x - size/2);
+                    char.setAttribute('y', y - size/2);
+                });
             }
         }
 
@@ -406,6 +439,18 @@
 
         function adjustContainerToSVG() {
             if (svgElement) {
+                // Guardar personajes existentes
+                const existingCharacters = svgElement.querySelectorAll('.character');
+                existingCharacters.forEach(char => {
+                    const image = char.querySelector('image');
+                    if (image) {
+                        const x = image.getAttribute('x');
+                        const y = image.getAttribute('y');
+                        const href = image.getAttribute('href');
+                        characters.set(char.id, {x, y, href});
+                    }
+                });
+
                 const bbox = svgElement.getBBox();
                 svgContainer.style.width = `${bbox.width}px`;
                 svgContainer.style.height = `${bbox.height}px`;
@@ -415,6 +460,13 @@
                 scale = 1;
                 setTransform();
                 setupLayers();
+
+                // Restaurar personajes
+                characters.forEach((data, id) => {
+                    if (typeof data === 'object' && data.href) {
+                        addCharacterToMap(data.href, {x: data.x, y: data.y});
+                    }
+                });
             }
         }
 
@@ -498,6 +550,173 @@
             } catch (e) {
                 console.error('Error transforming point:', e);
                 return null;
+            }
+        }
+
+        function addCharacterToMap(imageUrl) {
+            if (!svgElement) return;
+
+            const charGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            charGroup.setAttribute('class', 'character');
+            
+            // Extraer el nombre del archivo de la URL
+            const fileName = imageUrl.split('/').pop(); // Obtiene el último segmento de la URL
+            const baseName = fileName.substring(0, fileName.lastIndexOf('.')) // Elimina la extensión
+                .replace(/[^a-zA-Z0-9]/g, '_'); // Sanitiza el nombre
+            
+            // Crear imagen
+            const image = document.createElementNS("http://www.w3.org/2000/svg", "image");
+            image.setAttribute('href', imageUrl);
+            image.setAttribute('data-name', baseName);
+            const size = 50 / scale; // Tamaño inicial ajustado al zoom actual
+            image.setAttribute('width', size);
+            image.setAttribute('height', size);
+            image.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+            
+            // Posicionar en el centro del viewport actual
+            const point = getPointInSVG(window.innerWidth/2, window.innerHeight/2);
+            const x = point.x;
+            const y = point.y;
+            // Guardar las coordenadas centrales como datos
+            image.setAttribute('data-x', x);
+            image.setAttribute('data-y', y);
+
+            const titleElement = document.createElementNS("http://www.w3.org/2000/svg", "title");
+            titleElement.textContent = baseName;
+            charGroup.insertBefore(titleElement, charGroup.firstChild);
+            // Posicionar teniendo en cuenta el tamaño
+            image.setAttribute('x', x - size/2);
+            image.setAttribute('y', y - size/2);
+            
+            // Añadir cruz de referencia (inicialmente oculta)
+            const crossGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            crossGroup.setAttribute('class', 'position-cross');
+            crossGroup.style.display = 'none';
+            
+            // Línea horizontal
+            const hLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            hLine.setAttribute('stroke', 'white');
+            hLine.setAttribute('stroke-width', '2');
+            
+            // Línea vertical
+            const vLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            vLine.setAttribute('stroke', 'white');
+            vLine.setAttribute('stroke-width', '2');
+            
+            crossGroup.appendChild(hLine);
+            crossGroup.appendChild(vLine);
+            charGroup.appendChild(image);
+            charGroup.appendChild(crossGroup);
+            
+            svgElement.appendChild(charGroup);
+            
+            setupCharacterDrag(charGroup);
+            
+            const id = 'char_' + Date.now();
+            charGroup.setAttribute('id', id);
+            characters.set(id, charGroup);
+        }
+
+        function setupCharacterDrag(charElement) {
+            let startX, startY;
+            let originalPos;
+
+            charElement.addEventListener('mousedown', startDragging);
+            charElement.addEventListener('touchstart', startDragging);
+
+            function updateCross(x, y, size) {
+                const cross = charElement.querySelector('.position-cross');
+                const [hLine, vLine] = cross.children;
+                
+                // La cruz debe tener el mismo tamaño que el personaje: 50px en pantalla
+                const halfCross = 25 / scale; // 50px total, dividido por 2
+                
+                // Las líneas se extienden de punta a punta del área del personaje
+                hLine.setAttribute('x1', x - halfCross);
+                hLine.setAttribute('x2', x + halfCross);
+                hLine.setAttribute('y1', y);
+                hLine.setAttribute('y2', y);
+                
+                vLine.setAttribute('x1', x);
+                vLine.setAttribute('x2', x);
+                vLine.setAttribute('y1', y - halfCross);
+                vLine.setAttribute('y2', y + halfCross);
+                
+                // Actualizar el grosor de la línea para mantenerlo constante en pantalla
+                const strokeWidth = 2 / scale;
+                hLine.setAttribute('stroke-width', strokeWidth);
+                vLine.setAttribute('stroke-width', strokeWidth);
+            }
+
+            function startDragging(e) {
+                e.stopPropagation();
+                draggedCharacter = charElement;
+                
+                const evt = e.touches ? e.touches[0] : e;
+                const point = getPointInSVG(evt.clientX, evt.clientY);
+                
+                startX = point.x;
+                startY = point.y;
+                
+                const image = charElement.querySelector('image');
+                const cross = charElement.querySelector('.position-cross');
+                
+                // Mostrar cruz y aplicar transparencia
+                cross.style.display = 'block';
+                image.style.opacity = '0.5';
+                
+                originalPos = {
+                    x: parseFloat(image.getAttribute('data-x')) || (parseFloat(image.getAttribute('x')) + parseFloat(image.getAttribute('width'))/2),
+                    y: parseFloat(image.getAttribute('data-y')) || (parseFloat(image.getAttribute('y')) + parseFloat(image.getAttribute('height'))/2)
+                };
+
+                document.addEventListener('mousemove', drag);
+                document.addEventListener('touchmove', drag);
+                document.addEventListener('mouseup', stopDragging);
+                document.addEventListener('touchend', stopDragging);
+            }
+
+            function drag(e) {
+                if (!draggedCharacter) return;
+                e.preventDefault();
+                
+                const evt = e.touches ? e.touches[0] : e;
+                const point = getPointInSVG(evt.clientX, evt.clientY);
+                
+                const dx = point.x - startX;
+                const dy = point.y - startY;
+                
+                const image = draggedCharacter.querySelector('image');
+                const newX = originalPos.x + dx;
+                const newY = originalPos.y + dy;
+                
+                // Guardar y actualizar posiciones
+                image.setAttribute('data-x', newX);
+                image.setAttribute('data-y', newY);
+                
+                const size = parseFloat(image.getAttribute('width'));
+                image.setAttribute('x', newX - size/2);
+                image.setAttribute('y', newY - size/2);
+                
+                // Actualizar posición de la cruz
+                updateCross(newX, newY, size);
+            }
+
+            function stopDragging() {
+                if (draggedCharacter) {
+                    const image = draggedCharacter.querySelector('image');
+                    const cross = draggedCharacter.querySelector('.position-cross');
+                    
+                    // Ocultar cruz y restaurar opacidad
+                    cross.style.display = 'none';
+                    image.style.opacity = '1';
+                }
+                
+                draggedCharacter = null;
+                document.removeEventListener('mousemove', drag);
+                document.removeEventListener('touchmove', drag);
+                document.removeEventListener('mouseup', stopDragging);
+                document.removeEventListener('touchend', stopDragging);
             }
         }
 
