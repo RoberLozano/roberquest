@@ -56,13 +56,23 @@
       <v-app-bar app color="primary" dark>
         <v-app-bar-nav-icon @click="drawer = !drawer"> ≡ </v-app-bar-nav-icon>
         <v-toolbar-title>Diario de Aventuras</v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-btn icon @click="$refs.fileInput.click()">
+          <v-icon>↑📄</v-icon>
+        </v-btn>
+        <input
+          ref="fileInput"
+          type="file"
+          accept=".txt"
+          style="display: none"
+          @change="handleFileUpload($event.target.files[0])"
+        >
       </v-app-bar>
 
       <v-navigation-drawer
         v-model="drawer"
         app
         class="compact-form"
-        :mini-variant="mini"
         width="250"
         color="black"
       >
@@ -96,16 +106,6 @@
               outlined
               @input="filterEntries"
             ></v-text-field>
-          </v-list-item>
-          <v-list-item>
-            <v-file-input
-              dense
-              label="Subir Archivo"
-              accept=".txt"
-              prepend-icon="mdi-upload"
-              outlined
-              @change="handleFileUpload"
-            ></v-file-input>
           </v-list-item>
           <v-list-item>
             <v-menu
@@ -166,7 +166,9 @@
           <!-- Contenido del editor principal -->
           <v-card>
             <v-card-title>
+                <v-btn  plain v-if="displayDate" @click="navigateDate(-1)"><</v-btn>
               <span id="worldDate" @click="menu = !menu">{{ displayDate }}</span>
+                <v-btn plain v-if="displayDate" @click="navigateDate(1)">></v-btn>
             </v-card-title>
             <v-card-text>
               <!-- Editable div con resaltado. Actualiza diaryEntry con updateDiaryEntry -->
@@ -216,7 +218,7 @@
               primary: '#FF0000',
               background: '#000000',
               accent: '#424242',
-              secondary: '#00000',
+              secondary: '#000000',
               info: '#26A69A',
               warning: '#FFC107',
               error: '#FF5252',
