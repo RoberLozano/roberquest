@@ -139,26 +139,31 @@
         #sidePanel {
             position: fixed;
             top: 0;
-            right: -320px; /* Cambiar left por right */
+            right: -320px;
+            /* Cambiar left por right */
             width: 300px;
             height: 100%;
             background: #1a1a1a;
             color: #fff;
-            transition: right 0.3s ease; /* Cambiar left por right en transition */
+            transition: right 0.3s ease;
+            /* Cambiar left por right en transition */
             z-index: 1000;
             padding: 20px;
             box-sizing: border-box;
-            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5); /* Invertir sombra */
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+            /* Invertir sombra */
         }
 
         #sidePanel.open {
-            right: 0; /* Cambiar left por right */
+            right: 0;
+            /* Cambiar left por right */
         }
 
         #togglePanel {
             position: fixed;
             top: 10px;
-            right: 10px; /* Cambiar left por right */
+            right: 10px;
+            /* Cambiar left por right */
             z-index: 1001;
             background: rgba(26, 26, 26, 0.8);
             color: white;
@@ -168,7 +173,48 @@
             cursor: pointer;
             font-size: 20px;
         }
+
+        /* Añadir estilos para el botón de wifi */
+        .wifi-button {
+            position: fixed;
+            top: 60px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .wifi-button svg {
+            width: 24px;
+            height: 24px;
+            fill: #666;
+        }
+
+        .wifi-button.online svg {
+            fill: #4CAF50;
+        }
+
+        .wifi-button:hover {
+            background: rgba(0, 0, 0, 0.9);
+        }
     </style>
+    <script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
+    <script src='js/coor.js'></script>
+    <script src='js/utils.js'></script>
+    <script src='js/D.js'></script>
+    <script src='js/habilidades.js'></script>
+    <script src='js/inventario.js'></script>
+    <script src='js/localizaciones.js'></script>
+    <script src='js/armaduras.js'></script>
+    <script src='js/rol.js'></script>
 </head>
 
 <body>
@@ -205,6 +251,14 @@
         </div>
     </div>
 
+    <!-- Añadir botón de sincronización después del sidePanel -->
+    <button class="wifi-button" id="syncButton" title="Modo offline">
+        <svg viewBox="0 0 24 24">
+            <path
+                d="M12,21L15.6,16.2C14.6,15.45 13.35,15 12,15C10.65,15 9.4,15.45 8.4,16.2L12,21M12,3C7.95,3 4.21,4.34 1.2,6.6L3,9C5.5,7.12 8.62,6 12,6C15.38,6 18.5,7.12 21,9L22.8,6.6C19.79,4.34 16.05,3 12,3M12,9C9.3,9 6.81,9.89 4.8,11.4L6.6,13.8C8.1,12.67 9.97,12 12,12C14.03,12 15.9,12.67 17.4,13.8L19.2,11.4C17.19,9.89 14.7,9 12,9Z" />
+        </svg>
+    </button>
+
     <script>
         let scale = 1;
         let panning = false;
@@ -217,6 +271,7 @@
 
         const mapContainer = document.getElementById("map-container");
         const svgContainer = document.getElementById("svg-container");
+
 
         // File input handler
         document.getElementById('fileInput').addEventListener('change', function (e) {
@@ -235,12 +290,12 @@
         });
 
         // Character input handler
-        document.getElementById('characterInput').addEventListener('change', function(e) {
+        document.getElementById('characterInput').addEventListener('change', function (e) {
             const file = e.target.files[0];
             if (file && file.type.startsWith('image/')) {
                 const reader = new FileReader();
-                reader.onload = function(event) {
-                    addCharacterToMap(event.target.result);
+                reader.onload = function (event) {
+                    addCharacterToMap(event.target.result, e.target.files[0].name);
                 }
                 reader.readAsDataURL(file);
             }
@@ -330,7 +385,7 @@
                 return;
             }
 
-            console.log(svgPointBefore);
+            // console.log(svgPointBefore);
 
             // Zoom con rueda del raton
             let zoomFactor = e.deltaY < 0 ? 1.2 : 0.8;
@@ -380,7 +435,7 @@
         function setTransform() {
             if (svgElement) {
                 svgElement.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
-                
+
                 // Ajustar tamaño de personajes para mantener 50px en pantalla
                 const characters = svgElement.querySelectorAll('.character image');
                 characters.forEach(char => {
@@ -391,10 +446,23 @@
                     // Ajustar la posición para mantener el centro del personaje en el mismo punto
                     const x = parseFloat(char.getAttribute('data-x') || char.getAttribute('x'));
                     const y = parseFloat(char.getAttribute('data-y') || char.getAttribute('y'));
-                    char.setAttribute('x', x - size/2);
-                    char.setAttribute('y', y - size/2);
+                    char.setAttribute('x', x - size / 2);
+                    char.setAttribute('y', y - size / 2);
                 });
             }
+        }
+
+        function mover(image, newX, newY) {
+            // Guardar y actualizar posiciones
+            image.setAttribute('data-x', newX);
+            image.setAttribute('data-y', newY);
+
+
+            const size = parseFloat(image.getAttribute('width'));
+            image.setAttribute('x', newX - size / 2);
+            image.setAttribute('y', newY - size / 2);
+
+
         }
 
         function zoomToText(text) {
@@ -447,7 +515,7 @@
                         const x = image.getAttribute('x');
                         const y = image.getAttribute('y');
                         const href = image.getAttribute('href');
-                        characters.set(char.id, {x, y, href});
+                        characters.set(char.id, { x, y, href });
                     }
                 });
 
@@ -464,7 +532,7 @@
                 // Restaurar personajes
                 characters.forEach((data, id) => {
                     if (typeof data === 'object' && data.href) {
-                        addCharacterToMap(data.href, {x: data.x, y: data.y});
+                        addCharacterToMap(data.href, { x: data.x, y: data.y });
                     }
                 });
             }
@@ -472,41 +540,41 @@
 
         function setupLayers() {
             if (!svgElement) return;
-            
+
             const layersList = document.getElementById('layersList');
             const searchInput = document.getElementById('layerSearch');
             layersList.innerHTML = '';
-            
+
             // Obtener todos los grupos del SVG
             const groups = svgElement.querySelectorAll('g');
             const processedIds = new Set();
             const layerItems = []; // Array para almacenar las referencias a los items
-            
+
             groups.forEach(group => {
                 let id = group.getAttribute('id');
                 if (!id || processedIds.has(id)) return;
-                
+
                 processedIds.add(id);
-                
+
                 const div = document.createElement('div');
                 div.className = 'layer-item';
-                
+
                 const checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
                 checkbox.id = `layer-${id}`;
                 checkbox.checked = true;
-                
+
                 const label = document.createElement('label');
                 label.htmlFor = `layer-${id}`;
                 label.textContent = id;
-                
+
                 div.appendChild(checkbox);
                 div.appendChild(label);
-                
+
                 checkbox.addEventListener('change', () => {
                     group.style.display = checkbox.checked ? 'inline' : 'none';
                 });
-                
+
                 layersList.appendChild(div);
                 layerItems.push({ element: div, id: id.toLowerCase() }); // Guardar referencia
             });
@@ -553,28 +621,33 @@
             }
         }
 
-        function addCharacterToMap(imageUrl) {
+        function addCharacterToMap(imageUrl, url) {
             if (!svgElement) return;
+
 
             const charGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
             charGroup.setAttribute('class', 'character');
-            
+
             // Extraer el nombre del archivo de la URL
-            const fileName = imageUrl.split('/').pop(); // Obtiene el último segmento de la URL
+            const fileName = url.split('/').pop(); // Obtiene el último segmento de la URL
             const baseName = fileName.substring(0, fileName.lastIndexOf('.')) // Elimina la extensión
                 .replace(/[^a-zA-Z0-9]/g, '_'); // Sanitiza el nombre
-            
+
             // Crear imagen
             const image = document.createElementNS("http://www.w3.org/2000/svg", "image");
             image.setAttribute('href', imageUrl);
+            console.log(fileName);
+
             image.setAttribute('data-name', baseName);
+            console.log(baseName);
+
             const size = 50 / scale; // Tamaño inicial ajustado al zoom actual
             image.setAttribute('width', size);
             image.setAttribute('height', size);
             image.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-            
+
             // Posicionar en el centro del viewport actual
-            const point = getPointInSVG(window.innerWidth/2, window.innerHeight/2);
+            const point = getPointInSVG(window.innerWidth / 2, window.innerHeight / 2);
             const x = point.x;
             const y = point.y;
             // Guardar las coordenadas centrales como datos
@@ -585,34 +658,34 @@
             titleElement.textContent = baseName;
             charGroup.insertBefore(titleElement, charGroup.firstChild);
             // Posicionar teniendo en cuenta el tamaño
-            image.setAttribute('x', x - size/2);
-            image.setAttribute('y', y - size/2);
-            
+            image.setAttribute('x', x - size / 2);
+            image.setAttribute('y', y - size / 2);
+
             // Añadir cruz de referencia (inicialmente oculta)
             const crossGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
             crossGroup.setAttribute('class', 'position-cross');
             crossGroup.style.display = 'none';
-            
+
             // Línea horizontal
             const hLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
             hLine.setAttribute('stroke', 'white');
             hLine.setAttribute('stroke-width', '2');
-            
+
             // Línea vertical
             const vLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
             vLine.setAttribute('stroke', 'white');
             vLine.setAttribute('stroke-width', '2');
-            
+
             crossGroup.appendChild(hLine);
             crossGroup.appendChild(vLine);
             charGroup.appendChild(image);
             charGroup.appendChild(crossGroup);
-            
+
             svgElement.appendChild(charGroup);
-            
+
             setupCharacterDrag(charGroup);
-            
-            const id = 'char_' + Date.now();
+
+            const id = baseName;
             charGroup.setAttribute('id', id);
             characters.set(id, charGroup);
         }
@@ -627,21 +700,21 @@
             function updateCross(x, y, size) {
                 const cross = charElement.querySelector('.position-cross');
                 const [hLine, vLine] = cross.children;
-                
+
                 // La cruz debe tener el mismo tamaño que el personaje: 50px en pantalla
                 const halfCross = 25 / scale; // 50px total, dividido por 2
-                
+
                 // Las líneas se extienden de punta a punta del área del personaje
                 hLine.setAttribute('x1', x - halfCross);
                 hLine.setAttribute('x2', x + halfCross);
                 hLine.setAttribute('y1', y);
                 hLine.setAttribute('y2', y);
-                
+
                 vLine.setAttribute('x1', x);
                 vLine.setAttribute('x2', x);
                 vLine.setAttribute('y1', y - halfCross);
                 vLine.setAttribute('y2', y + halfCross);
-                
+
                 // Actualizar el grosor de la línea para mantenerlo constante en pantalla
                 const strokeWidth = 2 / scale;
                 hLine.setAttribute('stroke-width', strokeWidth);
@@ -651,23 +724,23 @@
             function startDragging(e) {
                 e.stopPropagation();
                 draggedCharacter = charElement;
-                
+
                 const evt = e.touches ? e.touches[0] : e;
                 const point = getPointInSVG(evt.clientX, evt.clientY);
-                
+
                 startX = point.x;
                 startY = point.y;
-                
+
                 const image = charElement.querySelector('image');
                 const cross = charElement.querySelector('.position-cross');
-                
+
                 // Mostrar cruz y aplicar transparencia
                 cross.style.display = 'block';
                 image.style.opacity = '0.5';
-                
+
                 originalPos = {
-                    x: parseFloat(image.getAttribute('data-x')) || (parseFloat(image.getAttribute('x')) + parseFloat(image.getAttribute('width'))/2),
-                    y: parseFloat(image.getAttribute('data-y')) || (parseFloat(image.getAttribute('y')) + parseFloat(image.getAttribute('height'))/2)
+                    x: parseFloat(image.getAttribute('data-x')) || (parseFloat(image.getAttribute('x')) + parseFloat(image.getAttribute('width')) / 2),
+                    y: parseFloat(image.getAttribute('data-y')) || (parseFloat(image.getAttribute('y')) + parseFloat(image.getAttribute('height')) / 2)
                 };
 
                 document.addEventListener('mousemove', drag);
@@ -679,39 +752,43 @@
             function drag(e) {
                 if (!draggedCharacter) return;
                 e.preventDefault();
-                
+
                 const evt = e.touches ? e.touches[0] : e;
                 const point = getPointInSVG(evt.clientX, evt.clientY);
-                
+
                 const dx = point.x - startX;
                 const dy = point.y - startY;
-                
+
                 const image = draggedCharacter.querySelector('image');
                 const newX = originalPos.x + dx;
                 const newY = originalPos.y + dy;
-                
-                // Guardar y actualizar posiciones
-                image.setAttribute('data-x', newX);
-                image.setAttribute('data-y', newY);
-                
+
+
+                // Actualizar la posición del personaje
+                mover(image, newX, newY);
                 const size = parseFloat(image.getAttribute('width'));
-                image.setAttribute('x', newX - size/2);
-                image.setAttribute('y', newY - size/2);
-                
-                // Actualizar posición de la cruz
+                            // Actualizar posición de la cruz
                 updateCross(newX, newY, size);
+
+                if (isOnline) {
+                    saveMapState(draggedCharacter);
+                }
             }
+
 
             function stopDragging() {
                 if (draggedCharacter) {
                     const image = draggedCharacter.querySelector('image');
                     const cross = draggedCharacter.querySelector('.position-cross');
-                    
+
+                    console.log(image.getAttribute('data-name') + ' movido a:', image.getAttribute('data-x'), image.getAttribute('data-y'));
+
                     // Ocultar cruz y restaurar opacidad
                     cross.style.display = 'none';
                     image.style.opacity = '1';
+
                 }
-                
+
                 draggedCharacter = null;
                 document.removeEventListener('mousemove', drag);
                 document.removeEventListener('touchmove', drag);
@@ -731,6 +808,141 @@
                 document.getElementById('sidePanel').classList.remove('open');
             }
         });
+
+        async function initializeMap() {
+            try {
+                // Cargar el mapa por defecto
+                await loadMapFromURL('mapas/Elahiun.svg');
+                // Cargar el personaje por defecto
+                await loadCharacterFromURL('img/tokens/Rosssel.png');
+            } catch (error) {
+                console.error('Error en la inicialización:', error);
+            }
+        }
+
+        // Modificar el listener de DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM cargado, iniciando mapa...');
+            initializeMap();
+        });
+
+        // Función para cargar el mapa desde URL
+        async function loadMapFromURL(url) {
+            try {
+                const response = await fetch(url);
+                const blob = await response.blob();
+                const reader = new FileReader();
+
+                return new Promise((resolve, reject) => {
+                    reader.onload = function (event) {
+                        svgContainer.innerHTML = event.target.result;
+                        svgElement = svgContainer.querySelector('svg');
+                        adjustContainerToSVG();
+                        resolve();
+                    };
+                    reader.onerror = reject;
+                    reader.readAsText(blob);
+                });
+            } catch (error) {
+                console.error('Error cargando el mapa:', error);
+                throw error;
+            }
+        }
+
+        // Función para cargar personaje desde URL
+        async function loadCharacterFromURL(url) {
+            try {
+                const response = await fetch(url);
+                const blob = await response.blob();
+                const reader = new FileReader();
+
+                return new Promise((resolve, reject) => {
+                    reader.onload = function (event) {
+                        const fileName = url.split('/').pop();
+                        const char = addCharacterToMap(event.target.result, url);
+                        resolve(char);
+                    };
+                    reader.onerror = reject;
+                    reader.readAsDataURL(blob);
+                });
+            } catch (error) {
+                console.error('Error cargando el personaje:', error);
+                throw error;
+            }
+        }
+
+        // Añadir variables para sincronización
+        let isOnline = false;
+        const syncButton = document.getElementById('syncButton');
+
+        // Función para cambiar entre modo online/offline
+        function toggleOnlineMode() {
+            isOnline = !isOnline;
+            syncButton.classList.toggle('online');
+            syncButton.title = isOnline ? 'Modo online' : 'Modo offline';
+
+            if (isOnline) {
+                startSync();
+            } else {
+                stopSync();
+            }
+        }
+
+        // Función para iniciar sincronización
+        function startSync() {
+            // saveMapState();
+            // Aquí se implementará la lógica de sincronización específica
+            console.log('Iniciando sincronización...');
+            
+            database.ref('mapState/characters/').on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (!data) return;
+                console.log('Recibido:', data);
+
+                const image = draggedCharacter.querySelector('image');
+
+                let name = image.getAttribute('data-name');
+                let x = data[name].x;
+                let y = data[name].y;
+               
+                console.log('Recibido:', data);
+                
+                mover(image, x, y);
+
+            });
+        }
+
+        // Función para detener sincronización
+        function stopSync() {
+            // Aquí se implementará el código para detener la sincronización
+        }
+
+        // Función para guardar el estado del mapa
+        function saveMapState(character) {
+            if (!isOnline) return;
+            const image = draggedCharacter.querySelector('image');
+
+            let name = image.getAttribute('data-name');
+            let x = image.getAttribute('data-x');
+            let y = image.getAttribute('data-y');
+            // let y = character.getAttribute('data-y');
+
+
+            console.log('Guardando estado del mapa:', name, x, y);
+
+            // Aquí se implementará el guardado del estado del mapa
+            database.ref('mapState/characters/' + name).set({
+                x: x,
+                y: y
+            }).then(function () {
+                console.log('Estado del mapa guardado en la base de datos.');
+            }).catch(function (error) {
+                console.error('Error al guardar en la base de datos:', error);
+            });
+        }
+
+        // Añadir listener para el botón de sincronización
+        syncButton.addEventListener('click', toggleOnlineMode);
     </script>
 </body>
 
