@@ -681,6 +681,25 @@
 
             setupCharacterDrag(charGroup);
 
+            // Nuevo listener para shift+wheel: rota el personaje y guarda la rotación en modo online
+            charGroup.addEventListener('wheel', (e) => {
+                if (e.shiftKey) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    let img=charGroup.querySelector('image');
+                    console.log('Rotating character...',charGroup.id);
+                    let currentRotation = parseFloat(img.getAttribute('data-rotation') )|| 0;
+                    // let currentRotation = parseFloat(charGroup.getAttribute('data-rotation')) || 0;
+                    let delta = e.deltaY > 0 ? 15 : -15;
+                    let newRotation = (currentRotation + delta)%360;
+                    img.setAttribute('data-rotation', newRotation);
+                    rotate(img, newRotation);
+                    if (isOnline) {
+                        saveMapState(charGroup);
+                    }
+                }
+            });
+
             const id = baseName;
             charGroup.setAttribute('id', id);
             characters.set(id, charGroup);
@@ -868,19 +887,35 @@
                         const charImage = daImagen(name);
                         if (charImage) {
                             move(charImage, parseFloat(data[name].x), parseFloat(data[name].y));
+                            if (data[name].rotation) {
+                                rotate(charImage, parseFloat(data[name].rotation));
+                            }
                         }
                     }
                 });
             });
         };
 
+        const stopSync = () => {
+            console.log('Deteniendo sincronización...');
+            database.ref('mapState/characters/').off();
+        };
+
+        function rotate(img, angle) {
+            img.style.transformBox = 'fill-box';
+            img.style.transformOrigin = 'center';
+            img.style.transform = `rotate(${angle}deg)`;
+
+            
+        }
         const saveMapState = character => {
             if (!isOnline) return;
             const img = character ? character.querySelector('image') : draggedCharacter.querySelector('image');
             const name = img.getAttribute('data-name');
             const x = img.getAttribute('data-x');
             const y = img.getAttribute('data-y');
-            database.ref(`mapState/characters/${name}`).set({ x, y })
+            const rotation = img.getAttribute('data-rotation') || 0;
+            database.ref(`mapState/characters/${name}`).set({ x, y ,rotation})
                 .then(() => { /* guardado exitoso */ })
                 .catch(error => console.error('Error al guardar:', error));
         };
