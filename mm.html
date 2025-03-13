@@ -374,7 +374,7 @@
             panning = false;
         });
 
-
+ //#region zoom
         function handleWheelZoom(e) {
             e.preventDefault();
             // console.log(e);
@@ -432,6 +432,8 @@
             zoomToText(searchText);
         });
 
+        //#endregion
+
         function setTransform() {
             if (svgElement) {
                 svgElement.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
@@ -452,7 +454,8 @@
             }
         }
 
-        function mover(image, newX, newY) {
+
+        function move(image, newX, newY) {
             // Guardar y actualizar posiciones
             image.setAttribute('data-x', newX);
             image.setAttribute('data-y', newY);
@@ -765,7 +768,7 @@
 
 
                 // Actualizar la posición del personaje
-                mover(image, newX, newY);
+                move(image, newX, newY);
                 const size = parseFloat(image.getAttribute('width'));
                             // Actualizar posición de la cruz
                 updateCross(newX, newY, size);
@@ -809,6 +812,19 @@
             }
         });
 
+        
+       
+        /**
+         * @function daImagen
+         * @description Retrieves the image element associated with a given character.
+         * @param {string} personaje - The name of the character.
+         * @returns {HTMLImageElement | null | undefined} The image element if found, otherwise null or undefined.
+         */
+        function daImagen(personaje) {
+           return characters.get(personaje)?.querySelector('image');
+        }
+
+    
         async function initializeMap() {
             try {
                 // Cargar el mapa por defecto
@@ -897,17 +913,34 @@
             database.ref('mapState/characters/').on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (!data) return;
-                console.log('Recibido:', data);
+                if(draggedCharacter) console.log('Dragged:', draggedCharacter.querySelector('image').getAttribute('data-name'));
+                characters.forEach(name => {
+                    name=name.id
+                    console.log(name);
+                    if (draggedCharacter && draggedCharacter.querySelector('image').getAttribute('data-name') === name) {
+                        // Skip if this is the character being dragged
+                        console.log('Skipping dragged character:', name);
+                        
+                        return;
+                    }
+                    if(data[name]){
+                        const charImage = daImagen(name);
+                        if (charImage) {
+                            move(charImage, parseFloat(data[name].x), parseFloat(data[name].y));
+                        }
+                    }
+                });
+                // console.log('Recibido:', data);
 
-                const image = draggedCharacter.querySelector('image');
+                // const image = draggedCharacter.querySelector('image');
 
-                let name = image.getAttribute('data-name');
-                let x = data[name].x;
-                let y = data[name].y;
+                // let name = image.getAttribute('data-name');
+                // let x = data[name].x;
+                // let y = data[name].y;
                
-                console.log('Recibido:', data);
+                // console.log('Recibido:', data);
                 
-                mover(image, x, y);
+                // mover(image, x, y);
 
             });
         }
@@ -928,14 +961,14 @@
             // let y = character.getAttribute('data-y');
 
 
-            console.log('Guardando estado del mapa:', name, x, y);
+            // console.log('Guardando estado del mapa:', name, x, y);
 
             // Aquí se implementará el guardado del estado del mapa
             database.ref('mapState/characters/' + name).set({
                 x: x,
                 y: y
             }).then(function () {
-                console.log('Estado del mapa guardado en la base de datos.');
+                // console.log('Estado del mapa guardado en la base de datos.');
             }).catch(function (error) {
                 console.error('Error al guardar en la base de datos:', error);
             });
