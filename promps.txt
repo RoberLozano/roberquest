@@ -19,3 +19,4 @@ Haz que el formato de la fecha de las entradas se trasnforme para que el v-picke
 Hacer que a los mapas se les puedan añadir personajes. Se guardarían en el propio svg del mapa. Ha de ser una imagen, que se reescalara a 50px, pero manteniendo la proporcion y s edebe poder mover arrastrándola. Manteniendo su sposicion dentro de las coordenadas svg para que funcione correctamente con las funciones de  zoom y arrastre del mapa
 Haz las modificaciones necesarias en mm.html para que se guarde en firebase la posición de los personajes. Utiliza la misma estrategia que en mc1.html, con el icono de wifi y la actulizacion de la posición de personajes.
 Utilizar en mm las variables de personajes de mc1 en vez de las de mm. La posición y todo lo demás, para una buena sincronización en firebase. Reemplaza las viejas con las nuevas donde se utilizaran, como al mover personaje, etc
+Eres un experto en JavaScript, mejora el código sin crear ningún archivo nuevo.

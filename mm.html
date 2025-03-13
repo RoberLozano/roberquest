@@ -374,7 +374,7 @@
             panning = false;
         });
 
- //#region zoom
+        //#region zoom
         function handleWheelZoom(e) {
             e.preventDefault();
             // console.log(e);
@@ -434,26 +434,26 @@
 
         //#endregion
 
-        function setTransform() {
-            if (svgElement) {
-                svgElement.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
-
-                // Ajustar tamaño de personajes para mantener 50px en pantalla
-                const characters = svgElement.querySelectorAll('.character image');
-                characters.forEach(char => {
-                    // El tamaño base es 50/scale para que al aplicar el scale del SVG quede en 50px
-                    const size = 50 / scale;
-                    char.setAttribute('width', size);
-                    char.setAttribute('height', size);
-                    // Ajustar la posición para mantener el centro del personaje en el mismo punto
-                    const x = parseFloat(char.getAttribute('data-x') || char.getAttribute('x'));
-                    const y = parseFloat(char.getAttribute('data-y') || char.getAttribute('y'));
-                    char.setAttribute('x', x - size / 2);
-                    char.setAttribute('y', y - size / 2);
-                });
-            }
+        function updateTransformCharacters() {
+            if (!svgElement) return;
+            const characterEls = svgElement.querySelectorAll('.character image');
+            characterEls.forEach(char => {
+                const size = 50 / scale;
+                char.setAttribute('width', size);
+                char.setAttribute('height', size);
+                const x = parseFloat(char.getAttribute('data-x') || char.getAttribute('x'));
+                const y = parseFloat(char.getAttribute('data-y') || char.getAttribute('y'));
+                char.setAttribute('x', x - size / 2);
+                char.setAttribute('y', y - size / 2);
+            });
         }
 
+        const setTransform = () => {
+            if (svgElement) {
+                svgElement.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
+                updateTransformCharacters();
+            }
+        };
 
         function move(image, newX, newY) {
             // Guardar y actualizar posiciones
@@ -468,44 +468,40 @@
 
         }
 
-        function zoomToText(text) {
 
+        function c(el) {
+            const bbox = el.getBBox();
+            const matrix = el.getCTM();
+            const transformedPoint = svgElement.createSVGPoint();
+            transformedPoint.x = bbox.x + bbox.width / 2;
+            transformedPoint.y = bbox.y + bbox.height / 2;
+            const transformedCenter = transformedPoint.matrixTransform(matrix);
+            return { x: transformedCenter.x, y: transformedCenter.y };
+        }
+
+        function coordenadas(searchText) {
+            if (!svgElement) return null;
+            const texts = svgElement.querySelectorAll('text');
+            for (const textEl of texts) {
+                if (textEl.textContent.includes(searchText)) {
+                    return c(textEl);
+                }
+            }
+            return null;
+        }
+
+
+        function zoomToText(text) {
             if (!svgElement) return;
             scale = 1;
             setTransform();
+            const transformedCenter = coordenadas(text);
+            console.log(transformedCenter.x, transformedCenter.y);
 
-            const elements = svgElement.querySelectorAll('text');
-            elements.forEach(element => {
-                console.log(element.textContent);
+            pointX = -transformedCenter.x * scale + mapContainer.clientWidth / 2;
+            pointY = -transformedCenter.y * scale + mapContainer.clientHeight / 2;
 
-                if (element.textContent.includes(text)) {
-
-                    const bbox = element.getBBox();
-
-                    const matrix = element.getCTM();
-                    const transformedPoint = svgElement.createSVGPoint();
-                    transformedPoint.x = bbox.x + bbox.width / 2;
-                    transformedPoint.y = bbox.y + bbox.height / 2;
-                    const transformedCenter = transformedPoint.matrixTransform(matrix);
-
-                    // const centerX = bbox.x + bbox.width / 2;
-                    // const centerY = bbox.y + bbox.height / 2;
-                    // console.log(centerX, centerY);
-                    console.log(transformedCenter.x, transformedCenter.y);
-
-
-                    // scale = 5; // Ajustar el nivel de zoom según sea necesario
-                    // pointX = -centerX * scale + mapContainer.clientWidth / 2;
-                    // pointY = -centerY * scale + mapContainer.clientHeight / 2;
-
-                    pointX = -transformedCenter.x * scale + mapContainer.clientWidth / 2;
-                    pointY = -transformedCenter.y * scale + mapContainer.clientHeight / 2;
-
-                    setTransform();
-
-
-                }
-            });
+            setTransform();
         }
 
         function adjustContainerToSVG() {
@@ -693,112 +689,75 @@
             characters.set(id, charGroup);
         }
 
-        function setupCharacterDrag(charElement) {
-            let startX, startY;
-            let originalPos;
+        const setupCharacterDrag = charElement => {
+            let startX, startY, originalPos;
+            const image = () => charElement.querySelector('image');
+            const cross = () => charElement.querySelector('.position-cross');
 
-            charElement.addEventListener('mousedown', startDragging);
-            charElement.addEventListener('touchstart', startDragging);
-
-            function updateCross(x, y, size) {
-                const cross = charElement.querySelector('.position-cross');
-                const [hLine, vLine] = cross.children;
-
-                // La cruz debe tener el mismo tamaño que el personaje: 50px en pantalla
-                const halfCross = 25 / scale; // 50px total, dividido por 2
-
-                // Las líneas se extienden de punta a punta del área del personaje
+            const updateCross = (x, y) => {
+                const crossEl = cross();
+                const [hLine, vLine] = crossEl.children;
+                const halfCross = 25 / scale; // Mantener 50px en pantalla dividido entre 2
                 hLine.setAttribute('x1', x - halfCross);
                 hLine.setAttribute('x2', x + halfCross);
                 hLine.setAttribute('y1', y);
                 hLine.setAttribute('y2', y);
-
                 vLine.setAttribute('x1', x);
                 vLine.setAttribute('x2', x);
                 vLine.setAttribute('y1', y - halfCross);
                 vLine.setAttribute('y2', y + halfCross);
-
-                // Actualizar el grosor de la línea para mantenerlo constante en pantalla
                 const strokeWidth = 2 / scale;
                 hLine.setAttribute('stroke-width', strokeWidth);
                 vLine.setAttribute('stroke-width', strokeWidth);
-            }
+            };
 
-            function startDragging(e) {
+            const startDragging = e => {
                 e.stopPropagation();
                 draggedCharacter = charElement;
-
                 const evt = e.touches ? e.touches[0] : e;
                 const point = getPointInSVG(evt.clientX, evt.clientY);
-
-                startX = point.x;
-                startY = point.y;
-
-                const image = charElement.querySelector('image');
-                const cross = charElement.querySelector('.position-cross');
-
-                // Mostrar cruz y aplicar transparencia
-                cross.style.display = 'block';
-                image.style.opacity = '0.5';
-
+                startX = point.x; startY = point.y;
+                cross().style.display = 'block';
+                image().style.opacity = '0.5';
                 originalPos = {
-                    x: parseFloat(image.getAttribute('data-x')) || (parseFloat(image.getAttribute('x')) + parseFloat(image.getAttribute('width')) / 2),
-                    y: parseFloat(image.getAttribute('data-y')) || (parseFloat(image.getAttribute('y')) + parseFloat(image.getAttribute('height')) / 2)
+                    x: parseFloat(image().getAttribute('data-x')) || (parseFloat(image().getAttribute('x')) + parseFloat(image().getAttribute('width')) / 2),
+                    y: parseFloat(image().getAttribute('data-y')) || (parseFloat(image().getAttribute('y')) + parseFloat(image().getAttribute('height')) / 2)
                 };
-
                 document.addEventListener('mousemove', drag);
                 document.addEventListener('touchmove', drag);
                 document.addEventListener('mouseup', stopDragging);
                 document.addEventListener('touchend', stopDragging);
-            }
+            };
 
-            function drag(e) {
+            const drag = e => {
                 if (!draggedCharacter) return;
                 e.preventDefault();
-
                 const evt = e.touches ? e.touches[0] : e;
                 const point = getPointInSVG(evt.clientX, evt.clientY);
-
                 const dx = point.x - startX;
                 const dy = point.y - startY;
-
-                const image = draggedCharacter.querySelector('image');
                 const newX = originalPos.x + dx;
                 const newY = originalPos.y + dy;
+                move(image(), newX, newY);
+                updateCross(newX, newY);
+                if (isOnline) saveMapState(draggedCharacter);
+            };
 
-
-                // Actualizar la posición del personaje
-                move(image, newX, newY);
-                const size = parseFloat(image.getAttribute('width'));
-                            // Actualizar posición de la cruz
-                updateCross(newX, newY, size);
-
-                if (isOnline) {
-                    saveMapState(draggedCharacter);
-                }
-            }
-
-
-            function stopDragging() {
+            const stopDragging = () => {
                 if (draggedCharacter) {
-                    const image = draggedCharacter.querySelector('image');
-                    const cross = draggedCharacter.querySelector('.position-cross');
-
-                    console.log(image.getAttribute('data-name') + ' movido a:', image.getAttribute('data-x'), image.getAttribute('data-y'));
-
-                    // Ocultar cruz y restaurar opacidad
-                    cross.style.display = 'none';
-                    image.style.opacity = '1';
-
+                    image().style.opacity = '1';
+                    cross().style.display = 'none';
                 }
-
                 draggedCharacter = null;
                 document.removeEventListener('mousemove', drag);
                 document.removeEventListener('touchmove', drag);
                 document.removeEventListener('mouseup', stopDragging);
                 document.removeEventListener('touchend', stopDragging);
-            }
-        }
+            };
+
+            charElement.addEventListener('mousedown', startDragging);
+            charElement.addEventListener('touchstart', startDragging);
+        };
 
         // Añadir control del panel lateral
         document.getElementById('togglePanel').addEventListener('click', () => {
@@ -812,8 +771,8 @@
             }
         });
 
-        
-       
+
+
         /**
          * @function daImagen
          * @description Retrieves the image element associated with a given character.
@@ -821,10 +780,10 @@
          * @returns {HTMLImageElement | null | undefined} The image element if found, otherwise null or undefined.
          */
         function daImagen(personaje) {
-           return characters.get(personaje)?.querySelector('image');
+            return characters.get(personaje)?.querySelector('image');
         }
 
-    
+
         async function initializeMap() {
             try {
                 // Cargar el mapa por defecto
@@ -891,88 +850,43 @@
         let isOnline = false;
         const syncButton = document.getElementById('syncButton');
 
-        // Función para cambiar entre modo online/offline
-        function toggleOnlineMode() {
+        const toggleOnlineMode = () => {
             isOnline = !isOnline;
             syncButton.classList.toggle('online');
             syncButton.title = isOnline ? 'Modo online' : 'Modo offline';
+            isOnline ? startSync() : stopSync();
+        };
 
-            if (isOnline) {
-                startSync();
-            } else {
-                stopSync();
-            }
-        }
-
-        // Función para iniciar sincronización
-        function startSync() {
-            // saveMapState();
-            // Aquí se implementará la lógica de sincronización específica
+        const startSync = () => {
             console.log('Iniciando sincronización...');
-            
-            database.ref('mapState/characters/').on('value', (snapshot) => {
+            database.ref('mapState/characters/').on('value', snapshot => {
                 const data = snapshot.val();
                 if (!data) return;
-                if(draggedCharacter) console.log('Dragged:', draggedCharacter.querySelector('image').getAttribute('data-name'));
-                characters.forEach(name => {
-                    name=name.id
-                    console.log(name);
+                characters.forEach((charEl, name) => {
                     if (draggedCharacter && draggedCharacter.querySelector('image').getAttribute('data-name') === name) {
-                        // Skip if this is the character being dragged
                         console.log('Skipping dragged character:', name);
-                        
                         return;
                     }
-                    if(data[name]){
+                    if (data[name]) {
                         const charImage = daImagen(name);
                         if (charImage) {
                             move(charImage, parseFloat(data[name].x), parseFloat(data[name].y));
                         }
                     }
                 });
-                // console.log('Recibido:', data);
-
-                // const image = draggedCharacter.querySelector('image');
-
-                // let name = image.getAttribute('data-name');
-                // let x = data[name].x;
-                // let y = data[name].y;
-               
-                // console.log('Recibido:', data);
-                
-                // mover(image, x, y);
-
             });
-        }
+        };
 
-        // Función para detener sincronización
-        function stopSync() {
-            // Aquí se implementará el código para detener la sincronización
-        }
-
-        // Función para guardar el estado del mapa
-        function saveMapState(character) {
+        const saveMapState = character => {
             if (!isOnline) return;
-            const image = draggedCharacter.querySelector('image');
-
-            let name = image.getAttribute('data-name');
-            let x = image.getAttribute('data-x');
-            let y = image.getAttribute('data-y');
-            // let y = character.getAttribute('data-y');
-
-
-            // console.log('Guardando estado del mapa:', name, x, y);
-
-            // Aquí se implementará el guardado del estado del mapa
-            database.ref('mapState/characters/' + name).set({
-                x: x,
-                y: y
-            }).then(function () {
-                // console.log('Estado del mapa guardado en la base de datos.');
-            }).catch(function (error) {
-                console.error('Error al guardar en la base de datos:', error);
-            });
-        }
+            const img = character ? character.querySelector('image') : draggedCharacter.querySelector('image');
+            const name = img.getAttribute('data-name');
+            const x = img.getAttribute('data-x');
+            const y = img.getAttribute('data-y');
+            database.ref(`mapState/characters/${name}`).set({ x, y })
+                .then(() => { /* guardado exitoso */ })
+                .catch(error => console.error('Error al guardar:', error));
+        };
 
         // Añadir listener para el botón de sincronización
         syncButton.addEventListener('click', toggleOnlineMode);
