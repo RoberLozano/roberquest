@@ -273,10 +273,12 @@
         const mapContainer = document.getElementById("map-container");
         const svgContainer = document.getElementById("svg-container");
 
+        const iconSize = 50;
+
         // Agregar variable global para almacenar las rutas de personajes
         const characterRoutes = new Map();
         // Si se emuestra el rastro al mover
-        let rastro =true;
+        let rastro = true;
 
         // Definir tooltip para mostrar distancia mientras se mueve un personaje
         const tooltip = document.createElement('div');
@@ -471,21 +473,13 @@
         function handleWheelZoom(e) {
             e.preventDefault();
             // console.log(e);
-
             const svgPointBefore = getPointInSVG(e.clientX, e.clientY);
-
-            if (!svgPointBefore) {
-                return;
-            }
-
-            // console.log(svgPointBefore);
-
+            if (!svgPointBefore) return;
             // Zoom con rueda del raton
             let zoomFactor = e.deltaY < 0 ? 1.2 : 0.8;
 
             const newScale = Math.min(Math.max(0.1, scale * zoomFactor), 100);
             scale = newScale;
-
             setTransform();
 
             const svgPointAfter = getPointInSVG(e.clientX, e.clientY);
@@ -493,7 +487,6 @@
 
             pointX += (svgPointAfter.x - svgPointBefore.x) * scale;
             pointY += (svgPointAfter.y - svgPointBefore.y) * scale;
-
             setTransform();
 
         }
@@ -531,7 +524,7 @@
             if (!svgElement) return;
             const characterEls = svgElement.querySelectorAll('.character image');
             characterEls.forEach(char => {
-                const size = 50 / scale;
+                const size = iconSize / scale;
                 char.setAttribute('width', size);
                 char.setAttribute('height', size);
                 const x = parseFloat(char.getAttribute('data-x') || char.getAttribute('x'));
@@ -552,7 +545,6 @@
             let x, y;
             //si hay coordenadas como segundo parámetro se asignan a x e y
             ({ x, y } = newX.x && newX.y ? newX : { x: newX, y: newY });
-            ;
             // Guardar y actualizar posiciones
             image.setAttribute('data-x', x);
             image.setAttribute('data-y', y);
@@ -562,6 +554,12 @@
             image.setAttribute('y', y - size / 2);
         }
 
+        /**
+         * @function rotate
+         * @description Rota una imagen alrededor de su centro.
+         * @param {SVGImageElement} image - El elemento imagen a rotar.
+         * @param {number} angle - El ángulo en grados para rotar la imagen.
+         */
         function move2(personaje, lugar) {
             let cs = coordenadas(lugar);
             let img = characters.get(personaje).querySelector('image');
@@ -573,7 +571,6 @@
             }
 
         }
-
 
         function c(el) {
             const bbox = el.getBBox();
@@ -610,7 +607,6 @@
 
             pointX = -transformedCenter.x * scale + mapContainer.clientWidth / 2;
             pointY = -transformedCenter.y * scale + mapContainer.clientHeight / 2;
-
             setTransform();
         }
 
@@ -750,7 +746,7 @@
             image.setAttribute('data-name', baseName);
             console.log(baseName);
 
-            const size = 50 / scale; // Tamaño inicial ajustado al zoom actual
+            const size = iconSize / scale; // Tamaño inicial ajustado al zoom actual
             image.setAttribute('width', size);
             image.setAttribute('height', size);
             image.setAttribute('preserveAspectRatio', 'xMidYMid meet');
@@ -826,7 +822,7 @@
             const updateCross = (x, y) => {
                 const crossEl = cross();
                 const [hLine, vLine] = crossEl.children;
-                const halfCross = 25 / scale; // Mantener 50px en pantalla dividido entre 2
+                const halfCross = (iconSize / 2) / scale; // Mantener 50px en pantalla dividido entre 2
                 hLine.setAttribute('x1', x - halfCross);
                 hLine.setAttribute('x2', x + halfCross);
                 hLine.setAttribute('y1', y);
@@ -881,17 +877,17 @@
                     image().style.opacity = '1';
                     cross().style.display = 'none';
 
-if (rastro) {
+                    if (rastro) {
                         let ruta = characterRoutes.get(charElement);
                         console.log(ruta);
                         const path = simplifySvgPath(ruta);
                         console.log(path);
-    
+
                         let pathElem = charElement.querySelector('.character-route');
                         if (!pathElem) {
                             pathElem = document.createElementNS("http://www.w3.org/2000/svg", "path");
                             pathElem.classList.add('character-route');
-    
+
                             pathElem.setAttribute('fill', 'none');
                             pathElem.setAttribute('stroke', 'red');
                             pathElem.setAttribute('stroke-width', 1);
@@ -899,7 +895,7 @@ if (rastro) {
                             svgElement.appendChild(pathElem);
                         }
                         pathElem.setAttribute('d', path);
-}
+                    }
                     draggedCharacter = null;
                 }
                 // draggedCharacter = null;
