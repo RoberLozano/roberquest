@@ -215,6 +215,7 @@
     <script src='js/localizaciones.js'></script>
     <script src='js/armaduras.js'></script>
     <script src='js/rol.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/@luncheon/simplify-svg-path@0.2.0"></script>
 </head>
 
 <body>
@@ -282,6 +283,8 @@
 
         // Nueva función helper para generar ruta suave con curvas Bezier (Catmull-Rom a Bezier)
         function generateSmoothPath(points) {
+            //hacerlo con simplify-svg-path para reducir el número de puntos   
+            return simplifySvgPath(points);
             if (points.length < 2) return "";
             let d = `M ${points[0].x} ${points[0].y} `;
             if (points.length === 2) {
@@ -306,13 +309,14 @@
         // Además, se posiciona el tooltip relativo al personaje para que al mover el mapa su posición se mantenga.
         function updateCharacterRoute(charElement, newX, newY) {
             let route = characterRoutes.get(charElement) || [];
-            const threshold = 5; // Añadir muestra solo si la distancia es mayor a 5 unidades
+            const threshold = 0; // Añadir muestra solo si la distancia es mayor a 5 unidades
             if (route.length === 0) {
                 route.push({ x: newX, y: newY });
             } else {
                 const lastPoint = route[route.length - 1];
                 const dx = newX - lastPoint.x, dy = newY - lastPoint.y;
-                if (Math.sqrt(dx*dx + dy*dy) >= threshold) {
+                // if (Math.sqrt(dx*dx + dy*dy) >= threshold) {
+                if (true) {
                     route.push({ x: newX, y: newY });
                 }
             }
@@ -331,13 +335,22 @@
             if (!pathElem) {
                 pathElem = document.createElementNS("http://www.w3.org/2000/svg", "path");
                 pathElem.classList.add('character-route');
+                
                 pathElem.setAttribute('fill', 'none');
                 pathElem.setAttribute('stroke', 'red');
                 pathElem.setAttribute('stroke-width', 1);
+                pathElem.setAttribute('stroke-dasharray', '2 2');
                 svgElement.appendChild(pathElem);
             }
-            const d = generateSmoothPath(route);
-            pathElem.setAttribute('d', d);
+            let routeSize= (route+"").length;
+            // const d = generateSmoothPath(route);
+            // console.log(routeSize, d.length);
+            // console.log(d);
+            // console.log(pathElem);
+            
+            
+            // pathElem.setAttribute('d', d);
+            // pathElem.setAttribute('d', d);
             
             // Posicionar el tooltip relativo al bounding box del personaje
             const bbox = charElement.getBoundingClientRect();
@@ -534,13 +547,29 @@
         };
 
         function move(image, newX, newY) {
+            let x, y;
+            //si hay coordenadas como segundo parámetro se asignan a x e y
+            ({ x, y } = newX.x && newX.y ? newX : { x: newX, y: newY });
+            ;
             // Guardar y actualizar posiciones
-            image.setAttribute('data-x', newX);
-            image.setAttribute('data-y', newY);
+            image.setAttribute('data-x', x);
+            image.setAttribute('data-y', y);
 
             const size = parseFloat(image.getAttribute('width'));
-            image.setAttribute('x', newX - size / 2);
-            image.setAttribute('y', newY - size / 2);
+            image.setAttribute('x', x - size / 2);
+            image.setAttribute('y', y - size / 2);
+        }
+
+        function move2(personaje, lugar) {
+            let cs = coordenadas(lugar);
+            let img = characters.get(personaje).querySelector('image');
+            // if cs or img is not available, do not move
+            if (!cs || !img) return;
+            move(img, cs);
+            if (isOnline) {
+                saveMapState(characters.get(personaje));
+            }
+            
         }
 
 
@@ -556,6 +585,10 @@
 
         function coordenadas(searchText) {
             if (!svgElement) return null;
+            if (svgElement.getElementById(searchText)) {
+                const el = svgElement.getElementById(searchText);
+                return c(el);
+            }
             const texts = svgElement.querySelectorAll('text');
             for (const textEl of texts) {
                 if (textEl.textContent.includes(searchText)) {
@@ -841,10 +874,33 @@
                 if (isOnline) saveMapState(draggedCharacter);
             };
 
-            const stopDragging = () => {
+            const stopDragging = e => {
                 if (draggedCharacter) {
                     image().style.opacity = '1';
                     cross().style.display = 'none';
+                    
+                    let ruta=characterRoutes.get(charElement);
+                    console.log(ruta);
+                    const path = simplifySvgPath(ruta);
+                    console.log(path);
+
+                    let pathElem = charElement.querySelector('.character-route');
+            if (!pathElem) {
+                pathElem = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                pathElem.classList.add('character-route');
+                
+                pathElem.setAttribute('fill', 'none');
+                pathElem.setAttribute('stroke', 'red');
+                pathElem.setAttribute('stroke-width', 1);
+                pathElem.setAttribute('stroke-dasharray', '2 2');
+                svgElement.appendChild(pathElem);
+            }
+            pathElem.setAttribute('d', path);
+                    draggedCharacter = null;
+                 
+                    
+
+
                 }
                 draggedCharacter = null;
                 document.removeEventListener('mousemove', drag);
