@@ -572,6 +572,28 @@
 
         }
 
+        function localizacion(personaje) {
+            let x= daImagen(personaje).getAttribute('data-x');
+            let y= daImagen(personaje).getAttribute('data-y');
+            return {x: x, y: y};
+        }
+
+        function near(personaje){
+            const texts = svgElement.querySelectorAll('text');
+            let loc=localizacion(personaje);
+            let cercano = null;
+            let minDistancia = 1000000;
+            let dist=0;
+            for (const textEl of texts) {
+                locEl=c(textEl);
+                dis=Math.sqrt((locEl.x - loc.x)**2 + (locEl.y - loc.y)**2);
+                 
+                
+            }
+
+        }
+
+
         function c(el) {
             const bbox = el.getBBox();
             const matrix = el.getCTM();
