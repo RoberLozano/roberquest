@@ -272,6 +272,84 @@
         const mapContainer = document.getElementById("map-container");
         const svgContainer = document.getElementById("svg-container");
 
+        // Agregar variable global para almacenar las rutas de personajes
+        const characterRoutes = new Map();
+
+        // Definir tooltip para mostrar distancia mientras se mueve un personaje
+        const tooltip = document.createElement('div');
+        tooltip.style.cssText = "position: fixed; display: none; background: rgba(0,0,0,0.8); color: white; padding: 5px; border-radius: 3px; z-index: 1100; font-size: 12px;";
+        document.body.appendChild(tooltip);
+
+        // Nueva función helper para generar ruta suave con curvas Bezier (Catmull-Rom a Bezier)
+        function generateSmoothPath(points) {
+            if (points.length < 2) return "";
+            let d = `M ${points[0].x} ${points[0].y} `;
+            if (points.length === 2) {
+                d += `L ${points[1].x} ${points[1].y}`;
+                return d;
+            }
+            for (let i = 0; i < points.length - 1; i++) {
+                const p0 = i === 0 ? points[i] : points[i - 1];
+                const p1 = points[i];
+                const p2 = points[i + 1];
+                const p3 = (i + 2 < points.length) ? points[i + 2] : p2;
+                const cp1x = p1.x + (p2.x - p0.x) / 6;
+                const cp1y = p1.y + (p2.y - p0.y) / 6;
+                const cp2x = p2.x - (p3.x - p1.x) / 6;
+                const cp2y = p2.y - (p3.y - p1.y) / 6;
+                d += `C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p2.x} ${p2.y} `;
+            }
+            return d;
+        }
+
+        // Modificar updateCharacterRoute para dibujar menos muestras y suavizar el camino con curvas Bezier.
+        // Además, se posiciona el tooltip relativo al personaje para que al mover el mapa su posición se mantenga.
+        function updateCharacterRoute(charElement, newX, newY) {
+            let route = characterRoutes.get(charElement) || [];
+            const threshold = 5; // Añadir muestra solo si la distancia es mayor a 5 unidades
+            if (route.length === 0) {
+                route.push({ x: newX, y: newY });
+            } else {
+                const lastPoint = route[route.length - 1];
+                const dx = newX - lastPoint.x, dy = newY - lastPoint.y;
+                if (Math.sqrt(dx*dx + dy*dy) >= threshold) {
+                    route.push({ x: newX, y: newY });
+                }
+            }
+            characterRoutes.set(charElement, route);
+            
+            // Calcular distancia total recorrida
+            let totalDistance = 0;
+            for (let i = 1; i < route.length; i++) {
+                const dx = route[i].x - route[i - 1].x;
+                const dy = route[i].y - route[i - 1].y;
+                totalDistance += Math.sqrt(dx * dx + dy * dy);
+            }
+            
+            // Dibujar el camino usando un <path> con curvas Bezier
+            let pathElem = charElement.querySelector('.character-route');
+            if (!pathElem) {
+                pathElem = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                pathElem.classList.add('character-route');
+                pathElem.setAttribute('fill', 'none');
+                pathElem.setAttribute('stroke', 'red');
+                pathElem.setAttribute('stroke-width', 1);
+                svgElement.appendChild(pathElem);
+            }
+            const d = generateSmoothPath(route);
+            pathElem.setAttribute('d', d);
+            
+            // Posicionar el tooltip relativo al bounding box del personaje
+            const bbox = charElement.getBoundingClientRect();
+            tooltip.style.display = 'block';
+            tooltip.style.left = `${bbox.right + 10}px`;
+            tooltip.style.top = `${bbox.top + 10}px`;
+            tooltip.innerText = `Dist: ${totalDistance.toFixed(2)}`;
+            clearTimeout(tooltip.hideTimeout);
+            tooltip.hideTimeout = setTimeout(() => {
+                tooltip.style.display = 'none';
+            }, 2000);
+        }
 
         // File input handler
         document.getElementById('fileInput').addEventListener('change', function (e) {
@@ -739,6 +817,8 @@
                     x: parseFloat(image().getAttribute('data-x')) || (parseFloat(image().getAttribute('x')) + parseFloat(image().getAttribute('width')) / 2),
                     y: parseFloat(image().getAttribute('data-y')) || (parseFloat(image().getAttribute('y')) + parseFloat(image().getAttribute('height')) / 2)
                 };
+                // Inicializar la ruta con la posición inicial
+                characterRoutes.set(charElement, [{ x: originalPos.x, y: originalPos.y }]);
                 document.addEventListener('mousemove', drag);
                 document.addEventListener('touchmove', drag);
                 document.addEventListener('mouseup', stopDragging);
@@ -756,6 +836,8 @@
                 const newY = originalPos.y + dy;
                 move(image(), newX, newY);
                 updateCross(newX, newY);
+                // Actualizar y dibujar la ruta con distancia recorrida
+                updateCharacterRoute(charElement, newX, newY);
                 if (isOnline) saveMapState(draggedCharacter);
             };
 
