@@ -584,12 +584,19 @@
             let cercano = null;
             let minDistancia = 1000000;
             let dist=0;
+            
             for (const textEl of texts) {
                 locEl=c(textEl);
                 dis=Math.sqrt((locEl.x - loc.x)**2 + (locEl.y - loc.y)**2);
-                 
+                 console.log(dis);
+                if(dis<minDistancia){
+                    minDistancia=dis;
+                    cercano=textEl.textContent;
+                }
                 
             }
+            console.log(cercano, minDistancia);
+            
 
         }
 
