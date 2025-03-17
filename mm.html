@@ -418,15 +418,42 @@
                 // Handle pinch zoom
                 const touch1 = e.touches[0];
                 const touch2 = e.touches[1];
+
+                // Calcular el punto medio entre los dos dedos
+                const midX = (touch1.clientX + touch2.clientX) / 2;
+                const midY = (touch1.clientY + touch2.clientY) / 2;
+
+
                 const dist = Math.hypot(
                     touch2.clientX - touch1.clientX,
                     touch2.clientY - touch1.clientY
                 );
 
                 if (this.lastDist) {
+                    // const delta = dist - this.lastDist;
+                    // scale += delta * 0.01;
+                    // scale = Math.min(Math.max(0.1, scale), 100); // Permitir hasta 100x zoom
+                    // setTransform();
+                    // Obtener el punto en coordenadas SVG antes del zoom
+                    const svgPointBefore = getPointInSVG(midX, midY);
+                    if (!svgPointBefore) return;
+
+                    // Calcular el factor de zoom basado en la diferencia de distancia
                     const delta = dist - this.lastDist;
+                    const oldScale = scale;
                     scale += delta * 0.01;
-                    scale = Math.min(Math.max(0.1, scale), 100); // Permitir hasta 100x zoom
+                    scale = Math.min(Math.max(0.1, scale), 100); // Limitar zoom entre 0.1x y 100x
+
+                    // Aplicar la transformación inicial
+                    setTransform();
+
+                    // Obtener el punto en coordenadas SVG después del zoom
+                    const svgPointAfter = getPointInSVG(midX, midY);
+                    if (!svgPointAfter) return;
+
+                    // Ajustar la posición para mantener el punto bajo los dedos
+                    pointX += (svgPointAfter.x - svgPointBefore.x) * scale;
+                    pointY += (svgPointAfter.y - svgPointBefore.y) * scale;
                     setTransform();
                 }
                 this.lastDist = dist;
@@ -573,31 +600,29 @@
         }
 
         function localizacion(personaje) {
-            let x= daImagen(personaje).getAttribute('data-x');
-            let y= daImagen(personaje).getAttribute('data-y');
-            return {x: x, y: y};
+            let x = daImagen(personaje).getAttribute('data-x');
+            let y = daImagen(personaje).getAttribute('data-y');
+            return { x: x, y: y };
         }
 
-        function near(personaje){
+        function near(personaje) {
             const texts = svgElement.querySelectorAll('text');
-            let loc=localizacion(personaje);
+            let loc = localizacion(personaje);
             let cercano = null;
             let minDistancia = 1000000;
-            let dist=0;
-            
+            let dist = 0;
+
             for (const textEl of texts) {
-                locEl=c(textEl);
-                dis=Math.sqrt((locEl.x - loc.x)**2 + (locEl.y - loc.y)**2);
-                 console.log(dis);
-                if(dis<minDistancia){
-                    minDistancia=dis;
-                    cercano=textEl.textContent;
+                locEl = c(textEl);
+                dis = Math.sqrt((locEl.x - loc.x) ** 2 + (locEl.y - loc.y) ** 2);
+                console.log(dis);
+                if (dis < minDistancia) {
+                    minDistancia = dis;
+                    cercano = textEl.textContent;
                 }
-                
             }
             console.log(cercano, minDistancia);
-            
-
+            return cercano;
         }
 
 
