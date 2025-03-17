@@ -238,7 +238,7 @@
             <button class="map-button" id="zoomIn">+</button>
             <button class="map-button" id="zoomOut">-</button>
             <button class="map-button" id="resetView">Reset</button>
-            v 0.004
+            v 0.005
         </div>
         <div id="searchBox">
             <input type="text" id="searchInput" placeholder="Enter name to zoom">
@@ -443,7 +443,8 @@
                     const delta = dist - this.lastDist;
                     // // const oldScale = scale;
                     // scale += delta * 0.01;
-                    zoomPunto({ x: midX, y: midY },delta * 0.01);
+                    let zoomFactor = delta < 0 ? 1.2 : 0.8;
+                    zoomPunto({ x: midX, y: midY },delta);
 
                     // scale = Math.min(Math.max(0.1, scale), 100); // Limitar zoom entre 0.1x y 100x
 
