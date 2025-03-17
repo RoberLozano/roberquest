@@ -238,7 +238,7 @@
             <button class="map-button" id="zoomIn">+</button>
             <button class="map-button" id="zoomOut">-</button>
             <button class="map-button" id="resetView">Reset</button>
-            v 0.003
+            v 0.004
         </div>
         <div id="searchBox">
             <input type="text" id="searchInput" placeholder="Enter name to zoom">
@@ -440,7 +440,7 @@
                     // if (!svgPointBefore) return;
 
                     // // Calcular el factor de zoom basado en la diferencia de distancia
-                    // const delta = dist - this.lastDist;
+                    const delta = dist - this.lastDist;
                     // // const oldScale = scale;
                     // scale += delta * 0.01;
                     zoomPunto({ x: midX, y: midY },delta * 0.01);
