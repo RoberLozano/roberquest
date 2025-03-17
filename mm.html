@@ -238,7 +238,7 @@
             <button class="map-button" id="zoomIn">+</button>
             <button class="map-button" id="zoomOut">-</button>
             <button class="map-button" id="resetView">Reset</button>
-            v 0.005
+            v 0.006
         </div>
         <div id="searchBox">
             <input type="text" id="searchInput" placeholder="Enter name to zoom">
@@ -436,29 +436,29 @@
                     // setTransform();
                     // Obtener el punto en coordenadas SVG antes del zoom
                     
-                    // const svgPointBefore = getPointInSVG(midX, midY);
-                    // if (!svgPointBefore) return;
+                    const svgPointBefore = getPointInSVG(midX, midY);
+                    if (!svgPointBefore) return;
 
                     // // Calcular el factor de zoom basado en la diferencia de distancia
                     const delta = dist - this.lastDist;
-                    // // const oldScale = scale;
-                    // scale += delta * 0.01;
-                    let zoomFactor = delta < 0 ? 1.2 : 0.8;
-                    zoomPunto({ x: midX, y: midY },delta);
+                    // const oldScale = scale;
+                    scale += delta * 0.01;
+                    // let zoomFactor = delta < 0 ? 1.2 : 0.8;
+                    // zoomPunto({ x: midX, y: midY },delta);
 
-                    // scale = Math.min(Math.max(0.1, scale), 100); // Limitar zoom entre 0.1x y 100x
+                    scale = Math.min(Math.max(0.1, scale), 100); // Limitar zoom entre 0.1x y 100x
 
-                    // // Aplicar la transformación inicial
-                    // setTransform();
+                    // Aplicar la transformación inicial
+                    setTransform();
 
-                    // // Obtener el punto en coordenadas SVG después del zoom
-                    // const svgPointAfter = getPointInSVG(midX, midY);
-                    // if (!svgPointAfter) return;
+                    // Obtener el punto en coordenadas SVG después del zoom
+                    const svgPointAfter = getPointInSVG(midX, midY);
+                    if (!svgPointAfter) return;
 
-                    // // Ajustar la posición para mantener el punto bajo los dedos
-                    // pointX += (svgPointAfter.x - svgPointBefore.x) * scale;
-                    // pointY += (svgPointAfter.y - svgPointBefore.y) * scale;
-                    // setTransform();
+                    // Ajustar la posición para mantener el punto bajo los dedos
+                    pointX += (svgPointAfter.x - svgPointBefore.x) * scale;
+                    pointY += (svgPointAfter.y - svgPointBefore.y) * scale;
+                    setTransform();
                 }
                 this.lastDist = dist;
             }
