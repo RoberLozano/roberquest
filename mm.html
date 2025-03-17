@@ -60,7 +60,7 @@
             position: relative;
             top: 0;
             right: 0;
-            margin-bottom: 20px;
+            margin-bottom: 5px;
             background: #2a2a2a;
             color: #fff;
             width: 100%;
@@ -80,7 +80,7 @@
             position: relative;
             top: 0;
             right: 0;
-            margin-bottom: 20px;
+            margin-bottom: 5px;
             background: #2a2a2a;
             color: #fff;
             width: 100%;
@@ -90,7 +90,7 @@
         }
 
         #layersHeader {
-            padding: 10px;
+            padding: 5px;
             border-bottom: 1px solid #444;
             position: sticky;
             top: 0;
@@ -148,7 +148,7 @@
             transition: right 0.3s ease;
             /* Cambiar left por right en transition */
             z-index: 1000;
-            padding: 20px;
+            padding: 10px;
             box-sizing: border-box;
             box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
             /* Invertir sombra */
@@ -238,7 +238,7 @@
             <button class="map-button" id="zoomIn">+</button>
             <button class="map-button" id="zoomOut">-</button>
             <button class="map-button" id="resetView">Reset</button>
-            v 0.001
+            v 0.003
         </div>
         <div id="searchBox">
             <input type="text" id="searchInput" placeholder="Enter name to zoom">
@@ -246,7 +246,6 @@
         </div>
         <div id="layersPanel">
             <div id="layersHeader">
-                <h3>Capas</h3>
                 <input type="text" id="layerSearch" placeholder="Buscar capas...">
             </div>
             <div id="layersList"></div>
@@ -436,26 +435,29 @@
                     // scale = Math.min(Math.max(0.1, scale), 100); // Permitir hasta 100x zoom
                     // setTransform();
                     // Obtener el punto en coordenadas SVG antes del zoom
-                    const svgPointBefore = getPointInSVG(midX, midY);
-                    if (!svgPointBefore) return;
+                    
+                    // const svgPointBefore = getPointInSVG(midX, midY);
+                    // if (!svgPointBefore) return;
 
-                    // Calcular el factor de zoom basado en la diferencia de distancia
-                    const delta = dist - this.lastDist;
-                    const oldScale = scale;
-                    scale += delta * 0.01;
-                    scale = Math.min(Math.max(0.1, scale), 100); // Limitar zoom entre 0.1x y 100x
+                    // // Calcular el factor de zoom basado en la diferencia de distancia
+                    // const delta = dist - this.lastDist;
+                    // // const oldScale = scale;
+                    // scale += delta * 0.01;
+                    zoomPunto({ x: midX, y: midY },delta * 0.01);
 
-                    // Aplicar la transformación inicial
-                    setTransform();
+                    // scale = Math.min(Math.max(0.1, scale), 100); // Limitar zoom entre 0.1x y 100x
 
-                    // Obtener el punto en coordenadas SVG después del zoom
-                    const svgPointAfter = getPointInSVG(midX, midY);
-                    if (!svgPointAfter) return;
+                    // // Aplicar la transformación inicial
+                    // setTransform();
 
-                    // Ajustar la posición para mantener el punto bajo los dedos
-                    pointX += (svgPointAfter.x - svgPointBefore.x) * scale;
-                    pointY += (svgPointAfter.y - svgPointBefore.y) * scale;
-                    setTransform();
+                    // // Obtener el punto en coordenadas SVG después del zoom
+                    // const svgPointAfter = getPointInSVG(midX, midY);
+                    // if (!svgPointAfter) return;
+
+                    // // Ajustar la posición para mantener el punto bajo los dedos
+                    // pointX += (svgPointAfter.x - svgPointBefore.x) * scale;
+                    // pointY += (svgPointAfter.y - svgPointBefore.y) * scale;
+                    // setTransform();
                 }
                 this.lastDist = dist;
             }
@@ -501,22 +503,40 @@
         function handleWheelZoom(e) {
             e.preventDefault();
             // console.log(e);
-            const svgPointBefore = getPointInSVG(e.clientX, e.clientY);
-            if (!svgPointBefore) return;
+            // const svgPointBefore = getPointInSVG(e.clientX, e.clientY);
+            // if (!svgPointBefore) return;
             // Zoom con rueda del raton
             let zoomFactor = e.deltaY < 0 ? 1.2 : 0.8;
+
+            zoomPunto({x: e.clientX, y: e.clientY}, zoomFactor);
+
+            // const newScale = Math.min(Math.max(0.1, scale * zoomFactor), 100);
+            // scale = newScale;
+            // setTransform();
+
+            // const svgPointAfter = getPointInSVG(e.clientX, e.clientY);
+            // if (!svgPointAfter) return;
+
+            // pointX += (svgPointAfter.x - svgPointBefore.x) * scale;
+            // pointY += (svgPointAfter.y - svgPointBefore.y) * scale;
+            // setTransform();
+
+        }
+
+        function zoomPunto(p, zoomFactor){
+            const svgPointBefore = getPointInSVG(p.x, p.y);
+            if (!svgPointBefore) return;
 
             const newScale = Math.min(Math.max(0.1, scale * zoomFactor), 100);
             scale = newScale;
             setTransform();
 
-            const svgPointAfter = getPointInSVG(e.clientX, e.clientY);
+            const svgPointAfter = getPointInSVG(p.x, p.y);
             if (!svgPointAfter) return;
 
             pointX += (svgPointAfter.x - svgPointBefore.x) * scale;
             pointY += (svgPointAfter.y - svgPointBefore.y) * scale;
             setTransform();
-
         }
 
         mapContainer.addEventListener('wheel', handleWheelZoom);
