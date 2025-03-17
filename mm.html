@@ -544,15 +544,11 @@
 
         // Button handlers
         document.getElementById('zoomIn').addEventListener('click', function () {
-            scale *= 1.2;
-            scale = Math.min(100, scale); // Permitir hasta 100x zoom
-            setTransform();
+            zoomPunto({x: window.innerWidth / 2, y: window.innerHeight / 2}, 1.2);
         });
 
         document.getElementById('zoomOut').addEventListener('click', function () {
-            scale *= 0.8;
-            scale = Math.max(0.1, scale);
-            setTransform();
+            zoomPunto({x: window.innerWidth / 2, y: window.innerHeight / 2}, 0.8);
         });
 
         document.getElementById('resetView').addEventListener('click', function () {
@@ -625,6 +621,15 @@
             let x = daImagen(personaje).getAttribute('data-x');
             let y = daImagen(personaje).getAttribute('data-y');
             return { x: x, y: y };
+        }
+        function screenLocation(personaje) {
+
+            let x = daImagen(personaje)
+            console.log(x);
+            
+            let y = daImagen(personaje).getAttribute('y');
+            return { x: x, y: y };
+            
         }
 
         function near(personaje) {
