@@ -205,6 +205,47 @@
         .wifi-button:hover {
             background: rgba(0, 0, 0, 0.9);
         }
+
+        #characterContextMenu {
+            position: absolute;
+            display: none;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 1000;
+            min-width: 150px;
+        }
+
+        #characterContextMenu ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        #characterContextMenu li {
+            padding: 8px 12px;
+            color: #fff;
+            cursor: pointer;
+            border-bottom: 1px solid #444;
+        }
+
+        #characterContextMenu li:last-child {
+            border-bottom: none;
+        }
+
+        #characterContextMenu li:hover {
+            background: #444;
+        }
+
+        #characterContextMenu .menu-delete {
+            color: #ff4444;
+        }
+
+        #characterContextMenu .placeholder {
+            color: #666;
+            font-style: italic;
+        }
     </style>
     <script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
     <script src='js/coor.js'></script>
@@ -260,6 +301,16 @@
         </svg>
     </button>
 
+    <div id="characterContextMenu">
+        <ul>
+            <li id="togglePath">Mostrar camino</li>
+            <li id="deleteCharacter" class="menu-delete">Eliminar personaje</li>
+            <li class="placeholder">Mostrar stats</li>
+            <li class="placeholder">Editar personaje</li>
+            <li class="placeholder">Cambiar imagen</li>
+        </ul>
+    </div>
+
     <script>
         let scale = 1;
         let panning = false;
@@ -268,7 +319,10 @@
         let start = { x: 0, y: 0 };
         let svgElement = null;
         let draggedCharacter = null;
+        activeCharacter = null;
         let characters = new Map(); // Para mantener registro de personajes
+        let personajes = new Map(); // Para mantener el objeto personaje si existe en firebase
+        
 
         const mapContainer = document.getElementById("map-container");
         const svgContainer = document.getElementById("svg-container");
@@ -965,11 +1019,26 @@
         startAngle = null;
     });
 
-
-
             const id = baseName;
             charGroup.setAttribute('id', id);
             characters.set(id, charGroup);
+
+            charGroup.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                activeCharacter = charGroup;
+                const contextMenu = document.getElementById('characterContextMenu');
+                contextMenu.style.display = 'block';
+                contextMenu.style.left = `${e.pageX}px`;
+                contextMenu.style.top = `${e.pageY}px`;
+        
+                // Actualizar texto del toggle path
+                const togglePathItem = document.getElementById('togglePath');
+                togglePathItem.textContent = activeCharacter.querySelector('.character-route')?.style.display !== 'none' 
+                    ? 'Ocultar camino' 
+                    : 'Mostrar camino';
+            });
         }
 
         const setupCharacterDrag = charElement => {
@@ -1038,6 +1107,8 @@
                     if (rastro) {
                         let ruta = characterRoutes.get(charElement);
                         console.log(ruta);
+                        if (!ruta) return;
+                            
                         const path = simplifySvgPath(ruta);
                         console.log(path);
 
@@ -1214,6 +1285,36 @@
 
         // Añadir listener para el botón de sincronización
         syncButton.addEventListener('click', toggleOnlineMode);
+
+        document.getElementById('togglePath').addEventListener('click', () => {
+            console.log('Toggling path...');
+            
+            if (!activeCharacter) return;
+            const path = activeCharacter.querySelector('.character-route');
+            if (path) {
+                path.style.display = path.style.display === 'none' ? '' : 'none';
+            }
+        });
+
+        document.getElementById('deleteCharacter').addEventListener('click', () => {
+            if (!activeCharacter) return;
+            console.log('Deleting character...');
+            
+            const id = activeCharacter.getAttribute('id');
+            characterRoutes.delete(activeCharacter); // Eliminar la ruta
+            activeCharacter.querySelector('.character-route')?.remove(); // Eliminar el camino  
+            
+            activeCharacter.remove();
+            characters.delete(id);
+            activeCharacter = null;
+        });
+
+        // Cerrar el menú al hacer click fuera
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#characterContextMenu')) {
+                document.getElementById('characterContextMenu').style.display = 'none';
+            }
+        });
     </script>
 </body>
 
