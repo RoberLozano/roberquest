@@ -1013,9 +1013,8 @@
         
                 // Actualizar texto del toggle path
                 const togglePathItem = document.getElementById('togglePath');
-                togglePathItem.textContent = activeCharacter.querySelector('.character-route')?.style.display !== 'none' 
-                    ? 'Ocultar camino' 
-                    : 'Mostrar camino';
+                togglePathItem.textContent = rastro ? 'Ocultar camino' : 'Mostrar camino'; 
+    
             });
         }
 
@@ -1264,12 +1263,7 @@
 
         document.getElementById('togglePath').addEventListener('click', () => {
             console.log('Toggling path...');
-            
-            if (!activeCharacter) return;
-            const path = activeCharacter.querySelector('.character-route');
-            if (path) {
-                path.style.display = path.style.display === 'none' ? '' : 'none';
-            }
+            rastro = !rastro;
         });
 
         document.getElementById('deleteCharacter').addEventListener('click', () => {
