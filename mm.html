@@ -238,7 +238,7 @@
             <button class="map-button" id="zoomIn">+</button>
             <button class="map-button" id="zoomOut">-</button>
             <button class="map-button" id="resetView">Reset</button>
-            v 0.007
+            v 0.07
         </div>
         <div id="searchBox">
             <input type="text" id="searchInput" placeholder="Enter name to zoom">
@@ -415,6 +415,7 @@
                 pointY = e.touches[0].clientY - start.y;
                 setTransform();
             } else if (e.touches.length === 2) {
+                panning = false;
                 // Handle pinch zoom
                 const touch1 = e.touches[0];
                 const touch2 = e.touches[1];
