@@ -388,29 +388,7 @@
                 totalDistance += Math.sqrt(dx * dx + dy * dy);
             }
 
-            // Dibujar el camino usando un <path> con curvas Bezier
-            let pathElem = charElement.querySelector('.character-route');
-            if (!pathElem) {
-                pathElem = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                pathElem.classList.add('character-route');
-
-                pathElem.setAttribute('fill', 'none');
-                pathElem.setAttribute('stroke', 'red');
-                pathElem.setAttribute('stroke-width', 1);
-                pathElem.setAttribute('stroke-dasharray', '2 2');
-                svgElement.appendChild(pathElem);
-            }
-            let routeSize = (route + "").length;
-            // const d = generateSmoothPath(route);
-            // console.log(routeSize, d.length);
-            // console.log(d);
-            // console.log(pathElem);
-
-
-            // pathElem.setAttribute('d', d);
-            // pathElem.setAttribute('d', d);
-
-            // Posicionar el tooltip relativo al bounding box del personaje
+ 
             const bbox = charElement.getBoundingClientRect();
             tooltip.style.display = 'block';
             tooltip.style.left = `${bbox.right + 10}px`;
@@ -1107,8 +1085,6 @@
                     if (rastro) {
                         let ruta = characterRoutes.get(charElement);
                         console.log(ruta);
-                        if (!ruta) return;
-                            
                         const path = simplifySvgPath(ruta);
                         console.log(path);
 
