@@ -238,7 +238,7 @@
             <button class="map-button" id="zoomIn">+</button>
             <button class="map-button" id="zoomOut">-</button>
             <button class="map-button" id="resetView">Reset</button>
-            v 0.006
+            v 0.007
         </div>
         <div id="searchBox">
             <input type="text" id="searchInput" placeholder="Enter name to zoom">
@@ -889,6 +889,78 @@
                     }
                 }
             });
+
+           
+
+    // Ángulo inicial y rotación de inicio
+    let startAngle = null;
+    let startRotation = 0;
+    
+    // Función para calcular el ángulo entre dos toques
+    function getAngle(touch1, touch2) {
+        return Math.atan2(
+            touch2.clientY - touch1.clientY,
+            touch2.clientX - touch1.clientX
+        ) * 180 / Math.PI;
+    }
+    
+    // Evento de inicio de toque
+    charGroup.addEventListener('touchstart', (e) => {
+        // Activar rotación solo si hay dos dedos en la pantalla
+        if (e.touches.length === 2) {
+            e.preventDefault();
+            
+            let img = charGroup.querySelector('image');
+            startRotation = parseFloat(img.getAttribute('data-rotation')) || 0;
+            startAngle = getAngle(e.touches[0], e.touches[1]);
+            
+            console.log('Iniciando rotación del personaje...', charGroup.id);
+        }
+    });
+    
+    // Evento de movimiento de toque
+    charGroup.addEventListener('touchmove', (e) => {
+        if (e.touches.length === 2 && startAngle !== null) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            let img = charGroup.querySelector('image');
+            let currentAngle = getAngle(e.touches[0], e.touches[1]);
+            let angleDelta = currentAngle - startAngle;
+            
+            // Calcular nueva rotación
+            let newRotation = (startRotation + angleDelta) % 360;
+            if (newRotation < 0) newRotation += 360;
+            
+            img.setAttribute('data-rotation', newRotation);
+            rotate(img, newRotation);
+            
+            console.log('Rotando personaje...', charGroup.id, 'Nuevo ángulo:', newRotation);
+        }
+    });
+    
+    // Evento de fin de toque
+    charGroup.addEventListener('touchend', (e) => {
+        if (startAngle !== null) {
+            // Si quedan menos de 2 toques, terminar la rotación
+            if (e.touches.length < 2) {
+                startAngle = null;
+                
+                if (isOnline) {
+                    saveMapState(charGroup);
+                }
+                
+                console.log('Rotación finalizada');
+            }
+        }
+    });
+    
+    // Evento de cancelación de toque
+    charGroup.addEventListener('touchcancel', (e) => {
+        startAngle = null;
+    });
+
+
 
             const id = baseName;
             charGroup.setAttribute('id', id);
