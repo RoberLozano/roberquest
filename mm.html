@@ -304,7 +304,9 @@
     <div id="characterContextMenu">
         <ul>
             <li id="togglePath">Mostrar camino</li>
+            <li id="deleteRoute" class="menu-delete">Eliminar ruta</li>
             <li id="deleteCharacter" class="menu-delete">Eliminar personaje</li>
+            <li id="rotate"> Rotar <input type="range" min="-180" max="180" value="0" class="slider" id="myAngle" onchange="rotate(activeCharacter,this.value)"> </li>
             <li class="placeholder">Mostrar stats</li>
             <li class="placeholder">Editar personaje</li>
             <li class="placeholder">Cambiar imagen</li>
@@ -504,6 +506,10 @@
 
         // Mouse handlers
         mapContainer.addEventListener('mousedown', function (e) {
+            if(e.button === 2){
+                panning=false;
+                return;
+            } 
             panning = true;
             start = {
                 x: e.clientX - pointX,
@@ -968,7 +974,7 @@
             let newRotation = (startRotation + angleDelta) % 360;
             if (newRotation < 0) newRotation += 360;
             
-            img.setAttribute('data-rotation', newRotation);
+            // img.setAttribute('data-rotation', newRotation);
             rotate(img, newRotation);
             
             console.log('Rotando personaje...', charGroup.id, 'Nuevo ángulo:', newRotation);
@@ -1041,6 +1047,7 @@
             };
 
             const startDragging = e => {
+                if(e.button==2) return; // Si es click derecho, no hacer nada
                 e.stopPropagation();
                 draggedCharacter = charElement;
                 const evt = e.touches ? e.touches[0] : e;
@@ -1242,8 +1249,8 @@
         function rotate(img, angle) {
             img.style.transformBox = 'fill-box';
             img.style.transformOrigin = 'center';
+            img.setAttribute('data-rotation', angle);
             img.style.transform = `rotate(${angle}deg)`;
-
 
         }
         const saveMapState = character => {
@@ -1264,7 +1271,21 @@
         document.getElementById('togglePath').addEventListener('click', () => {
             console.log('Toggling path...');
             rastro = !rastro;
+            svgElement.querySelectorAll('.character-route').forEach(el => el.style.display = rastro ? 'block' : 'none');
+                        // Actualizar texto del toggle path
+                const togglePathItem = document.getElementById('togglePath');
+                togglePathItem.textContent = rastro ? 'Ocultar camino' : 'Mostrar camino';
+        
         });
+
+        
+        document.getElementById('deleteRoute').addEventListener('click', () => {
+            if (!activeCharacter) return;
+            console.log('Deleting routes...');
+
+            svgElement.querySelectorAll('.character-route').forEach(el => el.remove());
+        });
+
 
         document.getElementById('deleteCharacter').addEventListener('click', () => {
             if (!activeCharacter) return;
@@ -1272,8 +1293,8 @@
             
             const id = activeCharacter.getAttribute('id');
             characterRoutes.delete(activeCharacter); // Eliminar la ruta
-            activeCharacter.querySelector('.character-route')?.remove(); // Eliminar el camino  
-            
+            svgElement.querySelectorAll('.character-route').forEach(el => el.remove());
+
             activeCharacter.remove();
             characters.delete(id);
             activeCharacter = null;
