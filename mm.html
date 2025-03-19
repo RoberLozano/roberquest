@@ -369,14 +369,14 @@
         // Además, se posiciona el tooltip relativo al personaje para que al mover el mapa su posición se mantenga.
         function updateCharacterRoute(charElement, newX, newY) {
             let route = characterRoutes.get(charElement) || [];
-            const threshold = 0; // Añadir muestra solo si la distancia es mayor a 5 unidades
+            const threshold = 0.3; // Añadir muestra solo si la distancia es mayor a 5 unidades
             if (route.length === 0) {
                 route.push({ x: newX, y: newY });
             } else {
                 const lastPoint = route[route.length - 1];
                 const dx = newX - lastPoint.x, dy = newY - lastPoint.y;
-                // if (Math.sqrt(dx*dx + dy*dy) >= threshold) {
-                if (true) {
+                if (Math.sqrt(dx*dx + dy*dy) >= threshold) {
+                // if (true) {
                     route.push({ x: newX, y: newY });
                 }
             }
@@ -663,9 +663,7 @@
         }
         function screenLocation(personaje) {
 
-            let x = daImagen(personaje)
-            console.log(x);
-            
+            let x = daImagen(personaje).getAttribute('x');           
             let y = daImagen(personaje).getAttribute('y');
             return { x: x, y: y };
             
@@ -858,6 +856,7 @@
             const baseName = fileName.substring(0, fileName.lastIndexOf('.')) // Elimina la extensión
                 .replace(/[^a-zA-Z0-9]/g, '_'); // Sanitiza el nombre
 
+            charGroup.id = baseName;
             // Crear imagen
             const image = document.createElementNS("http://www.w3.org/2000/svg", "image");
             image.setAttribute('href', imageUrl);
@@ -894,12 +893,12 @@
             // Línea horizontal
             const hLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
             hLine.setAttribute('stroke', 'white');
-            hLine.setAttribute('stroke-width', '2');
+            hLine.setAttribute('stroke-width', '1');
 
             // Línea vertical
             const vLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
             vLine.setAttribute('stroke', 'white');
-            vLine.setAttribute('stroke-width', '2');
+            vLine.setAttribute('stroke-width', '1');
 
             crossGroup.appendChild(hLine);
             crossGroup.appendChild(vLine);
@@ -921,15 +920,14 @@
                     // let currentRotation = parseFloat(charGroup.getAttribute('data-rotation')) || 0;
                     let delta = e.deltaY > 0 ? 15 : -15;
                     let newRotation = (currentRotation + delta) % 360;
-                    img.setAttribute('data-rotation', newRotation);
+                    // img.setAttribute('data-rotation', newRotation);
                     rotate(img, newRotation);
                     if (isOnline) {
                         saveMapState(charGroup);
                     }
                 }
             });
-
-           
+      
 //#region Rotación con dos dedos
 
     // Ángulo inicial y rotación de inicio
@@ -975,8 +973,7 @@
             if (newRotation < 0) newRotation += 360;
             
             // img.setAttribute('data-rotation', newRotation);
-            rotate(img, newRotation);
-            
+            rotate(img, newRotation);    
             console.log('Rotando personaje...', charGroup.id, 'Nuevo ángulo:', newRotation);
         }
     });
@@ -990,8 +987,7 @@
                 
                 if (isOnline) {
                     saveMapState(charGroup);
-                }
-                
+                }              
                 console.log('Rotación finalizada');
             }
         }
@@ -1090,26 +1086,35 @@
 
                     if (rastro) {
                         let ruta = characterRoutes.get(charElement);
+                        if(!ruta && ruta.length<2) return;
                         console.log(ruta);
-                        const path = simplifySvgPath(ruta);
+                        var path =null;
+                        try {
+                            path = simplifySvgPath(ruta);
+                        } catch (error) {
+                            return;
+                        }
                         console.log(path);
+                        console.log(draggedCharacter.id)
 
                         let pathElem = charElement.querySelector('.character-route');
-                        if (!pathElem) {
+                        if (!pathElem && path) {
                             pathElem = document.createElementNS("http://www.w3.org/2000/svg", "path");
                             pathElem.classList.add('character-route');
+                            pathElem.classList.add(`${draggedCharacter.id}-route`);
+
 
                             pathElem.setAttribute('fill', 'none');
                             pathElem.setAttribute('stroke', 'red');
-                            pathElem.setAttribute('stroke-width', 1);
-                            pathElem.setAttribute('stroke-dasharray', '2 2');
+                            pathElem.setAttribute('stroke-width', 0.5);
+                            pathElem.setAttribute('stroke-dasharray', '1 1');
                             svgElement.appendChild(pathElem);
                         }
-                        pathElem.setAttribute('d', path);
+                         if(path) pathElem.setAttribute('d', path);
                     }
                     draggedCharacter = null;
                 }
-                // draggedCharacter = null;
+                draggedCharacter = null;
                 document.removeEventListener('mousemove', drag);
                 document.removeEventListener('touchmove', drag);
                 document.removeEventListener('mouseup', stopDragging);
@@ -1283,7 +1288,7 @@
             if (!activeCharacter) return;
             console.log('Deleting routes...');
 
-            svgElement.querySelectorAll('.character-route').forEach(el => el.remove());
+            svgElement.querySelectorAll(`.${activeCharacter.id}-route`).forEach(el => el.remove());
         });
 
 
@@ -1293,7 +1298,7 @@
             
             const id = activeCharacter.getAttribute('id');
             characterRoutes.delete(activeCharacter); // Eliminar la ruta
-            svgElement.querySelectorAll('.character-route').forEach(el => el.remove());
+            svgElement.querySelectorAll(`.${activeCharacter.id}-route`).forEach(el => el.remove());
 
             activeCharacter.remove();
             characters.delete(id);
