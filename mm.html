@@ -212,7 +212,7 @@
             background: #2a2a2a;
             border: 1px solid #444;
             border-radius: 4px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
             z-index: 1000;
             min-width: 150px;
         }
@@ -306,7 +306,8 @@
             <li id="togglePath">Mostrar camino</li>
             <li id="deleteRoute" class="menu-delete">Eliminar ruta</li>
             <li id="deleteCharacter" class="menu-delete">Eliminar personaje</li>
-            <li id="rotate"> Rotar <input type="range" min="-180" max="180" value="0" class="slider" id="myAngle" onchange="rotate(activeCharacter,this.value)"> </li>
+            <li id="rotate"> Rotar <input type="range" min="-180" max="180" value="0" class="slider" id="myAngle"
+                    onchange="rotate(activeCharacter,this.value)"> </li>
             <li class="placeholder">Mostrar stats</li>
             <li class="placeholder">Editar personaje</li>
             <li class="placeholder">Cambiar imagen</li>
@@ -324,7 +325,7 @@
         activeCharacter = null;
         let characters = new Map(); // Para mantener registro de personajes
         let personajes = new Map(); // Para mantener el objeto personaje si existe en firebase
-        
+
 
         const mapContainer = document.getElementById("map-container");
         const svgContainer = document.getElementById("svg-container");
@@ -375,8 +376,8 @@
             } else {
                 const lastPoint = route[route.length - 1];
                 const dx = newX - lastPoint.x, dy = newY - lastPoint.y;
-                if (Math.sqrt(dx*dx + dy*dy) >= threshold) {
-                // if (true) {
+                if (Math.sqrt(dx * dx + dy * dy) >= threshold) {
+                    // if (true) {
                     route.push({ x: newX, y: newY });
                 }
             }
@@ -390,7 +391,7 @@
                 totalDistance += Math.sqrt(dx * dx + dy * dy);
             }
 
- 
+
             const bbox = charElement.getBoundingClientRect();
             tooltip.style.display = 'block';
             tooltip.style.left = `${bbox.right + 10}px`;
@@ -470,7 +471,7 @@
                     // scale = Math.min(Math.max(0.1, scale), 100); // Permitir hasta 100x zoom
                     // setTransform();
                     // Obtener el punto en coordenadas SVG antes del zoom
-                    
+
                     const svgPointBefore = getPointInSVG(midX, midY);
                     if (!svgPointBefore) return;
 
@@ -506,10 +507,10 @@
 
         // Mouse handlers
         mapContainer.addEventListener('mousedown', function (e) {
-            if(e.button === 2){
-                panning=false;
+            if (e.button === 2) {
+                panning = false;
                 return;
-            } 
+            }
             panning = true;
             start = {
                 x: e.clientX - pointX,
@@ -548,7 +549,7 @@
             // Zoom con rueda del raton
             let zoomFactor = e.deltaY < 0 ? 1.2 : 0.8;
 
-            zoomPunto({x: e.clientX, y: e.clientY}, zoomFactor);
+            zoomPunto({ x: e.clientX, y: e.clientY }, zoomFactor);
 
             // const newScale = Math.min(Math.max(0.1, scale * zoomFactor), 100);
             // scale = newScale;
@@ -563,7 +564,7 @@
 
         }
 
-        function zoomPunto(p, zoomFactor){
+        function zoomPunto(p, zoomFactor) {
             const svgPointBefore = getPointInSVG(p.x, p.y);
             if (!svgPointBefore) return;
 
@@ -583,11 +584,11 @@
 
         // Button handlers
         document.getElementById('zoomIn').addEventListener('click', function () {
-            zoomPunto({x: window.innerWidth / 2, y: window.innerHeight / 2}, 1.2);
+            zoomPunto({ x: window.innerWidth / 2, y: window.innerHeight / 2 }, 1.2);
         });
 
         document.getElementById('zoomOut').addEventListener('click', function () {
-            zoomPunto({x: window.innerWidth / 2, y: window.innerHeight / 2}, 0.8);
+            zoomPunto({ x: window.innerWidth / 2, y: window.innerHeight / 2 }, 0.8);
         });
 
         document.getElementById('resetView').addEventListener('click', function () {
@@ -653,7 +654,6 @@
             if (isOnline) {
                 saveMapState(characters.get(personaje));
             }
-
         }
 
         function localizacion(personaje) {
@@ -662,11 +662,9 @@
             return { x: x, y: y };
         }
         function screenLocation(personaje) {
-
-            let x = daImagen(personaje).getAttribute('x');           
+            let x = daImagen(personaje).getAttribute('x');
             let y = daImagen(personaje).getAttribute('y');
             return { x: x, y: y };
-            
         }
 
         function near(personaje) {
@@ -751,7 +749,6 @@
                 scale = 1;
                 setTransform();
                 setupLayers();
-
                 // Restaurar personajes
                 characters.forEach((data, id) => {
                     if (typeof data === 'object' && data.href) {
@@ -927,77 +924,77 @@
                     }
                 }
             });
-      
-//#region Rotación con dos dedos
 
-    // Ángulo inicial y rotación de inicio
-    let startAngle = null;
-    let startRotation = 0;
-    
-    // Función para calcular el ángulo entre dos toques
-    function getAngle(touch1, touch2) {
-        return Math.atan2(
-            touch2.clientY - touch1.clientY,
-            touch2.clientX - touch1.clientX
-        ) * 180 / Math.PI;
-    }
-    
-    // Evento de inicio de toque
-    charGroup.addEventListener('touchstart', (e) => {
-        // Activar rotación solo si hay dos dedos en la pantalla
-        if (e.touches.length === 2) {
-            panning = false;
-            e.preventDefault();
-            
-            let img = charGroup.querySelector('image');
-            startRotation = parseFloat(img.getAttribute('data-rotation')) || 0;
-            startAngle = getAngle(e.touches[0], e.touches[1]);
-            
-            console.log('Iniciando rotación del personaje...', charGroup.id);
-        }
-    });
-    
-    // Evento de movimiento de toque
-    charGroup.addEventListener('touchmove', (e) => {
-        if (e.touches.length === 2 && startAngle !== null) {
-            panning = false;
-            e.preventDefault();
-            e.stopPropagation();
-            
-            let img = charGroup.querySelector('image');
-            let currentAngle = getAngle(e.touches[0], e.touches[1]);
-            let angleDelta = currentAngle - startAngle;
-            
-            // Calcular nueva rotación
-            let newRotation = (startRotation + angleDelta) % 360;
-            if (newRotation < 0) newRotation += 360;
-            
-            // img.setAttribute('data-rotation', newRotation);
-            rotate(img, newRotation);    
-            console.log('Rotando personaje...', charGroup.id, 'Nuevo ángulo:', newRotation);
-        }
-    });
-    
-    // Evento de fin de toque
-    charGroup.addEventListener('touchend', (e) => {
-        if (startAngle !== null) {
-            // Si quedan menos de 2 toques, terminar la rotación
-            if (e.touches.length < 2) {
-                startAngle = null;
-                
-                if (isOnline) {
-                    saveMapState(charGroup);
-                }              
-                console.log('Rotación finalizada');
+            //#region Rotación con dos dedos
+
+            // Ángulo inicial y rotación de inicio
+            let startAngle = null;
+            let startRotation = 0;
+
+            // Función para calcular el ángulo entre dos toques
+            function getAngle(touch1, touch2) {
+                return Math.atan2(
+                    touch2.clientY - touch1.clientY,
+                    touch2.clientX - touch1.clientX
+                ) * 180 / Math.PI;
             }
-        }
-    });
-    
-    //#endregion
-    // Evento de cancelación de toque
-    charGroup.addEventListener('touchcancel', (e) => {
-        startAngle = null;
-    });
+
+            // Evento de inicio de toque
+            charGroup.addEventListener('touchstart', (e) => {
+                // Activar rotación solo si hay dos dedos en la pantalla
+                if (e.touches.length === 2) {
+                    panning = false;
+                    e.preventDefault();
+
+                    let img = charGroup.querySelector('image');
+                    startRotation = parseFloat(img.getAttribute('data-rotation')) || 0;
+                    startAngle = getAngle(e.touches[0], e.touches[1]);
+
+                    console.log('Iniciando rotación del personaje...', charGroup.id);
+                }
+            });
+
+            // Evento de movimiento de toque
+            charGroup.addEventListener('touchmove', (e) => {
+                if (e.touches.length === 2 && startAngle !== null) {
+                    panning = false;
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    let img = charGroup.querySelector('image');
+                    let currentAngle = getAngle(e.touches[0], e.touches[1]);
+                    let angleDelta = currentAngle - startAngle;
+
+                    // Calcular nueva rotación
+                    let newRotation = (startRotation + angleDelta) % 360;
+                    if (newRotation < 0) newRotation += 360;
+
+                    // img.setAttribute('data-rotation', newRotation);
+                    rotate(img, newRotation);
+                    console.log('Rotando personaje...', charGroup.id, 'Nuevo ángulo:', newRotation);
+                }
+            });
+
+            // Evento de fin de toque
+            charGroup.addEventListener('touchend', (e) => {
+                if (startAngle !== null) {
+                    // Si quedan menos de 2 toques, terminar la rotación
+                    if (e.touches.length < 2) {
+                        startAngle = null;
+
+                        if (isOnline) {
+                            saveMapState(charGroup);
+                        }
+                        console.log('Rotación finalizada');
+                    }
+                }
+            });
+
+            //#endregion
+            // Evento de cancelación de toque
+            charGroup.addEventListener('touchcancel', (e) => {
+                startAngle = null;
+            });
 
             const id = baseName;
             charGroup.setAttribute('id', id);
@@ -1006,17 +1003,17 @@
             charGroup.addEventListener('contextmenu', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                
+
                 activeCharacter = charGroup;
                 const contextMenu = document.getElementById('characterContextMenu');
                 contextMenu.style.display = 'block';
                 contextMenu.style.left = `${e.pageX}px`;
                 contextMenu.style.top = `${e.pageY}px`;
-        
+
                 // Actualizar texto del toggle path
                 const togglePathItem = document.getElementById('togglePath');
-                togglePathItem.textContent = rastro ? 'Ocultar camino' : 'Mostrar camino'; 
-    
+                togglePathItem.textContent = rastro ? 'Ocultar camino' : 'Mostrar camino';
+
             });
         }
 
@@ -1043,7 +1040,7 @@
             };
 
             const startDragging = e => {
-                if(e.button==2) return; // Si es click derecho, no hacer nada
+                if (e.button == 2) return; // Si es click derecho, no hacer nada
                 e.stopPropagation();
                 draggedCharacter = charElement;
                 const evt = e.touches ? e.touches[0] : e;
@@ -1086,9 +1083,9 @@
 
                     if (rastro) {
                         let ruta = characterRoutes.get(charElement);
-                        if(!ruta && ruta.length<2) return;
+                        if (!ruta && ruta.length < 2) return;
                         console.log(ruta);
-                        var path =null;
+                        var path = null;
                         try {
                             path = simplifySvgPath(ruta);
                         } catch (error) {
@@ -1110,7 +1107,7 @@
                             pathElem.setAttribute('stroke-dasharray', '1 1');
                             svgElement.appendChild(pathElem);
                         }
-                         if(path) pathElem.setAttribute('d', path);
+                        if (path) pathElem.setAttribute('d', path);
                     }
                     draggedCharacter = null;
                 }
@@ -1277,13 +1274,13 @@
             console.log('Toggling path...');
             rastro = !rastro;
             svgElement.querySelectorAll('.character-route').forEach(el => el.style.display = rastro ? 'block' : 'none');
-                        // Actualizar texto del toggle path
-                const togglePathItem = document.getElementById('togglePath');
-                togglePathItem.textContent = rastro ? 'Ocultar camino' : 'Mostrar camino';
-        
+            // Actualizar texto del toggle path
+            const togglePathItem = document.getElementById('togglePath');
+            togglePathItem.textContent = rastro ? 'Ocultar camino' : 'Mostrar camino';
+
         });
 
-        
+
         document.getElementById('deleteRoute').addEventListener('click', () => {
             if (!activeCharacter) return;
             console.log('Deleting routes...');
@@ -1295,7 +1292,7 @@
         document.getElementById('deleteCharacter').addEventListener('click', () => {
             if (!activeCharacter) return;
             console.log('Deleting character...');
-            
+
             const id = activeCharacter.getAttribute('id');
             characterRoutes.delete(activeCharacter); // Eliminar la ruta
             svgElement.querySelectorAll(`.${activeCharacter.id}-route`).forEach(el => el.remove());
