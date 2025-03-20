@@ -391,7 +391,6 @@
                 totalDistance += Math.sqrt(dx * dx + dy * dy);
             }
 
-
             const bbox = charElement.getBoundingClientRect();
             tooltip.style.display = 'block';
             tooltip.style.left = `${bbox.right + 10}px`;
@@ -458,7 +457,6 @@
                 // Calcular el punto medio entre los dos dedos
                 const midX = (touch1.clientX + touch2.clientX) / 2;
                 const midY = (touch1.clientY + touch2.clientY) / 2;
-
 
                 const dist = Math.hypot(
                     touch2.clientX - touch1.clientX,
@@ -812,6 +810,12 @@
             });
         }
 
+        /**
+         * Obtiene el punto en el SVG correspondiente a las coordenadas de la pantalla
+         * @param {number} screenX - Coordenada X de la pantalla
+         * @param {number} screenY - Coordenada Y de la pantalla
+         * @returns {object} - Objeto con las coordenadas del punto en el SVG {x,y}
+         */
         function getPointInSVG(screenX, screenY) {
             if (!svgElement) return null;
 
@@ -843,7 +847,6 @@
 
         function addCharacterToMap(imageUrl, url) {
             if (!svgElement) return;
-
 
             const charGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
             charGroup.setAttribute('class', 'character');
@@ -1134,8 +1137,6 @@
             }
         });
 
-
-
         /**
          * @function daImagen
          * @description Retrieves the image element associated with a given character.
@@ -1145,7 +1146,6 @@
         function daImagen(personaje) {
             return characters.get(personaje)?.querySelector('image');
         }
-
 
         async function initializeMap() {
             try {
@@ -1284,7 +1284,6 @@
         document.getElementById('deleteRoute').addEventListener('click', () => {
             if (!activeCharacter) return;
             console.log('Deleting routes...');
-
             svgElement.querySelectorAll(`.${activeCharacter.id}-route`).forEach(el => el.remove());
         });
 
