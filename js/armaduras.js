@@ -78,8 +78,8 @@ class Ropa extends Objeto {
      * @param {*} nombre 
      * @param {*} peso 
      * @param {*} valor 
+     * @param {Number} pa numero de puntos de armadura
      * @param {Array} localizaciones array de  localizaciones que cubre
-     * @param {Number} peso numero de puntos de armadura
      */
     constructor(nombre, peso, valor, pa = 0, localizaciones) {
         super(nombre, peso, valor);
@@ -505,4 +505,199 @@ let pa= new Pieza( 'camisa malla',ropa['camisa'], 8,5,2,0.5,0)
 let vZ= new Pieza('Vestido de Zaahira',ropa['vestido'],6,0);
 let arm = new Armadura([pa,vZ])
 
+/**
+ * Busca si alguna parte del texto está presente como clave en el objeto ropa
+ * @param {string} texto - El texto a buscar dentro de las claves de ropa
+ * @param {boolean} [exacto=false] - Si es true, busca coincidencia exacta; si es false, busca coincidencia parcial
+ * @returns {Object|null} - Objeto con clave y localizaciones encontradas, o null si no hay coincidencia
+ */
+function buscarRopa(texto, exacto = false) {
+    // Normalizar el texto de búsqueda
+    const textoBusqueda = texto.toLowerCase().trim();
+    
+    // Resultados encontrados
+    const resultados = [];
+    
+    // Buscar en todas las claves del objeto ropa
+    for (const clave in ropa) {
+        const claveNormalizada = clave.toLowerCase();
+        
+        // Determinar si hay coincidencia según el modo exacto o parcial
+        let coincide = false;
+        
+        if (exacto) {
+            // Coincidencia exacta
+            coincide = (claveNormalizada === textoBusqueda);
+        } else {
+            // Coincidencia parcial (en cualquier dirección)
+            coincide = (
+                claveNormalizada.includes(textoBusqueda) || 
+                textoBusqueda.includes(claveNormalizada)
+            );
+        }
+        
+        // Si hay coincidencia, agregar al resultado
+        if (coincide) {
+            resultados.push({
+                clave: clave,
+                localizaciones: ropa[clave]
+            });
+        }
+    }
+    
+    // Devolver resultados
+    return resultados.length > 0 ? resultados : null;
+}
 
+/**
+ * Versión mejorada que devuelve la mejor coincidencia según porcentaje de similitud
+ * @param {string} texto - El texto a buscar
+ * @returns {Object|null} - Mejor coincidencia o null si no hay ninguna
+ */
+function buscarRopaMejorCoincidencia(texto) {
+    const textoBusqueda = texto.toLowerCase().trim();
+    let mejorCoincidencia = null;
+    let mayorPorcentaje = 0;
+    
+    // Buscar en todas las claves del objeto ropa
+    for (const clave in ropa) {
+        const claveNormalizada = clave.toLowerCase();
+        
+        // Calcular porcentaje de coincidencia simple
+        let porcentaje = 0;
+        
+        if (claveNormalizada === textoBusqueda) {
+            // Coincidencia exacta
+            porcentaje = 1;
+        } else if (claveNormalizada.includes(textoBusqueda)) {
+            // El texto de búsqueda está contenido en la clave
+            porcentaje = textoBusqueda.length / claveNormalizada.length;
+        } else if (textoBusqueda.includes(claveNormalizada)) {
+            // La clave está contenida en el texto de búsqueda
+            porcentaje = claveNormalizada.length / textoBusqueda.length;
+        }
+        
+        // Actualizar mejor coincidencia si es necesario
+        if (porcentaje > mayorPorcentaje) {
+            mayorPorcentaje = porcentaje;
+            mejorCoincidencia = {
+                clave: clave,
+                localizaciones: ropa[clave],
+                porcentaje: porcentaje
+            };
+        }
+    }
+    
+    return mejorCoincidencia;
+}
+
+const resultado = buscarRopa("camisa");
+if (resultado) {
+    console.log(`Se encontraron ${resultado.length} coincidencias:`);
+    resultado.forEach(item => {
+        console.log(`- ${item.clave}: cubre ${item.localizaciones.length} localizaciones`);
+    });
+} else {
+    console.log("No se encontraron coincidencias");
+}
+
+const mejorCoincidencia = buscarRopaMejorCoincidencia("camiseta de algodón");
+if (mejorCoincidencia) {
+    console.log(`Mejor coincidencia: ${mejorCoincidencia.clave} (${Math.round(mejorCoincidencia.porcentaje * 100)}%)`);
+}
+
+
+//#region Armaduras
+
+const armadurasPopularesMedievales = new Map([
+    // Armadura de placas completa (siglos XV-XVI)
+    ["Armadura de placas completa", new Armadura([
+        new Pieza("Yelmo", ["Craneo", "Cara", "Cuello"], 10, 15, 1.8, 0.9, 1.5, 2),
+        new Pieza("Peto y espaldar", ["Pecho", "Vientre"], 10, 15, 1.7, 0.9, 1.5, 2),
+        new Pieza("Hombreras", ["Hombro D", "Hombro I"], 10, 15, 1.7, 0.8, 1.5, 2),
+        new Pieza("Brazales", ["Antebrazo D", "Antebrazo I"], 10, 15, 1.7, 0.8, 1.5, 2),
+        new Pieza("Codales", ["Codo D", "Codo I"], 10, 15, 1.7, 0.8, 1.3, 2),
+        new Pieza("Guanteletes", ["Mano D", "Mano I"], 10, 15, 1.6, 0.8, 1.3, 2),
+        new Pieza("Quijotes", ["Muslo Superior D", "Muslo Superior I"], 10, 15, 1.7, 0.8, 1.5, 2),
+        new Pieza("Rodilleras", ["Rodilla D", "Rodilla I"], 10, 15, 1.7, 0.8, 1.3, 2),
+        new Pieza("Grebas", ["Pierna Inf D", "Pierna Inf I"], 10, 15, 1.7, 0.8, 1.5, 2),
+        new Pieza("Escarpes", ["Pie D", "Pie I"], 10, 15, 1.6, 0.8, 1.4, 2)
+    ])],
+    
+    // Cota de malla completa (siglos XII-XV)
+    ["Cota de malla completa", new Armadura([
+        new Pieza("Almófar (capucha de malla)", ["Craneo", "Cuello"], 7, 10, 1.5, 0.5, 0.9, 1),
+        new Pieza("Loriga (cota de malla)", ropa["camisa"], 7, 10, 1.5, 0.5, 0.9, 1),
+        new Pieza("Calzas de malla", ropa["pantalones"], 7, 10, 1.5, 0.5, 0.9, 1),
+        new Pieza("Manoplas de malla", ropa["guantes"], 6, 8, 1.4, 0.5, 0.8, 1),
+        new Pieza("Gambesón (acolchado bajo malla)", ropa["gambesón"], 3, 5, 1.0, 1.2, 0.6, 0)
+    ])],
+    
+    // Brigandina (siglos XIV-XV)
+    ["Brigandina", new Armadura([
+        new Pieza("Brigandina", ["Pecho", "Vientre", "Hombro D", "Hombro I"], 8, 12, 1.3, 0.8, 1.2, 1),
+        new Pieza("Mangas de brigandina", ["Biceps D", "Biceps I", "Antebrazo D", "Antebrazo I"], 7, 10, 1.3, 0.8, 1.2, 1),
+        new Pieza("Faldón de brigandina", ["Muslo Superior D", "Muslo Superior I"], 7, 10, 1.3, 0.8, 1.2, 1),
+        new Pieza("Bacinete", ["Craneo"], 8, 12, 1.4, 0.7, 1.3, 2),
+        new Pieza("Gambesón (acolchado)", ropa["gambesón"], 3, 5, 1.0, 1.2, 0.6, 0)
+    ])],
+    
+    // Armadura de cuero endurecido (cuirbouilli)
+    ["Cuirbouilli", new Armadura([
+        new Pieza("Capacete de cuero", ["Craneo"], 4, 6, 1.2, 0.7, 0.8, 1),
+        new Pieza("Coraza de cuero endurecido", ["Pecho", "Vientre"], 5, 7, 1.2, 0.7, 0.8, 1),
+        new Pieza("Brazales de cuero", ["Antebrazo D", "Antebrazo I"], 4, 6, 1.1, 0.7, 0.7, 1),
+        new Pieza("Guantes de cuero reforzados", ropa["guantes"], 3, 5, 1.0, 0.6, 0.7, 1),
+        new Pieza("Musleras de cuero", ["Muslo Superior D", "Muslo Superior I"], 4, 6, 1.1, 0.7, 0.7, 1),
+        new Pieza("Grebas de cuero", ["Pierna Inf D", "Pierna Inf I"], 4, 6, 1.1, 0.7, 0.7, 1)
+    ])],
+    
+    // Armadura de escamas (siglos XI-XV)
+    ["Armadura de escamas", new Armadura([
+        new Pieza("Casco cónico con protector nasal", ["Craneo"], 7, 10, 1.4, 0.7, 1.0, 1),
+        new Pieza("Coraza de escamas", ["Pecho", "Vientre"], 7, 10, 1.4, 0.7, 1.0, 1),
+        new Pieza("Hombreras de escamas", ["Hombro D", "Hombro I"], 6, 9, 1.4, 0.7, 0.9, 1),
+        new Pieza("Brazales de escamas", ["Antebrazo D", "Antebrazo I"], 6, 9, 1.4, 0.7, 0.9, 1),
+        new Pieza("Faldón de escamas", ["Muslo Superior D", "Muslo Superior I"], 6, 9, 1.4, 0.7, 0.9, 1),
+        new Pieza("Gambesón (acolchado bajo escamas)", ropa["gambesón"], 3, 5, 1.0, 1.2, 0.6, 0)
+    ])],
+    
+    // Armadura lamelar (influencia oriental/bizantina)
+    ["Armadura lamelar", new Armadura([
+        new Pieza("Casco lamelar", ["Craneo"], 7, 10, 1.5, 0.9, 1.1, 1),
+        new Pieza("Coraza lamelar", ["Pecho", "Vientre"], 7, 11, 1.5, 0.9, 1.1, 1),
+        new Pieza("Hombreras lamelares", ["Hombro D", "Hombro I"], 7, 10, 1.5, 0.9, 1.1, 1),
+        new Pieza("Faldón lamelar", ["Muslo Superior D", "Muslo Superior I"], 7, 10, 1.5, 0.9, 1.1, 1),
+        new Pieza("Brazales lamelares", ["Antebrazo D", "Antebrazo I"], 6, 9, 1.5, 0.9, 1.1, 1)
+    ])],
+    
+    // Equipo básico de infantería medieval (siglos XII-XIV)
+    ["Equipo de infantería", new Armadura([
+        new Pieza("Capacete simple", ["Craneo"], 6, 9, 1.2, 0.8, 1.0, 1),
+        new Pieza("Gambesón completo", ropa["gambesón"], 3, 5, 1.0, 1.2, 0.6, 0),
+        new Pieza("Gorjal de cuero reforzado", ["Cuello"], 4, 6, 1.1, 0.7, 0.7, 1),
+        new Pieza("Guantes de cuero", ropa["guantes"], 2, 4, 0.9, 0.6, 0.5, 0)
+    ])],
+    
+    // Armadura de torneo (siglos XV-XVI)
+    ["Armadura de torneo", new Armadura([
+        new Pieza("Yelmo de torneo reforzado", ["Craneo", "Cara", "Cuello"], 12, 18, 2.0, 1.3, 1.8, 2),
+        new Pieza("Coraza reforzada", ["Pecho", "Vientre"], 12, 18, 2.0, 1.3, 1.8, 2),
+        new Pieza("Hombreras de torneo", ["Hombro D", "Hombro I"], 12, 18, 2.0, 1.3, 1.8, 2),
+        new Pieza("Brazales de torneo", ["Antebrazo D", "Antebrazo I", "Codo D", "Codo I"], 12, 18, 2.0, 1.3, 1.8, 2),
+        new Pieza("Guanteletes reforzados", ropa["guantes"], 12, 18, 2.0, 1.3, 1.7, 2),
+        new Pieza("Musleras de torneo", ["Muslo Superior D", "Muslo Superior I", "Muslo Inferior D", "Muslo Inferior I"], 12, 18, 2.0, 1.3, 1.8, 2),
+        new Pieza("Grebas de torneo", ["Pierna Inf D", "Pierna Inf I", "Rodilla D", "Rodilla I"], 12, 18, 2.0, 1.3, 1.8, 2)
+    ])],
+    
+    // Cota de anillos (anterior a cota de malla)
+    ["Cota de anillos", new Armadura([
+        new Pieza("Cota de anillos", ropa["camisa"], 5, 8, 1.2, 0.4, 0.7, 1),
+        new Pieza("Calzas de anillos", ropa["pantalones"], 5, 8, 1.2, 0.4, 0.7, 1),
+        new Pieza("Casco cónico simple", ["Craneo"], 6, 9, 1.2, 0.8, 1.0, 1),
+        new Pieza("Túnica acolchada", ropa["camisa"], 2, 3, 0.9, 1.1, 0.5, 0)
+    ])]
+]);
+
+
+//#endregion
