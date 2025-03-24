@@ -275,7 +275,7 @@
             <label for="characterInput" class="map-button">
                 Add Character
             </label>
-            <input type="file" id="characterInput" accept="image/*" style="display: none;">
+            <input type="file" id="characterInput" accept="image/*" multiple style="display: none;">
             <button class="map-button" id="zoomIn">+</button>
             <button class="map-button" id="zoomOut">-</button>
             <button class="map-button" id="resetView">Reset</button>
@@ -419,15 +419,14 @@
         });
 
         // Character input handler
-        document.getElementById('characterInput').addEventListener('change', function (e) {
-            const file = e.target.files[0];
-            if (file && file.type.startsWith('image/')) {
+        document.getElementById('characterInput').addEventListener('change', (e) => {
+            Array.from(e.target.files).forEach(file => {
                 const reader = new FileReader();
-                reader.onload = function (event) {
-                    addCharacterToMap(event.target.result, e.target.files[0].name);
-                }
+                reader.onload = (event) => {
+                    addCharacterToMap(event.target.result, file.name);
+                };
                 reader.readAsDataURL(file);
-            }
+            });
         });
 
         // Touch handlers
