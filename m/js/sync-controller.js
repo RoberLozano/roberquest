@@ -1,0 +1,211 @@
+/**
+ * Sync Controller Module
+ * Handles Firebase synchronization and data persistence
+ */
+const SyncController = {
+    // Firebase connection state
+    isOnline: false,
+    database: null,
+    syncButton: null,
+    mapStateRef: null,
+    
+    /**
+     * Initialize Firebase connection
+     */
+    init() {
+        try {
+            this.syncButton = DOM.getElement('syncButton');
+            
+            // Initialize Firebase if API is available
+            if (typeof firebase !== 'undefined') {
+                // Firebase configuration
+                this.database = database
+                
+                // Setup sync button event
+                this.syncButton.addEventListener('click', this.toggleSync.bind(this));
+                this.syncButton.title = "Conectar para sincronizar";
+                
+                // Setup connection state listener
+                const connectedRef = this.database.ref(".info/connected");
+                connectedRef.on("value", (snap) => {
+                    if (snap.val() === true) {
+                        this.setupFirebaseListeners();
+                    }
+                });
+            } else {
+                console.error('Firebase is not defined. Make sure to include the Firebase SDK.');
+                this.syncButton.style.display = 'none';
+            }
+        } catch (e) {
+            console.error('Error initializing Firebase:', e);
+            this.syncButton.style.display = 'none';
+        }
+    },
+    
+    /**
+     * Toggle online/offline sync mode
+     */
+    toggleSync() {
+        this.isOnline = !this.isOnline;
+        
+        if (this.isOnline) {
+            this.syncButton.classList.add('online');
+            this.syncButton.title = "Modo online (click para desconectar)";
+            
+            // Setup Firebase map state
+            this.setupFirebaseListeners();
+            
+            // Save current character states
+            this.saveAllMapState();
+        } else {
+            this.syncButton.classList.remove('online');
+            this.syncButton.title = "Modo offline (click para conectar)";
+            
+            // Detach listeners
+            if (this.mapStateRef) {
+                this.mapStateRef.off();
+            }
+        }
+    },
+    
+    /**
+     * Setup Firebase database listeners
+     */
+    setupFirebaseListeners() {
+        if (!this.database || !this.isOnline) return;
+        
+        try {
+            // Reference to the map state in Firebase
+            this.mapStateRef = this.database.ref('mapState');
+            
+            // Listen for character updates
+            this.mapStateRef.on('child_added', this.handleSyncCharacterAdded.bind(this));
+            this.mapStateRef.on('child_changed', this.handleSyncCharacterChanged.bind(this));
+            this.mapStateRef.on('child_removed', this.handleSyncCharacterRemoved.bind(this));
+        } catch (e) {
+            console.error('Error setting up Firebase listeners:', e);
+        }
+    },
+    
+    /**
+     * Handle character added from sync
+     * @param {Object} snapshot - Firebase snapshot
+     */
+    handleSyncCharacterAdded(snapshot) {
+        const charData = snapshot.val();
+        if (!charData || !charData.id) return;
+        
+        // Skip if we already have this character
+        if (CharacterController.characters.has(charData.id)) {
+            return;
+        }
+        
+        try {
+            // Add the new character from sync
+            const charEl = CharacterController.addCharacterToMap(charData.href, {
+                x: charData.x,
+                y: charData.y
+            });
+            
+            // Apply rotation if available
+            const img = charEl.querySelector('image');
+            if (img && charData.rotation) {
+                CharacterUtils.rotate(img, charData.rotation);
+            }
+        } catch (e) {
+            console.error('Error adding synced character:', e);
+        }
+    },
+    
+    /**
+     * Handle character changed from sync
+     * @param {Object} snapshot - Firebase snapshot
+     */
+    handleSyncCharacterChanged(snapshot) {
+        const charData = snapshot.val();
+        if (!charData || !charData.id) return;
+        
+        try {
+            // Get existing character
+            const charEl = CharacterController.characters.get(charData.id);
+            if (!charEl) {
+                // If character doesn't exist, add it
+                this.handleSyncCharacterAdded(snapshot);
+                return;
+            }
+            
+            // Update position
+            const img = charEl.querySelector('image');
+            if (img) {
+                CharacterController.moveCharacter(img, charData.x, charData.y);
+                
+                // Update rotation if available
+                if (charData.rotation !== undefined) {
+                    CharacterUtils.rotate(img, charData.rotation);
+                }
+            }
+        } catch (e) {
+            console.error('Error updating synced character:', e);
+        }
+    },
+    
+    /**
+     * Handle character removed from sync
+     * @param {Object} snapshot - Firebase snapshot
+     */
+    handleSyncCharacterRemoved(snapshot) {
+        const charData = snapshot.val();
+        if (!charData || !charData.id) return;
+        
+        try {
+            // Get existing character
+            const charEl = CharacterController.characters.get(charData.id);
+            if (charEl) {
+                // Set as active and delete
+                CharacterController.activeCharacter = charEl;
+                CharacterController.deleteCharacter();
+            }
+        } catch (e) {
+            console.error('Error removing synced character:', e);
+        }
+    },
+    
+    /**
+     * Save character state to Firebase
+     * @param {SVGElement} charElement - Character element to save
+     */
+    saveMapState(charElement) {
+        if (!this.database || !this.isOnline || !charElement) return;
+        
+        try {
+            const id = charElement.id;
+            const img = charElement.querySelector('image');
+            if (!img) return;
+            
+            const href = img.getAttribute('href');
+            const x = parseFloat(img.getAttribute('data-x'));
+            const y = parseFloat(img.getAttribute('data-y'));
+            const rotation = parseFloat(img.getAttribute('data-rotation') || 0);
+            
+            const charData = { id, href, x, y, rotation };
+            this.mapStateRef.child(id).set(charData);
+        } catch (e) {
+            console.error('Error saving map state:', e);
+        }
+    },
+    
+    /**
+     * Save all characters state to Firebase
+     */
+    saveAllMapState() {
+        if (!this.database || !this.isOnline) return;
+        
+        try {
+            CharacterController.characters.forEach((charEl) => {
+                this.saveMapState(charEl);
+            });
+        } catch (e) {
+            console.error('Error saving all map state:', e);
+        }
+    }
+};

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Map</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://www.gstatic.com/firebasejs/4.7.0/firebase.js"></script>
+    <script src="../js/coor.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/D.js"></script>
+    <script src="../js/habilidades.js"></script>
+    <script src="../js/inventario.js"></script>
+    <script src="../js/localizaciones.js"></script>
+    <script src="../js/armaduras.js"></script>
+    <script src="../js/rol.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@luncheon/simplify-svg-path@0.2.0"></script>
+</head>
+
+<body>
+    <div id="map-container">
+        <div id="svg-container"></div>
+    </div>
+
+    <button id="togglePanel">☰</button>
+
+    <div id="sidePanel">
+        <div class="controls">
+            <label for="fileInput" class="map-button">
+                Load Map
+            </label>
+            <input type="file" id="fileInput" accept="image/svg+xml">
+            <label for="characterInput" class="map-button">
+                Add Character
+            </label>
+            <input type="file" id="characterInput" accept="image/*" multiple style="display: none;">
+            <button class="map-button" id="zoomIn">+</button>
+            <button class="map-button" id="zoomOut">-</button>
+            <button class="map-button" id="resetView">Reset</button>
+            v 0.008
+        </div>
+        <div id="searchBox">
+            <input type="text" id="searchInput" placeholder="Enter name to zoom">
+            <button class="map-button" id="searchButton">Zoom</button>
+        </div>
+        <div id="layersPanel">
+            <div id="layersHeader">
+                <input type="text" id="layerSearch" placeholder="Buscar capas...">
+            </div>
+            <div id="layersList"></div>
+        </div>
+    </div>
+
+    <!-- Sync button -->
+    <button class="wifi-button" id="syncButton" title="Modo offline">
+        <svg viewBox="0 0 24 24">
+            <path
+                d="M12,21L15.6,16.2C14.6,15.45 13.35,15 12,15C10.65,15 9.4,15.45 8.4,16.2L12,21M12,3C7.95,3 4.21,4.34 1.2,6.6L3,9C5.5,7.12 8.62,6 12,6C15.38,6 18.5,7.12 21,9L22.8,6.6C19.79,4.34 16.05,3 12,3M12,9C9.3,9 6.81,9.89 4.8,11.4L6.6,13.8C8.1,12.67 9.97,12 12,12C14.03,12 15.9,12.67 17.4,13.8L19.2,11.4C17.19,9.89 14.7,9 12,9Z" />
+        </svg>
+    </button>
+
+    <div id="characterContextMenu">
+        <ul>
+            <li id="togglePath">Mostrar camino</li>
+            <li id="deleteRoute" class="menu-delete">Eliminar ruta</li>
+            <li id="deleteCharacter" class="menu-delete">Eliminar personaje</li>
+            <li id="rotate"> Rotar <input type="range" min="-180" max="180" value="0" class="slider" id="myAngle"
+                    onchange="CharacterUtils.rotate(activeCharacter,this.value)"> </li>
+            <li class="placeholder">Mostrar stats</li>
+            <li class="placeholder">Editar personaje</li>
+            <li class="placeholder">Cambiar imagen</li>
+        </ul>
+    </div>
+
+    <!-- Load JavaScript modules -->
+    <script src="js/config.js"></script>
+    <script src="js/dom-utils.js"></script>
+    <script src="js/svg-utils.js"></script>
+    <script src="js/map-controller.js"></script>
+    <script src="js/character-controller.js"></script>
+    <script src="js/layer-controller.js"></script>
+    <script src="js/sync-controller.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
