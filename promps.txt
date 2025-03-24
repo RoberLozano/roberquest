@@ -20,3 +20,4 @@ Hacer que a los mapas se les puedan añadir personajes. Se guardarían en el pro
 Haz las modificaciones necesarias en mm.html para que se guarde en firebase la posición de los personajes. Utiliza la misma estrategia que en mc1.html, con el icono de wifi y la actulizacion de la posición de personajes.
 Utilizar en mm las variables de personajes de mc1 en vez de las de mm. La posición y todo lo demás, para una buena sincronización en firebase. Reemplaza las viejas con las nuevas donde se utilizaran, como al mover personaje, etc
 Eres un experto en JavaScript, mejora el código sin crear ningún archivo nuevo.
+Hacer que se puedan seleccionar personajes. Cuando haya varios personajes seleccionados, los giros, movimientos y las acciones del menú contextual se aplicarána todos los personajes seleccionados. debería hacerse con un método de seleción que se pueda utilizar en pantallas táctiles como las de los móviles
