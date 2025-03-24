@@ -1022,6 +1022,8 @@
 
         const setupCharacterDrag = charElement => {
             let startX, startY, originalPos;
+            let isDragging = false;
+            let hasStartedDrag = false;
             const image = () => charElement.querySelector('image');
             const cross = () => charElement.querySelector('.position-cross');
 
@@ -1043,20 +1045,21 @@
             };
 
             const startDragging = e => {
-                if (e.button == 2) return; // Si es click derecho, no hacer nada
+                if (e.button === 2) return;
                 e.stopPropagation();
-                draggedCharacter = charElement;
+                
                 const evt = e.touches ? e.touches[0] : e;
                 const point = getPointInSVG(evt.clientX, evt.clientY);
-                startX = point.x; startY = point.y;
-                cross().style.display = 'block';
-                image().style.opacity = '0.5';
+                startX = point.x;
+                startY = point.y;
+                isDragging = true;
+                hasStartedDrag = false;
+                
                 originalPos = {
                     x: parseFloat(image().getAttribute('data-x')) || (parseFloat(image().getAttribute('x')) + parseFloat(image().getAttribute('width')) / 2),
                     y: parseFloat(image().getAttribute('data-y')) || (parseFloat(image().getAttribute('y')) + parseFloat(image().getAttribute('height')) / 2)
                 };
-                // Inicializar la ruta con la posición inicial
-                characterRoutes.set(charElement, [{ x: originalPos.x, y: originalPos.y }]);
+                
                 document.addEventListener('mousemove', drag);
                 document.addEventListener('touchmove', drag);
                 document.addEventListener('mouseup', stopDragging);
@@ -1064,56 +1067,71 @@
             };
 
             const drag = e => {
-                if (!draggedCharacter) return;
+                if (!isDragging) return;
                 e.preventDefault();
+                
                 const evt = e.touches ? e.touches[0] : e;
                 const point = getPointInSVG(evt.clientX, evt.clientY);
                 const dx = point.x - startX;
                 const dy = point.y - startY;
-                const newX = originalPos.x + dx;
-                const newY = originalPos.y + dy;
-                move(image(), newX, newY);
-                updateCross(newX, newY);
-                // Actualizar y dibujar la ruta con distancia recorrida
-                updateCharacterRoute(charElement, newX, newY);
-                if (isOnline) saveMapState(draggedCharacter);
+                
+                // Solo iniciar el arrastre real si el movimiento es suficiente
+                if (!hasStartedDrag) {
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < 2) return; // Umbral de movimiento mínimo
+                    
+                    hasStartedDrag = true;
+                    draggedCharacter = charElement;
+                    cross().style.display = 'block';
+                    image().style.opacity = '0.5';
+                    characterRoutes.set(charElement, [{ x: originalPos.x, y: originalPos.y }]);
+                }
+                
+                if (hasStartedDrag) {
+                    const newX = originalPos.x + dx;
+                    const newY = originalPos.y + dy;
+                    move(image(), newX, newY);
+                    updateCross(newX, newY);
+                    updateCharacterRoute(charElement, newX, newY);
+                    if (isOnline) saveMapState(draggedCharacter);
+                }
             };
 
             const stopDragging = e => {
-                if (draggedCharacter) {
+                if (!isDragging) return;
+                isDragging = false;
+
+                if (hasStartedDrag) {
                     image().style.opacity = '1';
                     cross().style.display = 'none';
 
                     if (rastro) {
-                        let ruta = characterRoutes.get(charElement);
-                        if (!ruta && ruta.length < 2) return;
-                        console.log(ruta);
-                        var path = null;
-                        try {
-                            path = simplifySvgPath(ruta);
-                        } catch (error) {
-                            return;
+                        const ruta = characterRoutes.get(charElement);
+                        if (ruta && ruta.length >= 2) {
+                            try {
+                                const path = simplifySvgPath(ruta);
+                                let pathElem = charElement.querySelector('.character-route');
+                                if (!pathElem) {
+                                    pathElem = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                                    pathElem.classList.add('character-route');
+                                    pathElem.classList.add(`${draggedCharacter.id}-route`);
+                                    pathElem.setAttribute('fill', 'none');
+                                    pathElem.setAttribute('stroke', 'red');
+                                    pathElem.setAttribute('stroke-width', 0.5);
+                                    pathElem.setAttribute('stroke-dasharray', '1 1');
+                                    svgElement.appendChild(pathElem);
+                                }
+                                pathElem.setAttribute('d', path);
+                            } catch (error) {
+                                console.error('Error al crear el path:', error);
+                            }
                         }
-                        console.log(path);
-                        console.log(draggedCharacter.id)
-
-                        let pathElem = charElement.querySelector('.character-route');
-                        if (!pathElem && path) {
-                            pathElem = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                            pathElem.classList.add('character-route');
-                            pathElem.classList.add(`${draggedCharacter.id}-route`);
-
-
-                            pathElem.setAttribute('fill', 'none');
-                            pathElem.setAttribute('stroke', 'red');
-                            pathElem.setAttribute('stroke-width', 0.5);
-                            pathElem.setAttribute('stroke-dasharray', '1 1');
-                            svgElement.appendChild(pathElem);
-                        }
-                        if (path) pathElem.setAttribute('d', path);
                     }
-                    draggedCharacter = null;
+                } else {
+                    // Si no hubo arrastre, considerar como click
+                    activeCharacter = charElement;
                 }
+
                 draggedCharacter = null;
                 document.removeEventListener('mousemove', drag);
                 document.removeEventListener('touchmove', drag);
