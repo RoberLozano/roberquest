@@ -1610,13 +1610,6 @@
             });
         } catch (error) {
             console.error('Error cargando el personaje:', error);
-            // Intenta cargar una ruta alternativa
-            console.log('Intentando ruta alternativa...');
-            try {
-                await loadCharacterFromURL('img/tokens/Rosssel.png');
-            } catch (error2) {
-                console.error('Error en ruta alternativa:', error2);
-            }
         }
     }
 
@@ -1626,6 +1619,7 @@
         try {
             await loadMapFromURL('mapas/Elahiun.svg');
             await loadCharacterFromURL('img/tokens/Rosssel.png');
+            
             console.log('Carga inicial completada');
         } catch (error) {
             console.error('Error en initMap:', error);
