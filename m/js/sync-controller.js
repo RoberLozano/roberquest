@@ -18,7 +18,7 @@ const SyncController = {
             
             // Initialize Firebase if API is available
             if (typeof firebase !== 'undefined') {
-                // Firebase configuration
+                // Firebase configuration de rol.js
                 this.database = database
                 
                 // Setup sync button event
@@ -55,8 +55,8 @@ const SyncController = {
             // Setup Firebase map state
             this.setupFirebaseListeners();
             
-            // Save current character states
-            this.saveAllMapState();
+            // Load current state from Firebase instead of saving local state
+            this.loadMapStateFromFirebase();
         } else {
             this.syncButton.classList.remove('online');
             this.syncButton.title = "Modo offline (click para conectar)";
@@ -167,6 +167,45 @@ const SyncController = {
             }
         } catch (e) {
             console.error('Error removing synced character:', e);
+        }
+    },
+    
+    /**
+     * Load the map state from Firebase
+     */
+    loadMapStateFromFirebase() {
+        if (!this.database || !this.isOnline) return;
+        
+        try {
+            // Get the current state from Firebase
+            this.mapStateRef.once('value', (snapshot) => {
+                const remoteState = snapshot.val();
+                if (!remoteState) return;
+                
+                // Clear local characters first
+                CharacterController.characters.forEach(charEl => {
+                    CharacterController.activeCharacter = charEl;
+                    CharacterController.deleteCharacter();
+                });
+                
+                // Add each character from Firebase
+                Object.values(remoteState).forEach(charData => {
+                    if (!charData || !charData.href) return;
+                    
+                    const charEl = CharacterController.addCharacterToMap(charData.href, {
+                        x: charData.x,
+                        y: charData.y
+                    });
+                    
+                    // Apply rotation if available
+                    const img = charEl.querySelector('image');
+                    if (img && charData.rotation) {
+                        CharacterUtils.rotate(img, charData.rotation);
+                    }
+                });
+            });
+        } catch (e) {
+            console.error('Error loading map state from Firebase:', e);
         }
     },
     

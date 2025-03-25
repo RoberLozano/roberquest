@@ -25,5 +25,5 @@ const CONFIG = {
     tooltipDisplayTime: 2000,
     
     // App version
-    version: '0.008'
+    version: '0.009'
 };

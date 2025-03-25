@@ -34,10 +34,11 @@
                 Add Character
             </label>
             <input type="file" id="characterInput" accept="image/*" multiple style="display: none;">
+            <button class="map-button" id="addNpcBtn">Add NPC</button>
             <button class="map-button" id="zoomIn">+</button>
             <button class="map-button" id="zoomOut">-</button>
             <button class="map-button" id="resetView">Reset</button>
-            v 0.008
+            v 0.009
         </div>
         <div id="searchBox">
             <input type="text" id="searchInput" placeholder="Enter name to zoom">
@@ -70,6 +71,20 @@
             <li class="placeholder">Editar personaje</li>
             <li class="placeholder">Cambiar imagen</li>
         </ul>
+    </div>
+
+    <!-- NPC Selection Modal -->
+    <div id="npcModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Select NPC</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="npcSearch" placeholder="Search NPCs...">
+                <div id="npcGrid"></div>
+            </div>
+        </div>
     </div>
 
     <!-- Load JavaScript modules -->
