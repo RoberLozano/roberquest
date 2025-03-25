@@ -161,6 +161,19 @@ const CharacterController = {
         vLine.setAttribute('stroke-width', strokeWidth);
     },
     
+    rotateCharacter(charElement, e) {
+        let img = charElement.querySelector('image');
+        let currentRotation = parseFloat(img.getAttribute('data-rotation')) || 0;
+        let delta = e.deltaY > 0 ? 15 : -15;
+        let newRotation = (currentRotation + delta) % 360;
+        
+        CharacterUtils.rotate(img, newRotation);
+        
+        if (SyncController.isOnline) {
+            SyncController.saveMapState(charElement);
+        }
+    },
+
     /**
      * Move character to position
      * @param {SVGImageElement} image - Character image element
@@ -397,6 +410,9 @@ const CharacterController = {
         const image = () => charElement.querySelector('image');
         const cross = () => charElement.querySelector('.position-cross');
         
+        // Store original positions of all selected characters
+        let selectedOriginalPos = new Map();
+        
         const startDragging = e => {
             if (e.button === 2) return;
             e.stopPropagation();
@@ -410,12 +426,25 @@ const CharacterController = {
             isDragging = true;
             hasStartedDrag = false;
             
+            // Store original position of dragged character
             originalPos = {
                 x: parseFloat(image().getAttribute('data-x')) || 
                    (parseFloat(image().getAttribute('x')) + parseFloat(image().getAttribute('width')) / 2),
                 y: parseFloat(image().getAttribute('data-y')) || 
                    (parseFloat(image().getAttribute('y')) + parseFloat(image().getAttribute('height')) / 2)
             };
+
+            // Store original positions of all selected characters
+            selectedOriginalPos.clear();
+            this.selectedCharacters.forEach((char) => {
+                const img = char.querySelector('image');
+                selectedOriginalPos.set(char, {
+                    x: parseFloat(img.getAttribute('data-x')) || 
+                       (parseFloat(img.getAttribute('x')) + parseFloat(img.getAttribute('width')) / 2),
+                    y: parseFloat(img.getAttribute('data-y')) || 
+                       (parseFloat(img.getAttribute('y')) + parseFloat(img.getAttribute('height')) / 2)
+                });
+            });
             
             document.addEventListener('mousemove', drag);
             document.addEventListener('touchmove', drag);
@@ -444,18 +473,45 @@ const CharacterController = {
                 cross().style.display = 'block';
                 image().style.opacity = '0.5';
                 this.characterRoutes.set(charElement, [{ x: originalPos.x, y: originalPos.y }]);
+
+                // Initialize routes for selected characters
+                this.selectedCharacters.forEach((char) => {
+                    if (char !== charElement) {
+                        const origPos = selectedOriginalPos.get(char);
+                        this.characterRoutes.set(char, [{ x: origPos.x, y: origPos.y }]);
+                        char.querySelector('image').style.opacity = '0.5';
+                    }
+                });
             }
             
             if (hasStartedDrag) {
+                // Move the dragged character
                 const newX = originalPos.x + dx;
                 const newY = originalPos.y + dy;
                 
                 this.moveCharacter(image(), newX, newY);
                 this.updateCross(cross(), newX, newY);
                 this.updateCharacterRoute(charElement, newX, newY);
+
+                // Move all selected characters
+                this.selectedCharacters.forEach((char) => {
+                    if (char !== charElement) {
+                        const origPos = selectedOriginalPos.get(char);
+                        const newSelectedX = origPos.x + dx;
+                        const newSelectedY = origPos.y + dy;
+                        
+                        this.moveCharacter(char.querySelector('image'), newSelectedX, newSelectedY);
+                        this.updateCharacterRoute(char, newSelectedX, newSelectedY);
+                    }
+                });
                 
                 if (SyncController.isOnline) {
                     SyncController.saveMapState(this.draggedCharacter);
+                    this.selectedCharacters.forEach((char) => {
+                        if (char !== charElement) {
+                            SyncController.saveMapState(char);
+                        }
+                    });
                 }
             }
         };
@@ -468,33 +524,49 @@ const CharacterController = {
                 image().style.opacity = '1';
                 cross().style.display = 'none';
                 
-                if (this.rastro) {
-                    const ruta = this.characterRoutes.get(charElement);
-                    if (ruta && ruta.length >= 2) {
-                        try {
-                            const path = SVGUtils.generateSmoothPath(ruta);
-                            let pathElem = charElement.querySelector('.character-route');
-                            
-                            if (!pathElem) {
-                                pathElem = DOM.createSVGElement("path", {
-                                    'class': 'character-route',
-                                    'fill': 'none',
-                                    'stroke': 'red',
-                                    'stroke-width': 0.5,
-                                    'stroke-dasharray': '1 1'
-                                });
-                                pathElem.classList.add(`${this.draggedCharacter.id}-route`);
-                                svgElement.appendChild(pathElem);
-                            }
-                            
-                            pathElem.setAttribute('d', path);
-                        } catch (error) {
-                            console.error('Error creating path:', error);
-                        }
+                // Restore opacity for selected characters
+                this.selectedCharacters.forEach((char) => {
+                    if (char !== charElement) {
+                        char.querySelector('image').style.opacity = '1';
                     }
+                });
+
+                if (this.rastro) {
+                    // Draw paths for all moved characters
+                    const drawPath = (char) => {
+                        const ruta = this.characterRoutes.get(char);
+                        if (ruta && ruta.length >= 2) {
+                            try {
+                                const path = SVGUtils.generateSmoothPath(ruta);
+                                let pathElem = char.querySelector('.character-route');
+                                
+                                if (!pathElem) {
+                                    pathElem = DOM.createSVGElement("path", {
+                                        'class': 'character-route',
+                                        'fill': 'none',
+                                        'stroke': 'red',
+                                        'stroke-width': 0.5,
+                                        'stroke-dasharray': '1 1'
+                                    });
+                                    pathElem.classList.add(`${char.id}-route`);
+                                    svgElement.appendChild(pathElem);
+                                }
+                                
+                                pathElem.setAttribute('d', path);
+                            } catch (error) {
+                                console.error('Error creating path:', error);
+                            }
+                        }
+                    };
+
+                    drawPath(charElement);
+                    this.selectedCharacters.forEach((char) => {
+                        if (char !== charElement) {
+                            drawPath(char);
+                        }
+                    });
                 }
             } else {
-                // If no dragging, treat as click
                 this.activeCharacter = charElement;
             }
             
@@ -520,16 +592,12 @@ const CharacterController = {
                 e.preventDefault();
                 e.stopPropagation();
                 
-                let img = charElement.querySelector('image');
-                let currentRotation = parseFloat(img.getAttribute('data-rotation')) || 0;
-                let delta = e.deltaY > 0 ? 15 : -15;
-                let newRotation = (currentRotation + delta) % 360;
-                
-                CharacterUtils.rotate(img, newRotation);
-                
-                if (SyncController.isOnline) {
-                    SyncController.saveMapState(charElement);
-                }
+                this.selectedCharacters.forEach((char) => {
+                    if (char == charElement) return;
+                    this.rotateCharacter(char, e);
+                });
+
+                this.rotateCharacter(charElement, e);
             }
         });
         
