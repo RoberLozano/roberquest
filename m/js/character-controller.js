@@ -645,6 +645,7 @@ const CharacterController = {
                     });
                 CharacterUtils.rotate(img, newRotation);
             }
+        }
         });
         
         // Touch rotation end
