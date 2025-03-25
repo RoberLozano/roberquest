@@ -381,6 +381,10 @@ const CharacterController = {
 
             const id = charElement.getAttribute('id');
             if (this.isDragging) return;
+
+            // Limpiar draggedCharacter aquí después del arrastre
+            this.draggedCharacter = null;
+
             console.log('Click', { id, selected: this.selectedCharacters.has(id) });
 
             if (e.ctrlKey || e.metaKey || e.shiftKey) {
@@ -578,7 +582,7 @@ const CharacterController = {
                 this.activeCharacter = charElement;
             }
 
-            this.draggedCharacter = null;
+            // Ya no limpiamos draggedCharacter aquí
             document.removeEventListener('mousemove', drag);
             document.removeEventListener('touchmove', drag);
             document.removeEventListener('mouseup', stopDragging);
