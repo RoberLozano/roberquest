@@ -378,7 +378,7 @@ const CharacterController = {
         // Handle click events for selection
         charElement.addEventListener('click', (e) => {
             e.stopPropagation();
-
+            alert('click');
             const id = charElement.getAttribute('id');
             if (this.isDragging) return;
             console.log('Click', { id, selected: this.selectedCharacters.has(id) });
