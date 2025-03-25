@@ -5,6 +5,7 @@
 const CharacterController = {
     // Character tracking
     characters: new Map(),
+    selectedCharacters: new Map(),
     personajes: new Map(),
     characterRoutes: new Map(),
     draggedCharacter: null,
@@ -100,6 +101,7 @@ const CharacterController = {
         this.setupCharacterDrag(charGroup);
         this.setupRotationHandlers(charGroup);
         this.setupContextMenu(charGroup);
+        this.setupSelection(charGroup);
         
         // Store character reference
         this.characters.set(baseName, charGroup);
@@ -319,6 +321,70 @@ const CharacterController = {
         }, CONFIG.tooltipDisplayTime);
     },
     
+    /**
+     * Setup selection handling for a character
+     * @param {SVGElement} charElement - Character element
+     */
+    setupSelection(charElement) {
+
+        const toggleSelection = (charElement) => {
+            const id = charElement.getAttribute('id');
+            if (this.selectedCharacters.has(id)) {
+                this.selectedCharacters.delete(id);
+                charElement.classList.remove('selected');
+            } else {
+                this.selectedCharacters.set(id, charElement);
+                charElement.classList.add('selected');
+            }
+        };
+
+        // Touch event handlers for selection
+        charElement.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 1) {
+                e.stopPropagation();
+                const id = charElement.getAttribute('id');
+
+                console.log('Touch start', { id, selected: this.selectedCharacters.has(id) });
+                
+                if (e.touches.length === 1 && e.touches[0].force > 0.5) {
+                    // Long press / force touch for multi-select
+                    toggleSelection(charElement);
+                } else {
+                    // Single tap for single selection
+                    toggleSelection(charElement);
+                }
+            }
+        });
+        // Handle click events for selection
+        charElement.addEventListener('click', (e) => {
+            e.stopPropagation();
+            
+            const id = charElement.getAttribute('id');
+            if(this.isDragging)  return;
+            console.log('Click', { id, selected: this.selectedCharacters.has(id) });
+            
+            if (e.ctrlKey || e.metaKey || e.shiftKey) {
+                // Toggle selection with Ctrl/Cmd key
+                toggleSelection(charElement);
+            } else {
+                // Single selection without Ctrl/Cmd
+                // toggleSelection(charElement);
+            }
+        });
+
+        // Clear selection when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.character')) {
+                this.selectedCharacters.forEach((char) => {
+                    char.classList.remove('selected');
+                });
+                this.selectedCharacters.clear();
+            }
+        });
+
+    }
+    ,
+
     /**
      * Setup character drag behavior
      * @param {SVGElement} charElement - Character element
@@ -566,10 +632,16 @@ const CharacterController = {
      */
     deleteRoute() {
         if (!this.activeCharacter) return;
-        
-        svgElement.querySelectorAll(`.${this.activeCharacter.id}-route`).forEach(el => {
-            el.remove();
-        });
+        if(this.selectedCharacters.size > 0){
+            this.selectedCharacters.forEach((char) => {
+                svgElement.querySelectorAll(`.${char.id}-route`).forEach(el => {
+                    el.remove();
+                });
+            });
+        }else       
+            svgElement.querySelectorAll(`.${this.activeCharacter.id}-route`).forEach(el => {
+                el.remove();
+            });
     },
     
     /**
@@ -577,16 +649,26 @@ const CharacterController = {
      */
     deleteCharacter() {
         if (!this.activeCharacter) return;
+        if(this.selectedCharacters.size > 0){
+            this.selectedCharacters.forEach((char) => {
+                this.borrarP(char);
+                });        
+        }else
+            this.borrarP(this.activeCharacter);
+
+    }
+    ,
+    borrarP(char){
+        if (!char) return;
         
-        const id = this.activeCharacter.getAttribute('id');
-        
+        const id = char.getAttribute('id');     
         // Clean up
-        this.characterRoutes.delete(this.activeCharacter);
+        this.characterRoutes.delete(char);
         svgElement.querySelectorAll(`.${id}-route`).forEach(el => {
             el.remove();
         });
         
-        this.activeCharacter.remove();
+        char.remove();
         this.characters.delete(id);
         this.activeCharacter = null;
     }

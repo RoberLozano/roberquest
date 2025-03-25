@@ -56,6 +56,8 @@ const DOM = {
         
         return element;
     },
+
+    
     
     /**
      * Add event listener with proper context
