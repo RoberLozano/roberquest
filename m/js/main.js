@@ -252,14 +252,14 @@ function displayNpcTokens() {
         // Extract filename to use as NPC name
         const fileName = tokenPath.split('/').pop();
         const npcName = fileName.substring(0, fileName.lastIndexOf('.'))
-                       .replace(/[_-]/g, ' ');
+                       .replace(/[_-]/g, ' ').replace(/[%20]/g, ' ');
         
         // Create NPC item element
         const npcItem = DOM.createElement('div', { class: 'npc-item', 'data-path': tokenPath });
         
         // Create image and name elements
         const img = DOM.createElement('img', { src: tokenPath, alt: npcName, loading: 'lazy' });
-        const span = DOM.createElement('span', {}, npcName.replace(/[%20]/g, ' '));
+        const span = DOM.createElement('span', {}, npcName);
         
         // Add click event to add NPC to map
         npcItem.addEventListener('click', () => {

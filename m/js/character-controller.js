@@ -28,7 +28,7 @@ const CharacterController = {
      */
     addCharacterToMap(imageUrl, position) {
         if (!svgElement) return;
-        
+        console.log('Adding character to map', { imageUrl, position });
         // Create character group
         const charGroup = DOM.createSVGElement("g", { 'class': 'character' });
         
@@ -36,8 +36,23 @@ const CharacterController = {
         const fileName = typeof position === 'string' ? 
                         position.split('/').pop() : 
                         imageUrl.split('/').pop();
-        const baseName = fileName.substring(0, fileName.lastIndexOf('.'))
+        let baseName = fileName.substring(0, fileName.lastIndexOf('.'))
+                        .replace(/%20/g, '_')
                         .replace(/[^a-zA-Z0-9]/g, '_');
+
+        let number = 1;
+        while (this.characters.has(`${baseName}`)) {
+            console.log('Name already exists, incrementing', { baseName, number });
+            number++;
+            const match = baseName.match(/\d+$/);
+            if (match) {
+                number = parseInt(match[0], 10) + 1;
+                baseName = baseName.substring(0, baseName.length - match[0].length);
+                baseName += number;
+                console.log('New name', { baseName, number });
+            }
+        }
+
         
         charGroup.id = baseName;
         
