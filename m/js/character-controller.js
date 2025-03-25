@@ -362,13 +362,16 @@ const CharacterController = {
         charElement.addEventListener('touchstart', (e) => {
             if (e.touches.length === 1) {
                 e.stopPropagation();
+                
                 const id = charElement.getAttribute('id');
 
                 console.log('Touch start', { id, selected: this.selectedCharacters.has(id) });
 
                 if (e.touches.length === 1 && e.touches[0].force > 0.5) {
-                    // Long press / force touch for multi-select
+                    // Long press / force touch for multi-select             
                     toggleSelection(charElement);
+                    console.log('Long press:'+ e.touches[0].force);
+                    
                 } else {
                     // Single tap for single selection
                     toggleSelection(charElement);
@@ -378,9 +381,9 @@ const CharacterController = {
         // Handle click events for selection
         charElement.addEventListener('click', (e) => {
             e.stopPropagation();
-            alert('click');
+         
             const id = charElement.getAttribute('id');
-            if (this.isDragging) return;
+            // if (this.isDragging) return;
             console.log('Click', { id, selected: this.selectedCharacters.has(id) });
 
             if (e.ctrlKey || e.metaKey || e.shiftKey) {
