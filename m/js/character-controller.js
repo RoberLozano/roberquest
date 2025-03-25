@@ -638,7 +638,11 @@ const CharacterController = {
                 
                 let newRotation = (startRotation + angleDelta) % 360;
                 if (newRotation < 0) newRotation += 360;
-                
+                if(this.selectedCharacters.size > 0){
+                    this.selectedCharacters.forEach((char) => {
+                        if (char == charElement) return;
+                        CharacterUtils.rotate(char.querySelector('image'), newRotation);
+                    });
                 CharacterUtils.rotate(img, newRotation);
             }
         });
