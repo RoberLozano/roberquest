@@ -66,7 +66,8 @@
             <li id="deleteRoute" class="menu-delete">Eliminar ruta</li>
             <li id="deleteCharacter" class="menu-delete">Eliminar personaje</li>
             <li id="rotate"> Rotar <input type="range" min="-180" max="180" value="0" class="slider" id="myAngle"
-                    onchange="CharacterUtils.rotate(activeCharacter,this.value)"> </li>
+                    onchange="CharacterController.rotateCharacters(
+                        CharacterController.activeCharacter,this.value)"> </li>
             <li class="placeholder">Mostrar stats</li>
             <li class="placeholder">Editar personaje</li>
             <li class="placeholder">Cambiar imagen</li>
