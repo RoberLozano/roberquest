@@ -417,6 +417,7 @@ const CharacterController = {
         let startX, startY, originalPos;
         let isDragging = false;
         let hasStartedDrag = false;
+        let wasSelected = false;
 
         const image = () => charElement.querySelector('image');
         const cross = () => charElement.querySelector('.position-cross');
@@ -425,6 +426,9 @@ const CharacterController = {
         let selectedOriginalPos = new Map();
 
         const startDragging = e => {
+            if(this.selectedCharacters.has(charElement.getAttribute('id'))){
+                wasSelected = charElement.getAttribute('id');
+            }
             if (e.button === 2) return;
             e.stopPropagation();
 
@@ -577,9 +581,18 @@ const CharacterController = {
                         }
                     });
                 }
+                //si estaba seleccionado antes de empezar a arrastar lo volvemos a seleccionar, porque el click largo lo ha deseleccionado
+                if(wasSelected && wasSelected == charElement.getAttribute('id')){
+                    console.log('wasSelected', wasSelected);
+                    
+                    this.selectedCharacters.set(wasSelected, charElement);
+                    charElement.classList.add('selected');
+                    wasSelected = false;
+                }
             } else {
                 this.activeCharacter = charElement;
             }
+
 
             this.draggedCharacter = null;
             document.removeEventListener('mousemove', drag);
