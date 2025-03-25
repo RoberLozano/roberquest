@@ -394,7 +394,8 @@ const CharacterController = {
 
         // Clear selection when clicking outside
         document.addEventListener('click', (e) => {
-            if (!e.target.closest('.character')) {
+            // Ignorar si estamos acabando de arrastrar
+            if (!e.target.closest('.character') && !this.draggedCharacter) {
                 this.selectedCharacters.forEach((char) => {
                     char.classList.remove('selected');
                 });
