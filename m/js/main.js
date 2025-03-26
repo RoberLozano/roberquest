@@ -266,7 +266,8 @@ function displayNpcTokens() {
         npcItem.addEventListener('click', () => {
             let n=ctd.value;
             for (let i=0; i<n; i++){
-                CharacterController.addCharacterToMap(tokenPath);
+                // decidir que distancia habrá entre NPCs al aparecer
+                CharacterController.addCharacterToMap(tokenPath, {x: 0+i*50, y:  100});
             }       
             // CharacterController.addCharacterToMap(tokenPath);
             DOM.getElement('npcModal').style.display = 'none';

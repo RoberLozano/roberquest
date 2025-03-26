@@ -71,6 +71,8 @@ const CharacterController = {
         if (typeof position === 'object' && position.x && position.y) {
             x = parseFloat(position.x);
             y = parseFloat(position.y);
+            console.log('Position from '+baseName, { x, y });
+            
         } else {
             const point = SVGUtils.getPointInSVG(window.innerWidth / 2, window.innerHeight / 2);
             x = point.x;
