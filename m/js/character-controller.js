@@ -753,6 +753,10 @@ const CharacterController = {
 
     }
     ,
+    /**
+     * Borrar un personaje del mapa
+     * @param {SVGElement} char - Personaje a eliminar
+     */ 
     borrarP(char) {
         if (!char) return;
 

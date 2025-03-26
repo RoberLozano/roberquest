@@ -78,11 +78,14 @@
     <div id="npcModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Select NPC</h3>
+                <h3>Selecciona NPC</h3>
                 <span class="close-modal">&times;</span>
             </div>
-            <div class="modal-body">
-                <input type="text" id="npcSearch" placeholder="Search NPCs...">
+            <div class="modal-body" >
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="npcSearch" placeholder="Buscar NPCs..." style="flex: 1;">
+                    <input type="number" name="ctd" id="ctd" placeholder="Cantidad" min="1" max="10" value="1">
+                </div>
                 <div id="npcGrid"></div>
             </div>
         </div>

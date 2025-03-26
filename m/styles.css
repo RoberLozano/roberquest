@@ -18,7 +18,7 @@ body {
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    background-color: #333;
+    background-color: #333333;
 }
 
 #svg-container {
@@ -77,7 +77,7 @@ body {
     top: 0;
     right: 0;
     margin-bottom: 5px;
-    background: #2a2a2a;
+    background: #111;
     color: #fff;
     width: 100%;
     box-sizing: border-box;
@@ -90,7 +90,7 @@ body {
     border-bottom: 1px solid #444;
     position: sticky;
     top: 0;
-    background: #2a2a2a;
+    background: #111;
     z-index: 2;
 }
 
@@ -101,7 +101,7 @@ body {
     border: 1px solid #444;
     border-radius: 3px;
     font-size: 14px;
-    background: #333;
+    background: #111;
     color: #fff;
 }
 
@@ -252,7 +252,7 @@ body {
 }
 
 .modal-content {
-    background-color: #2a2a2a;
+    background-color: #111;
     margin: 10% auto;
     padding: 0;
     border: 1px solid #444;
@@ -299,11 +299,21 @@ body {
     width: 100%;
     padding: 8px;
     margin-bottom: 15px;
-    background: #333;
+    background: #111;
     color: #fff;
     border: 1px solid #444;
     border-radius: 4px;
 }
+
+#ctd {
+    width: 30px;
+    padding: 8px;
+    margin-bottom: 15px;
+    background: #111;
+    color: #fff;
+}
+
+
 
 #npcGrid {
     display: grid;
@@ -324,7 +334,7 @@ body {
 }
 
 .npc-item:hover {
-    background: #444;
+    background:darkred;
 }
 
 .npc-item img {
@@ -340,6 +350,7 @@ body {
     word-break: break-word;
     max-width: 100%;
 }
+
 /* Selected character style */
 .character.selected {
     filter: drop-shadow(0 0 5px #fff) brightness(1.5);

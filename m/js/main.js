@@ -102,6 +102,7 @@ function setupNpcModal() {
     const closeBtn = modal.querySelector('.close-modal');
     const npcGrid = DOM.getElement('npcGrid');
     const npcSearch = DOM.getElement('npcSearch');
+    const ctd = DOM.getElement('ctd');
     const addNpcBtn = DOM.getElement('addNpcBtn');
     
     // Open modal when Add NPC button is clicked
@@ -263,7 +264,11 @@ function displayNpcTokens() {
         
         // Add click event to add NPC to map
         npcItem.addEventListener('click', () => {
-            CharacterController.addCharacterToMap(tokenPath);
+            let n=ctd.value;
+            for (let i=0; i<n; i++){
+                CharacterController.addCharacterToMap(tokenPath);
+            }       
+            // CharacterController.addCharacterToMap(tokenPath);
             DOM.getElement('npcModal').style.display = 'none';
         });
         
