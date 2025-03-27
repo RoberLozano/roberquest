@@ -1978,8 +1978,162 @@ class InputHechizo extends InputHabilidad {
 }
 
 //Input de clase
+// class InputCustom extends HTMLElement {
+//   constructor(clase, lista) {
+//     super();
+//     let i = 'input';
+
+//     var html = '';
+
+//     var tabla = document.createElement('table');
+//     this.reset = {}
+//     this.appendChild(this.tablear('root', clase, lista));
+//   }
+
+//   /**
+//    * 
+//    * @param {Object} o el objeto del cual obtener la tabla
+//    * @returns La tabla 
+//    */
+//   tablear(id, clase, lista) {
+//     var tabla = document.createElement('table');
+//     // var c;
+//     for (let key in clase) {
+//       if (lista?.includes(key) || !lista && clase[key]) {
+//         var fila = document.createElement('tr');
+//         // if(clase[key] instanceof Object)
+
+//         console.log(typeof clase[key], key, clase[key]);
+//         // console.log(clase[key].constructor.name);
+//         var tipo = clase[key].constructor.name
+//         //component
+//         var c;
+//         var ta; //tabla anidada
+//         var isObject = false;
+
+//         switch (tipo) {
+//           case 'Number':
+//             c = document.createElement('input');
+//             c.setAttribute("type", "number");
+//             c.setAttribute("value", clase[key]);
+//             c.addEventListener('change', (event) => {
+//               clase[key] = +event.target.value; //para que sea número
+//               console.log(clase[key]);
+//             });
+//             break;
+//           case 'String':
+//             c = document.createElement('input');
+//             c.setAttribute("type", "text");
+//             c.setAttribute("value", clase[key]);
+//             c.addEventListener('change', (event) => {
+//               clase[key] = event.target.value;
+//               console.log(clase[key]);
+//             });
+//             break;
+//           case 'Date':
+//             c = document.createElement('input');
+//             c.setAttribute("type", "datetime-local");
+//             try {
+//               c.setAttribute("value", clase[key].fechahoraLocal());
+//             } catch (error) {
+//               console.error('FAllo con fechas');
+//             }
+
+//             c.addEventListener('change', (event) => {
+//               clase[key] = new Date(event.target.value);
+//               console.log(clase[key]);
+//             });
+//             break;
+//           // case 'Object':
+//           //   c=this.tablear( clase[key])
+//           //   break;
+
+//           default:
+//             // html += `${key}<${i}  value='${clase[key]}'><br>`
+//             if (typeof clase[key] === 'object') {
+//               console.log('Tableo ' + id + key);
+
+//               ta = this.tablear(id + key, clase[key])
+//               ta.id = id + key;
+//               // c = ta;
+//               isObject = true;
+//               ta.style.border = "thin solid"
+//             }
+//             else {
+//               c = document.createElement('input');
+//               c.setAttribute("value", clase[key]);
+//             }
+
+//         }
+//         this.reset[id + key] = clase[key]
+//         tabla.appendChild(fila)
+//         // this.appendChild(c);
+
+//         let label = document.createElement('td');
+//         if (isObject) { //si es objeto que colapse la tabla
+//           let b = document.createElement('span');
+//           // let b= document.createElement('button');
+//           b.innerHTML = "&#9650";
+//           label.innerText = key;
+//           label.id = ta.id;
+//           label.appendChild(b)
+//           b.addEventListener('click', (event) => {
+//             let next = document.getElementById(label.id).nextSibling;
+//             // console.log(ta);
+//             // next=ta.nextSibling;
+//             console.log(next);
+
+//             next.hidden = !next.hidden
+//             next.hidden ? b.innerHTML = "&#9660;" : b.innerHTML = "&#9650"; // ▼ ▲
+
+//             // ta.hidden = !ta.hidden
+//             //  c.hidden?b.innerHTML =" +  &#9650;":b.innerHTML =" -  &#9660" ;
+//             // ta.hidden ? b.innerHTML = "&#9660;" : b.innerHTML = "&#9650"; // ▼ ▲
+//             //  c.hidden?b.innerHTML ="&#9662;":b.innerHTML ="&#9652" ; //▾ ▴
+//           });
+//           fila.appendChild(label)
+//           fila.appendChild(document.createElement('td').appendChild(ta));
+//         }
+//         else {
+//           label.innerText = key;
+//           let b = document.createElement('span');
+//           // let b= document.createElement('button');
+//           b.innerHTML = "&#11176";
+//           // b.innerHTML = "&#8630";
+//           label.appendChild(b)
+//           b.addEventListener('click', (event) => {
+//             console.log(event.target);
+//             console.log(event.target.parentNode.nextSibling);
+//             // c.setAttribute("value", this.reset[key]);
+//             event.target.parentNode.nextSibling.setAttribute("value", this.reset[id + key]);
+//             event.target.parentNode.nextSibling.value = this.reset[id + key];
+//             event.target.parentNode.nextSibling.dispatchEvent(new Event("change"));;
+
+//             console.log(this.reset[id + key]);
+//           });
+
+//           fila.appendChild(label)
+//           fila.appendChild(document.createElement('td').appendChild(c));
+
+//         }
+
+//         tabla.appendChild(fila);
+//       }
+
+//     }
+//     return (tabla);
+
+//   }
+
+// }
+/**
+ *  Clase para crear un input de tipo personalizado
+ *  @param {Object} clase Objeto del cual se quiere crear el input
+ *  @param {Array} lista Array con los nombres de los atributos que se quieren mostrar vacio o null, para que muestre todos
+ *  @param {boolean} colapse Si se quiere que la tabla colapse o no, por defecto true
+ */
 class InputCustom extends HTMLElement {
-  constructor(clase, lista) {
+  constructor(clase, lista, colapse = true) {
     super();
     let i = 'input';
 
@@ -1987,7 +2141,8 @@ class InputCustom extends HTMLElement {
 
     var tabla = document.createElement('table');
     this.reset = {}
-    this.appendChild(this.tablear('root', clase, lista));
+    this.colapse = colapse; // Store the collapse preference
+    this.appendChild(this.tablear('root', clase, lista, colapse));
   }
 
   /**
@@ -1995,7 +2150,7 @@ class InputCustom extends HTMLElement {
    * @param {Object} o el objeto del cual obtener la tabla
    * @returns La tabla 
    */
-  tablear(id, clase, lista) {
+  tablear(id, clase, lista, colapse = true) {
     var tabla = document.createElement('table');
     // var c;
     for (let key in clase) {
@@ -2053,7 +2208,7 @@ class InputCustom extends HTMLElement {
             if (typeof clase[key] === 'object') {
               console.log('Tableo ' + id + key);
 
-              ta = this.tablear(id + key, clase[key])
+              ta = this.tablear(id + key, clase[key], null, colapse)
               ta.id = id + key;
               // c = ta;
               isObject = true;
@@ -2063,7 +2218,6 @@ class InputCustom extends HTMLElement {
               c = document.createElement('input');
               c.setAttribute("value", clase[key]);
             }
-
         }
         this.reset[id + key] = clase[key]
         tabla.appendChild(fila)
@@ -2073,32 +2227,36 @@ class InputCustom extends HTMLElement {
         if (isObject) { //si es objeto que colapse la tabla
           let b = document.createElement('span');
           // let b= document.createElement('button');
-          b.innerHTML = "&#9650";
+          let collapsed = colapse; // Estado inicial basado en el parámetro
+          b.innerHTML = collapsed ? "&#9660;" : "&#9650;"; // Icono según el estado
+          b.style.cursor = "pointer"; // Añadido cursor pointer para mejor UX
           label.innerText = key;
           label.id = ta.id;
-          label.appendChild(b)
+          label.appendChild(b);
+          
+          // Crear celda para la tabla anidada
+          let tdContent = document.createElement('td');
+          tdContent.appendChild(ta);
+          tdContent.hidden = collapsed; // Ocultar según la preferencia
+          
           b.addEventListener('click', (event) => {
-            let next = document.getElementById(label.id).nextSibling;
-            // console.log(ta);
-            // next=ta.nextSibling;
-            console.log(next);
+            // Usar la celda directamente en lugar de buscarla
+            let contentCell = event.target.parentNode.nextSibling;
+            console.log(contentCell);
 
-            next.hidden = !next.hidden
-            next.hidden ? b.innerHTML = "&#9660;" : b.innerHTML = "&#9650"; // ▼ ▲
-
-            // ta.hidden = !ta.hidden
-            //  c.hidden?b.innerHTML =" +  &#9650;":b.innerHTML =" -  &#9660" ;
-            // ta.hidden ? b.innerHTML = "&#9660;" : b.innerHTML = "&#9650"; // ▼ ▲
-            //  c.hidden?b.innerHTML ="&#9662;":b.innerHTML ="&#9652" ; //▾ ▴
+            contentCell.hidden = !contentCell.hidden;
+            contentCell.hidden ? b.innerHTML = "&#9660;" : b.innerHTML = "&#9650;"; // ▼ ▲
           });
-          fila.appendChild(label)
-          fila.appendChild(document.createElement('td').appendChild(ta));
+          
+          fila.appendChild(label);
+          fila.appendChild(tdContent); // Añadir la celda directamente
         }
         else {
           label.innerText = key;
           let b = document.createElement('span');
           // let b= document.createElement('button');
           b.innerHTML = "&#11176";
+          b.style.cursor = "pointer"; // Añadido cursor pointer
           // b.innerHTML = "&#8630";
           label.appendChild(b)
           b.addEventListener('click', (event) => {
@@ -2112,20 +2270,26 @@ class InputCustom extends HTMLElement {
             console.log(this.reset[id + key]);
           });
 
-          fila.appendChild(label)
-          fila.appendChild(document.createElement('td').appendChild(c));
-
+          // Crear celda para el input
+          let tdContent = document.createElement('td');
+          tdContent.appendChild(c);
+          
+          fila.appendChild(label);
+          fila.appendChild(tdContent);
         }
 
         tabla.appendChild(fila);
       }
-
     }
     return (tabla);
-
   }
-
 }
+
+// Registrar el elemento personalizado
+customElements.define('input-custom', InputCustom);
+
+
+customElements.define('input-custom', InputCustom);
 
 // Define the new element
 

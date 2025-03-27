@@ -164,6 +164,10 @@ const SyncController = {
         }
     },
 
+    /**
+     * Handle character changed from sync (for personajes)
+     * @param {Object} snapshot - Firebase snapshot
+     */ 
     handleSyncPersonajeChanged(snapshot) {      
         try {
             let personaje=null;

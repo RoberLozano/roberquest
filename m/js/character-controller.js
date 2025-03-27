@@ -24,15 +24,19 @@ const CharacterController = {
     showStats(){
         if (!this.activeCharacter) return;
         let personaje = this.activeCharacter.getAttribute('id');
-        let stats = this.personajes.get(personaje);
+        let pe = this.personajes.get(personaje);
         document.getElementById('infoTitle').innerHTML = personaje;
     
         let info=document.getElementById('infoContent');
         info.innerHTML = '';
-        for (const [key, value] of Object.entries(stats)) {
-            info.innerHTML += `<b>${key}:</b> ${value}`;
-            info.innerHTML += '<br>';
-        }
+        var ic = new InputCustom(pe,null,true);
+
+        info.appendChild(ic);
+        // info.innerHTML = '';
+        // for (const [key, value] of Object.entries(stats)) {
+        //     info.innerHTML += `<b>${key}:</b> ${value}`;
+        //     info.innerHTML += '<br>';
+        // }
         // Show the modal
         const infoModal = document.getElementById('infoModal');
         infoModal.style.display = 'block';
