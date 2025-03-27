@@ -21,6 +21,23 @@ const CharacterController = {
         document.body.appendChild(this.tooltip);
     },
 
+    showStats(){
+        if (!this.activeCharacter) return;
+        let personaje = this.activeCharacter.getAttribute('id');
+        let stats = this.personajes.get(personaje);
+        document.getElementById('infoTitle').innerHTML = personaje;
+    
+        let info=document.getElementById('infoContent');
+        info.innerHTML = '';
+        for (const [key, value] of Object.entries(stats)) {
+            info.innerHTML += `<b>${key}:</b> ${value}`;
+            info.innerHTML += '<br>';
+        }
+        // Show the modal
+        const infoModal = document.getElementById('infoModal');
+        infoModal.style.display = 'block';
+    },
+
     /**
      * Add character to the map
      * @param {string} imageUrl - URL of the character image
@@ -29,7 +46,7 @@ const CharacterController = {
      */
     addCharacterToMap(imageUrl, position) {
         if (!svgElement) return;
-        console.log('Adding character to map', { imageUrl, position });
+        // console.log('Adding character to map', { imageUrl, position });
         // Create character group
         const charGroup = DOM.createSVGElement("g", { 'class': 'character' });
 
@@ -37,20 +54,21 @@ const CharacterController = {
         const fileName = typeof position === 'string' ?
             position.split('/').pop() :
             imageUrl.split('/').pop();
+        const nombre=fileName.substring(0, fileName.lastIndexOf('.'));
         let baseName = fileName.substring(0, fileName.lastIndexOf('.'))
             .replace(/%20/g, '_')
             .replace(/[^a-zA-Z0-9]/g, '_');
 
         let number = 1;
         while (this.characters.has(`${baseName}`)) {
-            console.log('Name already exists, incrementing', { baseName, number });
+            // console.log('Name already exists, incrementing', { baseName, number });
             number++;
             const match = baseName.match(/\d+$/);
             if (match) {
                 number = parseInt(match[0], 10) + 1;
                 baseName = baseName.substring(0, baseName.length - match[0].length);
                 baseName += number;
-                console.log('New name', { baseName, number });
+                // console.log('New name', { baseName, number });
             }
         }
 
@@ -105,6 +123,12 @@ const CharacterController = {
 
         // Store character reference
         this.characters.set(baseName, charGroup);
+
+        if(SyncController.isOnline){
+            console.log('cargo desde crear personaje:'+nombre);
+            
+            SyncController.cargarPersonaje(nombre);
+        }
         return charGroup;
     },
 
@@ -384,7 +408,7 @@ const CharacterController = {
          
             const id = charElement.getAttribute('id');
             // if (this.isDragging) return;
-            console.log('Click', { id, selected: this.selectedCharacters.has(id) });
+            // console.log('Click', { id, selected: this.selectedCharacters.has(id) });
 
             if (e.ctrlKey || e.metaKey || e.shiftKey) {
                 // Toggle selection with Ctrl/Cmd key

@@ -68,10 +68,23 @@
             <li id="rotate"> Rotar <input type="range" min="-180" max="180" value="0" class="slider" id="myAngle"
                     onchange="CharacterController.rotateCharacters(
                         CharacterController.activeCharacter,this.value)"> </li>
-            <li class="placeholder">Mostrar stats</li>
+            <li id="showStats">Mostrar stats</li>
             <li class="placeholder">Editar personaje</li>
             <li class="placeholder">Cambiar imagen</li>
         </ul>
+    </div>
+
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="infoTitle">Información</h3>
+                <span class="close-modal" onclick="infoModal.style.display='none'"
+                >&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="infoContent"></div>
+            </div>
+        </div>
     </div>
 
     <!-- NPC Selection Modal -->

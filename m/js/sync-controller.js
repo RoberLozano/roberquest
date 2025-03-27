@@ -8,6 +8,7 @@ const SyncController = {
     database: null,
     syncButton: null,
     mapStateRef: null,
+    personajesRef:null,
     
     /**
      * Initialize Firebase connection
@@ -65,6 +66,9 @@ const SyncController = {
             if (this.mapStateRef) {
                 this.mapStateRef.off();
             }
+            if (this.personajesRef) {
+                this.personajesRef.off();
+            }
         }
     },
     
@@ -82,6 +86,17 @@ const SyncController = {
             this.mapStateRef.on('child_added', this.handleSyncCharacterAdded.bind(this));
             this.mapStateRef.on('child_changed', this.handleSyncCharacterChanged.bind(this));
             this.mapStateRef.on('child_removed', this.handleSyncCharacterRemoved.bind(this));
+        
+            //si quiero que mire todos los personajes guardados
+            this.personajesRef = this.database.ref('personajes');
+            this.personajesRef.on('child_changed', this.handleSyncPersonajeChanged.bind(this));
+
+            //si quiero que mire solo los personajes de CharacterController.personajes
+            CharacterController.personajes.forEach((personaje) => {
+                this.personajesRef.child(personaje.nombre)
+                .on('value', this.handleSyncPersonajeChanged.bind(this));
+            });
+            
         } catch (e) {
             console.error('Error setting up Firebase listeners:', e);
         }
@@ -148,6 +163,29 @@ const SyncController = {
             console.error('Error updating synced character:', e);
         }
     },
+
+    handleSyncPersonajeChanged(snapshot) {      
+        try {
+            let personaje=null;
+                const data = snapshot.val();
+                if (data) {
+                    console.log("Personaje cargado:", data);
+                    // Convertir los datos a un objeto de personaje
+                    if (data.clase) {
+                        personaje = Clase.convertir(data);
+                    } else {
+                        personaje = new Humanoide({});
+                    }
+                    personaje.setAll(data);
+                    personaje.act();
+                    CharacterController.personajes.set(personaje.nombre, personaje);
+                    console.log("Personaje actualizado en personajes", personaje);
+                }
+           
+        } catch (e) {
+            console.error('Error updating synced character:', e);
+        }
+    },
     
     /**
      * Handle character removed from sync
@@ -168,6 +206,34 @@ const SyncController = {
         } catch (e) {
             console.error('Error removing synced character:', e);
         }
+    },
+
+
+/**
+ * Carga una vez un personaje y lo guarda en @link{CharacterController.personajes}
+ * 
+ * @param {string} nombre 
+ */
+    cargarPersonaje(nombre){
+        // Cargar personaje de forma asíncrona
+        let ruta = `personajes/${nombre}/`;
+        let personaje=null;
+        this.database.ref(ruta).once('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                console.log("Personaje cargado:", data);
+                // Convertir los datos a un objeto de personaje
+                if (data.clase) {
+                    personaje = Clase.convertir(data);
+                } else {
+                    personaje = new Humanoide({});
+                }
+                personaje.setAll(data);
+                personaje.act();
+                CharacterController.personajes.set(personaje.nombre, personaje);
+                console.log("Personaje guardado en personajes", personaje);
+            }
+        });
     },
     
     /**

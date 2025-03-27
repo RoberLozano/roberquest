@@ -76,6 +76,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             CharacterController.deleteCharacter();
             DOM.getElement('characterContextMenu').style.display = 'none';
         });
+
+        DOM.getElement('showStats').addEventListener('click', () => {
+            CharacterController.showStats();
+            DOM.getElement('characterContextMenu').style.display = 'none';
+        });
+        
         
         // Load default map
         try {
