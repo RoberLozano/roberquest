@@ -162,6 +162,31 @@ const CharacterController = {
         return crossGroup;
     },
 
+    drawSelectionCircle(char){
+                    // Draw selection circle
+                    if (char.parentElement.classList.contains('selected')) {
+                        const size = parseFloat(char.getAttribute('width'));
+                        let x= parseFloat(char.getAttribute('data-x')) || parseFloat(char.getAttribute('x')) + size / 2;
+                        let y= parseFloat(char.getAttribute('data-y')) || parseFloat(char.getAttribute('y')) + size / 2;
+                        const circle = char.parentElement.querySelector('.selection-circle') || 
+                            DOM.createSVGElement('circle', {
+                                'class': 'selection-circle',
+                                'stroke': 'white',
+                                'fill': 'none',
+                                'stroke-width': 0.000001
+                            });
+                        circle.setAttribute('r', size / 2);
+                        circle.setAttribute('cx', x);
+                        circle.setAttribute('cy', y);
+                        if (!char.parentElement.contains(circle)) {
+                            char.parentElement.appendChild(circle);
+                        }
+                    } else {
+                        const circle = char.parentElement.querySelector('.selection-circle');
+                        if (circle) circle.remove();
+                    }
+    },
+
     /**
      * Update position cross during character drag
      * @param {SVGElement} crossEl - The cross element
@@ -231,6 +256,9 @@ const CharacterController = {
         const size = parseFloat(image.getAttribute('width'));
         image.setAttribute('x', x - size / 2);
         image.setAttribute('y', y - size / 2);
+
+        this.drawSelectionCircle(image);
+
     },
 
     /**
@@ -317,11 +345,16 @@ const CharacterController = {
             char.setAttribute('width', size);
             char.setAttribute('height', size);
 
+            console.log(MapController.scale);
+            
             const x = parseFloat(char.getAttribute('data-x') || char.getAttribute('x'));
             const y = parseFloat(char.getAttribute('data-y') || char.getAttribute('y'));
 
             char.setAttribute('x', x - size / 2);
             char.setAttribute('y', y - size / 2);
+  
+            this.drawSelectionCircle(char);
+
         });
     },
 
@@ -384,6 +417,7 @@ const CharacterController = {
                 this.selectedCharacters.set(id, charElement);
                 charElement.classList.add('selected');
             }
+            this.drawSelectionCircle(charElement.querySelector('image'));
         };
 
         // Touch event handlers for selection
@@ -429,6 +463,7 @@ const CharacterController = {
             if (!e.target.closest('.character') && !this.draggedCharacter) {
                 this.selectedCharacters.forEach((char) => {
                     char.classList.remove('selected');
+                    this.drawSelectionCircle(char.querySelector('image'));
                 });
                 this.selectedCharacters.clear();
             }
@@ -449,6 +484,7 @@ const CharacterController = {
 
         const image = () => charElement.querySelector('image');
         const cross = () => charElement.querySelector('.position-cross');
+
 
         // Store original positions of all selected characters
         let selectedOriginalPos = new Map();
@@ -615,6 +651,7 @@ const CharacterController = {
                     
                     this.selectedCharacters.set(wasSelected, charElement);
                     charElement.classList.add('selected');
+                    this.drawSelectionCircle(charElement.querySelector('image'));
                     wasSelected = false;
                 }
             } else {

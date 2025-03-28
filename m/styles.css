@@ -354,7 +354,7 @@ body {
 /* Selected character style */
 .character.selected {
     filter: drop-shadow(0 0 5px #fff) brightness(1.5);
-    outline: 1px solid #aaf068;
-    outline-offset: 2px;
-    z-index: 10;
+    outline: 0.00001px solid #aaf068;
+    /* outline-offset: 1; */
+    z-index: -1;
 }
