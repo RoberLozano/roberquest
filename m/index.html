@@ -71,8 +71,12 @@
             <li id="showStats">Mostrar stats</li>
             <li id="inventario"
             onclick="CharacterController.showStats('inventario')">Inventario</li>
-            >Ejecutar comando</li>
-            <li class="placeholder">Cambiar imagen</li>
+            <li id="exe">
+                <input type="text" name="" id="exeInput" placeholder="Ejecutar comando...">
+                <button id="exeBtn" onclick="eval('CharacterController.getActivePersonaje().'+
+                document.getElementById('exeInput').value)">Ejecutar</button>
+
+            </li>
         </ul>
     </div>
 

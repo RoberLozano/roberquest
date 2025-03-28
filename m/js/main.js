@@ -52,9 +52,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         setupNpcModal();
         
         // Close context menu on document click
-        document.addEventListener('click', () => {
-            DOM.getElement('characterContextMenu').style.display = 'none';
-        });
+        // document.addEventListener('click', () => {
+        //     DOM.getElement('characterContextMenu').style.display = 'none';
+        // });
         
         // Prevent context menu on SVG container
         const svgContainer = DOM.getElement('svg-container');

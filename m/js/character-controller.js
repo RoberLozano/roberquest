@@ -258,6 +258,12 @@ const CharacterController = {
         this.drawSelectionCircle(image);
 
     },
+    getActivePersonaje(){
+        if (!this.activeCharacter) return null;
+        const personaje = this.activeCharacter.getAttribute('id');
+        return this.personajes.get(personaje);
+
+    },
 
     /**
      * Move character by name to a location
