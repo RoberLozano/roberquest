@@ -21,23 +21,21 @@ const CharacterController = {
         document.body.appendChild(this.tooltip);
     },
 
-    showStats(){
+    showStats(campo){
         if (!this.activeCharacter) return;
         let personaje = this.activeCharacter.getAttribute('id');
         let pe = this.personajes.get(personaje);
         document.getElementById('infoTitle').innerHTML = personaje;
-    
+        var ic;
         let info=document.getElementById('infoContent');
         info.innerHTML = '';
-        var ic = new InputCustom(pe,null,true);
-
+        if(!campo){
+            ic = new InputCustom(pe,null,true);
+        }
+        else{
+            ic = new InputCustom(pe[campo], null, false);
+        }
         info.appendChild(ic);
-        // info.innerHTML = '';
-        // for (const [key, value] of Object.entries(stats)) {
-        //     info.innerHTML += `<b>${key}:</b> ${value}`;
-        //     info.innerHTML += '<br>';
-        // }
-        // Show the modal
         const infoModal = document.getElementById('infoModal');
         infoModal.style.display = 'block';
     },
