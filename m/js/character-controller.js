@@ -11,14 +11,139 @@ const CharacterController = {
     draggedCharacter: null,
     activeCharacter: null,
     rastro: true,
+    // Mapa para almacenar las posiciones originales para cancelar movimientos
+    originalPositions: new Map(),
+    // Control de confirmación automática de movimientos
+    autoConfirmMove: false,
 
     /**
-     * Initialize the tooltip for distance display
+     * Initialize the character controller
      */
-    initTooltip() {
+    init() {
+        // Inicializar tooltip
         this.tooltip = document.createElement('div');
         this.tooltip.style.cssText = "position: fixed; display: none; background: rgba(0,0,0,0.8); color: white; padding: 5px; border-radius: 3px; z-index: 1100; font-size: 12px;";
         document.body.appendChild(this.tooltip);
+        
+        // Inicializar controladores para los botones de confirmación
+        this.initMoveConfirmation();
+        
+        // Inicializar controlador para el checkbox de auto-confirmación
+        this.initAutoConfirmMove();
+    },
+    
+    /**
+     * Initialize auto-confirm move checkbox
+     */
+    initAutoConfirmMove() {
+        const autoConfirmCheckbox = document.getElementById('autoConfirmMove');
+        
+        // Establecer estado inicial
+        autoConfirmCheckbox.checked = this.autoConfirmMove;
+        
+        // Añadir event listener para actualizar el estado
+        autoConfirmCheckbox.addEventListener('change', () => {
+            this.autoConfirmMove = autoConfirmCheckbox.checked;
+            console.log(`Auto-confirmación de movimientos: ${this.autoConfirmMove ? 'Activada' : 'Desactivada'}`);
+        });
+    },
+
+    /**
+     * Initialize move confirmation buttons
+     */
+    initMoveConfirmation() {
+        const confirmButton = document.getElementById('confirmMove');
+        const cancelButton = document.getElementById('cancelMove');
+        const confirmationDiv = document.getElementById('moveConfirmation');
+        
+        // Confirmar movimiento
+        confirmButton.addEventListener('click', () => {
+            confirmationDiv.style.display = 'none';
+            this.originalPositions.clear();
+            
+            // Si estamos online, guardar el estado
+            if (SyncController.isOnline) {
+                this.saveDraggedCharactersState();
+            }
+        });
+        
+        // Cancelar movimiento
+        cancelButton.addEventListener('click', () => {
+            this.undoCharacterMovement();
+            confirmationDiv.style.display = 'none';
+        });
+    },
+    
+    /**
+     * Save state of all dragged characters to Firebase
+     */
+    saveDraggedCharactersState() {
+        if (!SyncController.isOnline) return;
+        
+        if (this.draggedCharacter) {
+            SyncController.saveMapState(this.draggedCharacter);
+        }
+        
+        this.selectedCharacters.forEach((char) => {
+            if (char !== this.draggedCharacter) {
+                SyncController.saveMapState(char);
+            }
+        });
+    },
+    
+    /**
+     * Undo character movement by restoring original positions
+     */
+    undoCharacterMovement() {
+        this.originalPositions.forEach((originalPos, charElement) => {
+            const img = charElement.querySelector('image');
+            this.moveCharacter(img, originalPos.x, originalPos.y);
+            
+            // En lugar de eliminar el rastro completo, solo eliminamos la última ruta añadida
+            // Esto mantiene el historial de rutas anteriores
+            const routes = this.characterRoutes.get(charElement);
+            if (routes && routes.length > 0) {
+                // Eliminamos el último punto (destino actual) de la ruta
+                routes.pop();
+                
+                // Si quedan puntos en la ruta, redibujamos el camino
+                if (routes.length >= 2) {
+                    try {
+                        const pathElem = charElement.querySelector('.character-route');
+                        if (pathElem) {
+                            const path = SVGUtils.generateSmoothPath(routes);
+                            pathElem.setAttribute('d', path);
+                        }
+                    } catch (error) {
+                        console.error('Error al actualizar la ruta:', error);
+                    }
+                } else {
+                    // Si solo quedaba un punto (el origen), eliminamos el elemento path visual
+                    // pero mantenemos la entrada en el mapa de rutas
+                    const pathElem = charElement.querySelector('.character-route');
+                    if (pathElem) {
+                        pathElem.remove();
+                    }
+                }
+            }
+        });
+        
+        this.originalPositions.clear();
+    },
+
+    /**
+     * Set the distance scale factor
+     * @param {number} value - The scale value in meters per unit
+     */
+    setDistanceScale(value) {
+        const scaleFactor = parseFloat(value);
+        if (isNaN(scaleFactor) || scaleFactor <= 0) return;
+        
+        CONFIG.distanceScaleFactor = scaleFactor;
+        console.log(`Escala establecida: ${scaleFactor} metros por unidad`);
+        
+        // Cerrar el menú contextual
+        document.getElementById('mapContextMenu').style.display = 'none';
     },
 
     showStats(campo){
@@ -41,6 +166,119 @@ const CharacterController = {
     },
 
     /**
+     * Set the speed for a character (km/h)
+     * @param {number} speed - Speed in km/h
+     */
+    setCharacterSpeed(speed) {
+        if (!this.activeCharacter) return;
+        
+        // Convert to number and validate
+        speed = parseFloat(speed);
+        if (isNaN(speed) || speed <= 0) speed = CONFIG.defaultSpeed;
+        
+        // Update DOM
+        document.getElementById('speedValue').value = speed;
+        
+        // Update for selected characters or active character
+        if (this.selectedCharacters.size > 0) {
+            this.selectedCharacters.forEach((char) => {
+                char.setAttribute('data-speed', speed);
+            });
+        } else {
+            this.activeCharacter.setAttribute('data-speed', speed);
+        }
+        
+        // Update CONFIG default for new characters
+        CONFIG.defaultSpeed = speed;
+    },
+    
+    /**
+     * Set the distance scale factor (meters per map unit)
+     * @param {number} scale - Scale factor in meters per map unit
+     */
+    setDistanceScale(scale) {
+        // Convert to number and validate
+        scale = parseFloat(scale);
+        if (isNaN(scale) || scale <= 0) scale = 1;
+        
+        // Update DOM
+        document.getElementById('mapScaleValue').value = scale;
+        
+        // Update CONFIG
+        CONFIG.distanceScaleFactor = scale;
+        
+        // Refresh all routes to update distances
+        this.characterRoutes.forEach((route, charElement) => {
+            if (route.length > 1) {
+                this.updateDistanceDisplay(charElement);
+            }
+        });
+    },
+    
+    /**
+     * Update distance display for a character's route
+     * @param {SVGElement} charElement - Character element
+     */
+    updateDistanceDisplay(charElement) {
+        if (!charElement) return;
+        
+        const route = this.characterRoutes.get(charElement) || [];
+        if (route.length <= 1) return;
+        
+        // Calculate total distance
+        let totalDistance = 0;
+        for (let i = 1; i < route.length; i++) {
+            const dx = route[i].x - route[i - 1].x;
+            const dy = route[i].y - route[i - 1].y;
+            totalDistance += Math.sqrt(dx * dx + dy * dy);
+        }
+        
+        // Apply scale factor
+        const scaledDistance = totalDistance * CONFIG.distanceScaleFactor;
+        
+        // Get character speed (km/h)
+        const speed = parseFloat(charElement.getAttribute('data-speed')) || CONFIG.defaultSpeed;
+        
+        // Calculate time (h) = distance (m) / (speed (km/h) * 1000 (m/km))
+        const timeHours = scaledDistance / (speed * 1000);
+        
+        // Format time in hours, minutes, seconds
+        let timeString = '';
+        if (timeHours >= 1) {
+            timeString = Math.floor(timeHours) + 'h ';
+        }
+        
+        const minutes = Math.floor((timeHours % 1) * 60);
+        if (minutes > 0 || timeHours >= 1) {
+            timeString += minutes + 'min ';
+        }
+        
+        const seconds = Math.floor(((timeHours % 1) * 60 % 1) * 60);
+        timeString += seconds + 's';
+        
+        // Display distance and time in tooltip
+        const bbox = charElement.getBoundingClientRect();
+        this.tooltip.style.display = 'block';
+        this.tooltip.style.left = `${bbox.right + 10}px`;
+        this.tooltip.style.top = `${bbox.top + 10}px`;
+        
+        // Format distance in m or km
+        let distanceText = '';
+        if (scaledDistance >= 1000) {
+            distanceText = `${(scaledDistance / 1000).toFixed(2)} km`;
+        } else {
+            distanceText = `${scaledDistance.toFixed(1)} m`;
+        }
+        
+        this.tooltip.innerHTML = `Dist: ${distanceText}<br>Tiempo: ${timeString}`;
+        
+        clearTimeout(this.tooltip.hideTimeout);
+        this.tooltip.hideTimeout = setTimeout(() => {
+            this.tooltip.style.display = 'none';
+        }, CONFIG.tooltipDisplayTime);
+    },
+
+    /**
      * Add character to the map
      * @param {string} imageUrl - URL of the character image
      * @param {Object|string} position - Position or URL for character
@@ -50,7 +288,8 @@ const CharacterController = {
         if (!svgElement) return;
         // console.log('Adding character to map', { imageUrl, position });
         // Create character group
-        const charGroup = DOM.createSVGElement("g", { 'class': 'character' });
+        const charGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        charGroup.setAttribute('class', 'character');
 
         // Extract name from URL
         const fileName = typeof position === 'string' ?
@@ -76,15 +315,17 @@ const CharacterController = {
 
 
         charGroup.id = baseName;
+        
+        // Set default speed
+        charGroup.setAttribute('data-speed', CONFIG.defaultSpeed);
 
         // Create character image
-        const image = DOM.createSVGElement("image", {
-            'href': imageUrl,
-            'data-name': baseName,
-            'width': CONFIG.iconSize / MapController.scale,
-            'height': CONFIG.iconSize / MapController.scale,
-            'preserveAspectRatio': 'xMidYMid meet'
-        });
+        const image = document.createElementNS("http://www.w3.org/2000/svg", "image");
+        image.setAttribute('href', imageUrl);
+        image.setAttribute('data-name', baseName);
+        image.setAttribute('width', CONFIG.iconSize / MapController.scale);
+        image.setAttribute('height', CONFIG.iconSize / MapController.scale);
+        image.setAttribute('preserveAspectRatio', 'xMidYMid meet');
 
         // Position the character
         let x, y;
@@ -101,7 +342,7 @@ const CharacterController = {
         image.setAttribute('data-y', y);
 
         // Add title for hover information
-        const titleElement = DOM.createSVGElement("title", {});
+        const titleElement = document.createElementNS("http://www.w3.org/2000/svg", "title");
         titleElement.textContent = baseName;
         charGroup.insertBefore(titleElement, charGroup.firstChild);
 
@@ -135,234 +376,6 @@ const CharacterController = {
     },
 
     /**
-     * Create position cross marker for dragging
-     * @returns {SVGElement} - The created cross element
-     */
-    createPositionCross() {
-        const crossGroup = DOM.createSVGElement("g", { 'class': 'position-cross' });
-        crossGroup.style.display = 'none';
-
-        // Horizontal line
-        const hLine = DOM.createSVGElement("line", {
-            'stroke': 'white',
-            'stroke-width': '1'
-        });
-
-        // Vertical line
-        const vLine = DOM.createSVGElement("line", {
-            'stroke': 'white',
-            'stroke-width': '1'
-        });
-
-        crossGroup.appendChild(hLine);
-        crossGroup.appendChild(vLine);
-
-        return crossGroup;
-    },
-
-    drawSelectionCircle(char){
-                    // Draw selection circle
-                    if (char.parentElement.classList.contains('selected')) {
-                        const size = parseFloat(char.getAttribute('width'));
-                        let x= parseFloat(char.getAttribute('data-x')) || parseFloat(char.getAttribute('x')) + size / 2;
-                        let y= parseFloat(char.getAttribute('data-y')) || parseFloat(char.getAttribute('y')) + size / 2;
-                        const circle = char.parentElement.querySelector('.selection-circle') || 
-                            DOM.createSVGElement('circle', {
-                                'class': 'selection-circle',
-                                'stroke': 'white',
-                                'fill': 'none',
-                                'stroke-width': 0.000001
-                            });
-                        circle.setAttribute('r', size / 2);
-                        circle.setAttribute('cx', x);
-                        circle.setAttribute('cy', y);
-                        if (!char.parentElement.contains(circle)) {
-                            char.parentElement.appendChild(circle);
-                        }
-                    } else {
-                        const circle = char.parentElement.querySelector('.selection-circle');
-                        if (circle) circle.remove();
-                    }
-    },
-
-    /**
-     * Update position cross during character drag
-     * @param {SVGElement} crossEl - The cross element
-     * @param {number} x - X coordinate
-     * @param {number} y - Y coordinate
-     */
-    updateCross(crossEl, x, y) {
-        if (!crossEl) return;
-
-        const [hLine, vLine] = crossEl.children;
-        const halfCross = (CONFIG.iconSize / 2) / MapController.scale;
-
-        hLine.setAttribute('x1', x - halfCross);
-        hLine.setAttribute('x2', x + halfCross);
-        hLine.setAttribute('y1', y);
-        hLine.setAttribute('y2', y);
-
-        vLine.setAttribute('x1', x);
-        vLine.setAttribute('x2', x);
-        vLine.setAttribute('y1', y - halfCross);
-        vLine.setAttribute('y2', y + halfCross);
-
-        const strokeWidth = 2 / MapController.scale;
-        hLine.setAttribute('stroke-width', strokeWidth);
-        vLine.setAttribute('stroke-width', strokeWidth);
-    },
-
-    rotateCharacters(charElement, newRotation) {
-        if (this.selectedCharacters.size > 0) {
-            this.selectedCharacters.forEach((char) => {
-                if (char == charElement) return;
-                CharacterUtils.rotate(char.querySelector('image'),
-                 newRotation);
-                 if (SyncController.isOnline) {
-                    SyncController.saveMapState(char);
-                }
-
-            });
-        }
-        let img = charElement.querySelector('image');
-        CharacterUtils.rotate(img, newRotation);
-
-        if (SyncController.isOnline) {
-            SyncController.saveMapState(charElement);
-        }
-    },
-
-    /**
-     * Move character to position
-     * @param {SVGImageElement} image - Character image element
-     * @param {number|Object} newX - X coordinate or position object
-     * @param {number} newY - Y coordinate (if newX is not an object)
-     */
-    moveCharacter(image, newX, newY) {
-        let x, y;
-
-        // Handle both coordinate formats
-        ({ x, y } = newX.x !== undefined && newX.y !== undefined ?
-            { x: newX.x, y: newX.y } :
-            { x: newX, y: newY });
-
-        // Store coordinates
-        image.setAttribute('data-x', x);
-        image.setAttribute('data-y', y);
-
-        // Set position considering icon size
-        const size = parseFloat(image.getAttribute('width'));
-        image.setAttribute('x', x - size / 2);
-        image.setAttribute('y', y - size / 2);
-
-        this.drawSelectionCircle(image);
-
-    },
-    getActivePersonaje(){
-        if (!this.activeCharacter) return null;
-        const personaje = this.activeCharacter.getAttribute('id');
-        return this.personajes.get(personaje);
-
-    },
-
-    /**
-     * Move character by name to a location
-     * @param {string} personaje - Character name
-     * @param {string|Object} lugar - Target location name or coordinates
-     */
-    moveCharacterToLocation(personaje, lugar) {
-        let coords = typeof lugar === 'string' ?
-            SVGUtils.findCoordinates(lugar) :
-            lugar;
-
-        let img = this.getCharacterImage(personaje);
-
-        // Only move if valid target and character
-        if (!coords || !img) return;
-
-        this.moveCharacter(img, coords);
-
-        // Save state if online
-        if (SyncController.isOnline) {
-            SyncController.saveMapState(this.characters.get(personaje));
-        }
-    },
-
-    /**
-     * Get character position
-     * @param {string} personaje - Character name
-     * @returns {Object} - Character position {x, y}
-     */
-    getCharacterLocation(personaje) {
-        const img = this.getCharacterImage(personaje);
-        if (!img) return null;
-
-        const x = img.getAttribute('data-x');
-        const y = img.getAttribute('data-y');
-        return { x: parseFloat(x), y: parseFloat(y) };
-    },
-
-    /**
-     * Get character screen position
-     * @param {string} personaje - Character name
-     * @returns {Object} - Character screen position {x, y}
-     */
-    getCharacterScreenLocation(personaje) {
-        const img = this.getCharacterImage(personaje);
-        if (!img) return null;
-
-        const x = img.getAttribute('x');
-        const y = img.getAttribute('y');
-        return { x: parseFloat(x), y: parseFloat(y) };
-    },
-
-    /**
-     * Find nearest location name to a character
-     * @param {string} personaje - Character name
-     * @returns {string|null} - Name of nearest location
-     */
-    findNearestLocation(personaje) {
-        const loc = this.getCharacterLocation(personaje);
-        if (!loc || !svgElement) return null;
-
-        return SVGUtils.findNearestText(loc);
-    },
-
-    /**
-     * Get character image element by name
-     * @param {string} personaje - Character name
-     * @returns {SVGImageElement|null} - Character image element
-     */
-    getCharacterImage(personaje) {
-        return this.characters.get(personaje)?.querySelector('image') || null;
-    },
-
-    /**
-     * Update characters' transform on zoom
-     */
-    updateTransformCharacters() {
-        if (!svgElement) return;
-
-        const characterEls = svgElement.querySelectorAll('.character image');
-        characterEls.forEach(char => {
-            const size = CONFIG.iconSize / MapController.scale;
-            char.setAttribute('width', size);
-            char.setAttribute('height', size);
-
-            console.log(MapController.scale);
-            
-            const x = parseFloat(char.getAttribute('data-x') || char.getAttribute('x'));
-            const y = parseFloat(char.getAttribute('data-y') || char.getAttribute('y'));
-
-            char.setAttribute('x', x - size / 2);
-            char.setAttribute('y', y - size / 2);
-  
-            this.drawSelectionCircle(char);
-
-        });
-    },
-
-    /**
      * Update character route during movement
      * @param {SVGElement} charElement - Character element
      * @param {number} newX - X coordinate
@@ -384,26 +397,9 @@ const CharacterController = {
         }
 
         this.characterRoutes.set(charElement, route);
-
-        // Calculate total distance
-        let totalDistance = 0;
-        for (let i = 1; i < route.length; i++) {
-            const dx = route[i].x - route[i - 1].x;
-            const dy = route[i].y - route[i - 1].y;
-            totalDistance += Math.sqrt(dx * dx + dy * dy);
-        }
-
-        // Display distance tooltip
-        const bbox = charElement.getBoundingClientRect();
-        this.tooltip.style.display = 'block';
-        this.tooltip.style.left = `${bbox.right + 10}px`;
-        this.tooltip.style.top = `${bbox.top + 10}px`;
-        this.tooltip.innerText = `Dist: ${totalDistance.toFixed(2)}`;
-
-        clearTimeout(this.tooltip.hideTimeout);
-        this.tooltip.hideTimeout = setTimeout(() => {
-            this.tooltip.style.display = 'none';
-        }, CONFIG.tooltipDisplayTime);
+        
+        // Use updated method to display distance and time
+        this.updateDistanceDisplay(charElement);
     },
 
     /**
@@ -473,8 +469,7 @@ const CharacterController = {
             }
         });
 
-    }
-    ,
+    },
 
     /**
      * Setup character drag behavior
@@ -556,6 +551,12 @@ const CharacterController = {
                 cross().style.display = 'block';
                 image().style.opacity = '0.5';
                 this.characterRoutes.set(charElement, [{ x: originalPos.x, y: originalPos.y }]);
+                
+                // Guardar posición original para posible cancelación
+                this.originalPositions.set(charElement, {
+                    x: originalPos.x,
+                    y: originalPos.y
+                });
 
                 // Initialize routes for selected characters
                 this.selectedCharacters.forEach((char) => {
@@ -563,6 +564,12 @@ const CharacterController = {
                         const origPos = selectedOriginalPos.get(char);
                         this.characterRoutes.set(char, [{ x: origPos.x, y: origPos.y }]);
                         char.querySelector('image').style.opacity = '0.5';
+                        
+                        // Guardar posición original para posible cancelación
+                        this.originalPositions.set(char, {
+                            x: origPos.x,
+                            y: origPos.y
+                        });
                     }
                 });
             }
@@ -587,15 +594,6 @@ const CharacterController = {
                         this.updateCharacterRoute(char, newSelectedX, newSelectedY);
                     }
                 });
-
-                if (SyncController.isOnline) {
-                    SyncController.saveMapState(this.draggedCharacter);
-                    this.selectedCharacters.forEach((char) => {
-                        if (char !== charElement) {
-                            SyncController.saveMapState(char);
-                        }
-                    });
-                }
             }
         };
 
@@ -624,13 +622,12 @@ const CharacterController = {
                                 let pathElem = char.querySelector('.character-route');
 
                                 if (!pathElem) {
-                                    pathElem = DOM.createSVGElement("path", {
-                                        'class': 'character-route',
-                                        'fill': 'none',
-                                        'stroke': 'red',
-                                        'stroke-width': 0.5,
-                                        'stroke-dasharray': '1 1'
-                                    });
+                                    pathElem = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                                    pathElem.setAttribute('class', 'character-route');
+                                    pathElem.setAttribute('fill', 'none');
+                                    pathElem.setAttribute('stroke', 'red');
+                                    pathElem.setAttribute('stroke-width', 0.5);
+                                    pathElem.setAttribute('stroke-dasharray', '1 1');
                                     pathElem.classList.add(`${char.id}-route`);
                                     svgElement.appendChild(pathElem);
                                 }
@@ -649,6 +646,26 @@ const CharacterController = {
                         }
                     });
                 }
+                
+                // Mostrar los botones de confirmación o confirmar automáticamente
+                if (this.autoConfirmMove) {
+                    // Si está activada la auto-confirmación, guardamos el estado directamente
+                    this.originalPositions.clear();
+                    
+                    // Si estamos online, guardar el estado
+                    if (SyncController.isOnline) {
+                        this.saveDraggedCharactersState();
+                    }
+                } else {
+                    // Mostrar los botones de confirmación
+                    const confirmationDiv = document.getElementById('moveConfirmation');
+                    const img = charElement.querySelector('image');
+                    const rect = img.getBoundingClientRect();
+                    confirmationDiv.style.display = 'block';
+                    confirmationDiv.style.left = `${rect.right + 5}px`;
+                    confirmationDiv.style.top = `${rect.top - 5}px`;
+                }
+                
                 //si estaba seleccionado antes de empezar a arrastar lo volvemos a seleccionar, porque el click largo lo ha deseleccionado
                 if(wasSelected && wasSelected == charElement.getAttribute('id')){
                     console.log('wasSelected', wasSelected);
@@ -766,14 +783,41 @@ const CharacterController = {
             e.stopPropagation();
 
             this.activeCharacter = charElement;
-            const contextMenu = DOM.getElement('characterContextMenu');
+            const contextMenu = document.getElementById('characterContextMenu');
             contextMenu.style.display = 'block';
             contextMenu.style.left = `${e.pageX}px`;
             contextMenu.style.top = `${e.pageY}px`;
+            
+            // Update speed value
+            const speedValue = document.getElementById('speedValue');
+            speedValue.value = parseFloat(charElement.getAttribute('data-speed')) || CONFIG.defaultSpeed;
+        });
 
-            // Update toggle path text
-            const togglePathItem = DOM.getElement('togglePath');
-            togglePathItem.textContent = this.rastro ? 'Ocultar camino' : 'Mostrar camino';
+        // Cerrar el menú contextual al hacer clic en cualquier parte fuera del menú
+        document.addEventListener('click', (e) => {
+            const contextMenu = document.getElementById('characterContextMenu');
+            if (contextMenu.style.display === 'block' && !contextMenu.contains(e.target)) {
+                contextMenu.style.display = 'none';
+            }
+        });
+
+        // Prevenir que el menú se cierre al interactuar con inputs dentro del menú
+        const contextMenu = document.getElementById('characterContextMenu');
+        contextMenu.querySelectorAll('input').forEach(input => {
+            input.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+        });
+
+        // Añadir event listeners para cerrar el menú al hacer clic en opciones que no requieren inputs
+        const closeOnClick = ['deleteRoute', 'deleteCharacter', 'showStats', 'inventario'];
+        closeOnClick.forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.addEventListener('click', () => {
+                    contextMenu.style.display = 'none';
+                });
+            }
         });
     },
 
@@ -781,14 +825,17 @@ const CharacterController = {
      * Toggle path visibility
      */
     togglePath() {
+        console.log('togglePath()');
         this.rastro = !this.rastro;
         svgElement.querySelectorAll('.character-route').forEach(el => {
             el.style.display = this.rastro ? 'block' : 'none';
         });
 
-        // Update toggle path text
-        const togglePathItem = DOM.getElement('togglePath');
-        togglePathItem.textContent = this.rastro ? 'Ocultar camino' : 'Mostrar camino';
+        // Update toggle path text in both menus
+        const mapTogglePathItem = document.getElementById('mapTogglePath');
+        if (mapTogglePathItem) {
+            mapTogglePathItem.textContent = this.rastro ? 'Ocultar camino' : 'Mostrar camino';
+        }
     },
 
     /**
@@ -839,7 +886,231 @@ const CharacterController = {
         char.remove();
         this.characters.delete(id);
         this.activeCharacter = null;
-    }
+    },
+    
+    /**
+     * Create position cross marker for dragging
+     * @returns {SVGElement} - The created cross element
+     */
+    createPositionCross() {
+        const crossGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        crossGroup.setAttribute('class', 'position-cross');
+        crossGroup.style.display = 'none';
+
+        // Horizontal line
+        const hLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        hLine.setAttribute('stroke', 'white');
+        hLine.setAttribute('stroke-width', '1');
+
+        // Vertical line
+        const vLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        vLine.setAttribute('stroke', 'white');
+        vLine.setAttribute('stroke-width', '1');
+
+        crossGroup.appendChild(hLine);
+        crossGroup.appendChild(vLine);
+
+        return crossGroup;
+    },
+
+    drawSelectionCircle(char){
+                    // Draw selection circle
+                    if (char.parentElement.classList.contains('selected')) {
+                        const size = parseFloat(char.getAttribute('width'));
+                        let x= parseFloat(char.getAttribute('data-x')) || parseFloat(char.getAttribute('x')) + size / 2;
+                        let y= parseFloat(char.getAttribute('data-y')) || parseFloat(char.getAttribute('y')) + size / 2;
+                        const circle = char.parentElement.querySelector('.selection-circle') || 
+                            document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                        circle.setAttribute('class', 'selection-circle');
+                        circle.setAttribute('stroke', 'white');
+                        circle.setAttribute('fill', 'none');
+                        circle.setAttribute('stroke-width', 0.000001);
+                        circle.setAttribute('r', size / 2);
+                        circle.setAttribute('cx', x);
+                        circle.setAttribute('cy', y);
+                        if (!char.parentElement.contains(circle)) {
+                            char.parentElement.appendChild(circle);
+                        }
+                    } else {
+                        const circle = char.parentElement.querySelector('.selection-circle');
+                        if (circle) circle.remove();
+                    }
+    },
+
+    /**
+     * Update position cross during character drag
+     * @param {SVGElement} crossEl - The cross element
+     * @param {number} x - X coordinate
+     * @param {number} y - Y coordinate
+     */
+    updateCross(crossEl, x, y) {
+        if (!crossEl) return;
+
+        const [hLine, vLine] = crossEl.children;
+        const halfCross = (CONFIG.iconSize / 2) / MapController.scale;
+
+        hLine.setAttribute('x1', x - halfCross);
+        hLine.setAttribute('x2', x + halfCross);
+        hLine.setAttribute('y1', y);
+        hLine.setAttribute('y2', y);
+
+        vLine.setAttribute('x1', x);
+        vLine.setAttribute('x2', x);
+        vLine.setAttribute('y1', y - halfCross);
+        vLine.setAttribute('y2', y + halfCross);
+
+        const strokeWidth = 2 / MapController.scale;
+        hLine.setAttribute('stroke-width', strokeWidth);
+        vLine.setAttribute('stroke-width', strokeWidth);
+    },
+
+    rotateCharacters(charElement, newRotation) {
+        if (this.selectedCharacters.size > 0) {
+            this.selectedCharacters.forEach((char) => {
+                if (char == charElement) return;
+                CharacterUtils.rotate(char.querySelector('image'),
+                 newRotation);
+                 if (SyncController.isOnline) {
+                    SyncController.saveMapState(char);
+                }
+
+            });
+        }
+        let img = charElement.querySelector('image');
+        CharacterUtils.rotate(img, newRotation);
+
+        if (SyncController.isOnline) {
+            SyncController.saveMapState(charElement);
+        }
+    },
+
+    /**
+     * Move character to position
+     * @param {SVGImageElement} image - Character image element
+     * @param {number|Object} newX - X coordinate or position object
+     * @param {number} newY - Y coordinate (if newX is not an object)
+     */
+    moveCharacter(image, newX, newY) {
+        let x, y;
+
+        // Handle both coordinate formats
+        ({ x, y } = newX.x !== undefined && newX.y !== undefined ?
+            { x: newX.x, y: newX.y } :
+            { x: newX, y: newY });
+
+        // Store coordinates
+        image.setAttribute('data-x', x);
+        image.setAttribute('data-y', y);
+
+        // Set position considering icon size
+        const size = parseFloat(image.getAttribute('width'));
+        image.setAttribute('x', x - size / 2);
+        image.setAttribute('y', y - size / 2);
+
+        this.drawSelectionCircle(image);
+    },
+
+    getActivePersonaje(){
+        if (!this.activeCharacter) return null;
+        const personaje = this.activeCharacter.getAttribute('id');
+        return this.personajes.get(personaje);
+    },
+
+    /**
+     * Move character by name to a location
+     * @param {string} personaje - Character name
+     * @param {string|Object} lugar - Target location name or coordinates
+     */
+    moveCharacterToLocation(personaje, lugar) {
+        let coords = typeof lugar === 'string' ?
+            SVGUtils.findCoordinates(lugar) :
+            lugar;
+
+        let img = this.getCharacterImage(personaje);
+
+        // Only move if valid target and character
+        if (!coords || !img) return;
+
+        this.moveCharacter(img, coords);
+
+        // Save state if online
+        if (SyncController.isOnline) {
+            SyncController.saveMapState(this.characters.get(personaje));
+        }
+    },
+
+    /**
+     * Get character position
+     * @param {string} personaje - Character name
+     * @returns {Object} - Character position {x, y}
+     */
+    getCharacterLocation(personaje) {
+        const img = this.getCharacterImage(personaje);
+        if (!img) return null;
+
+        const x = img.getAttribute('data-x');
+        const y = img.getAttribute('data-y');
+        return { x: parseFloat(x), y: parseFloat(y) };
+    },
+
+    /**
+     * Get character screen position
+     * @param {string} personaje - Character name
+     * @returns {Object} - Character screen position {x, y}
+     */
+    getCharacterScreenLocation(personaje) {
+        const img = this.getCharacterImage(personaje);
+        if (!img) return null;
+
+        const x = img.getAttribute('x');
+        const y = img.getAttribute('y');
+        return { x: parseFloat(x), y: parseFloat(y) };
+    },
+
+    /**
+     * Find nearest location name to a character
+     * @param {string} personaje - Character name
+     * @returns {string|null} - Name of nearest location
+     */
+    findNearestLocation(personaje) {
+        const loc = this.getCharacterLocation(personaje);
+        if (!loc || !svgElement) return null;
+
+        return SVGUtils.findNearestText(loc);
+    },
+
+    /**
+     * Get character image element by name
+     * @param {string} personaje - Character name
+     * @returns {SVGImageElement|null} - Character image element
+     */
+    getCharacterImage(personaje) {
+        return this.characters.get(personaje)?.querySelector('image') || null;
+    },
+
+    /**
+     * Update characters' transform on zoom
+     */
+    updateTransformCharacters() {
+        if (!svgElement) return;
+
+        const characterEls = svgElement.querySelectorAll('.character image');
+        characterEls.forEach(char => {
+            const size = CONFIG.iconSize / MapController.scale;
+            char.setAttribute('width', size);
+            char.setAttribute('height', size);
+
+            console.log(MapController.scale);
+            
+            const x = parseFloat(char.getAttribute('data-x') || char.getAttribute('x'));
+            const y = parseFloat(char.getAttribute('data-y') || char.getAttribute('y'));
+
+            char.setAttribute('x', x - size / 2);
+            char.setAttribute('y', y - size / 2);
+
+            this.drawSelectionCircle(char);
+        });
+    },
 };
 
 /**

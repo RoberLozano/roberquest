@@ -2288,16 +2288,12 @@ class InputCustom extends HTMLElement {
 // Registrar el elemento personalizado
 customElements.define('input-custom', InputCustom);
 
-
-customElements.define('input-custom', InputCustom);
-
 // Define the new element
 
 customElements.define('input-habilidad', InputHabilidad);
 customElements.define('input-hechizo', InputHechizo);
 
 customElements.define('input-arte', InputArte);
-customElements.define('input-custom', InputCustom);
 customElements.define('input-subir', InputSubirHabilidad);
 
 // customElements.define('my-counter', MyCounter);

@@ -15,8 +15,8 @@ const MapController = {
      * Initialize the map controller
      */
     init() {
-        this.mapContainer = DOM.getElement("map-container");
-        this.svgContainer = DOM.getElement("svg-container");
+        this.mapContainer = document.getElementById("map-container");
+        this.svgContainer = document.getElementById("svg-container");
         this.setupEventListeners();
     },
     
@@ -37,10 +37,57 @@ const MapController = {
         this.mapContainer.addEventListener('wheel', this.handleWheelZoom.bind(this));
         
         // Button handlers
-        DOM.getElement('zoomIn').addEventListener('click', this.zoomIn.bind(this));
-        DOM.getElement('zoomOut').addEventListener('click', this.zoomOut.bind(this));
-        DOM.getElement('resetView').addEventListener('click', this.resetView.bind(this));
-        DOM.getElement('searchButton').addEventListener('click', this.handleSearch.bind(this));
+        document.getElementById('zoomIn').addEventListener('click', this.zoomIn.bind(this));
+        document.getElementById('zoomOut').addEventListener('click', this.zoomOut.bind(this));
+        document.getElementById('resetView').addEventListener('click', this.resetView.bind(this));
+        document.getElementById('searchButton').addEventListener('click', this.handleSearch.bind(this));
+
+        // Configurar el menú contextual del mapa
+        this.setupMapContextMenu();
+    },
+    
+    /**
+     * Setup map context menu
+     */
+    setupMapContextMenu() {
+        // Mostrar menú contextual con clic derecho en el mapa
+        this.mapContainer.addEventListener('contextmenu', (e) => {
+            // No mostrar si el clic es en un personaje
+            if (e.target.closest('.character')) return;
+            
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const contextMenu = document.getElementById('mapContextMenu');
+            contextMenu.style.display = 'block';
+            contextMenu.style.left = `${e.pageX}px`;
+            contextMenu.style.top = `${e.pageY}px`;
+            
+            // Actualizar texto del toggle path
+            const togglePathItem = document.getElementById('mapTogglePath');
+            togglePathItem.textContent = CharacterController.rastro ? 'Ocultar camino' : 'Mostrar camino';
+            
+            // Actualizar valor de escala
+            const scaleValue = document.getElementById('mapScaleValue');
+            scaleValue.value = CONFIG.distanceScaleFactor;
+        });
+        
+        // Cerrar el menú contextual al hacer clic fuera de él
+        document.addEventListener('click', (e) => {
+            const contextMenu = document.getElementById('mapContextMenu');
+            if (contextMenu.style.display === 'block' && !contextMenu.contains(e.target)) {
+                contextMenu.style.display = 'none';
+            }
+        });
+        
+        // Prevenir que el menú se cierre al interactuar con inputs
+        const contextMenu = document.getElementById('mapContextMenu');
+        contextMenu.querySelectorAll('input').forEach(input => {
+            input.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+        });
+        
     },
     
     /**
@@ -225,7 +272,7 @@ const MapController = {
      * Handle search button click
      */
     handleSearch() {
-        const searchText = DOM.getElement('searchInput').value;
+        const searchText = document.getElementById('searchInput').value;
         this.zoomToText(searchText);
     },
     

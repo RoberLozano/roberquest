@@ -24,6 +24,10 @@ const CONFIG = {
     // Animation timings
     tooltipDisplayTime: 2000,
     
+    // Distance and time settings
+    distanceScaleFactor: 1, // Metros por unidad de mapa
+    defaultSpeed: 5, // Velocidad por defecto en km/h
+    
     // App version
     version: '0.009'
 };

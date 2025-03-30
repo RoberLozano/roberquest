@@ -11,8 +11,8 @@ let npcTokens = []; // Array to store available NPC tokens
 // Document ready function
 document.addEventListener('DOMContentLoaded', async () => {
     try {
-        // Initialize tooltip for distance display
-        CharacterController.initTooltip();
+        // Initialize character controller
+        CharacterController.init();
         
         // Initialize controllers
         MapController.init();
@@ -20,15 +20,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         SyncController.init();
         
         // Setup side panel toggle
-        const togglePanelBtn = DOM.getElement('togglePanel');
-        const sidePanel = DOM.getElement('sidePanel');
+        const togglePanelBtn = document.getElementById('togglePanel');
+        const sidePanel = document.getElementById('sidePanel');
         
         togglePanelBtn.addEventListener('click', () => {
             sidePanel.classList.toggle('open');
         });
         
         // Setup file input for loading SVG maps
-        const fileInput = DOM.getElement('fileInput');
+        const fileInput = document.getElementById('fileInput');
         fileInput.addEventListener('change', async (e) => {
             if (e.target.files.length > 0) {
                 const file = e.target.files[0];
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
         
         // Setup character input for adding characters
-        const characterInput = DOM.getElement('characterInput');
+        const characterInput = document.getElementById('characterInput');
         characterInput.addEventListener('change', (e) => {
             if (e.target.files.length > 0) {
                 Array.from(e.target.files).forEach(file => {
@@ -53,33 +53,38 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         // Close context menu on document click
         // document.addEventListener('click', () => {
-        //     DOM.getElement('characterContextMenu').style.display = 'none';
+        //     document.getElementById('characterContextMenu').style.display = 'none';
         // });
         
         // Prevent context menu on SVG container
-        const svgContainer = DOM.getElement('svg-container');
+        const svgContainer = document.getElementById('svg-container');
         svgContainer.addEventListener('contextmenu', (e) => {
             e.preventDefault();
         });
         
         // Setup context menu item handlers
-        DOM.getElement('togglePath').addEventListener('click', () => {
+        document.getElementById('mapTogglePath').addEventListener('click', () => {
             CharacterController.togglePath();
         });
         
-        DOM.getElement('deleteRoute').addEventListener('click', () => {
-            CharacterController.deleteRoute();
-            DOM.getElement('characterContextMenu').style.display = 'none';
+        // Escala del mapa
+        document.getElementById('mapScaleValue').addEventListener('change', (e) => {
+            CharacterController.setDistanceScale(e.target.value);
         });
         
-        DOM.getElement('deleteCharacter').addEventListener('click', () => {
+        document.getElementById('deleteRoute').addEventListener('click', () => {
+            CharacterController.deleteRoute();
+            document.getElementById('characterContextMenu').style.display = 'none';
+        });
+        
+        document.getElementById('deleteCharacter').addEventListener('click', () => {
             CharacterController.deleteCharacter();
-            DOM.getElement('characterContextMenu').style.display = 'none';
+            document.getElementById('characterContextMenu').style.display = 'none';
         });
 
-        DOM.getElement('showStats').addEventListener('click', () => {
+        document.getElementById('showStats').addEventListener('click', () => {
             CharacterController.showStats();
-            DOM.getElement('characterContextMenu').style.display = 'none';
+            document.getElementById('characterContextMenu').style.display = 'none';
         });
         
         
@@ -104,12 +109,12 @@ document.addEventListener('DOMContentLoaded', async () => {
  * Setup NPC modal functionality
  */
 function setupNpcModal() {
-    const modal = DOM.getElement('npcModal');
+    const modal = document.getElementById('npcModal');
     const closeBtn = modal.querySelector('.close-modal');
-    const npcGrid = DOM.getElement('npcGrid');
-    const npcSearch = DOM.getElement('npcSearch');
-    const ctd = DOM.getElement('ctd');
-    const addNpcBtn = DOM.getElement('addNpcBtn');
+    const npcGrid = document.getElementById('npcGrid');
+    const npcSearch = document.getElementById('npcSearch');
+    const ctd = document.getElementById('ctd');
+    const addNpcBtn = document.getElementById('addNpcBtn');
     
     // Open modal when Add NPC button is clicked
     addNpcBtn.addEventListener('click', () => {
@@ -141,7 +146,7 @@ function setupNpcModal() {
  * Load NPC tokens from img/token directory
  */
 async function loadNpcTokens() {
-    const npcGrid = DOM.getElement('npcGrid');
+    const npcGrid = document.getElementById('npcGrid');
     npcGrid.innerHTML = '<div class="loading">Loading NPCs...</div>';
     
     try {
@@ -185,7 +190,7 @@ async function loadNpcTokens() {
  * Display NPC tokens in the grid
  */
 function displayNpcTokens() {
-    const npcGrid = DOM.getElement('npcGrid');
+    const npcGrid = document.getElementById('npcGrid');
     npcGrid.innerHTML = '';
     
     if (npcTokens.length === 0) {
@@ -200,11 +205,18 @@ function displayNpcTokens() {
                        .replace(/[_-]/g, ' ').replace(/[%20]/g, ' ');
         
         // Create NPC item element
-        const npcItem = DOM.createElement('div', { class: 'npc-item', 'data-path': tokenPath });
+        const npcItem = document.createElement('div');
+        npcItem.className = 'npc-item';
+        npcItem.dataset.path = tokenPath;
         
         // Create image and name elements
-        const img = DOM.createElement('img', { src: tokenPath, alt: npcName, loading: 'lazy' });
-        const span = DOM.createElement('span', {}, npcName);
+        const img = document.createElement('img');
+        img.src = tokenPath;
+        img.alt = npcName;
+        img.loading = 'lazy';
+        
+        const span = document.createElement('span');
+        span.textContent = npcName;
         
         // Add click event to add NPC to map
         npcItem.addEventListener('click', () => {
@@ -214,7 +226,7 @@ function displayNpcTokens() {
                 CharacterController.addCharacterToMap(tokenPath, {x: 0+i*50, y:  100});
             }       
             // CharacterController.addCharacterToMap(tokenPath);
-            DOM.getElement('npcModal').style.display = 'none';
+            document.getElementById('npcModal').style.display = 'none';
         });
         
         // Append elements to NPC item
@@ -230,8 +242,8 @@ function displayNpcTokens() {
  * Filter NPCs based on search input
  */
 function filterNpcs() {
-    const searchText = DOM.getElement('npcSearch').value.toLowerCase();
-    const npcItems = DOM.getElement('npcGrid').querySelectorAll('.npc-item');
+    const searchText = document.getElementById('npcSearch').value.toLowerCase();
+    const npcItems = document.getElementById('npcGrid').querySelectorAll('.npc-item');
     
     npcItems.forEach(item => {
         const npcName = item.querySelector('span').textContent.toLowerCase();
