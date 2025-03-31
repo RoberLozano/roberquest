@@ -22,27 +22,27 @@
         <div id="svg-container"></div>
     </div>
 
-    <button id="togglePanel">☰</button>
+    <button class="btn" id="togglePanel">☰</button>
 
     <div id="sidePanel">
         <div class="controls">
-            <label for="fileInput" class="map-button">
+            <label class="btn" for="fileInput" class="map-button">
                 Mapa
             </label>
-            <input type="file" id="fileInput" accept="image/svg+xml">
-            <label for="characterInput" class="map-button">
+            <input   type="file" id="fileInput" accept="image/svg+xml">
+            <label class="btn" for="characterInput" class="map-button">
                 Add PJ
             </label>
             <input type="file" id="characterInput" accept="image/*" multiple style="display: none;">
-            <button class="map-button" id="addNpcBtn">Add NPC</button>
-            <button class="map-button" id="zoomIn">+</button>
-            <button class="map-button" id="zoomOut">-</button>
-            <button class="map-button" id="resetView">Reset</button>
+            <button class="map-button btn" id="addNpcBtn">Add NPC</button>
+            <button class="map-button btn" id="zoomIn">+</button>
+            <button class="map-button btn" id="zoomOut">-</button>
+            <button class="map-button btn" id="resetView">Reset</button>
             v 0.017
         </div>
         <div id="searchBox">
-            <input type="text" id="searchInput" placeholder="Enter name to zoom">
-            <button class="map-button" id="searchButton">Zoom</button>
+            <input type="text" id="searchInput" class="input" placeholder="Enter name to zoom">
+            <button class="btn" id="searchButton">Zoom</button>
         </div>
         <div class="option-row">
             <label for="autoConfirmMove" class="option-label">
@@ -66,7 +66,7 @@
         </svg>
     </button>
 
-    <div id="characterContextMenu">
+    <div id="characterContextMenu" class="context-menu">
         <ul>
             <li id="deleteRoute" class="menu-delete">Eliminar ruta</li>
             <li id="deleteCharacter" class="menu-delete">Eliminar personaje</li>
@@ -90,7 +90,7 @@
     </div>
 
     <!-- Nuevo menú contextual para el mapa -->
-    <div id="mapContextMenu">
+    <div id="mapContextMenu" class="context-menu">
         <ul>
             <li id="mapTogglePath">Mostrar camino</li>
             <li id="mapScaleSetting">

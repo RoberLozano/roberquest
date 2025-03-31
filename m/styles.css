@@ -1,3 +1,15 @@
+/* Variables globales */
+:root {
+    --bg-dark: #111;
+    --bg-darker: #1a1a1a;
+    --bg-menu: #2a2a2a;
+    --border-color: #444;
+    --text-color: #fff;
+    --accent-color: #aaf068;
+    --danger-color: #ff4444;
+    --success-color: #4CAF50;
+}
+
 /* Base styles */
 html,
 body {
@@ -18,7 +30,7 @@ body {
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    background-color: #333333;
+    background-color: var(--bg-darker);
 }
 
 #svg-container {
@@ -41,24 +53,14 @@ body {
     top: 0;
     right: 0;
     margin-bottom: 20px;
-    background: #2a2a2a;
-    color: #fff;
+    background: var(--bg-menu);
+    color: var(--text-color);
     width: 100%;
     box-sizing: border-box;
 }
 
 .map-button {
-    background: #333;
-    color: #fff;
-    border: 1px solid #444;
-    padding: 5px 5px;
-    margin: 2px;
-    border-radius: 3px;
-    cursor: pointer;
-}
-
-.map-button:hover {
-    background: #444;
+    composes: btn;
 }
 
 #fileInput {
@@ -70,8 +72,8 @@ body {
     top: 0;
     right: 0;
     margin-bottom: 5px;
-    background: #2a2a2a;
-    color: #fff;
+    background: var(--bg-menu);
+    color: var(--text-color);
     width: 100%;
     box-sizing: border-box;
 }
@@ -82,8 +84,8 @@ body {
     top: 0;
     right: 0;
     margin-bottom: 5px;
-    background: #111;
-    color: #fff;
+    background: var(--bg-dark);
+    color: var(--text-color);
     width: 100%;
     box-sizing: border-box;
     display: flex;
@@ -92,22 +94,18 @@ body {
 
 #layersHeader {
     padding: 5px;
-    border-bottom: 1px solid #444;
+    border-bottom: 1px solid var(--border-color);
     position: sticky;
     top: 0;
-    background: #111;
+    background: var(--bg-dark);
     z-index: 2;
 }
 
 #layerSearch {
+    composes: input;
     width: calc(100% - 16px);
-    padding: 5px 8px;
     margin: 10px 0;
-    border: 1px solid #444;
-    border-radius: 3px;
     font-size: 14px;
-    background: #111;
-    color: #fff;
 }
 
 #layersList {
@@ -133,7 +131,7 @@ body {
 .layer-item label {
     cursor: pointer;
     user-select: none;
-    color: #fff;
+    color: var(--text-color);
 }
 
 /* Side panel */
@@ -143,8 +141,8 @@ body {
     right: -320px;
     width: 300px;
     height: 100%;
-    background: #1a1a1a;
-    color: #fff;
+    background: var(--bg-darker);
+    color: var(--text-color);
     transition: right 0.3s ease;
     z-index: 1000;
     padding: 10px;
@@ -162,7 +160,7 @@ body {
     right: 10px;
     z-index: 1001;
     background: rgba(26, 26, 26, 0.8);
-    color: white;
+    color: var(--text-color);
     border: none;
     padding: 10px 15px;
     border-radius: 5px;
@@ -195,168 +193,79 @@ body {
 }
 
 .wifi-button.online svg {
-    fill: #4CAF50;
+    fill: var(--success-color);
 }
 
 .wifi-button:hover {
     background: rgba(0, 0, 0, 0.9);
 }
 
-/* Character context menu */
-#characterContextMenu {
+/* Unified button styles */
+.btn {
+    background: var(--bg-dark);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    padding: 5px 10px;
+    margin: 2px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background: var(--danger-color);
+}
+
+.btn.danger {
+    color: var(--danger-color);
+}
+
+.btn.success {
+    background: var(--success-color);
+}
+
+/* Unified input styles */
+.input {
+    background: var(--bg-dark);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 3px;
+    padding: 5px 8px;
+}
+
+/* Context menu base */
+.context-menu {
     position: absolute;
     display: none;
-    background: #2a2a2a;
-    border: 1px solid #444;
+    background: var(--bg-menu);
+    border: 1px solid var(--border-color);
     border-radius: 4px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     z-index: 1000;
     min-width: 150px;
 }
 
-#characterContextMenu ul {
+.context-menu ul {
     list-style: none;
     margin: 0;
     padding: 0;
 }
 
-#characterContextMenu li {
+.context-menu li {
     padding: 8px 12px;
-    color: #fff;
+    color: var(--text-color);
     cursor: pointer;
-    border-bottom: 1px solid #444;
+    border-bottom: 1px solid var(--border-color);
 }
 
-#characterContextMenu li:last-child {
+.context-menu li:last-child {
     border-bottom: none;
 }
 
-#characterContextMenu li:hover {
-    background: #444;
+.context-menu li:hover {
+    background: var(--danger-color);
 }
 
-#characterContextMenu .menu-delete {
-    color: #ff4444;
-}
-
-#characterContextMenu .number-input {
-    width: 60px;
-    background: #333;
-    color: #fff;
-    border: 1px solid #444;
-    border-radius: 3px;
-    padding: 2px 5px;
-    margin-left: 5px;
-}
-
-#characterContextMenu .placeholder {
-    color: #666;
-    font-style: italic;
-}
-
-/* Map context menu */
-#mapContextMenu {
-    display: none;
-    position: absolute;
-    background: #222;
-    border: 1px solid #444;
-    border-radius: 4px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-    z-index: 100;
-    min-width: 180px;
-}
-
-#mapContextMenu ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-#mapContextMenu li {
-    padding: 8px 12px;
-    color: #fff;
-    cursor: pointer;
-    border-bottom: 1px solid #444;
-}
-
-#mapContextMenu li:last-child {
-    border-bottom: none;
-}
-
-#mapContextMenu li:hover {
-    background: #444;
-}
-
-#mapContextMenu .number-input {
-    width: 60px;
-    background: #333;
-    color: #fff;
-    border: 1px solid #444;
-    border-radius: 3px;
-    padding: 2px 5px;
-    margin-left: 5px;
-}
-
-/* Botones de confirmación de movimiento */
-#moveConfirmation {
-    display: none;
-    position: absolute;
-    background: rgba(0, 0, 0, 0.7);
-    border-radius: 5px;
-    padding: 8px;
-    z-index: 1000;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-}
-
-.confirm-button {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 3px;
-    padding: 5px 12px;
-    margin-right: 5px;
-    cursor: pointer;
-}
-
-.cancel-button {
-    background-color: #f44336;
-    color: white;
-    border: none;
-    border-radius: 3px;
-    padding: 5px 12px;
-    cursor: pointer;
-}
-
-.confirm-button:hover {
-    background-color: #3e8e41;
-}
-
-.cancel-button:hover {
-    background-color: #d32f2f;
-}
-
-/* Opciones del panel lateral */
-.option-row {
-    display: flex;
-    align-items: center;
-    padding: 8px 12px;
-    border-bottom: 1px solid #333;
-    background-color: #222;
-}
-
-.option-label {
-    display: flex;
-    align-items: center;
-    font-size: 14px;
-    color: #fff;
-    cursor: pointer;
-}
-
-.option-label input[type="checkbox"] {
-    margin-right: 8px;
-}
-
-/* Modal dialog */
+/* Modal base */
 .modal {
     display: none;
     position: fixed;
@@ -369,17 +278,16 @@ body {
 }
 
 .modal-content {
-    background-color: #111;
+    background: var(--bg-dark);
     margin: 10% auto;
-    padding: 0;
-    border: 1px solid #444;
+    border: 1px solid var(--border-color);
     border-radius: 4px;
     width: 80%;
     max-width: 800px;
     max-height: 80vh;
     display: flex;
     flex-direction: column;
-    color: #fff;
+    color: var(--text-color);
 }
 
 .modal-header {
@@ -387,7 +295,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #444;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .modal-header h3 {
@@ -403,7 +311,7 @@ body {
 }
 
 .close-modal:hover {
-    color: #fff;
+    color: var(--text-color);
 }
 
 .modal-body {
@@ -413,21 +321,15 @@ body {
 }
 
 #npcSearch {
+    composes: input;
     width: 100%;
-    padding: 8px;
     margin-bottom: 15px;
-    background: #111;
-    color: #fff;
-    border: 1px solid #444;
-    border-radius: 4px;
 }
 
 #ctd {
+    composes: input;
     width: 30px;
-    padding: 8px;
     margin-bottom: 15px;
-    background: #111;
-    color: #fff;
 }
 
 #npcGrid {
@@ -449,7 +351,7 @@ body {
 }
 
 .npc-item:hover {
-    background:darkred;
+    background: var(--danger-color);
 }
 
 .npc-item img {
@@ -468,8 +370,11 @@ body {
 
 /* Selected character style */
 .character.selected {
-    filter: drop-shadow(0 0 5px #fff) brightness(1.5);
-    outline: 0.00001px solid #aaf068;
-    outline-offset: 1;
-    z-index: -1;
+    filter: drop-shadow(0 0 5px var(--text-color)) brightness(1.5);
+    z-index: 10;
+}
+
+.character.selected .selection-circle {
+    stroke: var(--accent-color);
+    fill: none;
 }
