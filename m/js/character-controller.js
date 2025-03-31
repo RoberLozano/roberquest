@@ -62,9 +62,9 @@ const CharacterController = {
             this.originalPositions.clear();
             
             // Si estamos online, guardar el estado
-            if (SyncController.isOnline) {
+            if (SyncController.isOnline) 
                 this.saveDraggedCharactersState();
-            }
+            
         });
         
         // Cancelar movimiento
@@ -368,8 +368,7 @@ const CharacterController = {
         this.characters.set(baseName, charGroup);
 
         if(SyncController.isOnline){
-            console.log('cargo desde crear personaje:'+nombre);
-            
+            console.log('cargo desde crear personaje:'+nombre);          
             SyncController.cargarPersonaje(nombre);
         }
         return charGroup;
@@ -968,20 +967,12 @@ const CharacterController = {
         if (this.selectedCharacters.size > 0) {
             this.selectedCharacters.forEach((char) => {
                 if (char == charElement) return;
-                CharacterUtils.rotate(char.querySelector('image'),
-                 newRotation);
-                 if (SyncController.isOnline) {
-                    SyncController.saveMapState(char);
-                }
-
+                // CharacterUtils.rotate(char.querySelector('image'),newRotation);
+                CharacterUtils.rotate(char,newRotation);
             });
         }
-        let img = charElement.querySelector('image');
-        CharacterUtils.rotate(img, newRotation);
-
-        if (SyncController.isOnline) {
-            SyncController.saveMapState(charElement);
-        }
+        // CharacterUtils.rotate(img, newRotation); //por si falla lo de abajo
+        CharacterUtils.rotate(charElement,newRotation);
     },
 
     /**
@@ -1135,5 +1126,9 @@ const CharacterUtils = {
         img.style.transformOrigin = 'center';
         img.setAttribute('data-rotation', angle);
         img.style.transform = `rotate(${angle}deg)`;
+
+        if(SyncController.isOnline) {
+            SyncController.saveMapState(img.parentElement);
+        }
     }
 };

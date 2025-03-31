@@ -280,11 +280,11 @@ const SyncController = {
     },
     
     /**
-     * Save character state to Firebase
+     * Save character state to Firebase if online
      * @param {SVGElement} charElement - Character element to save
      */
     saveMapState(charElement) {
-        if (!this.database || !this.isOnline || !charElement) return;
+        if (!this.isOnline || !this.database || !charElement) return;
         
         try {
             const id = charElement.id;
@@ -304,10 +304,10 @@ const SyncController = {
     },
     
     /**
-     * Save all characters state to Firebase
+     * Save all characters state to Firebase if online
      */
     saveAllMapState() {
-        if (!this.database || !this.isOnline) return;
+        if ( !this.isOnline || !this.database ) return;
         
         try {
             CharacterController.characters.forEach((charEl) => {
