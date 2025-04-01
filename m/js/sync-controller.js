@@ -8,6 +8,7 @@ const SyncController = {
     database: null,
     syncButton: null,
     mapStateRef: null,
+    mapDateRef: null,
     personajesRef:null,
     
     /**
@@ -80,7 +81,8 @@ const SyncController = {
         
         try {
             // Reference to the map state in Firebase
-            this.mapStateRef = this.database.ref('mapState');
+            this.mapStateRef = this.database.ref('mapState/personajes');
+            this.mapDateRef=this.database.ref('mapState/fecha');
             
             // Listen for character updates
             this.mapStateRef.on('child_added', this.handleSyncCharacterAdded.bind(this));
@@ -96,6 +98,9 @@ const SyncController = {
                 this.personajesRef.child(personaje.nombre)
                 .on('value', this.handleSyncPersonajeChanged.bind(this));
             });
+
+            // Listen for date updates
+            this.mapDateRef.on('value', this.handleSyncDateChanged.bind(this));
             
         } catch (e) {
             console.error('Error setting up Firebase listeners:', e);
@@ -190,6 +195,28 @@ const SyncController = {
             console.error('Error updating synced character:', e);
         }
     },
+
+    handleSyncDateChanged(snapshot) {
+        console.log("Date:", snapshot.val());
+        if (snapshot.val() === fechaMundo.fechahora()) {
+            return;
+        } else {
+            console.log("Fecha actualizada:", fechaMundo.fechahora());
+            fechaMundo=  new Date(snapshot.val());
+            fecha.value= fechaMundo.fechahora();
+        }
+    }, 
+
+    cambiarFecha(fecha) {
+        if (!this.isOnline) return;
+        if(!fecha) fecha= fechaMundo;
+        if (fecha instanceof Date) {
+            fecha=fecha.fechahora();
+        }
+
+        this.mapDateRef.set(fecha);
+    },
+
     
     /**
      * Handle character removed from sync
@@ -284,7 +311,7 @@ const SyncController = {
      * @param {SVGElement} charElement - Character element to save
      */
     saveMapState(charElement) {
-        if (!this.isOnline || !this.database || !charElement) return;
+        // if (!this.isOnline || !this.database || !charElement) return;
         
         try {
             const id = charElement.id;
@@ -297,7 +324,13 @@ const SyncController = {
             const rotation = parseFloat(img.getAttribute('data-rotation') || 0);
             
             const charData = { id, href, x, y, rotation };
-            this.mapStateRef.child(id).set(charData);
+            console.log(charData);
+            
+           this.database.ref('mapState/personajes/' + id).set(charData);
+
+            // this.mapStateRef.child(id).set(charData);
+           
+
         } catch (e) {
             console.error('Error saving map state:', e);
         }

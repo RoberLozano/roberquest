@@ -295,10 +295,13 @@ const CharacterController = {
         const fileName = typeof position === 'string' ?
             position.split('/').pop() :
             imageUrl.split('/').pop();
+             console.log('Extracted name', { fileName });
         const nombre=fileName.substring(0, fileName.lastIndexOf('.'));
         let baseName = fileName.substring(0, fileName.lastIndexOf('.'))
             .replace(/%20/g, '_')
             .replace(/[^a-zA-Z0-9]/g, '_');
+            console.log(baseName);
+            
 
         let number = 1;
         while (this.characters.has(`${baseName}`)) {
@@ -999,6 +1002,11 @@ const CharacterController = {
         image.setAttribute('y', y - size / 2);
 
         this.drawSelectionCircle(image);
+
+                // Save state if online
+                if (SyncController.isOnline) {
+                    SyncController.saveMapState(image.parentElement);
+                }
     },
 
     getActivePersonaje(){
@@ -1024,10 +1032,6 @@ const CharacterController = {
 
         this.moveCharacter(img, coords);
 
-        // Save state if online
-        if (SyncController.isOnline) {
-            SyncController.saveMapState(this.characters.get(personaje));
-        }
     },
 
     /**

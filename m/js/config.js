@@ -5,6 +5,7 @@ const CONFIG = {
     // App settings
     iconSize: 50,
     defaultMapUrl: '../mapas/Elahiun.svg',
+    map: 'Elahiun',
     defaultCharacters: [
         '../img/tokens/Rosssel.png',
         '../img/tokens/Bandit Archer 01.png',

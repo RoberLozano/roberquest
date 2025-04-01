@@ -7,6 +7,7 @@
 let svgElement = null;
 let characters = new Map();
 let npcTokens = []; // Array to store available NPC tokens
+let fecha=null
 
 // Document ready function
 document.addEventListener('DOMContentLoaded', async () => {
@@ -22,7 +23,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Setup side panel toggle
         const togglePanelBtn = document.getElementById('togglePanel');
         const sidePanel = document.getElementById('sidePanel');
-        
+        fecha= document.getElementById('fecha');
+
+        fecha.value=fechaMundo.fechahora();
+        fecha.addEventListener('change', () => {
+            
+            fechaMundo= new Date(fecha.value);
+            console.log(fechaMundo);
+            SyncController.cambiarFecha(fecha.value);
+        });
         togglePanelBtn.addEventListener('click', () => {
             sidePanel.classList.toggle('open');
         });

@@ -315,6 +315,8 @@ const MapController = {
      * @returns {Promise} - Promise that resolves when the map is loaded
      */
     async loadMapFromURL(url) {
+        console.log(url);
+        
         try {
             const response = await fetch(url);
             const blob = await response.blob();
@@ -329,6 +331,13 @@ const MapController = {
                 };
                 reader.onerror = reject;
                 reader.readAsText(blob);
+                let nombre = url.split('/').pop();
+                // Remove the extension from the filename
+                nombre= nombre.substring(0, nombre.lastIndexOf('.'));
+                
+                CONFIG.map = nombre;
+                console.log('Loaded map:', CONFIG.map);
+                
             });
         } catch (error) {
             console.error('Error loading map:', error);

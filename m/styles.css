@@ -168,6 +168,20 @@ body {
     font-size: 20px;
 }
 
+#fecha {
+    position: absolute;
+    top: 10px;
+    left: 20px;
+    background-color: rgba(30, 30, 30, 0.2);
+    padding: 8px 15px;
+    border-radius: 4px;
+    font-size: 1.1em;
+    color: var(--text-color);
+    z-index: 100;
+    display: flex;
+    text-shadow: 0px 0px 2px black;
+}
+
 /* WiFi sync button */
 .wifi-button {
     position: fixed;

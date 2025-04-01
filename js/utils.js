@@ -118,14 +118,30 @@ Date.prototype.fecha = function () {
  * @returns {String} fecha con hora ("0007-01-01T00:00:00.000") sin Z
  */
 Date.prototype.fechahora = function () {
-  return (this.toISOString().slice(0, -1))
+  //Hace la puta hora local
+  let x= new Date(this.valueOf());
+  // x.setDate(this.getDate());
+  // x.setMonth(this.getMonth());
+  // x.setFullYear(this.getFullYear());
+  // x.setHours(this.getHours());
+  // x.setMinutes(this.getMinutes());
+  // x.setSeconds(this.getSeconds());
+  // x.setMilliseconds(this.getMilliseconds());
+  
+x = `${String(this.getFullYear()).padStart(4,'0')}-${String(this.getMonth()+1).padStart(2,'0')}-${String(this.getDate()).padStart(2,'0')}T${String(this.getHours()).padStart(2,'0')}:${String(this.getMinutes()).padStart(2,'0')}:${String(this.getSeconds()).padStart(2,'0')}.${String(this.getMilliseconds()).padStart(3,'0')}`;
+console.log(x);
+
+  return x;
+
+  return (this.toISOString().slice(0, -1));
 }
 
 /**
  * @returns {String} fecha con hora local ("0007-01-01T00:00:00.000") sin Z
  */
  Date.prototype.fechahoraLocal = function () {
-  return this.mod('minuto',-this.getTimezoneOffset()).fechahora()
+  //Hace lo mismo fechahora
+  return this.mod('hora',-this.getTimezoneOffset()).fechahora()
 }
 
 /**Busca las diferencias de dos objetos, con respecto al primero
