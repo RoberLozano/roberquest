@@ -15,6 +15,7 @@ const CharacterController = {
     originalPositions: new Map(),
     // Control de confirmación automática de movimientos
     autoConfirmMove: false,
+    travelTime:0,
 
     /**
      * Initialize the character controller
@@ -53,6 +54,7 @@ const CharacterController = {
      */
     initMoveConfirmation() {
         const confirmButton = document.getElementById('confirmMove');
+        const timeButton = document.getElementById('confirmTime');
         const cancelButton = document.getElementById('cancelMove');
         const confirmationDiv = document.getElementById('moveConfirmation');
         
@@ -66,7 +68,11 @@ const CharacterController = {
                 this.saveDraggedCharactersState();
             
         });
-        
+        timeButton.addEventListener('click', () => {
+            fechaMundo=fechaMundo.mod('hora', this.travelTime);
+            fecha.value=fechaMundo.fechahora();
+        });
+
         // Cancelar movimiento
         cancelButton.addEventListener('click', () => {
             this.undoCharacterMovement();
@@ -135,16 +141,18 @@ const CharacterController = {
      * Set the distance scale factor
      * @param {number} value - The scale value in meters per unit
      */
-    setDistanceScale(value) {
-        const scaleFactor = parseFloat(value);
-        if (isNaN(scaleFactor) || scaleFactor <= 0) return;
+    // setDistanceScale(value) {
+    //     console.log('setDISTANCE1');
         
-        CONFIG.distanceScaleFactor = scaleFactor;
-        console.log(`Escala establecida: ${scaleFactor} metros por unidad`);
+    //     const scaleFactor = parseFloat(value);
+    //     if (isNaN(scaleFactor) || scaleFactor <= 0) return;
         
-        // Cerrar el menú contextual
-        document.getElementById('mapContextMenu').style.display = 'none';
-    },
+    //     CONFIG.distanceScaleFactor = scaleFactor;
+    //     console.log(`Escala establecida: ${scaleFactor} metros por unidad`);
+        
+    //     // Cerrar el menú contextual
+    //     document.getElementById('mapContextMenu').style.display = 'none';
+    // },
 
     showStats(campo){
         if (!this.activeCharacter) return;
@@ -208,6 +216,7 @@ const CharacterController = {
         CONFIG.distanceScaleFactor = scale;
         
         // Refresh all routes to update distances
+        //esto HACE ALGO DE VERDAD??
         this.characterRoutes.forEach((route, charElement) => {
             if (route.length > 1) {
                 this.updateDistanceDisplay(charElement);
@@ -241,6 +250,7 @@ const CharacterController = {
         
         // Calculate time (h) = distance (m) / (speed (km/h) * 1000 (m/km))
         const timeHours = scaledDistance / (speed * 1000);
+        this.travelTime = timeHours;
         
         // Format time in hours, minutes, seconds
         let timeString = '';
@@ -659,13 +669,11 @@ const CharacterController = {
                         this.saveDraggedCharactersState();
                     }
                 } else {
-                    // Mostrar los botones de confirmación
                     const confirmationDiv = document.getElementById('moveConfirmation');
-                    const img = charElement.querySelector('image');
-                    const rect = img.getBoundingClientRect();
+                    const rect = charElement.getBoundingClientRect();
                     confirmationDiv.style.display = 'block';
-                    confirmationDiv.style.left = `${rect.right + 5}px`;
-                    confirmationDiv.style.top = `${rect.top - 5}px`;
+                    confirmationDiv.style.left = `${rect.right-CONFIG.iconSize}px`;
+                    confirmationDiv.style.top = `${rect.top-CONFIG.iconSize}px`;
                 }
                 
                 //si estaba seleccionado antes de empezar a arrastar lo volvemos a seleccionar, porque el click largo lo ha deseleccionado

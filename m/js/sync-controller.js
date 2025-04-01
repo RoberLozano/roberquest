@@ -324,7 +324,7 @@ const SyncController = {
             const rotation = parseFloat(img.getAttribute('data-rotation') || 0);
             
             const charData = { id, href, x, y, rotation };
-            console.log(charData);
+            // console.log(charData);
             
            this.database.ref('mapState/personajes/' + id).set(charData);
 

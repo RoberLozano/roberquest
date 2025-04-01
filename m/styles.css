@@ -392,3 +392,32 @@ body {
     stroke: var(--accent-color);
     fill: none;
 }
+
+/* Move confirmation buttons */
+#moveConfirmation {
+    display: none;
+    position: absolute;
+    z-index: 1000;
+    background: var(--bg-menu);
+    padding: 5px;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+#moveConfirmation button {
+    margin: 0 2px;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+#moveConfirmation .confirm-button {
+    background: var(--success-color);
+    color: var(--text-color);
+}
+
+#moveConfirmation .cancel-button {
+    background: var(--danger-color);
+    color: var(--text-color);
+}
