@@ -311,7 +311,7 @@ const SyncController = {
      * @param {SVGElement} charElement - Character element to save
      */
     saveMapState(charElement) {
-        // if (!this.isOnline || !this.database || !charElement) return;
+        if (!this.isOnline || !this.database || !charElement) return;
         
         try {
             const id = charElement.id;
