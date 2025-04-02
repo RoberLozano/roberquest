@@ -44,6 +44,38 @@ const MapController = {
 
         // Configurar el menú contextual del mapa
         this.setupMapContextMenu();
+
+        // Añadir soporte para long press en dispositivos táctiles
+        let longPressTimer;
+        const longPressDuration = 500; // medio segundo para considerar long press
+
+        this.mapContainer.addEventListener('touchstart', (e) => {
+            // Solo proceder si el toque no es en un personaje
+            if (e.target.closest('.character')) return;
+            
+            longPressTimer = setTimeout(() => {
+                const contextMenu = document.getElementById('mapContextMenu');
+                contextMenu.style.display = 'block';
+                contextMenu.style.left = `${e.touches[0].pageX}px`;
+                contextMenu.style.top = `${e.touches[0].pageY}px`;
+                
+                // Actualizar texto del toggle path
+                const togglePathItem = document.getElementById('mapTogglePath');
+                togglePathItem.textContent = CharacterController.rastro ? 'Ocultar camino' : 'Mostrar camino';
+                
+                // Actualizar valor de escala
+                const scaleValue = document.getElementById('mapScaleValue');
+                scaleValue.value = CONFIG.distanceScaleFactor;
+            }, longPressDuration);
+        });
+
+        this.mapContainer.addEventListener('touchend', () => {
+            clearTimeout(longPressTimer);
+        });
+
+        this.mapContainer.addEventListener('touchmove', () => {
+            clearTimeout(longPressTimer);
+        });
     },
     
     /**
@@ -72,14 +104,22 @@ const MapController = {
             scaleValue.value = CONFIG.distanceScaleFactor;
         });
         
-        // Cerrar el menú contextual al hacer clic fuera de él
+        // Separar los eventos de click y touch
         document.addEventListener('click', (e) => {
             const contextMenu = document.getElementById('mapContextMenu');
             if (contextMenu.style.display === 'block' && !contextMenu.contains(e.target)) {
                 contextMenu.style.display = 'none';
             }
         });
-        
+
+        document.addEventListener('touchstart', (e) => {
+            const contextMenu = document.getElementById('mapContextMenu');
+            if (contextMenu.style.display === 'block' && !contextMenu.contains(e.target)) {
+                e.preventDefault();
+                contextMenu.style.display = 'none';
+            }
+        });
+
         // Prevenir que el menú se cierre al interactuar con inputs
         const contextMenu = document.getElementById('mapContextMenu');
         contextMenu.querySelectorAll('input').forEach(input => {
@@ -88,6 +128,10 @@ const MapController = {
             });
         });
         
+        // Prevenir que el menú se cierre al tocar dentro de él
+        contextMenu.addEventListener('touchstart', (e) => {
+            e.stopPropagation();
+        });
     },
     
     /**
