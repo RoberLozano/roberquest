@@ -7,11 +7,22 @@
 let svgElement = null;
 let characters = new Map();
 let npcTokens = []; // Array to store available NPC tokens
-let fecha=null
+let fecha=null;
+const params = new URLSearchParams(window.location.search);
+let pp=params.get('p')||null;
+/**
+ * mapa por parámetro url
+ */
+let pmap= params.get('mapa')||params.get('map');
+console.info(pmap);
+
 
 // Document ready function
 document.addEventListener('DOMContentLoaded', async () => {
     try {
+            // Agregar función para obtener parámetros de la URL
+        
+    
         // Initialize character controller
         CharacterController.init();
         
@@ -96,10 +107,30 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('characterContextMenu').style.display = 'none';
         });
         
+        //Ctrl+a para seleccionar todo, Ctrl+d para deseleccionar todo
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'a') {
+                e.preventDefault();
+                CharacterController.selectAll();
+            }
+            if (e.ctrlKey && e.key === 'd') {
+                e.preventDefault();
+                CharacterController.deselectAll();
+            }
+        });
+        
         
         // Load default map
         try {
-            await MapController.loadMapFromURL(CONFIG.defaultMapUrl);
+            console.log(pmap);
+            
+            if(pmap){
+                await MapController.loadMapFromURL(`../mapas/${pmap}.svg`);
+                console.log('Parameter map loaded successfully');
+            }
+            else
+                await MapController.loadMapFromURL(CONFIG.defaultMapUrl);
+
             console.log('Default map loaded successfully');
             
             // Add default characters
@@ -113,6 +144,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('Initialization error:', error);
     }
 });
+
 
 /**
  * Setup NPC modal functionality

@@ -154,11 +154,41 @@ const CharacterController = {
     //     document.getElementById('mapContextMenu').style.display = 'none';
     // },
 
+    
+    select(charElement){
+        const id = charElement.getAttribute('id');
+        if (this.selectedCharacters.has(id)) {
+           return;
+        } else {
+            this.selectedCharacters.set(id, charElement);
+            charElement.classList.add('selected');
+        }
+        this.drawSelectionCircle(charElement.querySelector('image'));
+    },
+    selectAll(){
+        this.characters.forEach((char) => {
+            if (char.classList.contains('selected')) return;
+          this.select(char);
+        });
+    },
+    deselectAll(){ 
+        this.selectedCharacters.forEach((char) => {
+            // Eliminar el círculo de selección
+
+            char.classList.remove('selected');
+            this.drawSelectionCircle(char.querySelector('image'));    
+        });
+        this.selectedCharacters.clear();
+
+    },
+
     showStats(campo){
         if (!this.activeCharacter) return;
         let personaje = this.activeCharacter.getAttribute('id');
         let pe = this.personajes.get(personaje);
-        document.getElementById('infoTitle').innerHTML = personaje;
+        // document.getElementById('infoTitle').innerHTML = personaje;
+        document.getElementById('infoTitle').innerHTML =
+        `<h2 ><a href="../vue.html?pj=${pe.nombre}" target="_blank">${pe.nombre}</a> <FONT SIZE=4> ${pe.clase} ${pe.sexo}</FONT></h2> `;
         var ic;
         let info=document.getElementById('infoContent');
         info.innerHTML = '';
