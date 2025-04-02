@@ -107,16 +107,26 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('characterContextMenu').style.display = 'none';
         });
         
-        //Ctrl+a para seleccionar todo, Ctrl+d para deseleccionar todo
+        //Ctrl+a para seleccionar todo, Ctrl+d para deseleccionar todo, Ctrl+i para invertir selección
         document.addEventListener('keydown', (e) => {
+            // Ctrl+a para seleccionar todo
             if (e.ctrlKey && e.key === 'a') {
                 e.preventDefault();
                 CharacterController.selectAll();
             }
+            //Ctrl+d para deseleccionar todo
             if (e.ctrlKey && e.key === 'd') {
                 e.preventDefault();
                 CharacterController.deselectAll();
             }
+            //Ctrl+i para invertir selección
+            if (e.ctrlKey && e.key === 'i') {
+                e.preventDefault();
+                CharacterController.characters.forEach((character) => {
+                    CharacterController.toggleSelection(character);
+                }   );
+            }
+
         });
         
         

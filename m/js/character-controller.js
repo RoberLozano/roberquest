@@ -137,10 +137,10 @@ const CharacterController = {
         this.originalPositions.clear();
     },
 
-    /**
-     * Set the distance scale factor
-     * @param {number} value - The scale value in meters per unit
-     */
+    // /**
+    //  * Set the distance scale factor
+    //  * @param {number} value - The scale value in meters per unit
+    //  */
     // setDistanceScale(value) {
     //     console.log('setDISTANCE1');
         
@@ -154,7 +154,11 @@ const CharacterController = {
     //     document.getElementById('mapContextMenu').style.display = 'none';
     // },
 
-    
+    /**
+     * Selecciona el personaje
+     * @param {*} charElement Elemento del personaje
+     * @returns {void}
+     */
     select(charElement){
         const id = charElement.getAttribute('id');
         if (this.selectedCharacters.has(id)) {
@@ -165,6 +169,7 @@ const CharacterController = {
         }
         this.drawSelectionCircle(charElement.querySelector('image'));
     },
+    
     selectAll(){
         this.characters.forEach((char) => {
             if (char.classList.contains('selected')) return;
@@ -180,6 +185,18 @@ const CharacterController = {
         });
         this.selectedCharacters.clear();
 
+    },
+
+     toggleSelection(charElement){
+        const id = charElement.getAttribute('id');
+        if (this.selectedCharacters.has(id)) {
+            this.selectedCharacters.delete(id);
+            charElement.classList.remove('selected');
+        } else {
+            this.selectedCharacters.set(id, charElement);
+            charElement.classList.add('selected');
+        }
+        this.drawSelectionCircle(charElement.querySelector('image'));
     },
 
     showStats(campo){
@@ -450,17 +467,6 @@ const CharacterController = {
      */
     setupSelection(charElement) {
 
-        const toggleSelection = (charElement) => {
-            const id = charElement.getAttribute('id');
-            if (this.selectedCharacters.has(id)) {
-                this.selectedCharacters.delete(id);
-                charElement.classList.remove('selected');
-            } else {
-                this.selectedCharacters.set(id, charElement);
-                charElement.classList.add('selected');
-            }
-            this.drawSelectionCircle(charElement.querySelector('image'));
-        };
 
         // Touch event handlers for selection
         charElement.addEventListener('touchstart', (e) => {
@@ -473,12 +479,12 @@ const CharacterController = {
 
                 if (e.touches.length === 1 && e.touches[0].force > 0.5) {
                     // Long press / force touch for multi-select             
-                    toggleSelection(charElement);
+                    this.toggleSelection(charElement);
                     console.log('Long press:'+ e.touches[0].force);
                     
                 } else {
                     // Single tap for single selection
-                    toggleSelection(charElement);
+                    this.toggleSelection(charElement);
                 }
             }
         });
@@ -492,7 +498,7 @@ const CharacterController = {
 
             if (e.ctrlKey || e.metaKey || e.shiftKey) {
                 // Toggle selection with Ctrl/Cmd key
-                toggleSelection(charElement);
+                this.toggleSelection(charElement);
             } else {
                 // Single selection without Ctrl/Cmd
                 // toggleSelection(charElement);
