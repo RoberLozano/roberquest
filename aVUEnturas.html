@@ -229,7 +229,7 @@
       }),
       data: () => ({
         drawer: true,  // Controla la visibilidad del drawer
-        selectedCharacter: '',
+        selectedCharacter: new URLSearchParams(window.location.search).get('p')||'',
         characters: [],
         textSearch: '',
         regexToggle: false, // Nuevo: togglear búsqueda regex
@@ -454,6 +454,7 @@
       },
       mounted() {
         this.loadCharacters();
+        if(this.selectedCharacter){this.loadEntries();}
       }
     });
   </script>
