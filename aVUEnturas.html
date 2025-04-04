@@ -492,6 +492,7 @@
               this.selectedText = text;
               // Usar las coordenadas del touch o del mouse según el tipo de evento
               if (event.type === 'touchend') {
+                event.preventDefault();
                 const touch = event.changedTouches[0];
                 this.menuX = touch.clientX;
                 this.menuY = touch.clientY;
