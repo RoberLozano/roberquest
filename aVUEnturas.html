@@ -185,7 +185,9 @@
                 v-html="highlightedDiaryEntry" 
                 @input="updateDiaryEntry($event)"
                 @mouseup="handleTextSelection"
-                @touchend="handleTextSelection"
+                @contextmenu.prevent="handleTextSelection"
+                @touchstart="handleTouchStart"
+                @touchend="handleTouchEnd"
               ></div>
             </v-card-text>
             <v-card-actions>
@@ -270,7 +272,10 @@
         showContextMenu: false,
         menuX: 0,
         menuY: 0,
-        selectedText: ''
+        selectedText: '',
+        touchTimer: null,
+        touchStartX: 0,
+        touchStartY: 0,
       }),
       computed: {
         filteredEntries() {
@@ -484,28 +489,36 @@
         },
         handleTextSelection(event) {
           event.preventDefault();
-          // Pequeño delay para asegurar que la selección se complete
-          setTimeout(() => {
+          const selection = window.getSelection();
+          const text = selection.toString().trim();
+          
+          if (text) {
+            this.selectedText = text;
+            this.menuX = event.type.startsWith('touch') ? this.touchStartX : event.clientX;
+            this.menuY = event.type.startsWith('touch') ? this.touchStartY : event.clientY;
+            this.showContextMenu = true;
+          } else {
+            this.showContextMenu = false;
+          }
+        },
+        handleTouchStart(event) {
+          this.touchStartX = event.touches[0].clientX;
+          this.touchStartY = event.touches[0].clientY;
+          this.touchTimer = setTimeout(() => {
             const selection = window.getSelection();
             const text = selection.toString().trim();
-            
             if (text) {
               this.selectedText = text;
-              // Usar las coordenadas del touch o del mouse según el tipo de evento
-              if (event.type === 'touchend') {
-                
-                const touch = event.changedTouches[0];
-                this.menuX = touch.clientX;
-                this.menuY = touch.clientY;
-              } else {
-                this.menuX = event.clientX;
-                this.menuY = event.clientY;
-              }
+              this.menuX = this.touchStartX;
+              this.menuY = this.touchStartY;
               this.showContextMenu = true;
-            } else {
-              this.showContextMenu = false;
+              event.preventDefault();
             }
-          }, 200);
+          }, 500);
+        },
+
+        handleTouchEnd(event) {
+          clearTimeout(this.touchTimer);
         },
 
         searchMap() {
