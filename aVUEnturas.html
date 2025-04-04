@@ -83,7 +83,9 @@
         <v-list-item class="px-1" dense>
           <v-list-item-title>Panel de Control</v-list-item-title>
           <v-btn icon @click.stop="drawer = false">
-            <v-icon>mdi-close</v-icon>
+            <v-icon>
+              ←
+            </v-icon>
           </v-btn>
         </v-list-item>
 
@@ -183,6 +185,7 @@
                 v-html="highlightedDiaryEntry" 
                 @input="updateDiaryEntry($event)"
                 @mouseup="handleTextSelection"
+                @touchend="handleTextSelection"
               ></div>
             </v-card-text>
             <v-card-actions>
@@ -480,17 +483,27 @@
           this.diaryEntry = temp.replace(/<mark class="highlight">(.*?)<\/mark>/g, '$1');
         },
         handleTextSelection(event) {
-          const selection = window.getSelection();
-          const text = selection.toString().trim();
-          
-          if (text) {
-            this.selectedText = text;
-            this.menuX = event.clientX;
-            this.menuY = event.clientY;
-            this.showContextMenu = true;
-          } else {
-            this.showContextMenu = false;
-          }
+          // Pequeño delay para asegurar que la selección se complete
+          setTimeout(() => {
+            const selection = window.getSelection();
+            const text = selection.toString().trim();
+            
+            if (text) {
+              this.selectedText = text;
+              // Usar las coordenadas del touch o del mouse según el tipo de evento
+              if (event.type === 'touchend') {
+                const touch = event.changedTouches[0];
+                this.menuX = touch.clientX;
+                this.menuY = touch.clientY;
+              } else {
+                this.menuX = event.clientX;
+                this.menuY = event.clientY;
+              }
+              this.showContextMenu = true;
+            } else {
+              this.showContextMenu = false;
+            }
+          }, 200);
         },
 
         searchMap() {
