@@ -483,6 +483,7 @@
           this.diaryEntry = temp.replace(/<mark class="highlight">(.*?)<\/mark>/g, '$1');
         },
         handleTextSelection(event) {
+          event.preventDefault();
           // Pequeño delay para asegurar que la selección se complete
           setTimeout(() => {
             const selection = window.getSelection();
@@ -492,7 +493,7 @@
               this.selectedText = text;
               // Usar las coordenadas del touch o del mouse según el tipo de evento
               if (event.type === 'touchend') {
-                event.preventDefault();
+                
                 const touch = event.changedTouches[0];
                 this.menuX = touch.clientX;
                 this.menuY = touch.clientY;
