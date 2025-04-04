@@ -522,14 +522,14 @@
         },
 
         searchMap() {
-          window.open(`/m/?mapa=ElahiunVerde&zoom=${this.selectedText.trim()}`, '_blank');
+          window.open(`m/?mapa=ElahiunVerde&zoom=${this.selectedText.trim()}`, '_blank');
 
           // window.location.href = `/m/?mapa=ElahiunVerde&zoom=${encodeURIComponent(this.selectedText)}  target="_blank`;
           this.showContextMenu = false;
         },
 
         viewCharacter() {
-          window.location.href = `/vue.html?pj=${encodeURIComponent(this.selectedText)}`;
+          window.location.href = `vue.html?pj=${encodeURIComponent(this.selectedText)}`;
           this.showContextMenu = false;
         }
       },
