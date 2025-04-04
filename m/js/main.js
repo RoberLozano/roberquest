@@ -14,6 +14,9 @@ let pp=params.get('p')||null;
  * mapa por parámetro url
  */
 let pmap= params.get('mapa')||params.get('map');
+let pzoom= params.get('zoom')||params.get('zum');
+let ptime= params.get('time')||params.get('t');
+
 console.info(pmap);
 
 
@@ -126,6 +129,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                     CharacterController.toggleSelection(character);
                 }   );
             }
+            
+            // + para hacer zoom
+            if ( e.key === '+') {
+                // e.preventDefault();
+                MapController.zoomIn();
+            }
+            // - para hacer zoom out
+            if (e.key === '-') {
+                // e.preventDefault();
+                MapController.zoomOut();
+            }
+
 
         });
         
@@ -142,6 +157,25 @@ document.addEventListener('DOMContentLoaded', async () => {
                 await MapController.loadMapFromURL(CONFIG.defaultMapUrl);
 
             console.log('Default map loaded successfully');
+
+            if(pzoom){
+                console.log('Zoom parameter:', pzoom);
+                //delay 1.5 seconds
+                setTimeout(() => {
+                    MapController.zoomToText(pzoom);
+                }, 1000);
+
+                //Hacer zoom x 10
+                setTimeout(() => {
+                    MapController.zoomIn(10);
+                }, 1050);
+            }
+            if(ptime){
+                console.log('Time parameter:', ptime);
+                fechaMundo= new Date(ptime);
+                console.log(fechaMundo);
+                fecha.value=fechaMundo.fechahora();
+            }
             
             // Add default characters
             CONFIG.defaultCharacters.forEach(charUrl => {

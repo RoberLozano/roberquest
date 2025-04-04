@@ -48,6 +48,10 @@
     .compact-form .v-list-item__content {
       padding: 4px 0 !important;
     }
+    .context-menu {
+      position: fixed;
+      z-index: 1000;
+    }
   </style>
 </head>
 <body>
@@ -178,6 +182,7 @@
                 contenteditable="true" 
                 v-html="highlightedDiaryEntry" 
                 @input="updateDiaryEntry($event)"
+                @mouseup="handleTextSelection"
               ></div>
             </v-card-text>
             <v-card-actions>
@@ -185,6 +190,25 @@
               <v-btn color="info" @click="loadEntry">Cargar Entrada</v-btn>
             </v-card-actions>
           </v-card>
+
+          <!-- Context Menu -->
+          <v-menu
+            v-model="showContextMenu"
+            :position-x="menuX"
+            :position-y="menuY"
+            absolute
+            class="context-menu"
+          >
+            <v-list>
+              <v-list-item @click="searchMap">
+                <v-list-item-title>Buscar en el mapa</v-list-item-title>
+              </v-list-item>
+              <v-list-item @click="viewCharacter">
+                <v-list-item-title>Ver personaje</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+
         </v-container>
       </v-main>
     </v-app>
@@ -239,7 +263,11 @@
         entryDates: [], // Array de fechas con entrada (para el date-picker)
         displayDate: '',
         menu: false,  // Controla la visibilidad del date-picker
-        orderAsc: true  // Nuevo: controla el orden de listado (ascendente o descendente)
+        orderAsc: true,  // Nuevo: controla el orden de listado (ascendente o descendente)
+        showContextMenu: false,
+        menuX: 0,
+        menuY: 0,
+        selectedText: ''
       }),
       computed: {
         filteredEntries() {
@@ -450,6 +478,31 @@
           const temp = event.target.innerHTML;
           // Remover etiquetas de resaltado
           this.diaryEntry = temp.replace(/<mark class="highlight">(.*?)<\/mark>/g, '$1');
+        },
+        handleTextSelection(event) {
+          const selection = window.getSelection();
+          const text = selection.toString().trim();
+          
+          if (text) {
+            this.selectedText = text;
+            this.menuX = event.clientX;
+            this.menuY = event.clientY;
+            this.showContextMenu = true;
+          } else {
+            this.showContextMenu = false;
+          }
+        },
+
+        searchMap() {
+          window.open(`/m/?mapa=ElahiunVerde&zoom=${this.selectedText.trim()}`, '_blank');
+
+          // window.location.href = `/m/?mapa=ElahiunVerde&zoom=${encodeURIComponent(this.selectedText)}  target="_blank`;
+          this.showContextMenu = false;
+        },
+
+        viewCharacter() {
+          window.location.href = `/vue.html?pj=${encodeURIComponent(this.selectedText)}`;
+          this.showContextMenu = false;
         }
       },
       mounted() {

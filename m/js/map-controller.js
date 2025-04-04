@@ -284,11 +284,12 @@ const MapController = {
     
     /**
      * Zoom in centered on the viewport
+     * @param {number} factor - Zoom factor
      */
-    zoomIn() {
+    zoomIn(factor) {
         this.zoomToPoint(
             { x: window.innerWidth / 2, y: window.innerHeight / 2 }, 
-            CONFIG.zoomInFactor
+            factor||CONFIG.zoomInFactor
         );
     },
     
@@ -336,7 +337,7 @@ const MapController = {
             return;
         }
         
-        console.log('Zooming to:', transformedCenter.x, transformedCenter.y);
+        // console.log('Zooming to:', transformedCenter.x, transformedCenter.y);
         
         this.pointX = -transformedCenter.x * this.scale + this.mapContainer.clientWidth / 2;
         this.pointY = -transformedCenter.y * this.scale + this.mapContainer.clientHeight / 2;

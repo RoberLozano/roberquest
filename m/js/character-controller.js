@@ -1139,7 +1139,7 @@ const CharacterController = {
             char.setAttribute('width', size);
             char.setAttribute('height', size);
 
-            console.log(MapController.scale);
+            // console.log(MapController.scale);
             
             const x = parseFloat(char.getAttribute('data-x') || char.getAttribute('x'));
             const y = parseFloat(char.getAttribute('data-y') || char.getAttribute('y'));
