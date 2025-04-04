@@ -50,8 +50,8 @@ const MapController = {
         const longPressDuration = 500; // medio segundo para considerar long press
 
         this.mapContainer.addEventListener('touchstart', (e) => {
-            // Solo proceder si el toque no es en un personaje
-            if (e.target.closest('.character')) return;
+            // Solo proceder si es un único toque y no es en un personaje
+            if (e.touches.length !== 1 || e.target.closest('.character')) return;
             
             longPressTimer = setTimeout(() => {
                 const contextMenu = document.getElementById('mapContextMenu');
