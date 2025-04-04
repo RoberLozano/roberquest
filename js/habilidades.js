@@ -102,7 +102,6 @@ class Clase {
  * @type {object}
  * @property {Mod} mods - Los mods
  * @property {Modificaciones} listaMods -La lista de Modificaciones por id.
- * @property {number} age - your age.
  */
 class Modificable extends Clase {
   constructor() {

@@ -294,12 +294,14 @@ class Mod extends Clase {
 
 class ModHab extends Mod {
   constructor(id, op, ctd, magnitud, atributo = 'v') {
-    super();
-    this.id = id
-    this.op = op
-    this.ctd = ctd
-    this.magnitud = magnitud
-    this.atributo = atributo
+    super(id, op, ctd, magnitud); // Pasar argumentos al constructor base
+    this.atributo = atributo;
+    // super(); // Ya no son necesarios si super() los asigna
+    // this.id = id
+    // this.op = op
+    // this.ctd = ctd
+    // this.magnitud = magnitud
+    // this.atributo = atributo
 
     //TODO: añadir localizacion(es) ej: correr, saltar, Marciales
   }
@@ -351,7 +353,7 @@ class Animal extends Clase {
       DES = 10,
       ASP = 10,
 
-      PA = 0
+      PA = 0 //puntos de armadura natural
     }
 
   ) {
@@ -367,7 +369,7 @@ class Animal extends Clase {
     this.POD = POD
     this.DES = DES
     this.ASP = ASP
-    this.PA = PA
+    this.PA = PA //puntos de armadura natural
 
     // this.fecha= fechaMundo;
 

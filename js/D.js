@@ -125,7 +125,6 @@ class D {
 }
 
 
-
 /**
  * La clase que representa un dado como la suma de varios dados. (Es lo mismo
  * que daño)
@@ -188,25 +187,6 @@ class Dado {
 	}
 
 
-
-	// toString() {
-	// //TODO:
-	// }
-
-	// dadoMax(sumando) {
-	// 	let dado = 0;
-	// 	let sumandos;
-	// 	if (sumando.includes("d")) {
-	// 		sumandos = sumando.split("d");
-	// 		dado = parseInt(sumandos[0])
-	// 				* parseInt(sumandos[1]);
-
-	// 	} else
-	// 		dado = parseInt(sumando);
-
-	// 	return dado;
-
-	// }
 	/**
 	 * Tira del dado de un sumando, bien sea un dado o un entero
 	 *
@@ -350,7 +330,9 @@ class Dado {
 		let sumatorio = 0;
 		// por cada dado tiro el número de veces
 		for (let i of this.dados)
-			sumatorio += (new D(i.num, i.caras)).norm();
+			// sumatorio += (new D(i.num, i.caras)).norm();
+			sumatorio += i.norm();
+
 		//si hay parte entera la sumo
 		if (!isNaN(this.entero)) sumatorio += this.entero;
 		return sumatorio;
@@ -408,6 +390,12 @@ class Dado {
 
 }
 
+/**
+ * Clase que representa un daño
+ * @param {string} dado string con el daño
+ * @param {string} tipo string con el tipo de daño Lacerante,Contundente,Penetrante
+ * @class
+ */
 class Daño {
 	constructor(dado, tipo) {
 
