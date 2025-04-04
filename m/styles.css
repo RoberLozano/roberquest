@@ -109,7 +109,7 @@ body {
 }
 
 #layersList {
-    max-height: 40vh;
+    max-height: 65vh;
     overflow-y: auto;
     padding: 10px;
 }
@@ -172,7 +172,7 @@ body {
     position: absolute;
     top: 10px;
     left: 20px;
-    background-color: rgba(30, 30, 30, 0.2);
+    background-color: rgba(30, 30, 30, 0.4);
     padding: 8px 15px;
     border-radius: 4px;
     font-size: 1.1em;
