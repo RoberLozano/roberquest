@@ -19,8 +19,8 @@ const CONFIG = {
     zoomOutFactor: 0.8,
     
     // Movement thresholds
-    dragThreshold: 2,
-    moveThreshold: 0.3,
+    dragThreshold: 0.1,
+    moveThreshold: 0.1,
     
     // Animation timings
     tooltipDisplayTime: 2000,

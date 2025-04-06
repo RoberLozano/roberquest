@@ -347,6 +347,7 @@ const CharacterController = {
         // Create character group
         const charGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
         charGroup.setAttribute('class', 'character');
+        charGroup.setAttribute('arrow-visible', 'false'); // Añadir atributo por defecto
 
         // Extract name from URL
         const fileName = typeof position === 'string' ?
@@ -651,12 +652,20 @@ const CharacterController = {
 
             if (hasStartedDrag) {
                 image().style.opacity = '1';
-                cross().style.display = 'none';
+                
+                // Ocultar cruz si no está configurada como visible
+                if (charElement.getAttribute('arrow-visible') !== 'true') {
+                    cross().style.display = 'none';
+                }
 
                 // Restore opacity for selected characters
                 this.selectedCharacters.forEach((char) => {
                     if (char !== charElement) {
                         char.querySelector('image').style.opacity = '1';
+                        // Ocultar cruz para caracteres seleccionados si no está configurada como visible
+                        if (char.getAttribute('arrow-visible') !== 'true') {
+                            char.querySelector('.position-cross').style.display = 'none';
+                        }
                     }
                 });
 
@@ -839,6 +848,28 @@ const CharacterController = {
             speedValue.value = parseFloat(charElement.getAttribute('data-speed')) || CONFIG.defaultSpeed;
         });
 
+        // Añadir handler para toggleArrow
+        document.getElementById('toggleArrow').addEventListener('click', () => {
+            const setArrowVisibility = (char, isVisible) => {
+                char.setAttribute('arrow-visible', isVisible);
+                const cross = char.querySelector('.position-cross');
+                if (cross) {
+                    cross.style.display = isVisible ? 'block' : 'none';
+                }
+            };
+
+            if (this.selectedCharacters.size > 0) {
+                const isVisible = this.activeCharacter.getAttribute('arrow-visible') === 'true';
+                this.selectedCharacters.forEach(char => {
+                    setArrowVisibility(char, !isVisible);
+                });
+            } else if (this.activeCharacter) {
+                const isVisible = this.activeCharacter.getAttribute('arrow-visible') === 'true';
+                setArrowVisibility(this.activeCharacter, !isVisible);
+            }
+            document.getElementById('characterContextMenu').style.display = 'none';
+        });
+
         // Cerrar el menú contextual al hacer clic en cualquier parte fuera del menú
         document.addEventListener('click', (e) => {
             const contextMenu = document.getElementById('characterContextMenu');
@@ -941,16 +972,16 @@ const CharacterController = {
     createPositionCross() {
         const crossGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
         crossGroup.setAttribute('class', 'position-cross');
-        crossGroup.style.display = 'none';
+        crossGroup.style.display = 'block';
 
         // Horizontal line
         const hLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        hLine.setAttribute('stroke', 'white');
+        hLine.setAttribute('stroke', 'white 0');
         hLine.setAttribute('stroke-width', '1');
 
         // Vertical line
         const vLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        vLine.setAttribute('stroke', 'white');
+        vLine.setAttribute('stroke', 'white 0');
         vLine.setAttribute('stroke-width', '1');
 
         crossGroup.appendChild(hLine);
@@ -994,20 +1025,37 @@ const CharacterController = {
 
         const [hLine, vLine] = crossEl.children;
         const halfCross = (CONFIG.iconSize / 2) / MapController.scale;
+        const strokeWidth = 2 / MapController.scale;
 
+        // Update cross lines
         hLine.setAttribute('x1', x - halfCross);
         hLine.setAttribute('x2', x + halfCross);
         hLine.setAttribute('y1', y);
         hLine.setAttribute('y2', y);
+        hLine.setAttribute('stroke-width', strokeWidth);
+        hLine.setAttribute('stroke', 'white 0.3');
 
         vLine.setAttribute('x1', x);
         vLine.setAttribute('x2', x);
         vLine.setAttribute('y1', y - halfCross);
         vLine.setAttribute('y2', y + halfCross);
-
-        const strokeWidth = 2 / MapController.scale;
-        hLine.setAttribute('stroke-width', strokeWidth);
         vLine.setAttribute('stroke-width', strokeWidth);
+        vLine.setAttribute('stroke', 'white 0.3');
+
+        // Update or create arrow
+        let arrow = crossEl.querySelector('.cross-arrow');
+        if (!arrow) {
+            arrow = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            arrow.setAttribute('class', 'cross-arrow');
+            crossEl.appendChild(arrow);
+        }
+
+        // Create chevron with scaled size
+        const chevronPath = `M ${x-halfCross} ${y} L ${x} ${y+halfCross} L ${x+halfCross} ${y}`;
+        arrow.setAttribute('d', chevronPath);
+        arrow.setAttribute('stroke', 'red');
+        arrow.setAttribute('stroke-width', strokeWidth);
+        arrow.setAttribute('fill', 'none');
     },
 
     rotateCharacters(charElement, newRotation) {
@@ -1133,21 +1181,28 @@ const CharacterController = {
     updateTransformCharacters() {
         if (!svgElement) return;
 
-        const characterEls = svgElement.querySelectorAll('.character image');
+        const characterEls = svgElement.querySelectorAll('.character');
         characterEls.forEach(char => {
+            const img = char.querySelector('image');
+            const cross = char.querySelector('.position-cross');
             const size = CONFIG.iconSize / MapController.scale;
-            char.setAttribute('width', size);
-            char.setAttribute('height', size);
-
-            // console.log(MapController.scale);
             
-            const x = parseFloat(char.getAttribute('data-x') || char.getAttribute('x'));
-            const y = parseFloat(char.getAttribute('data-y') || char.getAttribute('y'));
+            // Update image size and position
+            img.setAttribute('width', size);
+            img.setAttribute('height', size);
+            
+            const x = parseFloat(img.getAttribute('data-x') || img.getAttribute('x'));
+            const y = parseFloat(img.getAttribute('data-y') || img.getAttribute('y'));
+            
+            img.setAttribute('x', x - size / 2);
+            img.setAttribute('y', y - size / 2);
 
-            char.setAttribute('x', x - size / 2);
-            char.setAttribute('y', y - size / 2);
+            // Update cross and arrow if they exist
+            if (cross) {
+                this.updateCross(cross, x, y);
+            }
 
-            this.drawSelectionCircle(char);
+            this.drawSelectionCircle(img);
         });
     },
 };
@@ -1170,13 +1225,25 @@ const CharacterUtils = {
             if (!img) return;
         }
 
+
         img.style.transformBox = 'fill-box';
         img.style.transformOrigin = 'center';
         img.setAttribute('data-rotation', angle);
         img.style.transform = `rotate(${angle}deg)`;
 
-        if(SyncController.isOnline) {
-            SyncController.saveMapState(img.parentElement);
+        let arrow = img.parentElement.querySelector('.position-cross');
+        if(arrow){
+            arrow.style.transformBox = 'fill-box';
+            arrow.style.transformOrigin = 'center';
+            arrow.setAttribute('data-rotation', angle);
+            arrow.style.transform = `rotate(${angle}deg)`;
+            //visible cross-arrow
+            arrow.querySelector('.cross-arrow').style.display = 'block';
+
         }
+
+        // if(SyncController.isOnline) {
+        //     SyncController.saveMapState(img.parentElement);
+        // }
     }
 };

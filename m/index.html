@@ -69,6 +69,7 @@
 
     <div id="characterContextMenu" class="context-menu">
         <ul>
+            <li id="toggleArrow">Mostrar flecha</li>
             <li id="deleteRoute" class="menu-delete">Eliminar ruta</li>
             <li id="deleteCharacter" class="menu-delete">Eliminar personaje</li>
             <li id="rotate"> Rotar <input type="range" min="-180" max="180" value="0" class="slider" id="myAngle"
@@ -94,6 +95,7 @@
     <div id="mapContextMenu" class="context-menu">
         <ul>
             <li id="mapTogglePath">Mostrar camino</li>
+            <li id="mapMeasure">Medir distancia</li>
             <li id="mapScaleSetting">
                 Escala (m/unidad) <input type="number" min="0.1" step="0.1" value="1" class="number-input" id="mapScaleValue"
                     onchange="CharacterController.setDistanceScale(this.value)">

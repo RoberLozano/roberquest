@@ -421,3 +421,26 @@ body {
     background: var(--danger-color);
     color: var(--text-color);
 }
+
+/* Distance measurement */
+.measure-line {
+    stroke: var(--accent-color);
+    stroke-width: 1px;
+    stroke-dasharray: 1,1;
+}
+
+.measure-text {
+    fill: var(--text-color);
+    font-size: 14px;
+    text-anchor: middle;
+    filter: drop-shadow(0 0 2px black);
+}
+
+/* Arrow visibility styles */
+.character[arrow-visible="true"] .position-cross {
+    display: block !important;
+}
+
+.character[arrow-visible="false"] .position-cross {
+    display: none;
+}

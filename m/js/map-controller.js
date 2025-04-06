@@ -10,6 +10,10 @@ const MapController = {
     panning: false,
     start: { x: 0, y: 0 },
     lastDist: null,
+    measuring: false,
+    measureStart: null,
+    measureLine: null,
+    measureText: null,
     
     /**
      * Initialize the map controller
@@ -132,6 +136,83 @@ const MapController = {
         contextMenu.addEventListener('touchstart', (e) => {
             e.stopPropagation();
         });
+
+        // Añadir handler para el botón de medición
+        document.getElementById('mapMeasure').addEventListener('click', () => {
+            this.startMeasuring();
+            document.getElementById('mapContextMenu').style.display = 'none';
+        });
+    },
+
+    startMeasuring() {
+        this.measuring = true;
+        this.mapContainer.style.cursor = 'crosshair';
+        
+        const measureHandler = (e) => {
+            if (!this.measuring) return;
+            
+            const point = SVGUtils.getPointInSVG(e.clientX, e.clientY);
+            if (!point) return;
+
+            if (!this.measureStart) {
+                // Primer click - iniciar medición
+                this.measureStart = point;
+                
+                // Crear elementos de medición
+                this.measureLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                this.measureLine.classList.add('measure-line');
+                this.measureText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                this.measureText.classList.add('measure-text');
+                
+                svgElement.appendChild(this.measureLine);
+                svgElement.appendChild(this.measureText);
+                
+                this.measureLine.setAttribute('x1', point.x);
+                this.measureLine.setAttribute('y1', point.y);
+            } else {
+                // Segundo click - finalizar medición
+                const dx = point.x - this.measureStart.x;
+                const dy = point.y - this.measureStart.y;
+                const distance = Math.sqrt(dx * dx + dy * dy) * CONFIG.distanceScaleFactor;
+                
+                // Limpiar medición
+                if (this.measureLine) this.measureLine.remove();
+                if (this.measureText) this.measureText.remove();
+                
+                this.measuring = false;
+                this.measureStart = null;
+                this.mapContainer.style.cursor = 'default';
+                this.mapContainer.removeEventListener('click', measureHandler);
+            }
+        };
+
+        const mouseMoveHandler = (e) => {
+            if (!this.measuring || !this.measureStart) return;
+            
+            const point = SVGUtils.getPointInSVG(e.clientX, e.clientY);
+            if (!point) return;
+
+            // Actualizar línea
+            this.measureLine.setAttribute('x2', point.x);
+            this.measureLine.setAttribute('y2', point.y);
+
+            // Calcular y mostrar distancia
+            const dx = point.x - this.measureStart.x;
+            const dy = point.y - this.measureStart.y;
+            const distance = Math.sqrt(dx * dx + dy * dy) * CONFIG.distanceScaleFactor;
+            
+            // Actualizar texto
+            const textX = (point.x + this.measureStart.x) / 2;
+            const textY = (point.y + this.measureStart.y) / 2 - 10;
+            this.measureText.setAttribute('x', textX);
+            this.measureText.setAttribute('y', textY);
+            this.measureText.textContent = distance >= 1000 ? 
+                `${(distance/1000).toFixed(2)} km` : 
+                `${distance.toFixed(0)} m`;
+        };
+
+        this.mapContainer.addEventListener('click', measureHandler);
+        this.mapContainer.addEventListener('mousemove', mouseMoveHandler);
     },
     
     /**
