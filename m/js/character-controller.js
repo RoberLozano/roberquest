@@ -1256,11 +1256,10 @@ const CharacterUtils = {
             arrow.style.transform = `rotate(${angle}deg)`;
             //visible cross-arrow
             arrow.querySelector('.cross-arrow').style.display = 'block';
-
         }
 
-        // if(SyncController.isOnline) {
-        //     SyncController.saveMapState(img.parentElement);
-        // }
+        if(SyncController.isOnline) {
+            SyncController.saveMapState(img.parentElement);
+        }
     }
 };
