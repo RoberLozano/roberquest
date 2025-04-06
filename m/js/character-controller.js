@@ -1033,14 +1033,19 @@ const CharacterController = {
         hLine.setAttribute('y1', y);
         hLine.setAttribute('y2', y);
         hLine.setAttribute('stroke-width', strokeWidth);
-        hLine.setAttribute('stroke', 'white 0.3');
+        hLine.setAttribute('stroke', 'white ');
 
         vLine.setAttribute('x1', x);
         vLine.setAttribute('x2', x);
         vLine.setAttribute('y1', y - halfCross);
         vLine.setAttribute('y2', y + halfCross);
         vLine.setAttribute('stroke-width', strokeWidth);
-        vLine.setAttribute('stroke', 'white 0.3');
+        vLine.setAttribute('stroke', 'white');
+        
+        // opacity 0.5
+        vLine.setAttribute('opacity', '0.5');
+        hLine.setAttribute('opacity', '0.5');
+
 
         // Update or create arrow
         let arrow = crossEl.querySelector('.cross-arrow');
@@ -1226,13 +1231,25 @@ const CharacterUtils = {
         }
 
 
-        img.style.transformBox = 'fill-box';
-        img.style.transformOrigin = 'center';
-        img.setAttribute('data-rotation', angle);
-        img.style.transform = `rotate(${angle}deg)`;
+
+
+        let p= img.parentElement;
+        if(p.getAttribute('arrow-visible')==='true'){
+            // La imagen debe estar igual
+            console.log('Portrait');
+            
+        }
+        else
+        {
+            img.style.transformBox = 'fill-box';
+            img.style.transformOrigin = 'center';
+            img.setAttribute('data-rotation', angle);
+            img.style.transform = `rotate(${angle}deg)`;
+        }
 
         let arrow = img.parentElement.querySelector('.position-cross');
         if(arrow){
+            img.setAttribute('data-rotation', angle);
             arrow.style.transformBox = 'fill-box';
             arrow.style.transformOrigin = 'center';
             arrow.setAttribute('data-rotation', angle);
