@@ -519,5 +519,96 @@ const MapController = {
                 }
             });
         }
-    }
+    },
+
+    /**
+     * Dibuja un círculo de área de efecto y devuelve los personajes afectados
+     * @param {number} x - Coordenada X del centro
+     * @param {number} y - Coordenada Y del centro
+     * @param {number} radiusMeters - Radio en metros
+     * @param {number} opacity - Opacidad del círculo (0-1)
+     * @param {boolean} gradient - Si se usa degradado radial
+     * @returns {Array} - Array de personajes dentro del área
+     */
+    createAreaEffect(x, y, radiusMeters, opacity = 0.5, gradient = false) {
+        if (!svgElement) return [];
+
+        const radius = radiusMeters / CONFIG.distanceScaleFactor;
+
+        // Crear el círculo
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute('class', 'area-effect');
+        circle.setAttribute('cx', x);
+        circle.setAttribute('cy', y);
+        circle.setAttribute('r', radius);
+
+        if (gradient) {
+            // Crear degradado radial
+            const gradientId = `areaGradient-${Date.now()}`;
+            const radialGradient = document.createElementNS("http://www.w3.org/2000/svg", "radialGradient");
+            radialGradient.setAttribute('id', gradientId);
+            radialGradient.setAttribute('cx', '50%');
+            radialGradient.setAttribute('cy', '50%');
+            radialGradient.setAttribute('r', '50%');
+
+            // Stops del degradado
+            const stops = [
+                { offset: '0%', opacity: opacity },
+                { offset: '50%', opacity: opacity * 0.5 }, //75%
+                { offset: '100%', opacity: 0 }
+            ];
+
+            stops.forEach(stop => {
+                const stopEl = document.createElementNS("http://www.w3.org/2000/svg", "stop");
+                stopEl.setAttribute('offset', stop.offset);
+                stopEl.setAttribute('stop-color', 'red');
+                stopEl.setAttribute('stop-opacity', stop.opacity);
+                radialGradient.appendChild(stopEl);
+            });
+
+            // Añadir el degradado al SVG
+            const defs = svgElement.querySelector('defs') || 
+                        svgElement.insertBefore(document.createElementNS("http://www.w3.org/2000/svg", "defs"), 
+                        svgElement.firstChild);
+            defs.appendChild(radialGradient);
+
+            circle.setAttribute('fill', `url(#${gradientId})`);
+            circle.setAttribute('stroke', 'none');
+        } else {
+            // Estilo sólido original
+            circle.setAttribute('fill', 'red');
+            circle.setAttribute('opacity', opacity);
+            circle.setAttribute('stroke', 'none');
+        }
+
+        svgElement.appendChild(circle);
+
+        // Encontrar personajes afectados
+        const affectedCharacters = [];
+        CharacterController.characters.forEach((char) => {
+            const img = char.querySelector('image');
+            const charX = parseFloat(img.getAttribute('data-x'));
+            const charY = parseFloat(img.getAttribute('data-y'));
+            
+            const dx = charX - x;
+            const dy = charY - y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance <= radius) {
+                affectedCharacters.push(char);
+            }
+        });
+
+        // Eliminar el círculo después de un tiempo
+        setTimeout(() => {
+            circle.remove();
+            // Limpiar el gradiente si existe
+            if (gradient) {
+                const gradientEl = svgElement.querySelector(`#areaGradient-${Date.now()}`);
+                if (gradientEl) gradientEl.remove();
+            }
+        }, 2000);
+
+        return affectedCharacters;
+    },
 };
