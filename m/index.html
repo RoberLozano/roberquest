@@ -69,10 +69,11 @@
 
     <div id="characterContextMenu" class="context-menu">
         <ul>
+            <li id="attackCharacter">⚔️ Atacar</li>
             <li id="toggleArrow">Mostrar flecha</li>
             <li id="deleteRoute" class="menu-delete">Eliminar ruta</li>
             <li id="deleteCharacter" class="menu-delete">Eliminar personaje</li>
-            <li id="rotate"> Rotar <input type="range" min="-180" max="180" value="0" class="slider" id="myAngle"
+            <li id="rotate" hidden> Rotar <input type="range" min="-180" max="180" value="0" class="slider" id="myAngle"
                     onchange="CharacterController.rotateCharacters(
                         CharacterController.activeCharacter,this.value)"> </li>
             <li id="speedSetting">
@@ -80,9 +81,9 @@
                     onchange="CharacterController.setCharacterSpeed(this.value)">
             </li>
             <li id="showStats">Mostrar stats</li>
-            <li id="inventario"
+            <li id="inventario" hidden
             onclick="CharacterController.showStats('inventario')">Inventario</li>
-            <li id="exe">
+            <li id="exe" hidden>
                 <input type="text" name="" id="exeInput" placeholder="Ejecutar comando...">
                 <button id="exeBtn" onclick="eval('CharacterController.getActivePersonaje().'+
                 document.getElementById('exeInput').value)">Ejecutar</button>

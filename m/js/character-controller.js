@@ -16,6 +16,9 @@ const CharacterController = {
     // Control de confirmación automática de movimientos
     autoConfirmMove: false,
     travelTime: 0,
+    // Añadir a las propiedades existentes
+    attackMode: false,
+    attackingCharacter: null,
 
     /**
      * Initialize the character controller
@@ -472,6 +475,12 @@ const CharacterController = {
         charElement.addEventListener('click', (e) => {
             e.stopPropagation();
 
+            // Check if we're in attack mode
+            if (this.attackMode && this.attackingCharacter !== charElement) {
+                this.performAttack(charElement);
+                return;
+            }
+
             const id = charElement.getAttribute('id');
             // if (this.isDragging) return;
             // console.log('Click', { id, selected: this.selectedCharacters.has(id) });
@@ -849,6 +858,12 @@ const CharacterController = {
             document.getElementById('characterContextMenu').style.display = 'none';
         });
 
+        // Añadir handler para ataque
+        document.getElementById('attackCharacter').addEventListener('click', () => {
+            this.startAttackMode(this.activeCharacter);
+            document.getElementById('characterContextMenu').style.display = 'none';
+        });
+
         // Cerrar el menú contextual al hacer clic en cualquier parte fuera del menú
         document.addEventListener('click', (e) => {
             const contextMenu = document.getElementById('characterContextMenu');
@@ -875,6 +890,43 @@ const CharacterController = {
                 });
             }
         });
+    },
+
+    startAttackMode(attacker) {
+        this.attackMode = true;
+        this.attackingCharacter = attacker;
+        document.body.classList.add('attack-mode');
+
+        // Añadir listener temporal para cancelar el ataque con clic derecho
+        const cancelAttack = (e) => {
+            if (e.button === 2) {
+                this.cancelAttackMode();
+                document.removeEventListener('mousedown', cancelAttack);
+            }
+        };
+        document.addEventListener('mousedown', cancelAttack);
+    },
+
+    cancelAttackMode() {
+        this.attackMode = false;
+        this.attackingCharacter = null;
+        document.body.classList.remove('attack-mode');
+    },
+
+    performAttack(targetCharacter) {
+        if (!this.attackMode || !this.attackingCharacter) return;
+
+        // Trigger attack animation
+        targetCharacter.classList.add('attack-animation');
+        setTimeout(() => {
+            targetCharacter.classList.remove('attack-animation');
+        }, 300);
+
+        // Aquí se puede añadir la lógica del ataque
+        console.log('Attack from', this.attackingCharacter.id, 'to', targetCharacter.id);
+
+        // Cancel attack mode after performing attack
+        this.cancelAttackMode();
     },
 
     /**

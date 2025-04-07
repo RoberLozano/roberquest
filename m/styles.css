@@ -444,3 +444,20 @@ body {
 .character[arrow-visible="false"] .position-cross {
     display: none;
 }
+
+/* Cursor styles */
+.attack-mode {
+    /* cursor: url('img/sword.svg') 16 4, crosshair; */
+    cursor: url('img/sword2.svg') 16 4, crosshair;
+}
+
+/* Attack animation */
+@keyframes attack-flash {
+    0% { filter: brightness(1); }
+    50% { filter: brightness(2) saturate(2); }
+    100% { filter: brightness(1); }
+}
+
+.attack-animation {
+    animation: attack-flash 0.3s ease-in-out;
+}
