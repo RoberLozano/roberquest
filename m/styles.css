@@ -454,10 +454,12 @@ body {
 /* Attack animation */
 @keyframes attack-flash {
     0% { filter: brightness(1); }
+    25% { filter: brightness(1.5) saturate(1.5) hue-rotate(-20deg); }
+    75% { filter: brightness(1.5) saturate(1.5) hue-rotate(20deg); }
     50% { filter: brightness(2) saturate(2); }
     100% { filter: brightness(1); }
 }
 
 .attack-animation {
-    animation: attack-flash 0.3s ease-in-out;
+    animation: attack-flash 0.7s ease-in-out;
 }

@@ -528,9 +528,11 @@ const MapController = {
      * @param {number} radiusMeters - Radio en metros
      * @param {number} opacity - Opacidad del círculo (0-1)
      * @param {boolean} gradient - Si se usa degradado radial
+     * @param {number} ms - Tiempo en milisegundos para eliminar el círculo
+     * @param {string} color - Color del círculo
      * @returns {Array} - Array de personajes dentro del área
      */
-    createAreaEffect(x, y, radiusMeters, opacity = 0.5, gradient = false) {
+    createAreaEffect(x, y, radiusMeters, opacity = 0.5, gradient = false, ms=2000, color='red') {
         if (!svgElement) return [];
 
         const radius = radiusMeters / CONFIG.distanceScaleFactor;
@@ -561,7 +563,7 @@ const MapController = {
             stops.forEach(stop => {
                 const stopEl = document.createElementNS("http://www.w3.org/2000/svg", "stop");
                 stopEl.setAttribute('offset', stop.offset);
-                stopEl.setAttribute('stop-color', 'red');
+                stopEl.setAttribute('stop-color', color);
                 stopEl.setAttribute('stop-opacity', stop.opacity);
                 radialGradient.appendChild(stopEl);
             });
@@ -576,7 +578,7 @@ const MapController = {
             circle.setAttribute('stroke', 'none');
         } else {
             // Estilo sólido original
-            circle.setAttribute('fill', 'red');
+            circle.setAttribute('fill', color);
             circle.setAttribute('opacity', opacity);
             circle.setAttribute('stroke', 'none');
         }
@@ -607,7 +609,7 @@ const MapController = {
                 const gradientEl = svgElement.querySelector(`#areaGradient-${Date.now()}`);
                 if (gradientEl) gradientEl.remove();
             }
-        }, 2000);
+        }, ms);
 
         return affectedCharacters;
     },

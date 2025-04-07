@@ -918,14 +918,21 @@ const CharacterController = {
 
         // Trigger attack animation
         targetCharacter.classList.add('attack-animation');
+        
+        // Obtener la posición del personaje atacado
+        const img = targetCharacter.querySelector('image');
+        const x = parseFloat(img.getAttribute('data-x'));
+        const y = parseFloat(img.getAttribute('data-y'));
+
+        // Crear efecto de onda (radio de 2 metros con degradado)
+        MapController.createAreaEffect(x, y, 100/ MapController.scale, 0.7, true, 1000);
+
         setTimeout(() => {
             targetCharacter.classList.remove('attack-animation');
         }, 300);
 
-        // Aquí se puede añadir la lógica del ataque
+        //TODO: La lógica del ataque
         console.log('Attack from', this.attackingCharacter.id, 'to', targetCharacter.id);
-
-        // Cancel attack mode after performing attack
         this.cancelAttackMode();
     },
 
