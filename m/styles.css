@@ -425,8 +425,8 @@ body {
 /* Distance measurement */
 .measure-line {
     stroke: var(--accent-color);
-    stroke-width: 1px;
-    stroke-dasharray: 1,1;
+    /* stroke-width: 1px;
+    stroke-dasharray: 1,1;  */
 }
 
 .measure-text {

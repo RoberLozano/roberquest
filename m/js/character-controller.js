@@ -15,7 +15,7 @@ const CharacterController = {
     originalPositions: new Map(),
     // Control de confirmación automática de movimientos
     autoConfirmMove: false,
-    travelTime:0,
+    travelTime: 0,
 
     /**
      * Initialize the character controller
@@ -25,23 +25,23 @@ const CharacterController = {
         this.tooltip = document.createElement('div');
         this.tooltip.style.cssText = "position: fixed; display: none; background: rgba(0,0,0,0.8); color: white; padding: 5px; border-radius: 3px; z-index: 1100; font-size: 12px;";
         document.body.appendChild(this.tooltip);
-        
+
         // Inicializar controladores para los botones de confirmación
         this.initMoveConfirmation();
-        
+
         // Inicializar controlador para el checkbox de auto-confirmación
         this.initAutoConfirmMove();
     },
-    
+
     /**
      * Initialize auto-confirm move checkbox
      */
     initAutoConfirmMove() {
         const autoConfirmCheckbox = document.getElementById('autoConfirmMove');
-        
+
         // Establecer estado inicial
         autoConfirmCheckbox.checked = this.autoConfirmMove;
-        
+
         // Añadir event listener para actualizar el estado
         autoConfirmCheckbox.addEventListener('change', () => {
             this.autoConfirmMove = autoConfirmCheckbox.checked;
@@ -57,20 +57,20 @@ const CharacterController = {
         const timeButton = document.getElementById('confirmTime');
         const cancelButton = document.getElementById('cancelMove');
         const confirmationDiv = document.getElementById('moveConfirmation');
-        
+
         // Confirmar movimiento
         confirmButton.addEventListener('click', () => {
             confirmationDiv.style.display = 'none';
             this.originalPositions.clear();
-            
+
             // Si estamos online, guardar el estado
-            if (SyncController.isOnline) 
+            if (SyncController.isOnline)
                 this.saveDraggedCharactersState();
-            
+
         });
         timeButton.addEventListener('click', () => {
-            fechaMundo=fechaMundo.mod('hora', this.travelTime);
-            fecha.value=fechaMundo.fechahora();
+            fechaMundo = fechaMundo.mod('hora', this.travelTime);
+            fecha.value = fechaMundo.fechahora();
         });
 
         // Cancelar movimiento
@@ -79,24 +79,24 @@ const CharacterController = {
             confirmationDiv.style.display = 'none';
         });
     },
-    
+
     /**
      * Save state of all dragged characters to Firebase
      */
     saveDraggedCharactersState() {
         if (!SyncController.isOnline) return;
-        
+
         if (this.draggedCharacter) {
             SyncController.saveMapState(this.draggedCharacter);
         }
-        
+
         this.selectedCharacters.forEach((char) => {
             if (char !== this.draggedCharacter) {
                 SyncController.saveMapState(char);
             }
         });
     },
-    
+
     /**
      * Undo character movement by restoring original positions
      */
@@ -104,36 +104,15 @@ const CharacterController = {
         this.originalPositions.forEach((originalPos, charElement) => {
             const img = charElement.querySelector('image');
             this.moveCharacter(img, originalPos.x, originalPos.y);
-            
+
             // En lugar de eliminar el rastro completo, solo eliminamos la última ruta añadida
             // Esto mantiene el historial de rutas anteriores
-            const routes = this.characterRoutes.get(charElement);
-            if (routes && routes.length > 0) {
-                // Eliminamos el último punto (destino actual) de la ruta
-                routes.pop();
-                
-                // Si quedan puntos en la ruta, redibujamos el camino
-                if (routes.length >= 2) {
-                    try {
-                        const pathElem = charElement.querySelector('.character-route');
-                        if (pathElem) {
-                            const path = SVGUtils.generateSmoothPath(routes);
-                            pathElem.setAttribute('d', path);
-                        }
-                    } catch (error) {
-                        console.error('Error al actualizar la ruta:', error);
-                    }
-                } else {
-                    // Si solo quedaba un punto (el origen), eliminamos el elemento path visual
-                    // pero mantenemos la entrada en el mapa de rutas
-                    const pathElem = charElement.querySelector('.character-route');
-                    if (pathElem) {
-                        pathElem.remove();
-                    }
-                }
-            }
+            let caminos = svgElement.querySelectorAll('.character-route');
+            console.log(caminos);
+            let ultimoCamino = caminos[caminos.length - 1];        
+            if (ultimoCamino) ultimoCamino.remove();        
         });
-        
+
         this.originalPositions.clear();
     },
 
@@ -143,13 +122,13 @@ const CharacterController = {
     //  */
     // setDistanceScale(value) {
     //     console.log('setDISTANCE1');
-        
+
     //     const scaleFactor = parseFloat(value);
     //     if (isNaN(scaleFactor) || scaleFactor <= 0) return;
-        
+
     //     CONFIG.distanceScaleFactor = scaleFactor;
     //     console.log(`Escala establecida: ${scaleFactor} metros por unidad`);
-        
+
     //     // Cerrar el menú contextual
     //     document.getElementById('mapContextMenu').style.display = 'none';
     // },
@@ -159,35 +138,35 @@ const CharacterController = {
      * @param {*} charElement Elemento del personaje
      * @returns {void}
      */
-    select(charElement){
+    select(charElement) {
         const id = charElement.getAttribute('id');
         if (this.selectedCharacters.has(id)) {
-           return;
+            return;
         } else {
             this.selectedCharacters.set(id, charElement);
             charElement.classList.add('selected');
         }
         this.drawSelectionCircle(charElement.querySelector('image'));
     },
-    
-    selectAll(){
+
+    selectAll() {
         this.characters.forEach((char) => {
             if (char.classList.contains('selected')) return;
-          this.select(char);
+            this.select(char);
         });
     },
-    deselectAll(){ 
+    deselectAll() {
         this.selectedCharacters.forEach((char) => {
             // Eliminar el círculo de selección
 
             char.classList.remove('selected');
-            this.drawSelectionCircle(char.querySelector('image'));    
+            this.drawSelectionCircle(char.querySelector('image'));
         });
         this.selectedCharacters.clear();
 
     },
 
-     toggleSelection(charElement){
+    toggleSelection(charElement) {
         const id = charElement.getAttribute('id');
         if (this.selectedCharacters.has(id)) {
             this.selectedCharacters.delete(id);
@@ -199,20 +178,20 @@ const CharacterController = {
         this.drawSelectionCircle(charElement.querySelector('image'));
     },
 
-    showStats(campo){
+    showStats(campo) {
         if (!this.activeCharacter) return;
         let personaje = this.activeCharacter.getAttribute('id');
         let pe = this.personajes.get(personaje);
         // document.getElementById('infoTitle').innerHTML = personaje;
         document.getElementById('infoTitle').innerHTML =
-        `<h2 ><a href="../vue.html?pj=${pe.nombre}" target="_blank">${pe.nombre}</a> <FONT SIZE=4> ${pe.clase} ${pe.sexo}</FONT></h2> `;
+            `<h2 ><a href="../vue.html?pj=${pe.nombre}" target="_blank">${pe.nombre}</a> <FONT SIZE=4> ${pe.clase} ${pe.sexo}</FONT></h2> `;
         var ic;
-        let info=document.getElementById('infoContent');
+        let info = document.getElementById('infoContent');
         info.innerHTML = '';
-        if(!campo){
-            ic = new InputCustom(pe,null,true);
+        if (!campo) {
+            ic = new InputCustom(pe, null, true);
         }
-        else{
+        else {
             ic = new InputCustom(pe[campo], null, false);
         }
         info.appendChild(ic);
@@ -226,14 +205,14 @@ const CharacterController = {
      */
     setCharacterSpeed(speed) {
         if (!this.activeCharacter) return;
-        
+
         // Convert to number and validate
         speed = parseFloat(speed);
         if (isNaN(speed) || speed <= 0) speed = CONFIG.defaultSpeed;
-        
+
         // Update DOM
         document.getElementById('speedValue').value = speed;
-        
+
         // Update for selected characters or active character
         if (this.selectedCharacters.size > 0) {
             this.selectedCharacters.forEach((char) => {
@@ -242,11 +221,11 @@ const CharacterController = {
         } else {
             this.activeCharacter.setAttribute('data-speed', speed);
         }
-        
+
         // Update CONFIG default for new characters
         CONFIG.defaultSpeed = speed;
     },
-    
+
     /**
      * Set the distance scale factor (meters per map unit)
      * @param {number} scale - Scale factor in meters per map unit
@@ -255,13 +234,13 @@ const CharacterController = {
         // Convert to number and validate
         scale = parseFloat(scale);
         if (isNaN(scale) || scale <= 0) scale = 1;
-        
+
         // Update DOM
         document.getElementById('mapScaleValue').value = scale;
-        
+
         // Update CONFIG
         CONFIG.distanceScaleFactor = scale;
-        
+
         // Refresh all routes to update distances
         //esto HACE ALGO DE VERDAD??
         this.characterRoutes.forEach((route, charElement) => {
@@ -270,17 +249,17 @@ const CharacterController = {
             }
         });
     },
-    
+
     /**
      * Update distance display for a character's route
      * @param {SVGElement} charElement - Character element
      */
     updateDistanceDisplay(charElement) {
         if (!charElement) return;
-        
+
         const route = this.characterRoutes.get(charElement) || [];
         if (route.length <= 1) return;
-        
+
         // Calculate total distance
         let totalDistance = 0;
         for (let i = 1; i < route.length; i++) {
@@ -288,37 +267,37 @@ const CharacterController = {
             const dy = route[i].y - route[i - 1].y;
             totalDistance += Math.sqrt(dx * dx + dy * dy);
         }
-        
+
         // Apply scale factor
         const scaledDistance = totalDistance * CONFIG.distanceScaleFactor;
-        
+
         // Get character speed (km/h)
         const speed = parseFloat(charElement.getAttribute('data-speed')) || CONFIG.defaultSpeed;
-        
+
         // Calculate time (h) = distance (m) / (speed (km/h) * 1000 (m/km))
         const timeHours = scaledDistance / (speed * 1000);
         this.travelTime = timeHours;
-        
+
         // Format time in hours, minutes, seconds
         let timeString = '';
         if (timeHours >= 1) {
             timeString = Math.floor(timeHours) + 'h ';
         }
-        
+
         const minutes = Math.floor((timeHours % 1) * 60);
         if (minutes > 0 || timeHours >= 1) {
             timeString += minutes + 'min ';
         }
-        
+
         const seconds = Math.floor(((timeHours % 1) * 60 % 1) * 60);
         timeString += seconds + 's';
-        
+
         // Display distance and time in tooltip
         const bbox = charElement.getBoundingClientRect();
         this.tooltip.style.display = 'block';
         this.tooltip.style.left = `${bbox.right + 10}px`;
         this.tooltip.style.top = `${bbox.top + 10}px`;
-        
+
         // Format distance in m or km
         let distanceText = '';
         if (scaledDistance >= 1000) {
@@ -326,9 +305,9 @@ const CharacterController = {
         } else {
             distanceText = `${scaledDistance.toFixed(1)} m`;
         }
-        
+
         this.tooltip.innerHTML = `Dist: ${distanceText}<br>Tiempo: ${timeString}`;
-        
+
         clearTimeout(this.tooltip.hideTimeout);
         this.tooltip.hideTimeout = setTimeout(() => {
             this.tooltip.style.display = 'none';
@@ -353,13 +332,13 @@ const CharacterController = {
         const fileName = typeof position === 'string' ?
             position.split('/').pop() :
             imageUrl.split('/').pop();
-             console.log('Extracted name', { fileName });
-        const nombre=fileName.substring(0, fileName.lastIndexOf('.'));
+        console.log('Extracted name', { fileName });
+        const nombre = fileName.substring(0, fileName.lastIndexOf('.'));
         let baseName = fileName.substring(0, fileName.lastIndexOf('.'))
             .replace(/%20/g, '_')
             .replace(/[^a-zA-Z0-9]/g, '_');
-            console.log(baseName);
-            
+        console.log(baseName);
+
 
         let number = 1;
         while (this.characters.has(`${baseName}`)) {
@@ -376,7 +355,7 @@ const CharacterController = {
 
 
         charGroup.id = baseName;
-        
+
         // Set default speed
         charGroup.setAttribute('data-speed', CONFIG.defaultSpeed);
 
@@ -392,7 +371,7 @@ const CharacterController = {
         let x, y;
         if (typeof position === 'object' && position.x && position.y) {
             x = parseFloat(position.x);
-            y = parseFloat(position.y);           
+            y = parseFloat(position.y);
         } else {
             const point = SVGUtils.getPointInSVG(window.innerWidth / 2, window.innerHeight / 2);
             x = point.x;
@@ -428,8 +407,8 @@ const CharacterController = {
         // Store character reference
         this.characters.set(baseName, charGroup);
 
-        if(SyncController.isOnline){
-            console.log('cargo desde crear personaje:'+nombre);          
+        if (SyncController.isOnline) {
+            console.log('cargo desde crear personaje:' + nombre);
             SyncController.cargarPersonaje(nombre);
         }
         return charGroup;
@@ -457,7 +436,7 @@ const CharacterController = {
         }
 
         this.characterRoutes.set(charElement, route);
-        
+
         // Use updated method to display distance and time
         this.updateDistanceDisplay(charElement);
     },
@@ -473,7 +452,7 @@ const CharacterController = {
         charElement.addEventListener('touchstart', (e) => {
             if (e.touches.length === 1) {
                 e.stopPropagation();
-                
+
                 const id = charElement.getAttribute('id');
 
                 console.log('Touch start', { id, selected: this.selectedCharacters.has(id) });
@@ -481,8 +460,8 @@ const CharacterController = {
                 if (e.touches.length === 1 && e.touches[0].force > 0.5) {
                     // Long press / force touch for multi-select             
                     this.toggleSelection(charElement);
-                    console.log('Long press:'+ e.touches[0].force);
-                    
+                    console.log('Long press:' + e.touches[0].force);
+
                 } else {
                     // Single tap for single selection
                     this.toggleSelection(charElement);
@@ -492,7 +471,7 @@ const CharacterController = {
         // Handle click events for selection
         charElement.addEventListener('click', (e) => {
             e.stopPropagation();
-         
+
             const id = charElement.getAttribute('id');
             // if (this.isDragging) return;
             // console.log('Click', { id, selected: this.selectedCharacters.has(id) });
@@ -538,7 +517,7 @@ const CharacterController = {
         let selectedOriginalPos = new Map();
 
         const startDragging = e => {
-            if(this.selectedCharacters.has(charElement.getAttribute('id'))){
+            if (this.selectedCharacters.has(charElement.getAttribute('id'))) {
                 wasSelected = charElement.getAttribute('id');
             }
             if (e.button === 2) return;
@@ -600,7 +579,7 @@ const CharacterController = {
                 cross().style.display = 'block';
                 image().style.opacity = '0.5';
                 this.characterRoutes.set(charElement, [{ x: originalPos.x, y: originalPos.y }]);
-                
+
                 // Guardar posición original para posible cancelación
                 this.originalPositions.set(charElement, {
                     x: originalPos.x,
@@ -613,7 +592,7 @@ const CharacterController = {
                         const origPos = selectedOriginalPos.get(char);
                         this.characterRoutes.set(char, [{ x: origPos.x, y: origPos.y }]);
                         char.querySelector('image').style.opacity = '0.5';
-                        
+
                         // Guardar posición original para posible cancelación
                         this.originalPositions.set(char, {
                             x: origPos.x,
@@ -652,7 +631,7 @@ const CharacterController = {
 
             if (hasStartedDrag) {
                 image().style.opacity = '1';
-                
+
                 // Ocultar cruz si no está configurada como visible
                 if (charElement.getAttribute('arrow-visible') !== 'true') {
                     cross().style.display = 'none';
@@ -683,8 +662,8 @@ const CharacterController = {
                                     pathElem.setAttribute('class', 'character-route');
                                     pathElem.setAttribute('fill', 'none');
                                     pathElem.setAttribute('stroke', 'red');
-                                    pathElem.setAttribute('stroke-width', 0.5);
-                                    pathElem.setAttribute('stroke-dasharray', '1 1');
+                                    // pathElem.setAttribute('stroke-width', 0.5);
+                                    MapController.grosorCamino(3,pathElem)
                                     pathElem.classList.add(`${char.id}-route`);
                                     svgElement.appendChild(pathElem);
                                 }
@@ -703,12 +682,12 @@ const CharacterController = {
                         }
                     });
                 }
-                
+
                 // Mostrar los botones de confirmación o confirmar automáticamente
                 if (this.autoConfirmMove) {
                     // Si está activada la auto-confirmación, guardamos el estado directamente
                     this.originalPositions.clear();
-                    
+
                     // Si estamos online, guardar el estado
                     if (SyncController.isOnline) {
                         this.saveDraggedCharactersState();
@@ -717,14 +696,14 @@ const CharacterController = {
                     const confirmationDiv = document.getElementById('moveConfirmation');
                     const rect = charElement.getBoundingClientRect();
                     confirmationDiv.style.display = 'block';
-                    confirmationDiv.style.left = `${rect.right-CONFIG.iconSize}px`;
-                    confirmationDiv.style.top = `${rect.top-CONFIG.iconSize}px`;
+                    confirmationDiv.style.left = `${rect.right - CONFIG.iconSize}px`;
+                    confirmationDiv.style.top = `${rect.top - CONFIG.iconSize}px`;
                 }
-                
+
                 //si estaba seleccionado antes de empezar a arrastar lo volvemos a seleccionar, porque el click largo lo ha deseleccionado
-                if(wasSelected && wasSelected == charElement.getAttribute('id')){
+                if (wasSelected && wasSelected == charElement.getAttribute('id')) {
                     console.log('wasSelected', wasSelected);
-                    
+
                     this.selectedCharacters.set(wasSelected, charElement);
                     charElement.classList.add('selected');
                     this.drawSelectionCircle(charElement.querySelector('image'));
@@ -842,7 +821,7 @@ const CharacterController = {
             contextMenu.style.display = 'block';
             contextMenu.style.left = `${e.pageX}px`;
             contextMenu.style.top = `${e.pageY}px`;
-            
+
             // Update speed value
             const speedValue = document.getElementById('speedValue');
             speedValue.value = parseFloat(charElement.getAttribute('data-speed')) || CONFIG.defaultSpeed;
@@ -949,7 +928,7 @@ const CharacterController = {
     /**
      * Borrar un personaje del mapa
      * @param {SVGElement} char - Personaje a eliminar
-     */ 
+     */
     borrarP(char) {
         if (!char) return;
 
@@ -964,7 +943,7 @@ const CharacterController = {
         this.characters.delete(id);
         this.activeCharacter = null;
     },
-    
+
     /**
      * Create position cross marker for dragging
      * @returns {SVGElement} - The created cross element
@@ -990,28 +969,28 @@ const CharacterController = {
         return crossGroup;
     },
 
-    drawSelectionCircle(char){
-                    // Draw selection circle
-                    if (char.parentElement.classList.contains('selected')) {
-                        const size = parseFloat(char.getAttribute('width'));
-                        let x= parseFloat(char.getAttribute('data-x')) || parseFloat(char.getAttribute('x')) + size / 2;
-                        let y= parseFloat(char.getAttribute('data-y')) || parseFloat(char.getAttribute('y')) + size / 2;
-                        const circle = char.parentElement.querySelector('.selection-circle') || 
-                            document.createElementNS("http://www.w3.org/2000/svg", "circle");
-                        circle.setAttribute('class', 'selection-circle');
-                        circle.setAttribute('stroke', 'white');
-                        circle.setAttribute('fill', 'none');
-                        circle.setAttribute('stroke-width', 0.000001);
-                        circle.setAttribute('r', size / 2);
-                        circle.setAttribute('cx', x);
-                        circle.setAttribute('cy', y);
-                        if (!char.parentElement.contains(circle)) {
-                            char.parentElement.appendChild(circle);
-                        }
-                    } else {
-                        const circle = char.parentElement.querySelector('.selection-circle');
-                        if (circle) circle.remove();
-                    }
+    drawSelectionCircle(char) {
+        // Draw selection circle
+        if (char.parentElement.classList.contains('selected')) {
+            const size = parseFloat(char.getAttribute('width'));
+            let x = parseFloat(char.getAttribute('data-x')) || parseFloat(char.getAttribute('x')) + size / 2;
+            let y = parseFloat(char.getAttribute('data-y')) || parseFloat(char.getAttribute('y')) + size / 2;
+            const circle = char.parentElement.querySelector('.selection-circle') ||
+                document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            circle.setAttribute('class', 'selection-circle');
+            circle.setAttribute('stroke', 'white');
+            circle.setAttribute('fill', 'none');
+            circle.setAttribute('stroke-width', 0.000001);
+            circle.setAttribute('r', size / 2);
+            circle.setAttribute('cx', x);
+            circle.setAttribute('cy', y);
+            if (!char.parentElement.contains(circle)) {
+                char.parentElement.appendChild(circle);
+            }
+        } else {
+            const circle = char.parentElement.querySelector('.selection-circle');
+            if (circle) circle.remove();
+        }
     },
 
     /**
@@ -1041,7 +1020,7 @@ const CharacterController = {
         vLine.setAttribute('y2', y + halfCross);
         vLine.setAttribute('stroke-width', strokeWidth);
         vLine.setAttribute('stroke', 'white');
-        
+
         // opacity 0.5
         vLine.setAttribute('opacity', '0.5');
         hLine.setAttribute('opacity', '0.5');
@@ -1056,7 +1035,7 @@ const CharacterController = {
         }
 
         // Create chevron with scaled size
-        const chevronPath = `M ${x-halfCross} ${y} L ${x} ${y+halfCross} L ${x+halfCross} ${y}`;
+        const chevronPath = `M ${x - halfCross} ${y} L ${x} ${y + halfCross} L ${x + halfCross} ${y}`;
         arrow.setAttribute('d', chevronPath);
         arrow.setAttribute('stroke', 'red');
         arrow.setAttribute('stroke-width', strokeWidth);
@@ -1068,11 +1047,11 @@ const CharacterController = {
             this.selectedCharacters.forEach((char) => {
                 if (char == charElement) return;
                 // CharacterUtils.rotate(char.querySelector('image'),newRotation);
-                CharacterUtils.rotate(char,newRotation);
+                CharacterUtils.rotate(char, newRotation);
             });
         }
         // CharacterUtils.rotate(img, newRotation); //por si falla lo de abajo
-        CharacterUtils.rotate(charElement,newRotation);
+        CharacterUtils.rotate(charElement, newRotation);
     },
 
     /**
@@ -1100,13 +1079,13 @@ const CharacterController = {
 
         this.drawSelectionCircle(image);
 
-                // Save state if online
-                if (SyncController.isOnline) {
-                    SyncController.saveMapState(image.parentElement);
-                }
+        // Save state if online
+        if (SyncController.isOnline) {
+            SyncController.saveMapState(image.parentElement);
+        }
     },
 
-    getActivePersonaje(){
+    getActivePersonaje() {
         if (!this.activeCharacter) return null;
         const personaje = this.activeCharacter.getAttribute('id');
         return this.personajes.get(personaje);
@@ -1185,20 +1164,37 @@ const CharacterController = {
      */
     updateTransformCharacters() {
         if (!svgElement) return;
+        let grosor=MapController.grosorCamino(3);
+        if (this.rastro)
+            svgElement.querySelectorAll('.character-route').forEach(el => {
+                //cambiar el grosor de la linea
+                MapController.grosorCamino(3,el);
+            });
+
+            svgElement.querySelectorAll('.measure-line').forEach(el => {
+                console.log('measureline encontrada');
+                MapController.grosorCamino(3,el);
+                //cambiar el grosor de la linea
+                // el.setAttribute('stroke-width', grosor);
+                // el.setAttribute('stroke-dasharray', `${2*grosor} ${grosor}`);
+            });
+
+        
 
         const characterEls = svgElement.querySelectorAll('.character');
         characterEls.forEach(char => {
             const img = char.querySelector('image');
             const cross = char.querySelector('.position-cross');
+            //TODO: permitir valores personalizados de iconos            
             const size = CONFIG.iconSize / MapController.scale;
-            
+
             // Update image size and position
             img.setAttribute('width', size);
             img.setAttribute('height', size);
-            
+
             const x = parseFloat(img.getAttribute('data-x') || img.getAttribute('x'));
             const y = parseFloat(img.getAttribute('data-y') || img.getAttribute('y'));
-            
+
             img.setAttribute('x', x - size / 2);
             img.setAttribute('y', y - size / 2);
 
@@ -1230,17 +1226,13 @@ const CharacterUtils = {
             if (!img) return;
         }
 
-
-
-
-        let p= img.parentElement;
-        if(p.getAttribute('arrow-visible')==='true'){
+        let p = img.parentElement;
+        if (p.getAttribute('arrow-visible') === 'true') {
             // La imagen debe estar igual
             console.log('Portrait');
-            
+
         }
-        else
-        {
+        else {
             img.style.transformBox = 'fill-box';
             img.style.transformOrigin = 'center';
             img.setAttribute('data-rotation', angle);
@@ -1248,7 +1240,7 @@ const CharacterUtils = {
         }
 
         let arrow = img.parentElement.querySelector('.position-cross');
-        if(arrow){
+        if (arrow) {
             img.setAttribute('data-rotation', angle);
             arrow.style.transformBox = 'fill-box';
             arrow.style.transformOrigin = 'center';
@@ -1258,8 +1250,25 @@ const CharacterUtils = {
             arrow.querySelector('.cross-arrow').style.display = 'block';
         }
 
-        if(SyncController.isOnline) {
+        if (SyncController.isOnline) {
             SyncController.saveMapState(img.parentElement);
         }
+    }
+    ,
+
+    /**
+     * Rotate a character image
+     * @param {SVGImageElement|SVGElement} img - Imagen o grupo del personaje
+     * @param {number} angle - Grados positivos o negativos a girar sobre el giro actual
+     */
+    rotateMore(img, angle) {
+        if (!img) return;
+        // If passed the character group instead of the image
+        if (img.tagName === 'g') {
+            img = img.querySelector('image');
+            if (!img) return;
+        }
+        let grados = img.getAttribute('data-rotation') || 0;
+        this.rotate(img, grados + angle)
     }
 };

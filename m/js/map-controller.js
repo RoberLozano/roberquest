@@ -23,6 +23,15 @@ const MapController = {
         this.svgContainer = document.getElementById("svg-container");
         this.setupEventListeners();
     },
+
+    grosorCamino(mult=1, pathElem){
+        if(pathElem){
+            let grosor= mult/this.scale;
+            pathElem.setAttribute('stroke-width', grosor);
+            pathElem.setAttribute('stroke-dasharray', `${2*grosor} ${1.5*grosor}`);
+        }
+        return mult/this.scale;
+    },
     
     /**
      * Set up map event listeners
@@ -163,6 +172,9 @@ const MapController = {
                 this.measureLine.classList.add('measure-line');
                 this.measureText = document.createElementNS("http://www.w3.org/2000/svg", "text");
                 this.measureText.classList.add('measure-text');
+
+                this.measureLine.setAttribute('stroke-width', 1 / MapController.scale);
+                this.measureLine.setAttribute('stroke-dasharray', '1 1');
                 
                 svgElement.appendChild(this.measureLine);
                 svgElement.appendChild(this.measureText);
