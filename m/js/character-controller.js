@@ -645,6 +645,11 @@ const CharacterController = {
                 if (charElement.getAttribute('arrow-visible') !== 'true') {
                     cross().style.display = 'none';
                 }
+                else{
+                    charElement.querySelector('.position-cross').querySelectorAll('line').forEach((line) => {
+                        line.setAttribute('stroke', 'white 0');
+                    }   );
+                }
 
                 // Restore opacity for selected characters
                 this.selectedCharacters.forEach((char) => {
@@ -653,6 +658,11 @@ const CharacterController = {
                         // Ocultar cruz para caracteres seleccionados si no está configurada como visible
                         if (char.getAttribute('arrow-visible') !== 'true') {
                             char.querySelector('.position-cross').style.display = 'none';
+                            
+                        }
+                        else{
+                            
+                            char.querySelector('.position-cross').querySelector('line').setAttribute('stroke', 'white 0');
                         }
                     }
                 });
@@ -837,26 +847,28 @@ const CharacterController = {
         });
 
         // Añadir handler para toggleArrow
-        document.getElementById('toggleArrow').addEventListener('click', () => {
-            const setArrowVisibility = (char, isVisible) => {
-                char.setAttribute('arrow-visible', isVisible);
-                const cross = char.querySelector('.position-cross');
-                if (cross) {
-                    cross.style.display = isVisible ? 'block' : 'none';
-                }
-            };
+        // document.getElementById('toggleArrow').addEventListener('click', () => {
+        //     const setArrowVisibility = (char, isVisible) => {
+        //         char.setAttribute('arrow-visible', isVisible);
+        //         console.log('Arrow visibility:', isVisible);
+                
+        //         const cross = char.querySelector('.position-cross');
+        //         if (cross) {
+        //             cross.style.display = isVisible ? 'block' : 'none';
+        //         }
+        //     };
 
-            if (this.selectedCharacters.size > 0) {
-                const isVisible = this.activeCharacter.getAttribute('arrow-visible') === 'true';
-                this.selectedCharacters.forEach(char => {
-                    setArrowVisibility(char, !isVisible);
-                });
-            } else if (this.activeCharacter) {
-                const isVisible = this.activeCharacter.getAttribute('arrow-visible') === 'true';
-                setArrowVisibility(this.activeCharacter, !isVisible);
-            }
-            document.getElementById('characterContextMenu').style.display = 'none';
-        });
+        //     if (this.selectedCharacters.size > 0) {
+        //         const isVisible = this.activeCharacter.getAttribute('arrow-visible') === 'true';
+        //         this.selectedCharacters.forEach(char => {
+        //             setArrowVisibility(char, !isVisible);
+        //         });
+        //     } else if (this.activeCharacter) {
+        //         const isVisible = this.activeCharacter.getAttribute('arrow-visible') === 'true';
+        //         setArrowVisibility(this.activeCharacter, !isVisible);
+        //     }
+        //     document.getElementById('characterContextMenu').style.display = 'none';
+        // });
 
         // Añadir handler para ataque
         document.getElementById('attackCharacter').addEventListener('click', () => {
@@ -1306,6 +1318,9 @@ const CharacterUtils = {
             arrow.style.transformOrigin = 'center';
             arrow.setAttribute('data-rotation', angle);
             arrow.style.transform = `rotate(${angle}deg)`;
+            arrow.querySelectorAll('line').forEach(line => {
+                line.setAttribute('stroke', 'white 0');
+            });
             //visible cross-arrow
             arrow.querySelector('.cross-arrow').style.display = 'block';
         }
