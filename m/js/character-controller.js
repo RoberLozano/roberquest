@@ -933,6 +933,7 @@ const CharacterController = {
 
         //TODO: La lógica del ataque
         console.log('Attack from', this.attackingCharacter.id, 'to', targetCharacter.id);
+        alert('Attack from '+ this.attackingCharacter.id+ ' to '+ targetCharacter.id);
         this.cancelAttackMode();
     },
 
