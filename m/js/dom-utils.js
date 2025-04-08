@@ -17,6 +17,17 @@ const DOM = {
         }
         return this.cache[id];
     },
+
+
+    /**
+     * Devuelve si un elemento tiene una clase
+     * @param {HTMLElement} element - Elemento a comprobar
+     * @param {string} className - Nombre de la clase a comprobar
+     * @returns {boolean} - True si el elemento tiene la clase, false en caso contrario
+     */
+    hasClass(element, className) {
+        return element.classList.contains(className);
+    },
     
     /**
      * Create SVG element with namespace

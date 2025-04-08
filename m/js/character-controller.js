@@ -112,8 +112,8 @@ const CharacterController = {
             // Esto mantiene el historial de rutas anteriores
             let caminos = svgElement.querySelectorAll('.character-route');
             console.log(caminos);
-            let ultimoCamino = caminos[caminos.length - 1];        
-            if (ultimoCamino) ultimoCamino.remove();        
+            let ultimoCamino = caminos[caminos.length - 1];
+            if (ultimoCamino) ultimoCamino.remove();
         });
 
         this.originalPositions.clear();
@@ -329,7 +329,6 @@ const CharacterController = {
         // Create character group
         const charGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
         charGroup.setAttribute('class', 'character');
-        charGroup.setAttribute('arrow-visible', 'false'); // Añadir atributo por defecto
 
         // Extract name from URL
         const fileName = typeof position === 'string' ?
@@ -640,30 +639,15 @@ const CharacterController = {
 
             if (hasStartedDrag) {
                 image().style.opacity = '1';
-
                 // Ocultar cruz si no está configurada como visible
-                if (charElement.getAttribute('arrow-visible') !== 'true') {
-                    cross().style.display = 'none';
-                }
-                else{
-                    charElement.querySelector('.position-cross').querySelectorAll('line').forEach((line) => {
-                        line.setAttribute('stroke', 'white 0');
-                    }   );
-                }
+                CharacterUtils.portada(charElement);
 
                 // Restore opacity for selected characters
                 this.selectedCharacters.forEach((char) => {
                     if (char !== charElement) {
                         char.querySelector('image').style.opacity = '1';
-                        // Ocultar cruz para caracteres seleccionados si no está configurada como visible
-                        if (char.getAttribute('arrow-visible') !== 'true') {
-                            char.querySelector('.position-cross').style.display = 'none';
-                            
-                        }
-                        else{
-                            
-                            char.querySelector('.position-cross').querySelector('line').setAttribute('stroke', 'white 0');
-                        }
+                        // Ocultar cruz entera, con flecha, para caracteres seleccionados si no es portrait
+                        CharacterUtils.portada(char);
                     }
                 });
 
@@ -682,7 +666,7 @@ const CharacterController = {
                                     pathElem.setAttribute('fill', 'none');
                                     pathElem.setAttribute('stroke', 'red');
                                     // pathElem.setAttribute('stroke-width', 0.5);
-                                    MapController.grosorCamino(3,pathElem)
+                                    MapController.grosorCamino(3, pathElem)
                                     pathElem.classList.add(`${char.id}-route`);
                                     svgElement.appendChild(pathElem);
                                 }
@@ -846,29 +830,6 @@ const CharacterController = {
             speedValue.value = parseFloat(charElement.getAttribute('data-speed')) || CONFIG.defaultSpeed;
         });
 
-        // Añadir handler para toggleArrow
-        // document.getElementById('toggleArrow').addEventListener('click', () => {
-        //     const setArrowVisibility = (char, isVisible) => {
-        //         char.setAttribute('arrow-visible', isVisible);
-        //         console.log('Arrow visibility:', isVisible);
-                
-        //         const cross = char.querySelector('.position-cross');
-        //         if (cross) {
-        //             cross.style.display = isVisible ? 'block' : 'none';
-        //         }
-        //     };
-
-        //     if (this.selectedCharacters.size > 0) {
-        //         const isVisible = this.activeCharacter.getAttribute('arrow-visible') === 'true';
-        //         this.selectedCharacters.forEach(char => {
-        //             setArrowVisibility(char, !isVisible);
-        //         });
-        //     } else if (this.activeCharacter) {
-        //         const isVisible = this.activeCharacter.getAttribute('arrow-visible') === 'true';
-        //         setArrowVisibility(this.activeCharacter, !isVisible);
-        //     }
-        //     document.getElementById('characterContextMenu').style.display = 'none';
-        // });
 
         // Añadir handler para ataque
         document.getElementById('attackCharacter').addEventListener('click', () => {
@@ -930,14 +891,14 @@ const CharacterController = {
 
         // Trigger attack animation
         targetCharacter.classList.add('attack-animation');
-        
+
         // Obtener la posición del personaje atacado
         const img = targetCharacter.querySelector('image');
         const x = parseFloat(img.getAttribute('data-x'));
         const y = parseFloat(img.getAttribute('data-y'));
 
         // Crear efecto de onda (radio de 2 metros con degradado)
-        MapController.createAreaEffect(x, y, 100/ MapController.scale, 0.7, true, 1000);
+        MapController.createAreaEffect(x, y, 100 / MapController.scale, 0.7, true, 1000);
 
         setTimeout(() => {
             targetCharacter.classList.remove('attack-animation');
@@ -945,7 +906,7 @@ const CharacterController = {
 
         //TODO: La lógica del ataque
         console.log('Attack from', this.attackingCharacter.id, 'to', targetCharacter.id);
-        alert('Attack from '+ this.attackingCharacter.id+ ' to '+ targetCharacter.id);
+        alert('Attack from ' + this.attackingCharacter.id + ' to ' + targetCharacter.id);
         this.cancelAttackMode();
     },
 
@@ -1236,22 +1197,22 @@ const CharacterController = {
      */
     updateTransformCharacters() {
         if (!svgElement) return;
-        let grosor=MapController.grosorCamino(3);
+        let grosor = MapController.grosorCamino(3);
         if (this.rastro)
             svgElement.querySelectorAll('.character-route').forEach(el => {
                 //cambiar el grosor de la linea
-                MapController.grosorCamino(3,el);
+                MapController.grosorCamino(3, el);
             });
 
-            svgElement.querySelectorAll('.measure-line').forEach(el => {
-                console.log('measureline encontrada');
-                MapController.grosorCamino(3,el);
-                //cambiar el grosor de la linea
-                // el.setAttribute('stroke-width', grosor);
-                // el.setAttribute('stroke-dasharray', `${2*grosor} ${grosor}`);
-            });
+        svgElement.querySelectorAll('.measure-line').forEach(el => {
+            console.log('measureline encontrada');
+            MapController.grosorCamino(3, el);
+            //cambiar el grosor de la linea
+            // el.setAttribute('stroke-width', grosor);
+            // el.setAttribute('stroke-dasharray', `${2*grosor} ${grosor}`);
+        });
 
-        
+
 
         const characterEls = svgElement.querySelectorAll('.character');
         characterEls.forEach(char => {
@@ -1299,7 +1260,7 @@ const CharacterUtils = {
         }
 
         let p = img.parentElement;
-        if (p.getAttribute('arrow-visible') === 'true') {
+        if (DOM.hasClass(p, 'portrait')) {
             // La imagen debe estar igual
             console.log('Portrait');
 
@@ -1318,11 +1279,13 @@ const CharacterUtils = {
             arrow.style.transformOrigin = 'center';
             arrow.setAttribute('data-rotation', angle);
             arrow.style.transform = `rotate(${angle}deg)`;
-            arrow.querySelectorAll('line').forEach(line => {
-                line.setAttribute('stroke', 'white 0');
-            });
-            //visible cross-arrow
-            arrow.querySelector('.cross-arrow').style.display = 'block';
+            //se podría llamar a portada, pero acabaria ejecutando mas instrucciones
+            CharacterUtils.portada(p);
+            // arrow.querySelectorAll('line').forEach(line => {
+            //     line.setAttribute('stroke', 'white 0');
+            // });
+            // //visible cross-arrow
+            // arrow.querySelector('.cross-arrow').style.display = 'block';
         }
 
         if (SyncController.isOnline) {
@@ -1345,5 +1308,23 @@ const CharacterUtils = {
         }
         let grados = img.getAttribute('data-rotation') || 0;
         this.rotate(img, grados + angle)
+    },
+    /**
+     * Set the visibility of the cross and arrow for a character if portrait or not
+     * @param {SVGElement} char - Character element
+     */
+    portada(char) {
+        if (!char) return;
+        if (DOM.hasClass(char, 'portrait')) {
+            //oculta las lineas pero no la flecha
+            char.querySelector('.position-cross').style.display = 'block';
+            char.querySelector('.position-cross').querySelectorAll('line').forEach(line => {
+                line.setAttribute('stroke', 'white 0');
+            });
+        }
+        else {
+            char.querySelector('.position-cross').style.display = 'none';
+        }
     }
 };
+

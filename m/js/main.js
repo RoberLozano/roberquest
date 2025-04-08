@@ -109,6 +109,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             CharacterController.showStats();
             document.getElementById('characterContextMenu').style.display = 'none';
         });
+
+        document.getElementById('togglePortrait').addEventListener('click', () => {
+
+            CharacterController.activeCharacter.classList.toggle("portrait");
+            CharacterUtils.portada(CharacterController.activeCharacter);
+
+            document.getElementById('characterContextMenu').style.display = 'none';
+        });
         
         //Ctrl+a para seleccionar todo, Ctrl+d para deseleccionar todo, Ctrl+i para invertir selección
         document.addEventListener('keydown', (e) => {
