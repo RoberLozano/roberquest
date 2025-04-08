@@ -43,7 +43,7 @@ armasCuerpoACuerpo.set("Espada bastarda", new Arma("Espada bastarda", 2.0, 230, 
 armasCuerpoACuerpo.set("Espada ancha", new Arma("Espada ancha", 1.5, 175, new Daño("1D8+1", "L"), new Daño("1D8+1", "C")));
 armasCuerpoACuerpo.set("Cimitarra", new Arma("Cimitarra", 1.5, 200, new Daño("1D6+2", "L"), new Daño("1D6+2", "C")));
 armasCuerpoACuerpo.set("Espada bastarda", new Arma("Espada bastarda", 2.0, 230, new Daño("1D10+1", "L"), new Daño("1D10+1", "P")));
-armasCuerpoACuerpo.set("Espada de doble puño", new Arma("Espada de doble puño", 3.5, 320, new Daño("2D8", "L")));
+armasCuerpoACuerpo.set("Mandoble", new Arma("Mandoble", 3.5, 320, new Daño("2D8", "L")));
 armasCuerpoACuerpo.set("Azadón", new Arma("Azadón", 2.0, 5, new Daño("1D6", "C")));
 armasCuerpoACuerpo.set("Guadaña", new Arma("Guadaña", 2.5, 50, new Daño("2D6", "L")));
 armasCuerpoACuerpo.set("Hoz", new Arma("Hoz", 0.5, 40, new Daño("1D6", "L")));

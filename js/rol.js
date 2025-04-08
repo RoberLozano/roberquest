@@ -2269,6 +2269,61 @@ class Enano extends Humanoide {
   }
 }
 
+class Orco extends Humanoide {
+  constructor() {
+    super({ ASP: new Dado('1d6+3').tirar(),
+        CON: new Dado('2d6+6').tirar(),
+        INT: new Dado('1d6+6').tirar(),
+        TAM: new Dado('2d6+3').tirar()});
+    this.nombre = 'Orgak';
+    this.peso = 55;
+    this.haBasicas();
+    this.crearCuerpo();
+  }
+
+  haBasicas() {
+
+    this.setHabilidad(new Habilidad("Esquivar", Agilidad, 20));
+
+    this.setHabilidad(new Habilidad("Nadar", Agilidad, 5));
+    this.setHabilidad(new Habilidad("Remar", Agilidad, 20));
+    this.setHabilidad(new Habilidad("Saltar", Agilidad, 20));
+    this.setHabilidad(new Habilidad("Trepar", Agilidad, 20));
+    this.setHabilidad(new Habilidad("Correr", Agilidad, 20));
+    this.setHabilidad(new Habilidad("Intimidar", Comunicación, 20));
+
+
+    this.setHabilidad(new Habilidad("Animal", Conocimiento, 20));
+    this.setHabilidad(new Habilidad("Vegetal", Conocimiento, 20));
+    this.setHabilidad(new Habilidad("Mineral", Conocimiento, 50));
+    this.setHabilidad(new Habilidad("Mundo", Conocimiento, 20));
+    this.setHabilidad(new Habilidad("Raza Propia", Conocimiento, 50));
+
+    this.setHabilidad(new Habilidad("Robar", Manipulación, 20));
+    this.setHabilidad(new Habilidad("Construir", Manipulación, 20));
+
+    this.setHabilidad(new Habilidad("Buscar", Percepción, 20));
+    this.setHabilidad(new Habilidad("Escuchar", Percepción, 20));
+    this.setHabilidad(new Habilidad("Otear", Percepción, 20));
+    this.setHabilidad(new Habilidad("Rastrear", Percepción, 20));
+    this.setHabilidad(new Habilidad("Oler", Percepción, 20));
+    this.setHabilidad(new Habilidad("Orientación", Percepción, 20));
+
+    this.setHabilidad(new Habilidad("Deslizarse en Silencio", Sigilo, 30));
+    this.setHabilidad(new Habilidad("Esconderse", Sigilo, 30));
+
+    this.setHabilidad(new HabilidadMarcial("Puño", Manipulación, 50));
+    this.setHabilidad(new HabilidadMarcial("Patada", Manipulación, 20));
+    this.setHabilidad(new HabilidadMarcial("Mordisco", Manipulación, 30));
+
+
+
+
+  }
+}
+
+
+
 
 /**
  * variable global con el personaje sobre
