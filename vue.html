@@ -303,7 +303,7 @@
                     <v-row>
                       <!-- tabla habilidades -->
                       <v-row justify="center">
-                        <v-expansion-panels accordion dark>
+                        <v-expansion-panels  v-model= "panelHabilidades" accordion dark>
                           <v-expansion-panel>
                             <v-expansion-panel-header>Habilidades 
  
@@ -510,7 +510,7 @@
 
                     <!-- tabla inventario  sin: item-key="nombre"  se necesita para el expandable-->
                     <v-row justify="center">
-                      <v-expansion-panels accordion dark>
+                      <v-expansion-panels v-model="panelInventario" accordion dark>
                         <v-expansion-panel>
                           <v-expansion-panel-header>Inventario {{roundTo(3,contenedor.pesa)}}kg
                           </v-expansion-panel-header>
@@ -771,8 +771,8 @@
 
                     <!-- tabla inventario  sin: item-key="nombre"  se necesita para el expandable-->
                     <v-row justify="center">
-                      <v-expansion-panels accordion dark>
-                        <v-expansion-panel>
+                      <v-expansion-panels accordion dark >
+                        <v-expansion-panel active>
                           <v-expansion-panel-header>Inventario ({{(contenedor.pesa).toFixed(2)}}kg)
                           </v-expansion-panel-header>
                           <v-expansion-panel-content>

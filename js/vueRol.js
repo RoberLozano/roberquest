@@ -502,10 +502,27 @@
                 .catch(err => console.error("Error cargando personaje local:", err));
             }
           }
+          //parametro buscar inventario
+          const bi=getUrlParameter('bi');
+          if(bi){
+            this.tab='Inventario';
+            this.search= bi;
+            this.panelInventario=0;
+          }
+          //parametro buscar habilidad
+          const bh=getUrlParameter('bh');
+          if(bh){
+            this.tab='Habilidades';
+            this.search= bh;
+            this.panelHabilidades=0;
+          }
+
+
         },
         data: {
-
-           filtroSubir: x=> x.subible()<100,
+          panelInventario: null, // Agregar esta línea
+          panelHabilidades: null, 
+          filtroSubir: x=> x.subible()<100,
            filtroTecnica: x=> x instanceof Tecnica,
            filtroHabilidadMarcial: x=> x.clase=="HabilidadMarcial",
            filtroHechizo: x=> x instanceof Hechizo,
@@ -519,7 +536,7 @@
           //drawer
           drawer: false,
           group: null,
-          tab: 'Habilidades',
+          tab: 'Personaje',
   
           //fab
           fab: false,
