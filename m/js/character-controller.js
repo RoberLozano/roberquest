@@ -422,6 +422,19 @@ const CharacterController = {
         let charCreado= new Humano();
         charCreado.sexo='♂'
         charCreado.nombre=nombre;
+        charCreado.act();
+        charCreado.setMaxPuntos();
+        armasCuerpoACuerpo.forEach((arma,nombreArma) => {
+           if(nombre.toLowerCase().includes(nombreArma.toLowerCase())){
+               charCreado.inventario.add(arma);
+           console.log(nombreArma);
+           }
+           console.log(nombreArma);
+        
+
+        });  
+            
+
         this.personajes.set(nombre, charCreado);
         return charGroup;
     },

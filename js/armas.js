@@ -45,6 +45,7 @@ armasCuerpoACuerpo.set("Kukri", new Arma("Kukri", 0.5, 120, new Daño("1D4+3", "
 armasCuerpoACuerpo.set("Gladius", new Arma("Gladius", 1.0, 100, new Daño("1D6+1", "L"), new Daño("1D6+1", "P")));
 armasCuerpoACuerpo.set("Pilum", new Arma("Pilum", 2.0, 125, new Daño("1D6+1", "P")));
 armasCuerpoACuerpo.set("Lanza de torneo", new Arma("Lanza de torneo", 3.5, 150, new Daño("1D10+1", "P")));
+armasCuerpoACuerpo.set("Lanza", new Arma("Lanza corta", 2.0, 20, new Daño("1D8+1", "P")));
 armasCuerpoACuerpo.set("Lanza corta", new Arma("Lanza corta", 2.0, 20, new Daño("1D8+1", "P")));
 armasCuerpoACuerpo.set("Lanza larga", new Arma("Lanza larga", 2.0, 30, new Daño("1D10+1", "P")));
 armasCuerpoACuerpo.set("Lanza corta", new Arma("Lanza corta", 2.0, 20, new Daño("1D8+1", "P")));
@@ -109,6 +110,7 @@ armasCuerpoACuerpo2.set("Kukri", new Arma("Kukri", 0.4, 60, new Daño("1D4+3", "
 armasCuerpoACuerpo2.set("Gladius", new Arma("Gladius", 0.8, 70, new Daño("1D6+1", "L"), new Daño("1D6+1", "P")));
 armasCuerpoACuerpo2.set("Pilum", new Arma("Pilum", 2.0, 60, new Daño("1D6+1", "P")));
 armasCuerpoACuerpo2.set("Lanza de torneo", new Arma("Lanza de torneo", 4.0, 100, new Daño("1D10+1", "P")));
+armasCuerpoACuerpo2.set("Lanza", new Arma("Lanza corta", 1.5, 15, new Daño("1D8+1", "P")));
 armasCuerpoACuerpo2.set("Lanza corta", new Arma("Lanza corta", 1.5, 15, new Daño("1D8+1", "P")));
 armasCuerpoACuerpo2.set("Lanza larga", new Arma("Lanza larga", 2.5, 20, new Daño("1D10+1", "P")));
 armasCuerpoACuerpo2.set("Lanza corta", new Arma("Lanza corta", 1.5, 15, new Daño("1D8+1", "P")));
