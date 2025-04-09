@@ -183,7 +183,7 @@ const CharacterController = {
 
     showStats(campo) {
         if (!this.activeCharacter) return;
-        let personaje = this.activeCharacter.getAttribute('id');
+        let personaje = this.activeCharacter.nombre;
         let pe = this.personajes.get(personaje);
         // document.getElementById('infoTitle').innerHTML = personaje;
         document.getElementById('infoTitle').innerHTML =
@@ -335,7 +335,8 @@ const CharacterController = {
             position.split('/').pop() :
             imageUrl.split('/').pop();
         console.log('Extracted name', { fileName });
-        const nombre = fileName.substring(0, fileName.lastIndexOf('.'));
+        let nombre = fileName.substring(0, fileName.lastIndexOf('.')).replace(/%20/g, ' ');
+       
         let baseName = fileName.substring(0, fileName.lastIndexOf('.'))
             .replace(/%20/g, '_')
             .replace(/[^a-zA-Z0-9]/g, '_');
@@ -353,10 +354,13 @@ const CharacterController = {
                 baseName += number;
                 // console.log('New name', { baseName, number });
             }
+            
         }
+        if(number>1) nombre= baseName.replaceAll('_',' ');
 
 
         charGroup.id = baseName;
+        charGroup.nombre=nombre;
 
         // Set default speed
         charGroup.setAttribute('data-speed', CONFIG.defaultSpeed);
@@ -364,7 +368,7 @@ const CharacterController = {
         // Create character image
         const image = document.createElementNS("http://www.w3.org/2000/svg", "image");
         image.setAttribute('href', imageUrl);
-        image.setAttribute('data-name', baseName);
+        image.setAttribute('data-name', nombre);
         image.setAttribute('width', CONFIG.iconSize / MapController.scale);
         image.setAttribute('height', CONFIG.iconSize / MapController.scale);
         image.setAttribute('preserveAspectRatio', 'xMidYMid meet');
@@ -385,7 +389,7 @@ const CharacterController = {
 
         // Add title for hover information
         const titleElement = document.createElementNS("http://www.w3.org/2000/svg", "title");
-        titleElement.textContent = baseName;
+        titleElement.textContent = nombre;
         charGroup.insertBefore(titleElement, charGroup.firstChild);
 
         // Size and position with proper centering
@@ -407,12 +411,18 @@ const CharacterController = {
         this.setupSelection(charGroup);
 
         // Store character reference
-        this.characters.set(baseName, charGroup);
+        this.characters.set(nombre, charGroup);
 
         if (SyncController.isOnline) {
             console.log('cargo desde crear personaje:' + nombre);
             SyncController.cargarPersonaje(nombre);
         }
+
+        //TODO: crear personaje si no existe
+        let charCreado= new Humano();
+        charCreado.sexo='♂'
+        charCreado.nombre=nombre;
+        this.personajes.set(nombre, charCreado);
         return charGroup;
     },
 
@@ -1120,7 +1130,7 @@ const CharacterController = {
 
     getActivePersonaje() {
         if (!this.activeCharacter) return null;
-        const personaje = this.activeCharacter.getAttribute('id');
+        const personaje = this.activeCharacter.nombre;
         return this.personajes.get(personaje);
     },
 

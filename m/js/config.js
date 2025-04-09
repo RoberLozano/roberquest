@@ -8,8 +8,8 @@ const CONFIG = {
     map: 'Elahiun',
     defaultCharacters: [
         '../img/tokens/Rosssel.png',
-        '../img/tokens/Bandit Archer 01.png',
-        '../img/tokens/Guard Spear 01.png'
+        '../img/tokens/Bandido Arquero 01.png',
+        '../img/tokens/Guardia Lanza 01.png'
     ],
     
     // Zoom settings
