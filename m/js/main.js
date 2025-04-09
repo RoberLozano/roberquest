@@ -293,9 +293,9 @@ function displayNpcTokens() {
     
     npcTokens.forEach(tokenPath => {
         // Extract filename to use as NPC name
-        const fileName = tokenPath.split('/').pop();
+        const fileName = decodeURI(tokenPath.split('/').pop());
         const npcName = fileName.substring(0, fileName.lastIndexOf('.'))
-                       .replace(/[_-]/g, ' ').replace(/[%20]/g, ' ');
+                    //    .replace(/[_-]/g, ' ').replace(/[%20]/g, ' ');
         
         // Create NPC item element
         const npcItem = document.createElement('div');

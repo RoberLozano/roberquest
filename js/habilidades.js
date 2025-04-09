@@ -2157,7 +2157,7 @@ class InputCustom extends HTMLElement {
         var fila = document.createElement('tr');
         // if(clase[key] instanceof Object)
 
-        console.log(typeof clase[key], key, clase[key]);
+        //console.log(typeof clase[key], key, clase[key]);
         // console.log(clase[key].constructor.name);
         var tipo = clase[key].constructor.name
         //component
@@ -2172,7 +2172,7 @@ class InputCustom extends HTMLElement {
             c.setAttribute("value", clase[key]);
             c.addEventListener('change', (event) => {
               clase[key] = +event.target.value; //para que sea número
-              console.log(clase[key]);
+              //console.log(clase[key]);
             });
             break;
           case 'String':
@@ -2181,7 +2181,7 @@ class InputCustom extends HTMLElement {
             c.setAttribute("value", clase[key]);
             c.addEventListener('change', (event) => {
               clase[key] = event.target.value;
-              console.log(clase[key]);
+              //console.log(clase[key]);
             });
             break;
           case 'Date':
@@ -2195,7 +2195,7 @@ class InputCustom extends HTMLElement {
 
             c.addEventListener('change', (event) => {
               clase[key] = new Date(event.target.value);
-              console.log(clase[key]);
+              //console.log(clase[key]);
             });
             break;
           // case 'Object':
@@ -2205,7 +2205,7 @@ class InputCustom extends HTMLElement {
           default:
             // html += `${key}<${i}  value='${clase[key]}'><br>`
             if (typeof clase[key] === 'object') {
-              console.log('Tableo ' + id + key);
+              //console.log('Tableo ' + id + key);
 
               ta = this.tablear(id + key, clase[key], null, colapse)
               ta.id = id + key;

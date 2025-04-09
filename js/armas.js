@@ -329,6 +329,7 @@ generadoresArmas.set("Rapier", new GenArma("Rapier", 1.0, 120, 100, [new Daño("
 generadoresArmas.set("Gladius", new GenArma("Gladius", 1.0, 70, 100, [new Daño("1D6+1", "L"), new Daño("1D6+1", "P")], { ratioPesoLong: 0.8, varLongPct: 0.05 })); // Estandarizado
 generadoresArmas.set("Espada corta", new GenArma("Espada corta", 1.2, 80, 120, [new Daño("1D6+1", "L"), new Daño("1D6+1", "P")], { ratioPesoLong: 0.8 }));
 generadoresArmas.set("Espada ancha", new GenArma("Espada ancha", 1.5, 100, 175, [new Daño("1D8+1", "L"), new Daño("1D8+1", "C")], { ratioPesoLong: 0.8 }));
+generadoresArmas.set("Espada", new GenArma("Espada", 1.5, 100, 175, [new Daño("1D8+1", "L"), new Daño("1D8+1", "C")], { ratioPesoLong: 0.8 }));
 generadoresArmas.set("Cimitarra", new GenArma("Cimitarra", 1.5, 95, 200, [new Daño("1D6+2", "L"), new Daño("1D6+2", "C")], { ratioPesoLong: 0.8 }));
 generadoresArmas.set("Espada bastarda", new GenArma("Espada bastarda", 2.0, 125, 230, [new Daño("1D10+1", "L"), new Daño("1D10+1", "P")], { ratioPesoLong: 0.8 }));
 generadoresArmas.set("Mandoble", new GenArma("Mandoble", 3.5, 165, 320, [new Daño("2D8", "L")], { ratioPesoLong: 0.8 }));
@@ -339,6 +340,7 @@ generadoresArmas.set("Alabarda", new GenArma("Alabarda", 3.0, 210, 250, [new Da�
 generadoresArmas.set("Naginata", new GenArma("Naginata", 2.0, 200, 150, [new Daño("2D6+2", "L")], { ratioPesoLong: 0.6 }));
 generadoresArmas.set("Pilum", new GenArma("Pilum", 2.0, 180, 125, [new Daño("1D6+1", "P")], { ratioPesoLong: 0.6, varLongPct: 0.05 })); // Estandarizado
 generadoresArmas.set("Jabalina", new GenArma("Jabalina", 1.0, 150, 15, [new Daño("1D6", "P")], { ratioPesoLong: 0.6, varLongPct: 0.15 }));
+generadoresArmas.set("Lanza ", new GenArma("Lanza", 2.0, 170, 20, [new Daño("1D8+1", "P")], { ratioPesoLong: 0.6 }));
 generadoresArmas.set("Lanza corta", new GenArma("Lanza corta", 2.0, 170, 20, [new Daño("1D8+1", "P")], { ratioPesoLong: 0.6 }));
 generadoresArmas.set("Lanza larga", new GenArma("Lanza larga", 2.0, 250, 30, [new Daño("1D10+1", "P")], { ratioPesoLong: 0.6 }));
 generadoresArmas.set("Lanza de caballería", new GenArma("Lanza de caballería", 3.0, 350, 50, [new Daño("1D10+2", "P")], { ratioPesoLong: 0.6 }));

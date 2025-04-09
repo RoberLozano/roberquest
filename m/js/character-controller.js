@@ -330,6 +330,10 @@ const CharacterController = {
         const charGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
         charGroup.setAttribute('class', 'character');
 
+        //from url to normal text
+         imageUrl = decodeURI(imageUrl);
+
+
         // Extract name from URL
         const fileName = typeof position === 'string' ?
             position.split('/').pop() :
@@ -338,8 +342,8 @@ const CharacterController = {
         let nombre = fileName.substring(0, fileName.lastIndexOf('.')).replace(/%20/g, ' ');
        
         let baseName = fileName.substring(0, fileName.lastIndexOf('.'))
-            .replace(/%20/g, '_')
-            .replace(/[^a-zA-Z0-9]/g, '_');
+            .replace(/%20/g, '_').replaceAll(' ', '_')
+            // .replace(/[^a-zA-Z0-9]/g, '_');
         console.log(baseName);
 
 
@@ -424,12 +428,17 @@ const CharacterController = {
         charCreado.nombre=nombre;
         charCreado.act();
         charCreado.setMaxPuntos();
-        armasCuerpoACuerpo.forEach((arma,nombreArma) => {
+        generadoresArmas.forEach((arma,nombreArma) => {
+   
            if(nombre.toLowerCase().includes(nombreArma.toLowerCase())){
+
+               console.log(nombreArma);
+               let arma=generadoresArmas.get(nombreArma).generar();
+               console.log(arma);
+               
                charCreado.inventario.add(arma);
-           console.log(nombreArma);
            }
-           console.log(nombreArma);
+        //    console.log(nombreArma);
         
 
         });  
