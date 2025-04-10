@@ -293,7 +293,7 @@ const generadoresArmas = new Map();
 
 // Hachas (ratioPesoLong ~0.7)
 generadoresArmas.set("Hacha de combate", new GenArma("Hacha de combate", 1.0, 70, 100, [new Daño("1D8+2", "L")], { ratioPesoLong: 0.7 }));
-generadoresArmas.set("Hacha de mano", new GenArma("Hacha de mano", 0.5, 40, 25, [new Daño("1D6+1", "L")], { ratioPesoLong: 0.7, varLongPct: 0.15 })); // Más variación en pequeñas
+generadoresArmas.set("Hacha", new GenArma("Hacha", 0.5, 40, 25, [new Daño("1D6+1", "L")], { ratioPesoLong: 0.7, varLongPct: 0.15 })); // Más variación en pequeñas
 generadoresArmas.set("Gran hacha", new GenArma("Gran hacha", 2.0, 130, 120, [new Daño("2D6+2", "L")], { ratioPesoLong: 0.7 }));
 generadoresArmas.set("Hacha danesa", new GenArma("Hacha danesa", 2.5, 150, 150, [new Daño("3D6", "L")], { ratioPesoLong: 0.7 }));
 generadoresArmas.set("Hacha ancha", new GenArma("Hacha ancha", 1.8, 80, 130, [new Daño("2D6", "L")], { ratioPesoLong: 0.7 }));

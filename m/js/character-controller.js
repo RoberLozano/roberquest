@@ -431,18 +431,15 @@ const CharacterController = {
         generadoresArmas.forEach((arma,nombreArma) => {
    
            if(nombre.toLowerCase().includes(nombreArma.toLowerCase())){
-
                console.log(nombreArma);
                let arma=generadoresArmas.get(nombreArma).generar();
-               console.log(arma);
-               
+               console.log(arma);         
                charCreado.inventario.add(arma);
                if (nombre.toLowerCase().includes('doble'))
                 charCreado.inventario.add(generadoresArmas.get(nombreArma).generar());
            }
         //    console.log(nombreArma);
-        
-
+    
         });  
             
 
