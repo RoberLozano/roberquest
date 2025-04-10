@@ -437,6 +437,8 @@ const CharacterController = {
                console.log(arma);
                
                charCreado.inventario.add(arma);
+               if (nombre.toLowerCase().includes('doble'))
+                charCreado.inventario.add(generadoresArmas.get(nombreArma).generar());
            }
         //    console.log(nombreArma);
         
