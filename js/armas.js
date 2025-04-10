@@ -319,7 +319,7 @@ generadoresArmas.set("Estrella del alba", new GenArma("Estrella del alba", 2.2, 
 generadoresArmas.set("Palo de madera", new GenArma("Palo de madera", 0.5, 50, 4, [new Daño("1D6", "C")], { ratioPesoLong: 0.7, varLongPct: 0.25 })); // Muy variable
 generadoresArmas.set("Vara", new GenArma("Vara", 0.5, 160, 10, [new Daño("1D6", "C")], { ratioPesoLong: 0.6 })); // Bastón
 generadoresArmas.set("Cayado", new GenArma("Cayado", 1.5, 180, 20, [new Daño("1D8", "C")], { ratioPesoLong: 0.6 })); // Bastón pesado
-generadoresArmas.set("Garrote", new GenArma("Garrote", 2.5, 90, 150, [new Daño("1D10+2", "C")], { ratioPesoLong: 0.7, varLongPct: 0.15 }));
+generadoresArmas.set("Garrote", new GenArma("Garrote", 2.5, 90, 80, [new Daño("1D10", "C")], { ratioPesoLong: 0.7, varLongPct: 0.15 }));
 generadoresArmas.set("Garrote de guerra", new GenArma("Garrote de guerra", 4.0, 110, 150, [new Daño("2D6+2", "C")], { ratioPesoLong: 0.7 }));
 generadoresArmas.set("Garrote de troll", new GenArma("Garrote de troll", 5.5, 140, 50, [new Daño("2D8", "C")], { ratioPesoLong: 0.7, varLongPct: 0.20 }));
 generadoresArmas.set("Nunchaku", new GenArma("Nunchaku", 0.8, 70, 70, [new Daño("1D6+1", "C")], { ratioPesoLong: 0.7 })); // Más como mayal corto
