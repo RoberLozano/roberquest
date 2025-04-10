@@ -45,7 +45,7 @@ armasCuerpoACuerpo.set("Kukri", new Arma("Kukri", 0.5, 120, new Daño("1D4+3", "
 armasCuerpoACuerpo.set("Gladius", new Arma("Gladius", 1.0, 100, new Daño("1D6+1", "L"), new Daño("1D6+1", "P")));
 armasCuerpoACuerpo.set("Pilum", new Arma("Pilum", 2.0, 125, new Daño("1D6+1", "P")));
 armasCuerpoACuerpo.set("Lanza de torneo", new Arma("Lanza de torneo", 3.5, 150, new Daño("1D10+1", "P")));
-armasCuerpoACuerpo.set("Lanza", new Arma("Lanza corta", 2.0, 20, new Daño("1D8+1", "P")));
+armasCuerpoACuerpo.set("Lanza", new Arma("Lanza", 2.0, 20, new Daño("1D8+1", "P")));
 armasCuerpoACuerpo.set("Lanza corta", new Arma("Lanza corta", 2.0, 20, new Daño("1D8+1", "P")));
 armasCuerpoACuerpo.set("Lanza larga", new Arma("Lanza larga", 2.0, 30, new Daño("1D10+1", "P")));
 armasCuerpoACuerpo.set("Lanza corta", new Arma("Lanza corta", 2.0, 20, new Daño("1D8+1", "P")));
@@ -336,7 +336,7 @@ generadoresArmas.set("Mandoble", new GenArma("Mandoble", 3.5, 165, 320, [new Da�
 generadoresArmas.set("Katana", new GenArma("Katana", 1.8, 105, 300, [new Daño("1D10", "L")], { ratioPesoLong: 0.8, varLongPct: 0.07 })); // Calidad suele ser más consistente
 
 // Armas de Asta y Lanzas (ratioPesoLong ~0.6)
-generadoresArmas.set("Alabarda", new GenArma("Alabarda", 3.0, 210, 250, [new Daño("3D6", "L"), new Daño("3D6", "P")], { ratioPesoLong: 0.6 }));
+generadoresArmas.set("Alabarda", new GenArma("Alabarda", 3.0, 210, 250, [new Daño("3D6", "L"), new Daño("2D10", "P")], { ratioPesoLong: 0.6 }));
 generadoresArmas.set("Naginata", new GenArma("Naginata", 2.0, 200, 150, [new Daño("2D6+2", "L")], { ratioPesoLong: 0.6 }));
 generadoresArmas.set("Pilum", new GenArma("Pilum", 2.0, 180, 125, [new Daño("1D6+1", "P")], { ratioPesoLong: 0.6, varLongPct: 0.05 })); // Estandarizado
 generadoresArmas.set("Jabalina", new GenArma("Jabalina", 1.0, 150, 15, [new Daño("1D6", "P")], { ratioPesoLong: 0.6, varLongPct: 0.15 }));
