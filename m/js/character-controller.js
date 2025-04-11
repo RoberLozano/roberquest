@@ -435,8 +435,11 @@ const CharacterController = {
                let arma=GA.get(nombreArma).generar();
                console.log(arma);         
                charCreado.inventario.add(arma);
-               if (nombre.toLowerCase().includes('doble'))
-                charCreado.inventario.add(GA.get(nombreArma).generar());
+               charCreado.setHabilidad(new HabilidadMarcial(nombreArma, Manipulación, 25 + new Dado('1d100').tirar(), true, "Brazo D", arma));
+               if (nombre.toLowerCase().includes('doble')){
+                   charCreado.inventario.add(GA.get(nombreArma).generar());
+                   charCreado.setHabilidad(new HabilidadMarcial(nombreArma, Manipulación, 25 + new Dado('1d100').tirar(), true, "Brazo I", arma));                 
+               }
            }
         //    console.log(nombreArma);
     

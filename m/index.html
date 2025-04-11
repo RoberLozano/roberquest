@@ -84,10 +84,14 @@
             <li id="showStats">Mostrar stats</li>
             <li id="inventario" hidden
             onclick="CharacterController.showStats('inventario')">Inventario</li>
-            <li id="exe" hidden>
+            <li id="exe">
+
                 <input type="text" name="" id="exeInput" placeholder="Ejecutar comando...">
-                <button id="exeBtn" onclick="eval('CharacterController.getActivePersonaje().'+
-                document.getElementById('exeInput').value)">Ejecutar</button>
+                <button id="exeBtn" onclick="             
+                    let x=eval('CharacterController.getActivePersonaje().'+
+                    document.getElementById('exeInput').value)
+                    console.log(x);
+                ">Ejecutar</button>
 
             </li>
         </ul>
