@@ -428,15 +428,15 @@ const CharacterController = {
         charCreado.nombre=nombre;
         charCreado.act();
         charCreado.setMaxPuntos();
-        generadoresArmas.forEach((arma,nombreArma) => {
+        GA.forEach((arma,nombreArma) => {
    
            if(nombre.toLowerCase().includes(nombreArma.toLowerCase())){
                console.log(nombreArma);
-               let arma=generadoresArmas.get(nombreArma).generar();
+               let arma=GA.get(nombreArma).generar();
                console.log(arma);         
                charCreado.inventario.add(arma);
                if (nombre.toLowerCase().includes('doble'))
-                charCreado.inventario.add(generadoresArmas.get(nombreArma).generar());
+                charCreado.inventario.add(GA.get(nombreArma).generar());
            }
         //    console.log(nombreArma);
     

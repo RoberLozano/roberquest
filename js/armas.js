@@ -284,7 +284,7 @@ class GenArma {
 
 
 // --- Mapa de Generadores de Armas ---
-const generadoresArmas = new Map();
+const GA = new Map();
 
 // Ratios Peso/Longitud estimados:
 // 0.6: Principalmente madera (Lanzas, Astas, Bastones, Herramientas mango largo)
@@ -292,80 +292,80 @@ const generadoresArmas = new Map();
 // 0.8: Principalmente metal (Espadas, Dagas, Sai)
 
 // Hachas (ratioPesoLong ~0.7)
-generadoresArmas.set("Hacha de combate", new GenArma("Hacha de combate", 1.0, 70, 100, [new Daño("1D8+2", "L")], { ratioPesoLong: 0.7 }));
-generadoresArmas.set("Hacha", new GenArma("Hacha", 0.5, 40, 25, [new Daño("1D6+1", "L")], { ratioPesoLong: 0.7, varLongPct: 0.15 })); // Más variación en pequeñas
-generadoresArmas.set("Gran hacha", new GenArma("Gran hacha", 2.0, 130, 120, [new Daño("2D6+2", "L")], { ratioPesoLong: 0.7 }));
-generadoresArmas.set("Hacha danesa", new GenArma("Hacha danesa", 2.5, 150, 150, [new Daño("3D6", "L")], { ratioPesoLong: 0.7 }));
-generadoresArmas.set("Hacha ancha", new GenArma("Hacha ancha", 1.8, 80, 130, [new Daño("2D6", "L")], { ratioPesoLong: 0.7 }));
+GA.set("Hacha de combate", new GenArma("Hacha de combate", 1.0, 70, 100, [new Daño("1D8+2", "L")], { ratioPesoLong: 0.7 }));
+GA.set("Hacha", new GenArma("Hacha", 0.5, 40, 25, [new Daño("1D6+1", "L")], { ratioPesoLong: 0.7, varLongPct: 0.15 })); // Más variación en pequeñas
+GA.set("Gran hacha", new GenArma("Gran hacha", 2.0, 130, 120, [new Daño("2D6+2", "L")], { ratioPesoLong: 0.7 }));
+GA.set("Hacha danesa", new GenArma("Hacha danesa", 2.5, 150, 150, [new Daño("3D6", "L")], { ratioPesoLong: 0.7 }));
+GA.set("Hacha ancha", new GenArma("Hacha ancha", 1.8, 80, 130, [new Daño("2D6", "L")], { ratioPesoLong: 0.7 }));
 
 // Dagas y Cuchillos (ratioPesoLong ~0.8)
-generadoresArmas.set("Daga", new GenArma("Daga", 0.5, 30, 33, [new Daño("1D4+2", "L"), new Daño("1D4+2", "P")], { ratioPesoLong: 0.8, varLongPct: 0.15 }));
-generadoresArmas.set("Cuchillo", new GenArma("Cuchillo", 0.2, 20, 10, [new Daño("1D3+1", "L")], { ratioPesoLong: 0.8, varLongPct: 0.20 })); // Mucha variación
-generadoresArmas.set("Main gauche", new GenArma("Main gauche", 0.5, 35, 55, [new Daño("1D4+2", "P")], { ratioPesoLong: 0.8 }));
-generadoresArmas.set("Kukri", new GenArma("Kukri", 0.5, 45, 120, [new Daño("1D4+3", "L")], { ratioPesoLong: 0.8 }));
-generadoresArmas.set("Garra de lucha", new GenArma("Garra de lucha", 0.1, 15, 100, [new Daño("1D4+1", "L")], { ratioPesoLong: 0.8, varLongPct: 0.05 })); // Precisión
+GA.set("Daga", new GenArma("Daga", 0.5, 30, 33, [new Daño("1D4+2", "L"), new Daño("1D4+2", "P")], { ratioPesoLong: 0.8, varLongPct: 0.15 }));
+GA.set("Cuchillo", new GenArma("Cuchillo", 0.2, 20, 10, [new Daño("1D3+1", "L")], { ratioPesoLong: 0.8, varLongPct: 0.20 })); // Mucha variación
+GA.set("Main gauche", new GenArma("Main gauche", 0.5, 35, 55, [new Daño("1D4+2", "P")], { ratioPesoLong: 0.8 }));
+GA.set("Kukri", new GenArma("Kukri", 0.5, 45, 120, [new Daño("1D4+3", "L")], { ratioPesoLong: 0.8 }));
+GA.set("Garra de lucha", new GenArma("Garra de lucha", 0.1, 15, 100, [new Daño("1D4+1", "L")], { ratioPesoLong: 0.8, varLongPct: 0.05 })); // Precisión
 
 // Armas Contundentes (ratioPesoLong ~0.7, excepto Sai=0.8, Nunchaku=0.7, Bastones=0.6)
-generadoresArmas.set("Sai", new GenArma("Sai", 1.0, 50, 60, [new Daño("1D6", "C")], { ratioPesoLong: 0.8 }));
-generadoresArmas.set("Bola y cadena", new GenArma("Bola y cadena", 2.0, 100, 250, [new Daño("1D10+1", "C")], { ratioPesoLong: 0.7 }));
-generadoresArmas.set("Triple cadena", new GenArma("Triple cadena", 2.0, 90, 240, [new Daño("1D6+2", "C")], { ratioPesoLong: 0.7 }));
-generadoresArmas.set("Maza de grano", new GenArma("Maza de grano", 1.0, 120, 10, [new Daño("1D6", "C")], { ratioPesoLong: 0.7, varLongPct: 0.20 })); // Improvisado
-generadoresArmas.set("Maza campesina militar", new GenArma("Maza campesina militar", 2.5, 150, 240, [new Daño("2D6+2", "C")], { ratioPesoLong: 0.7 }));
-generadoresArmas.set("Martillo de guerra", new GenArma("Martillo de guerra", 2.0, 75, 150, [new Daño("1D6+2", "C"), new Daño("1D6+2", "P")], { ratioPesoLong: 0.7 }));
-generadoresArmas.set("Gran martillo", new GenArma("Gran martillo", 2.5, 130, 250, [new Daño("2D6+2", "C"), new Daño("2D6+2", "P")], { ratioPesoLong: 0.7 }));
-generadoresArmas.set("Maza pesada", new GenArma("Maza pesada", 2.5, 85, 220, [new Daño("1D10", "C")], { ratioPesoLong: 0.7 }));
-generadoresArmas.set("Maza ligera", new GenArma("Maza ligera", 1.0, 70, 100, [new Daño("1D8", "C")], { ratioPesoLong: 0.7 }));
-generadoresArmas.set("Estrella del alba", new GenArma("Estrella del alba", 2.2, 90, 200, [new Daño("1D10+1", "C"), new Daño("1D8", "P")], { ratioPesoLong: 0.7 }));
-generadoresArmas.set("Palo de madera", new GenArma("Palo de madera", 0.5, 50, 4, [new Daño("1D6", "C")], { ratioPesoLong: 0.7, varLongPct: 0.25 })); // Muy variable
-generadoresArmas.set("Vara", new GenArma("Vara", 0.5, 160, 10, [new Daño("1D6", "C")], { ratioPesoLong: 0.6 })); // Bastón
-generadoresArmas.set("Cayado", new GenArma("Cayado", 1.5, 180, 20, [new Daño("1D8", "C")], { ratioPesoLong: 0.6 })); // Bastón pesado
-generadoresArmas.set("Garrote", new GenArma("Garrote", 2.5, 90, 80, [new Daño("1D10", "C")], { ratioPesoLong: 0.7, varLongPct: 0.15 }));
-generadoresArmas.set("Garrote de guerra", new GenArma("Garrote de guerra", 4.0, 110, 150, [new Daño("2D6+2", "C")], { ratioPesoLong: 0.7 }));
-generadoresArmas.set("Garrote de troll", new GenArma("Garrote de troll", 5.5, 140, 50, [new Daño("2D8", "C")], { ratioPesoLong: 0.7, varLongPct: 0.20 }));
-generadoresArmas.set("Nunchaku", new GenArma("Nunchaku", 0.8, 70, 70, [new Daño("1D6+1", "C")], { ratioPesoLong: 0.7 })); // Más como mayal corto
+GA.set("Sai", new GenArma("Sai", 1.0, 50, 60, [new Daño("1D6", "C")], { ratioPesoLong: 0.8 }));
+GA.set("Bola y cadena", new GenArma("Bola y cadena", 2.0, 100, 250, [new Daño("1D10+1", "C")], { ratioPesoLong: 0.7 }));
+GA.set("Triple cadena", new GenArma("Triple cadena", 2.0, 90, 240, [new Daño("1D6+2", "C")], { ratioPesoLong: 0.7 }));
+GA.set("Maza de grano", new GenArma("Maza de grano", 1.0, 120, 10, [new Daño("1D6", "C")], { ratioPesoLong: 0.7, varLongPct: 0.20 })); // Improvisado
+GA.set("Maza campesina militar", new GenArma("Maza campesina militar", 2.5, 150, 240, [new Daño("2D6+2", "C")], { ratioPesoLong: 0.7 }));
+GA.set("Martillo de guerra", new GenArma("Martillo de guerra", 2.0, 75, 150, [new Daño("1D6+2", "C"), new Daño("1D6+2", "P")], { ratioPesoLong: 0.7 }));
+GA.set("Gran martillo", new GenArma("Gran martillo", 2.5, 130, 250, [new Daño("2D6+2", "C"), new Daño("2D6+2", "P")], { ratioPesoLong: 0.7 }));
+GA.set("Maza pesada", new GenArma("Maza pesada", 2.5, 85, 220, [new Daño("1D10", "C")], { ratioPesoLong: 0.7 }));
+GA.set("Maza ligera", new GenArma("Maza ligera", 1.0, 70, 100, [new Daño("1D8", "C")], { ratioPesoLong: 0.7 }));
+GA.set("Estrella del alba", new GenArma("Estrella del alba", 2.2, 90, 200, [new Daño("1D10+1", "C"), new Daño("1D8", "P")], { ratioPesoLong: 0.7 }));
+GA.set("Palo de madera", new GenArma("Palo de madera", 0.5, 50, 4, [new Daño("1D6", "C")], { ratioPesoLong: 0.7, varLongPct: 0.25 })); // Muy variable
+GA.set("Vara", new GenArma("Vara", 0.5, 160, 10, [new Daño("1D6", "C")], { ratioPesoLong: 0.6 })); // Bastón
+GA.set("Cayado", new GenArma("Cayado", 1.5, 180, 20, [new Daño("1D8", "C")], { ratioPesoLong: 0.6 })); // Bastón pesado
+GA.set("Garrote", new GenArma("Garrote", 2.5, 90, 80, [new Daño("1D10", "C")], { ratioPesoLong: 0.7, varLongPct: 0.15 }));
+GA.set("Garrote de guerra", new GenArma("Garrote de guerra", 4.0, 110, 150, [new Daño("2D6+2", "C")], { ratioPesoLong: 0.7 }));
+GA.set("Garrote de troll", new GenArma("Garrote de troll", 5.5, 140, 50, [new Daño("2D8", "C")], { ratioPesoLong: 0.7, varLongPct: 0.20 }));
+GA.set("Nunchaku", new GenArma("Nunchaku", 0.8, 70, 70, [new Daño("1D6+1", "C")], { ratioPesoLong: 0.7 })); // Más como mayal corto
 
 // Espadas (ratioPesoLong ~0.8)
-generadoresArmas.set("Rapier", new GenArma("Rapier", 1.0, 120, 100, [new Daño("1D6+1", "P")], { ratioPesoLong: 0.8 }));
-generadoresArmas.set("Gladius", new GenArma("Gladius", 1.0, 70, 100, [new Daño("1D6+1", "L"), new Daño("1D6+1", "P")], { ratioPesoLong: 0.8, varLongPct: 0.05 })); // Estandarizado
-generadoresArmas.set("Espada corta", new GenArma("Espada corta", 1.2, 80, 120, [new Daño("1D6+1", "L"), new Daño("1D6+1", "P")], { ratioPesoLong: 0.8 }));
-generadoresArmas.set("Espada ancha", new GenArma("Espada ancha", 1.5, 100, 175, [new Daño("1D8+1", "L"), new Daño("1D8+1", "C")], { ratioPesoLong: 0.8 }));
-generadoresArmas.set("Espada", new GenArma("Espada", 1.5, 100, 175, [new Daño("1D8+1", "L"), new Daño("1D8+1", "C")], { ratioPesoLong: 0.8 }));
-generadoresArmas.set("Cimitarra", new GenArma("Cimitarra", 1.5, 95, 200, [new Daño("1D6+2", "L"), new Daño("1D6+2", "C")], { ratioPesoLong: 0.8 }));
-generadoresArmas.set("Espada bastarda", new GenArma("Espada bastarda", 2.0, 125, 230, [new Daño("1D10+1", "L"), new Daño("1D10+1", "P")], { ratioPesoLong: 0.8 }));
-generadoresArmas.set("Mandoble", new GenArma("Mandoble", 3.5, 165, 320, [new Daño("2D8", "L")], { ratioPesoLong: 0.8 }));
-generadoresArmas.set("Katana", new GenArma("Katana", 1.8, 105, 300, [new Daño("1D10", "L")], { ratioPesoLong: 0.8, varLongPct: 0.07 })); // Calidad suele ser más consistente
+GA.set("Rapier", new GenArma("Rapier", 1.0, 120, 100, [new Daño("1D6+1", "P")], { ratioPesoLong: 0.8 }));
+GA.set("Gladius", new GenArma("Gladius", 1.0, 70, 100, [new Daño("1D6+1", "L"), new Daño("1D6+1", "P")], { ratioPesoLong: 0.8, varLongPct: 0.05 })); // Estandarizado
+GA.set("Espada corta", new GenArma("Espada corta", 1.2, 80, 120, [new Daño("1D6+1", "L"), new Daño("1D6+1", "P")], { ratioPesoLong: 0.8 }));
+GA.set("Espada ancha", new GenArma("Espada ancha", 1.5, 100, 175, [new Daño("1D8+1", "L"), new Daño("1D8+1", "C")], { ratioPesoLong: 0.8 }));
+GA.set("Espada", new GenArma("Espada", 1.5, 100, 175, [new Daño("1D8+1", "L"), new Daño("1D8+1", "C")], { ratioPesoLong: 0.8 }));
+GA.set("Cimitarra", new GenArma("Cimitarra", 1.5, 95, 200, [new Daño("1D6+2", "L"), new Daño("1D6+2", "C")], { ratioPesoLong: 0.8 }));
+GA.set("Espada bastarda", new GenArma("Espada bastarda", 2.0, 125, 230, [new Daño("1D10+1", "L"), new Daño("1D10+1", "P")], { ratioPesoLong: 0.8 }));
+GA.set("Mandoble", new GenArma("Mandoble", 3.5, 165, 320, [new Daño("2D8", "L")], { ratioPesoLong: 0.8 }));
+GA.set("Katana", new GenArma("Katana", 1.8, 105, 300, [new Daño("1D10", "L")], { ratioPesoLong: 0.8, varLongPct: 0.07 })); // Calidad suele ser más consistente
 
 // Armas de Asta y Lanzas (ratioPesoLong ~0.6)
-generadoresArmas.set("Alabarda", new GenArma("Alabarda", 3.0, 210, 250, [new Daño("3D6", "L"), new Daño("2D10", "P")], { ratioPesoLong: 0.6 }));
-generadoresArmas.set("Naginata", new GenArma("Naginata", 2.0, 200, 150, [new Daño("2D6+2", "L")], { ratioPesoLong: 0.6 }));
-generadoresArmas.set("Pilum", new GenArma("Pilum", 2.0, 180, 125, [new Daño("1D6+1", "P")], { ratioPesoLong: 0.6, varLongPct: 0.05 })); // Estandarizado
-generadoresArmas.set("Jabalina", new GenArma("Jabalina", 1.0, 150, 15, [new Daño("1D6", "P")], { ratioPesoLong: 0.6, varLongPct: 0.15 }));
-generadoresArmas.set("Lanza ", new GenArma("Lanza", 2.0, 170, 20, [new Daño("1D8+1", "P")], { ratioPesoLong: 0.6 }));
-generadoresArmas.set("Lanza corta", new GenArma("Lanza corta", 2.0, 170, 20, [new Daño("1D8+1", "P")], { ratioPesoLong: 0.6 }));
-generadoresArmas.set("Lanza larga", new GenArma("Lanza larga", 2.0, 250, 30, [new Daño("1D10+1", "P")], { ratioPesoLong: 0.6 }));
-generadoresArmas.set("Lanza de caballería", new GenArma("Lanza de caballería", 3.0, 350, 50, [new Daño("1D10+2", "P")], { ratioPesoLong: 0.6 }));
-generadoresArmas.set("Lanza de torneo", new GenArma("Lanza de torneo", 3.5, 320, 150, [new Daño("1D10+1", "C")], { ratioPesoLong: 0.6 }));
-generadoresArmas.set("Pica", new GenArma("Pica", 3.5, 450, 65, [new Daño("2D6+2", "P")], { ratioPesoLong: 0.6 }));
-generadoresArmas.set("Tridente", new GenArma("Tridente", 2.2, 180, 75, [new Daño("1D8+1", "P")], { ratioPesoLong: 0.6 }));
+GA.set("Alabarda", new GenArma("Alabarda", 3.0, 210, 250, [new Daño("3D6", "L"), new Daño("2D10", "P")], { ratioPesoLong: 0.6 }));
+GA.set("Naginata", new GenArma("Naginata", 2.0, 200, 150, [new Daño("2D6+2", "L")], { ratioPesoLong: 0.6 }));
+GA.set("Pilum", new GenArma("Pilum", 2.0, 180, 125, [new Daño("1D6+1", "P")], { ratioPesoLong: 0.6, varLongPct: 0.05 })); // Estandarizado
+GA.set("Jabalina", new GenArma("Jabalina", 1.0, 150, 15, [new Daño("1D6", "P")], { ratioPesoLong: 0.6, varLongPct: 0.15 }));
+GA.set("Lanza ", new GenArma("Lanza", 2.0, 170, 20, [new Daño("1D8+1", "P")], { ratioPesoLong: 0.6 }));
+GA.set("Lanza corta", new GenArma("Lanza corta", 2.0, 170, 20, [new Daño("1D8+1", "P")], { ratioPesoLong: 0.6 }));
+GA.set("Lanza larga", new GenArma("Lanza larga", 2.0, 250, 30, [new Daño("1D10+1", "P")], { ratioPesoLong: 0.6 }));
+GA.set("Lanza de caballería", new GenArma("Lanza de caballería", 3.0, 350, 50, [new Daño("1D10+2", "P")], { ratioPesoLong: 0.6 }));
+GA.set("Lanza de torneo", new GenArma("Lanza de torneo", 3.5, 320, 150, [new Daño("1D10+1", "C")], { ratioPesoLong: 0.6 }));
+GA.set("Pica", new GenArma("Pica", 3.5, 450, 65, [new Daño("2D6+2", "P")], { ratioPesoLong: 0.6 }));
+GA.set("Tridente", new GenArma("Tridente", 2.2, 180, 75, [new Daño("1D8+1", "P")], { ratioPesoLong: 0.6 }));
 
 // Herramientas y Armas Improvisadas (ratioPesoLong ~0.6 para mangos largos, ~0.7 para otros)
-generadoresArmas.set("Azadón", new GenArma("Azadón", 2.0, 130, 5, [new Daño("1D6", "C")], { ratioPesoLong: 0.6, varLongPct: 0.15 }));
-generadoresArmas.set("Guadaña", new GenArma("Guadaña", 2.5, 170, 50, [new Daño("2D6", "L")], { ratioPesoLong: 0.6, varLongPct: 0.15 }));
-generadoresArmas.set("Hoz", new GenArma("Hoz", 0.5, 45, 40, [new Daño("1D6", "L")], { ratioPesoLong: 0.7, varLongPct: 0.20 }));
-generadoresArmas.set("Pala", new GenArma("Pala", 1.5, 140, 20, [new Daño("1D6+2", "C")], { ratioPesoLong: 0.6, varLongPct: 0.15 }));
-generadoresArmas.set("Pico", new GenArma("Pico", 2.8, 80, 30, [new Daño("1D8", "P"), new Daño("1D6+1", "C")], { ratioPesoLong: 0.7, varLongPct: 0.15 }));
-generadoresArmas.set("Horca", new GenArma("Horca", 2.0, 150, 15, [new Daño("1D6+1", "P")], { ratioPesoLong: 0.6, varLongPct: 0.15 }));
+GA.set("Azadón", new GenArma("Azadón", 2.0, 130, 5, [new Daño("1D6", "C")], { ratioPesoLong: 0.6, varLongPct: 0.15 }));
+GA.set("Guadaña", new GenArma("Guadaña", 2.5, 170, 50, [new Daño("2D6", "L")], { ratioPesoLong: 0.6, varLongPct: 0.15 }));
+GA.set("Hoz", new GenArma("Hoz", 0.5, 45, 40, [new Daño("1D6", "L")], { ratioPesoLong: 0.7, varLongPct: 0.20 }));
+GA.set("Pala", new GenArma("Pala", 1.5, 140, 20, [new Daño("1D6+2", "C")], { ratioPesoLong: 0.6, varLongPct: 0.15 }));
+GA.set("Pico", new GenArma("Pico", 2.8, 80, 30, [new Daño("1D8", "P"), new Daño("1D6+1", "C")], { ratioPesoLong: 0.7, varLongPct: 0.15 }));
+GA.set("Horca", new GenArma("Horca", 2.0, 150, 15, [new Daño("1D6+1", "P")], { ratioPesoLong: 0.6, varLongPct: 0.15 }));
 
 // Escudos (Golpes - ratioPesoLong bajo, ~0.5, ya que el área/grosor afecta más que la longitud lineal)
 // No aplicaremos modificador de daño por tamaño a los golpes de escudo.
-generadoresArmas.set("Cesto pesado", new GenArma("Cesto pesado", 1.5, 80, 100, [new Daño("1D3+2", "C")], { ratioPesoLong: 0.5, umbralModDañoLargoPct: 1.0, umbralModDañoCortoPct: -1.0 })); // Desactivar mod daño
-generadoresArmas.set("Cesto ligero", new GenArma("Cesto ligero", 1.0, 60, 100, [new Daño("1D3+1", "C")], { ratioPesoLong: 0.5, umbralModDañoLargoPct: 1.0, umbralModDañoCortoPct: -1.0 })); // Desactivar mod daño
+GA.set("Cesto pesado", new GenArma("Cesto pesado", 1.5, 80, 100, [new Daño("1D3+2", "C")], { ratioPesoLong: 0.5, umbralModDañoLargoPct: 1.0, umbralModDañoCortoPct: -1.0 })); // Desactivar mod daño
+GA.set("Cesto ligero", new GenArma("Cesto ligero", 1.0, 60, 100, [new Daño("1D3+1", "C")], { ratioPesoLong: 0.5, umbralModDañoLargoPct: 1.0, umbralModDañoCortoPct: -1.0 })); // Desactivar mod daño
 
 
 // --- Ejemplo de Uso ---
 
 // Obtener el generador para un tipo de arma
-const generadorEspadaAncha = generadoresArmas.get("Espada ancha");
+const generadorEspadaAncha = GA.get("Espada ancha");
 
 if (generadorEspadaAncha) {
   // Generar 3 espadas anchas diferentes
@@ -393,7 +393,7 @@ if (generadorEspadaAncha) {
 }
 
 // Generar un Mandoble aleatorio
-const generadorMandoble = generadoresArmas.get("Mandoble");
+const generadorMandoble = GA.get("Mandoble");
 if (generadorMandoble) {
     console.log("\n--- Generando Mandoble ---");
     const mandobleGenerado = generadorMandoble.generar();
