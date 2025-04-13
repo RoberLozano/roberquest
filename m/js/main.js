@@ -238,82 +238,60 @@ function setupNpcModal() {
 /**
  * Load NPC tokens from img/token directory
  */
-// async function loadNpcTokens() {
-//     const npcGrid = document.getElementById('npcGrid');
-//     npcGrid.innerHTML = '<div class="loading">Loading NPCs...</div>';
-    
-//     try {
-//         // Fetch list of token files
-//         const response = await fetch('../img/tokens/');
-       
-//         // If direct directory listing is not allowed, use the default characters
-//         // and some other common tokens that we know are available
-//         if (!response.ok) {
-//             console.log('Direct directory listing not allowed');
-//         } else {
-//             const html = await response.text();
-            
-//             // Extract image paths using regex
-//             const regex = /href="([^"]+\.(png|jpg|gif|jpeg|webp))"/gi;
-//             const matches = [...html.matchAll(regex)];
-//             console.log('Matches:', matches);
-            
-//             // Ensure we don't duplicate the path
-//             npcTokens = matches.map(match => {
-//                 const path = match[1];
-//                 // Check if the path already includes img/tokens/
-//                 if (path.startsWith('/img/tokens/')) {
-//                     return `..${path}`;
-//                 }
-//             });
-//         }
-//         // console.log('NPC Tokens:', npcTokens);
-//         displayNpcTokens();
-//     } catch (error) {
-//         console.error('Error loading NPC tokens:', error);
-//         npcGrid.innerHTML = '<div class="error">Error loading NPCs. Using default list.</div>';
-        
-//         // Use default list as fallback
-//         npcTokens = CONFIG.defaultCharacters;
-//         displayNpcTokens();
-//     }
-// }
-
-//EL DE LA IA
-
 async function loadNpcTokens() {
     const npcGrid = document.getElementById('npcGrid');
     npcGrid.innerHTML = '<div class="loading">Loading NPCs...</div>';
     
     try {
-        // Try to load tokens using FileSystem API
-        const tokensPath = '../img/tokens/';
-        let tokenFiles = [];
-
-        try {
-            const handle = await window.showDirectoryPicker({
-                startIn: tokensPath,
-                mode: 'read'
-            });
-
-            for await (const entry of handle.values()) {
-                if (entry.kind === 'file' && 
-                    entry.name.match(/\.(png|jpg|gif|jpeg|webp)$/i)) {
-                    tokenFiles.push({
-                        name: entry.name,
-                        path: `${tokensPath}${entry.name}`
-                    });
-                }
-            }
-
-            npcTokens = tokenFiles.map(file => file.path);
+        // Fetch list of token files
+        const response = await fetch('../img/tokens/');
+       
+        // If direct directory listing is not allowed, use the default characters
+        // and some other common tokens that we know are available
+        if (!response.ok) {
+            console.log('Direct directory listing not allowed');
+            loadNpcTokens2();
+        } else {
+            const html = await response.text();
             
-        } catch (fsError) {
-            console.log('FileSystem API not available or denied, falling back to defaults');
-            // Fallback to default tokens if FileSystem API fails
-            npcTokens = CONFIG.defaultCharacters;
+            // Extract image paths using regex
+            const regex = /href="([^"]+\.(png|jpg|gif|jpeg|webp))"/gi;
+            const matches = [...html.matchAll(regex)];
+            console.log('Matches:', matches);
+            
+            // Ensure we don't duplicate the path
+            npcTokens = matches.map(match => {
+                const path = match[1];
+                // Check if the path already includes img/tokens/
+                if (path.startsWith('/img/tokens/')) {
+                    return `..${path}`;
+                }
+            });
         }
+        // console.log('NPC Tokens:', npcTokens);
+        displayNpcTokens();
+    } catch (error) {
+        console.error('Error loading NPC tokens:', error);
+        npcGrid.innerHTML = '<div class="error">Error loading NPCs. Using default list.</div>';
+        
+        // Use default list as fallback
+        npcTokens = CONFIG.defaultCharacters;
+        displayNpcTokens();
+    }
+}
 
+//EL DE LA IA
+/**
+ * Load NPC tokens from a predefined list of tokens in CONFIG.tokens
+ * NOTA: Actualizar la lista de tokens en la configuración al añadir nuevos tokens
+ */
+async function loadNpcTokens2() {
+    const npcGrid = document.getElementById('npcGrid');
+    npcGrid.innerHTML = '<div class="loading">Loading NPCs...</div>';
+    
+    try {
+        // Usar la lista predefinida de tokens
+        npcTokens = CONFIG.tokens.map(tokenName => `../img/tokens/${tokenName}`);
         displayNpcTokens();
         
     } catch (error) {
