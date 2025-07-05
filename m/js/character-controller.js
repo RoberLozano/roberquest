@@ -342,29 +342,24 @@ const CharacterController = {
         let nombre = fileName.substring(0, fileName.lastIndexOf('.')).replace(/%20/g, ' ');
        
         let baseName = fileName.substring(0, fileName.lastIndexOf('.'))
-            .replace(/%20/g, '_').replaceAll(' ', '_')
-            // .replace(/[^a-zA-Z0-9]/g, '_');
-        console.log(baseName);
-
+            .replace(/%20/g, '_')
+            .replaceAll(' ', '_')
+            .replace(/[^a-zA-Z0-9_]/g, '_');
 
         let number = 1;
         while (this.characters.has(`${baseName}`)) {
-            // console.log('Name already exists, incrementing', { baseName, number });
             number++;
             const match = baseName.match(/\d+$/);
             if (match) {
                 number = parseInt(match[0], 10) + 1;
                 baseName = baseName.substring(0, baseName.length - match[0].length);
-                baseName += number;
-                // console.log('New name', { baseName, number });
             }
-            
+            baseName += number;
         }
-        if(number>1) nombre= baseName.replaceAll('_',' ');
-
+        if(number>1) nombre = baseName.replaceAll('_',' ');
 
         charGroup.id = baseName;
-        charGroup.nombre=nombre;
+        charGroup.nombre = nombre;
 
         // Set default speed
         charGroup.setAttribute('data-speed', CONFIG.defaultSpeed);
