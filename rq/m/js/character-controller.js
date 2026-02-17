@@ -177,8 +177,13 @@ const CharacterController = {
         } else {
             this.selectedCharacters.set(id, charElement);
             charElement.classList.add('selected');
+            console.log(id + 'selected');
+            this.showCharacterCard(charElement.p);
+
         }
         this.drawSelectionCircle(charElement.querySelector('image'));
+        
+        
     },
 
     showStats(campo) {
@@ -213,6 +218,14 @@ const CharacterController = {
         const characterName = document.getElementById('characterName');
         const statsGrid = document.querySelector('.stats-grid');
         const bodyDamageList = document.getElementById('bodyDamageList');
+
+        //PERSONAJE TYPEOF STRING
+
+
+
+        if( typeof personaje === 'string'){
+            personaje = this.personajes.get(personaje);
+        }
         
         // Establecer el nombre del personaje
         characterName.textContent = personaje.nombre;
