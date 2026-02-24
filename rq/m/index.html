@@ -55,6 +55,11 @@
                 Auto-aceptar movimientos
             </label>
         </div>
+        <div id="routeSimulation" class="option-row">
+            <div class="option-label">Simular ruta</div>
+            <input type="range" id="routeTime" min="0" max="0" step="1" value="0" class="slider">
+            <div id="routeTimeLabel">0s</div>
+        </div>
         <div id="layersPanel">
             <div id="layersHeader">
                 <input type="text" id="layerSearch" placeholder="Buscar capas...">
@@ -75,6 +80,7 @@
         <ul>
             <li id="attackCharacter">⚔️ Atacar</li>
             <li id="togglePortrait">Portada</li>
+            <li id="planRoute">Planificar ruta</li>
             <li id="deleteRoute" class="menu-delete">Eliminar ruta</li>
             <li id="deleteCharacter" class="menu-delete">Eliminar personaje</li>
             <li id="rotate" hidden> Rotar <input type="range" min="-180" max="180" value="0" class="slider" id="myAngle"

@@ -99,6 +99,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             CharacterController.deleteRoute();
             document.getElementById('characterContextMenu').style.display = 'none';
         });
+
+        document.getElementById('planRoute').addEventListener('click', () => {
+            CharacterController.toggleRoutePlanning();
+            document.getElementById('characterContextMenu').style.display = 'none';
+        });
         
         document.getElementById('deleteCharacter').addEventListener('click', () => {
             CharacterController.deleteCharacter();

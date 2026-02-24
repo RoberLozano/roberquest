@@ -8,6 +8,8 @@ const CharacterController = {
     selectedCharacters: new Map(),
     personajes: new Map(),
     characterRoutes: new Map(),
+    plannedRoutes: new Map(),
+    plannedStartPositions: new Map(),
     draggedCharacter: null,
     activeCharacter: null,
     rastro: true,
@@ -15,6 +17,7 @@ const CharacterController = {
     originalPositions: new Map(),
     // Control de confirmación automática de movimientos
     autoConfirmMove: true,
+    routePlanningMode: false,
     travelTime: 0,
     // Propiedades para el modo de ataque
     attackMode: false,
@@ -34,6 +37,8 @@ const CharacterController = {
 
         // Inicializar controlador para el checkbox de auto-confirmación
         this.initAutoConfirmMove();
+
+        this.initRouteSimulationControls();
     },
 
     /**
@@ -50,6 +55,251 @@ const CharacterController = {
             this.autoConfirmMove = autoConfirmCheckbox.checked;
             console.log(`Auto-confirmación de movimientos: ${this.autoConfirmMove ? 'Activada' : 'Desactivada'}`);
         });
+    },
+
+    initRouteSimulationControls() {
+        const slider = document.getElementById('routeTime');
+        const label = document.getElementById('routeTimeLabel');
+        if (!slider || !label) return;
+
+        slider.disabled = true;
+        slider.addEventListener('input', () => {
+            const seconds = parseInt(slider.value, 10) || 0;
+            this.simulateRouteTime(seconds);
+            label.textContent = this.formatSeconds(seconds);
+        });
+
+        slider.addEventListener('change', () => {
+            const seconds = parseInt(slider.value, 10) || 0;
+            this.simulateRouteTime(seconds);
+            label.textContent = this.formatSeconds(seconds);
+        });
+    },
+
+    toggleRoutePlanning() {
+        this.routePlanningMode = !this.routePlanningMode;
+        this.updateRoutePlanningLabel();
+        if (!this.routePlanningMode) {
+            this.finalizePlannedRoutes();
+        }
+    },
+
+    updateRoutePlanningLabel() {
+        const item = document.getElementById('planRoute');
+        if (!item) return;
+        item.textContent = this.routePlanningMode ? 'Terminar planificación' : 'Planificar ruta';
+    },
+
+    refreshRouteSimulationRange() {
+        const slider = document.getElementById('routeTime');
+        const label = document.getElementById('routeTimeLabel');
+        if (!slider || !label) return;
+
+        const targets = this.plannedRoutes.size > 0
+            ? Array.from(this.plannedRoutes.keys())
+            : this.getSimulationTargets();
+        let maxSeconds = 0;
+        targets.forEach((char) => {
+            const route = this.plannedRoutes.get(char);
+            if (!route || route.length < 2) return;
+            const speed = parseFloat(char.getAttribute('data-speed')) || CONFIG.defaultSpeed;
+            const duration = this.getRouteDurationSeconds(route, speed);
+            if (duration > maxSeconds) maxSeconds = duration;
+        });
+
+        slider.max = Math.ceil(maxSeconds);
+        slider.value = Math.min(parseInt(slider.value || '0', 10), slider.max || 0);
+        slider.disabled = maxSeconds <= 0;
+        label.textContent = this.formatSeconds(parseInt(slider.value, 10) || 0);
+    },
+
+    getSimulationTargets() {
+        if (this.selectedCharacters.size > 0) {
+            return Array.from(this.selectedCharacters.values());
+        }
+        if (this.activeCharacter) return [this.activeCharacter];
+        return Array.from(this.plannedRoutes.keys());
+    },
+
+    simulateRouteTime(seconds) {
+        const targets = this.getSimulationTargets();
+        targets.forEach((char) => {
+            const route = this.plannedRoutes.get(char);
+            if (!route || route.length < 2) return;
+
+            const speed = parseFloat(char.getAttribute('data-speed')) || CONFIG.defaultSpeed;
+            const duration = this.getRouteDurationSeconds(route, speed);
+            const pos = this.getRoutePositionAtTime(route, speed, seconds);
+            if (!pos) return;
+            const img = char.querySelector('image');
+            this.moveCharacter(img, pos.x, pos.y, false);
+
+            this.setPlannedRoutePath(char, route);
+            const traveled = this.getRouteTraveledSegment(route, speed, seconds);
+            if (traveled.length >= 2) {
+                this.setNormalRoutePath(char, traveled);
+            } else {
+                this.removeNormalRoutePath(char);
+            }
+        });
+    },
+
+    getRouteDurationSeconds(route, speed) {
+        if (!route || route.length < 2) return 0;
+        let totalDistance = 0;
+        for (let i = 1; i < route.length; i++) {
+            const dx = route[i].x - route[i - 1].x;
+            const dy = route[i].y - route[i - 1].y;
+            totalDistance += Math.sqrt(dx * dx + dy * dy) * CONFIG.distanceScaleFactor;
+        }
+        const metersPerSecond = (speed * 1000) / 3600;
+        if (metersPerSecond <= 0) return 0;
+        return totalDistance / metersPerSecond;
+    },
+
+    getRoutePositionAtTime(route, speed, seconds) {
+        if (!route || route.length < 2) return null;
+        const metersPerSecond = (speed * 1000) / 3600;
+        if (metersPerSecond <= 0) return route[0];
+        let remaining = metersPerSecond * seconds;
+        for (let i = 1; i < route.length; i++) {
+            const start = route[i - 1];
+            const end = route[i];
+            const dx = end.x - start.x;
+            const dy = end.y - start.y;
+            const segmentMeters = Math.sqrt(dx * dx + dy * dy) * CONFIG.distanceScaleFactor;
+            if (remaining <= segmentMeters) {
+                const ratio = segmentMeters === 0 ? 0 : remaining / segmentMeters;
+                return { x: start.x + dx * ratio, y: start.y + dy * ratio };
+            }
+            remaining -= segmentMeters;
+        }
+        return route[route.length - 1];
+    },
+
+    getRouteTraveledSegment(route, speed, seconds) {
+        if (!route || route.length < 2) return [];
+        const metersPerSecond = (speed * 1000) / 3600;
+        if (metersPerSecond <= 0) return [route[0]];
+        let remaining = metersPerSecond * seconds;
+        const traveled = [route[0]];
+        for (let i = 1; i < route.length; i++) {
+            if (remaining <= 0) break;
+            const start = route[i - 1];
+            const end = route[i];
+            const dx = end.x - start.x;
+            const dy = end.y - start.y;
+            const segmentMeters = Math.sqrt(dx * dx + dy * dy) * CONFIG.distanceScaleFactor;
+            if (remaining >= segmentMeters) {
+                traveled.push(end);
+                remaining -= segmentMeters;
+            } else {
+                const ratio = segmentMeters === 0 ? 0 : remaining / segmentMeters;
+                traveled.push({ x: start.x + dx * ratio, y: start.y + dy * ratio });
+                remaining = 0;
+            }
+        }
+        return traveled;
+    },
+
+    getRoutePathElement(char, className, stroke, suffix) {
+        let pathElem = svgElement.querySelector(`.${char.id}-${suffix}`);
+        if (!pathElem) {
+            pathElem = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            pathElem.setAttribute('class', className);
+            pathElem.setAttribute('fill', 'none');
+            pathElem.classList.add(`${char.id}-${suffix}`);
+            MapController.grosorCamino(3, pathElem);
+            svgElement.appendChild(pathElem);
+        }
+        pathElem.setAttribute('stroke', stroke);
+        return pathElem;
+    },
+
+    setNormalRoutePath(char, route) {
+        if (!route || route.length < 2) {
+            this.removeNormalRoutePath(char);
+            return;
+        }
+        const path = SVGUtils.generateSmoothPath(route);
+        const pathElem = this.getRoutePathElement(char, 'character-route', 'red', 'route');
+        pathElem.setAttribute('d', path);
+    },
+
+    setPlannedRoutePath(char, route) {
+        if (!route || route.length < 2) {
+            this.removePlannedRoutePath(char);
+            return;
+        }
+        const path = SVGUtils.generateSmoothPath(route);
+        const pathElem = this.getRoutePathElement(char, 'planned-route', 'deepskyblue', 'planned-route');
+        pathElem.setAttribute('d', path);
+    },
+
+    removePlannedRoutePath(char) {
+        const elem = svgElement.querySelector(`.${char.id}-planned-route`);
+        if (elem) elem.remove();
+    },
+
+    removeNormalRoutePath(char) {
+        const elem = svgElement.querySelector(`.${char.id}-route`);
+        if (elem) elem.remove();
+    },
+
+    finalizePlannedRoutes() {
+        const targets = this.getSimulationTargets();
+        if (targets.length === 0) return;
+        const slider = document.getElementById('routeTime');
+        const seconds = slider ? parseInt(slider.value, 10) || 0 : 0;
+        this.travelTime = seconds / 3600;
+        targets.forEach((char) => {
+            const route = this.plannedRoutes.get(char);
+            if (!route || route.length < 2) return;
+            const speed = parseFloat(char.getAttribute('data-speed')) || CONFIG.defaultSpeed;
+            const traveled = this.getRouteTraveledSegment(route, speed, seconds);
+            this.originalPositions.set(char, { x: route[0].x, y: route[0].y });
+            if (traveled.length >= 2) {
+                this.characterRoutes.set(char, traveled);
+                this.setNormalRoutePath(char, traveled);
+            } else {
+                this.removeNormalRoutePath(char);
+            }
+            this.removePlannedRoutePath(char);
+            this.plannedRoutes.delete(char);
+        });
+        this.refreshRouteSimulationRange();
+
+        if (this.autoConfirmMove) {
+            if (SyncController.isOnline) {
+                targets.forEach((char) => {
+                    SyncController.saveMapState(char);
+                });
+            }
+            this.originalPositions.clear();
+        } else {
+            const confirmationDiv = document.getElementById('moveConfirmation');
+            const anchor = this.activeCharacter || targets[0];
+            if (confirmationDiv && anchor) {
+                const rect = anchor.getBoundingClientRect();
+                confirmationDiv.style.display = 'block';
+                confirmationDiv.style.left = `${rect.right - CONFIG.iconSize}px`;
+                confirmationDiv.style.top = `${rect.top - CONFIG.iconSize}px`;
+            }
+        }
+    },
+
+    formatSeconds(seconds) {
+        const total = Math.max(0, Math.floor(seconds));
+        const h = Math.floor(total / 3600);
+        const m = Math.floor((total % 3600) / 60);
+        const s = total % 60;
+        if (h > 0) {
+            return `${h}h ${m}m ${s}s`;
+        }
+        if (m > 0) {
+            return `${m}m ${s}s`;
+        }
+        return `${s}s`;
     },
 
     /**
@@ -177,13 +427,11 @@ const CharacterController = {
         } else {
             this.selectedCharacters.set(id, charElement);
             charElement.classList.add('selected');
+            //si esta abierto la tarjeta de personaje
             console.log(id + 'selected');
             this.showCharacterCard(charElement.p);
-
         }
         this.drawSelectionCircle(charElement.querySelector('image'));
-        
-        
     },
 
     showStats(campo) {
@@ -218,14 +466,6 @@ const CharacterController = {
         const characterName = document.getElementById('characterName');
         const statsGrid = document.querySelector('.stats-grid');
         const bodyDamageList = document.getElementById('bodyDamageList');
-
-        //PERSONAJE TYPEOF STRING
-
-
-
-        if( typeof personaje === 'string'){
-            personaje = this.personajes.get(personaje);
-        }
         
         // Establecer el nombre del personaje
         characterName.textContent = personaje.nombre;
@@ -730,6 +970,7 @@ const CharacterController = {
                 this.updateDistanceDisplay(charElement);
             }
         });
+        this.refreshRouteSimulationRange();
     },
 
     /**
@@ -1012,7 +1253,10 @@ const CharacterController = {
 
         // Clear selection when clicking outside
         document.addEventListener('click', (e) => {
-            // Ignorar si estamos acabando de arrastrar
+            if (e.target.closest('#sidePanel')) return;
+            if (e.target.closest('#routeSimulation')) return;
+            if (e.target.closest('#moveConfirmation')) return;
+            if (this.routePlanningMode) return;
             if (!e.target.closest('.character') && !this.draggedCharacter) {
                 this.selectedCharacters.forEach((char) => {
                     char.classList.remove('selected');
@@ -1105,48 +1349,76 @@ const CharacterController = {
                 image().style.opacity = '0.5';
                 this.characterRoutes.set(charElement, [{ x: originalPos.x, y: originalPos.y }]);
 
-                // Guardar posición original para posible cancelación
-                this.originalPositions.set(charElement, {
-                    x: originalPos.x,
-                    y: originalPos.y
-                });
+                if (this.routePlanningMode) {
+                    this.plannedStartPositions.set(charElement, {
+                        x: originalPos.x,
+                        y: originalPos.y
+                    });
+                    this.selectedCharacters.forEach((char) => {
+                        if (char !== charElement) {
+                            const origPos = selectedOriginalPos.get(char);
+                            this.characterRoutes.set(char, [{ x: origPos.x, y: origPos.y }]);
+                            char.querySelector('image').style.opacity = '0.5';
+                            this.plannedStartPositions.set(char, {
+                                x: origPos.x,
+                                y: origPos.y
+                            });
+                        }
+                    });
+                } else {
+                    this.originalPositions.set(charElement, {
+                        x: originalPos.x,
+                        y: originalPos.y
+                    });
 
-                // Initialize routes for selected characters
-                this.selectedCharacters.forEach((char) => {
-                    if (char !== charElement) {
-                        const origPos = selectedOriginalPos.get(char);
-                        this.characterRoutes.set(char, [{ x: origPos.x, y: origPos.y }]);
-                        char.querySelector('image').style.opacity = '0.5';
+                    this.selectedCharacters.forEach((char) => {
+                        if (char !== charElement) {
+                            const origPos = selectedOriginalPos.get(char);
+                            this.characterRoutes.set(char, [{ x: origPos.x, y: origPos.y }]);
+                            char.querySelector('image').style.opacity = '0.5';
 
-                        // Guardar posición original para posible cancelación
-                        this.originalPositions.set(char, {
-                            x: origPos.x,
-                            y: origPos.y
-                        });
-                    }
-                });
+                            this.originalPositions.set(char, {
+                                x: origPos.x,
+                                y: origPos.y
+                            });
+                        }
+                    });
+                }
             }
 
             if (hasStartedDrag) {
-                // Move the dragged character
                 const newX = originalPos.x + dx;
                 const newY = originalPos.y + dy;
 
-                this.moveCharacter(image(), newX, newY);
-                this.updateCross(cross(), newX, newY);
                 this.updateCharacterRoute(charElement, newX, newY);
+                if (this.routePlanningMode) {
+                    this.setPlannedRoutePath(charElement, this.characterRoutes.get(charElement));
+                }
 
-                // Move all selected characters
-                this.selectedCharacters.forEach((char) => {
-                    if (char !== charElement) {
-                        const origPos = selectedOriginalPos.get(char);
-                        const newSelectedX = origPos.x + dx;
-                        const newSelectedY = origPos.y + dy;
+                if (this.routePlanningMode) {
+                    this.selectedCharacters.forEach((char) => {
+                        if (char !== charElement) {
+                            const origPos = selectedOriginalPos.get(char);
+                            const newSelectedX = origPos.x + dx;
+                            const newSelectedY = origPos.y + dy;
+                            this.updateCharacterRoute(char, newSelectedX, newSelectedY);
+                            this.setPlannedRoutePath(char, this.characterRoutes.get(char));
+                        }
+                    });
+                } else {
+                    this.moveCharacter(image(), newX, newY);
+                    this.updateCross(cross(), newX, newY);
+                    this.selectedCharacters.forEach((char) => {
+                        if (char !== charElement) {
+                            const origPos = selectedOriginalPos.get(char);
+                            const newSelectedX = origPos.x + dx;
+                            const newSelectedY = origPos.y + dy;
 
-                        this.moveCharacter(char.querySelector('image'), newSelectedX, newSelectedY);
-                        this.updateCharacterRoute(char, newSelectedX, newSelectedY);
-                    }
-                });
+                            this.moveCharacter(char.querySelector('image'), newSelectedX, newSelectedY);
+                            this.updateCharacterRoute(char, newSelectedX, newSelectedY);
+                        }
+                    });
+                }
             }
         };
 
@@ -1168,27 +1440,17 @@ const CharacterController = {
                     }
                 });
 
-                if (this.rastro) {
+                if (this.rastro || this.routePlanningMode) {
                     // Draw paths for all moved characters
                     const drawPath = (char) => {
                         const ruta = this.characterRoutes.get(char);
                         if (ruta && ruta.length >= 2) {
                             try {
-                                const path = SVGUtils.generateSmoothPath(ruta);
-                                let pathElem = char.querySelector('.character-route');
-
-                                if (!pathElem) {
-                                    pathElem = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                                    pathElem.setAttribute('class', 'character-route');
-                                    pathElem.setAttribute('fill', 'none');
-                                    pathElem.setAttribute('stroke', 'red');
-                                    // pathElem.setAttribute('stroke-width', 0.5);
-                                    MapController.grosorCamino(3, pathElem)
-                                    pathElem.classList.add(`${char.id}-route`);
-                                    svgElement.appendChild(pathElem);
+                                if (this.routePlanningMode) {
+                                    this.setPlannedRoutePath(char, ruta);
+                                } else {
+                                    this.setNormalRoutePath(char, ruta);
                                 }
-
-                                pathElem.setAttribute('d', path);
                             } catch (error) {
                                 console.error('Error creating path:', error);
                             }
@@ -1203,21 +1465,45 @@ const CharacterController = {
                     });
                 }
 
-                // Mostrar los botones de confirmación o confirmar automáticamente
-                if (this.autoConfirmMove) {
-                    // Si está activada la auto-confirmación, guardamos el estado directamente
-                    this.originalPositions.clear();
-
-                    // Si estamos online, guardar el estado
-                    if (SyncController.isOnline) {
-                        this.saveDraggedCharactersState();
+                if (this.routePlanningMode) {
+                    const startPos = this.plannedStartPositions.get(charElement);
+                    if (startPos) {
+                        this.moveCharacter(image(), startPos.x, startPos.y, false);
+                        this.updateCross(cross(), startPos.x, startPos.y);
                     }
+                    this.selectedCharacters.forEach((char) => {
+                        if (char !== charElement) {
+                            const origPos = this.plannedStartPositions.get(char);
+                            if (origPos) {
+                                this.moveCharacter(char.querySelector('image'), origPos.x, origPos.y, false);
+                            }
+                        }
+                    });
+                    this.plannedStartPositions.clear();
+                }
+
+                if (this.routePlanningMode) {
+                    this.plannedRoutes.set(charElement, this.characterRoutes.get(charElement) || []);
+                    this.selectedCharacters.forEach((char) => {
+                        if (char !== charElement) {
+                            this.plannedRoutes.set(char, this.characterRoutes.get(char) || []);
+                        }
+                    });
+                    this.refreshRouteSimulationRange();
                 } else {
-                    const confirmationDiv = document.getElementById('moveConfirmation');
-                    const rect = charElement.getBoundingClientRect();
-                    confirmationDiv.style.display = 'block';
-                    confirmationDiv.style.left = `${rect.right - CONFIG.iconSize}px`;
-                    confirmationDiv.style.top = `${rect.top - CONFIG.iconSize}px`;
+                    if (this.autoConfirmMove) {
+                        this.originalPositions.clear();
+
+                        if (SyncController.isOnline) {
+                            this.saveDraggedCharactersState();
+                        }
+                    } else {
+                        const confirmationDiv = document.getElementById('moveConfirmation');
+                        const rect = charElement.getBoundingClientRect();
+                        confirmationDiv.style.display = 'block';
+                        confirmationDiv.style.left = `${rect.right - CONFIG.iconSize}px`;
+                        confirmationDiv.style.top = `${rect.top - CONFIG.iconSize}px`;
+                    }
                 }
 
                 //si estaba seleccionado antes de empezar a arrastar lo volvemos a seleccionar, porque el click largo lo ha deseleccionado
@@ -1345,6 +1631,7 @@ const CharacterController = {
             // Update speed value
             const speedValue = document.getElementById('speedValue');
             speedValue.value = parseFloat(charElement.getAttribute('data-speed')) || CONFIG.defaultSpeed;
+            this.updateRoutePlanningLabel();
         });
 
 
@@ -1452,11 +1739,22 @@ const CharacterController = {
                 svgElement.querySelectorAll(`.${char.id}-route`).forEach(el => {
                     el.remove();
                 });
+                svgElement.querySelectorAll(`.${char.id}-planned-route`).forEach(el => {
+                    el.remove();
+                });
+                this.plannedRoutes.delete(char);
             });
         } else
             svgElement.querySelectorAll(`.${this.activeCharacter.id}-route`).forEach(el => {
                 el.remove();
             });
+        if (this.selectedCharacters.size === 0) {
+            svgElement.querySelectorAll(`.${this.activeCharacter.id}-planned-route`).forEach(el => {
+                el.remove();
+            });
+            this.plannedRoutes.delete(this.activeCharacter);
+        }
+        this.refreshRouteSimulationRange();
     },
 
     /**
@@ -1483,7 +1781,12 @@ const CharacterController = {
         const id = char.getAttribute('id');
         // Clean up
         this.characterRoutes.delete(char);
+        this.plannedRoutes.delete(char);
+        this.plannedStartPositions.delete(char);
         svgElement.querySelectorAll(`.${id}-route`).forEach(el => {
+            el.remove();
+        });
+        svgElement.querySelectorAll(`.${id}-planned-route`).forEach(el => {
             el.remove();
         });
 
@@ -1608,7 +1911,7 @@ const CharacterController = {
      * @param {number|Object} newX - X coordinate or position object
      * @param {number} newY - Y coordinate (if newX is not an object)
      */
-    moveCharacter(image, newX, newY) {
+    moveCharacter(image, newX, newY, saveState = true) {
         let x, y;
 
         // Handle both coordinate formats
@@ -1628,7 +1931,7 @@ const CharacterController = {
         this.drawSelectionCircle(image);
 
         // Save state if online
-        if (SyncController.isOnline) {
+        if (saveState && SyncController.isOnline) {
             SyncController.saveMapState(image.parentElement);
         }
     },
