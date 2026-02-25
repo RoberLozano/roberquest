@@ -1732,6 +1732,8 @@ const CharacterController = {
         if (mapTogglePathItem) {
             mapTogglePathItem.textContent = this.rastro ? 'Ocultar camino' : 'Mostrar camino';
         }
+        if (this.rastro) ocultarCamino.checked =false
+        else ocultarCamino.checked =true;
     },
 
     /**
