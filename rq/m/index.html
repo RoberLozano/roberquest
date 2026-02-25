@@ -24,7 +24,16 @@
         <div id="svg-container"></div>
     </div>
 
-    <input type="datetime-local" name="fecha" id="fecha" step="1">
+    <div id="arriba">
+        <input type="datetime-local" name="fecha" id="fecha" step="1">
+        <div id="routeSimulation" hidden >
+            <div class="enlinea">
+            <input type="range" id="routeTime" min="0" max="0" step="1" value="0" class="slider"><span id="routeTimeLabel">0s</span> <span onclick="CharacterController.toggleRoutePlanning() ">&#10003;</span>
+            </div>
+        </div>
+        
+    </div>
+   
     <button class="btn" id="togglePanel">☰</button>
 
     <div id="dice-container" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999; pointer-events: none;"></div>
@@ -54,11 +63,6 @@
                 <input type="checkbox" id="autoConfirmMove">
                 Auto-aceptar movimientos
             </label>
-        </div>
-        <div id="routeSimulation" class="option-row">
-            <div class="option-label">Simular ruta</div>
-            <input type="range" id="routeTime" min="0" max="0" step="1" value="0" class="slider">
-            <div id="routeTimeLabel">0s</div>
         </div>
         <div id="layersPanel">
             <details>

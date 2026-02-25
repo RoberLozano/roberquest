@@ -81,7 +81,12 @@ const CharacterController = {
         this.updateRoutePlanningLabel();
         if (!this.routePlanningMode) {
             this.finalizePlannedRoutes();
+            routeSimulation.hidden=true;
+            console.log("qacabado");
         }
+        else
+            routeSimulation.hidden=false;
+     
     },
 
     updateRoutePlanningLabel() {
