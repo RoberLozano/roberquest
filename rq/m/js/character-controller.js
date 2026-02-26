@@ -78,6 +78,7 @@ const CharacterController = {
 
     toggleRoutePlanning() {
         this.routePlanningMode = !this.routePlanningMode;
+        bPlanificar.hidden = this.routePlanningMode;
         this.updateRoutePlanningLabel();
         if (!this.routePlanningMode) {
             this.finalizePlannedRoutes();
@@ -434,6 +435,7 @@ const CharacterController = {
             charElement.classList.add('selected');
             //si esta abierto la tarjeta de personaje
             console.log(id + 'selected');
+            if( mostrarTarjeta.checked)
             this.showCharacterCard(charElement.p);
         }
         this.drawSelectionCircle(charElement.querySelector('image'));
@@ -477,6 +479,7 @@ const CharacterController = {
         
         // Limpiar contenido anterior
         statsGrid.innerHTML = '';
+        weaponContainer.innerHTML='';
         bodyDamageList.innerHTML = '';
         
         // Mostrar características principales
@@ -487,6 +490,12 @@ const CharacterController = {
             statItem.className = 'stat-item';
             statItem.innerHTML = `<span>${stat}</span><span>${statValue}</span>`;
             statsGrid.appendChild(statItem);
+        });
+
+        personaje.inventario.darClaseRecursiva(Arma).forEach(element => {
+            weaponContainer.innerHTML+=element.toString() + "->";
+            if (personaje.getHabilidad(element.nombre))  weaponContainer.innerHTML+=personaje.getHabilidad(element.nombre).t + '<br>';
+            
         });
 
         // Dibujar el daño en el canvas

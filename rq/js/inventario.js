@@ -685,7 +685,16 @@ class Arma extends Objeto {
     console.log(this.daños[this.index]);
   }
 
-  toString() { return this.nombre }
+  toString() {
+    let info=this.nombre;
+        this.daños?.forEach(d => {
+      if (d?.dado && d?.tipo) {
+       info+= " "+d.dado+ d.tipo+ "."
+      }
+
+    });
+     return info;
+    }
 
 
 }

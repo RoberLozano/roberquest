@@ -315,6 +315,7 @@ GA.set("Martillo de guerra", new GenArma("Martillo de guerra", 2.0, 75, 150, [ne
 GA.set("Gran martillo", new GenArma("Gran martillo", 2.5, 130, 250, [new Daño("2D6+2", "C"), new Daño("2D6+2", "P")], { ratioPesoLong: 0.7 }));
 GA.set("Maza pesada", new GenArma("Maza pesada", 2.5, 85, 220, [new Daño("1D10", "C")], { ratioPesoLong: 0.7 }));
 GA.set("Maza ligera", new GenArma("Maza ligera", 1.0, 70, 100, [new Daño("1D8", "C")], { ratioPesoLong: 0.7 }));
+GA.set("Maza", new GenArma("Maza", 1.1, 75, 100, [new Daño("1D8", "C")], { ratioPesoLong: 0.7 }));
 GA.set("Estrella del alba", new GenArma("Estrella del alba", 2.2, 90, 200, [new Daño("1D10+1", "C"), new Daño("1D8", "P")], { ratioPesoLong: 0.7 }));
 GA.set("Palo de madera", new GenArma("Palo de madera", 0.5, 50, 4, [new Daño("1D6", "C")], { ratioPesoLong: 0.7, varLongPct: 0.25 })); // Muy variable
 GA.set("Vara", new GenArma("Vara", 0.5, 160, 10, [new Daño("1D6", "C")], { ratioPesoLong: 0.6 })); // Bastón

@@ -28,6 +28,7 @@
 
     <div id="arriba">
         <input type="datetime-local" name="fecha" id="fecha" step="1">
+        <button class="map-button btn" id="bPlanificar" onclick="CharacterController.toggleRoutePlanning()">P</button>
         <div id="routeSimulation" hidden>
             <div class="enlinea">
                 <input type="range" id="routeTime" min="0" max="0" step="1" value="0" class="slider">
@@ -73,11 +74,25 @@
                         Auto-aceptar movimientos
                     </label>
                 </div>
+                <div class="option-row">
+                    <label for="ocultarCamino" class="option-label">
+                        <input type="checkbox" id="ocultarCamino" onchange="CharacterController.togglePath()">
+                        Ocultar camino
+                    </label>
+                </div>
+                <div class="option-row">
+                    <label for="mostrarTarjeta" class="option-label">
+                        <input type="checkbox" id="mostrarTarjeta" >
+                        Mostrar tarjeta al seleccionar
+                    </label>
+                </div>
+                <div class="option-row">
+                    <label for="ctxOpcional" class="option-label">
+                        <input type="checkbox" id="ctxOpcional">
+                        Contextual opcional
+                    </label>
+                </div>
 
-                <label for="ocultarCamino" class="option-label">
-                    <input type="checkbox" id="ocultarCamino" onchange="CharacterController.togglePath()">
-                    Ocultar camino
-                </label>
             </details>
         </div>
         <div id="layersPanel">
@@ -102,7 +117,7 @@
     <div id="characterContextMenu" class="context-menu">
         <ul>
             <li id="attackCharacter">⚔️ Atacar</li>
-            <li id="togglePortrait">Portada</li>
+            <li class="opcional" hidden id="togglePortrait">Portada</li>
             <li id="planRoute">Planificar ruta</li>
             <li id="deleteRoute" class="menu-delete">Eliminar ruta</li>
             <li id="deleteCharacter" class="menu-delete">Eliminar personaje</li>
@@ -113,18 +128,16 @@
                 Velocidad (km/h) <input type="number" min="0.1" step="0.1" value="5" class="number-input"
                     id="speedValue" onchange="CharacterController.setCharacterSpeed(this.value)">
             </li>
-            <li id="showStats">Mostrar stats</li>
-            <li id="showCharacterCard">Mostrar tarjeta</li>
-            <li id="inventario" hidden onclick="CharacterController.showStats('inventario')">Inventario</li>
-            <li id="exe">
-
+            <li class="opcional" hidden id="showStats">Mostrar stats</li>
+            <li class="opcional" hidden id="showCharacterCard">Mostrar tarjeta</li>
+            <li class="opcional" hidden id="inventario" hidden onclick="CharacterController.showStats('inventario')">Inventario</li>
+            <li class="opcional" hidden id="exe">
                 <input type="text" name="" id="exeInput" placeholder="Ejecutar comando...">
                 <button id="exeBtn" onclick="             
                     let x=eval('CharacterController.getActivePersonaje().'+
                     document.getElementById('exeInput').value)
                     console.log(x);
                 ">Ejecutar</button>
-
             </li>
         </ul>
     </div>
@@ -156,6 +169,7 @@
         </div>
         <div class="card-tabs">
             <button class="tab-button active" data-tab="stats">Características</button>
+            <button class="tab-button" data-tab="weapon">Armas</button>
             <button class="tab-button" data-tab="body">Cuerpo</button>
         </div>
         <div class="card-content">
@@ -163,6 +177,9 @@
                 <div class="stats-grid">
                     <!-- Las características se cargarán dinámicamente -->
                 </div>
+            </div>
+            <div id="weaponTab" class="tab-content"> Armas
+                <div id="weaponContainer"></div>
             </div>
             <div id="bodyTab" class="tab-content">
                 <div class="body-damage-container">
