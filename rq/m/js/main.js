@@ -106,6 +106,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('characterContextMenu').style.display = 'none';
         });
 
+        // Setup target mode button
+        document.getElementById('bObjetivo').addEventListener('click', () => {
+            CharacterController.startTargetMode();
+        });
+
         document.getElementById('deleteCharacter').addEventListener('click', () => {
             CharacterController.deleteCharacter();
             document.getElementById('characterContextMenu').style.display = 'none';

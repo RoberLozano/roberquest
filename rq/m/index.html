@@ -29,11 +29,12 @@
     <div id="arriba">
         <input type="datetime-local" name="fecha" id="fecha" step="1">
         <button class="map-button btn" id="bPlanificar" onclick="CharacterController.toggleRoutePlanning()">P</button>
+        <button class="map-button btn" id="bObjetivo" >◎</button>
         <div id="routeSimulation" hidden>
             <div class="enlinea">
                 <input type="range" id="routeTime" min="0" max="0" step="1" value="0" class="slider">
-                <span id="routeTimeLabel">0s</span> <span
-                    onclick="CharacterController.toggleRoutePlanning() ">&#10003;</span>
+                <span id="routeTimeLabel">0s</span>
+                <span onclick="CharacterController.toggleRoutePlanning() ">&#10003; ✅</span>
             </div>
         </div>
 

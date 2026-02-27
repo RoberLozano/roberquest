@@ -22,6 +22,10 @@ const CharacterController = {
     // Propiedades para el modo de ataque
     attackMode: false,
     attackingCharacter: null,
+    // Propiedades para el modo de establecer objetivo
+    targetMode: false,
+    targetCharacters: [],
+    targetClickHandler: null,
 
     /**
      * Initialize the character controller
@@ -936,9 +940,186 @@ const CharacterController = {
     },
 
     /**
-     * Set the speed for a character (km/h)
-     * @param {number} speed - Speed in km/h
+     * Inicia el modo para establecer el objetivo final de la ruta
      */
+    startTargetMode() {
+        this.targetMode = !this.targetMode;
+        const button = document.getElementById('bObjetivo');
+        const mapContainer = document.getElementById('svg-container');
+        
+        if (this.targetMode) {
+            // Preparar lista de personajes objetivo
+            if (this.selectedCharacters.size > 0) {
+                this.targetCharacters = Array.from(this.selectedCharacters.values());
+            } else if (this.activeCharacter) {
+                this.targetCharacters = [this.activeCharacter];
+            } else {
+                this.targetMode = false;
+                this.showTooltip('Selecciona un personaje primero', 2000);
+                return;
+            }
+            
+            // Cambiar estado visual del botón
+            button.style.backgroundColor = '#4CAF50';
+            button.style.color = 'white';
+            
+            // Cambiar cursor
+            document.body.style.cursor = 'crosshair';
+            
+            // Mostrar mensaje
+            this.showTooltip(`Haz clic en el mapa para establecer el objetivo para ${this.targetCharacters.length} personaje(s)`, 3000);
+            
+            // Agregar listeners para clics en el mapa (mouse y touch)
+            this.targetClickHandler = this.handleTargetClick.bind(this);
+            mapContainer.addEventListener('click', this.targetClickHandler);
+            mapContainer.addEventListener('touchend', this.targetClickHandler);
+        } else {
+            // Desactivar modo target
+            button.style.backgroundColor = '';
+            button.style.color = '';
+            document.body.style.cursor = 'default';
+            this.targetCharacters = [];
+            
+            // Remover listeners
+            if (this.targetClickHandler) {
+                mapContainer.removeEventListener('click', this.targetClickHandler);
+                mapContainer.removeEventListener('touchend', this.targetClickHandler);
+                this.targetClickHandler = null;
+            }
+        }
+    },
+
+    /**
+     * Maneja el clic en el mapa cuando está activo el modo target
+     * @param {MouseEvent|TouchEvent} e - Evento del clic o toque
+     */
+    handleTargetClick(e) {
+        if (!this.targetMode) {
+            const mapContainer = document.getElementById('svg-container');
+            if (this.targetClickHandler) {
+                mapContainer.removeEventListener('click', this.targetClickHandler);
+                mapContainer.removeEventListener('touchend', this.targetClickHandler);
+                this.targetClickHandler = null;
+            }
+            return;
+        }
+        
+        // No procesar si el clic es en un personaje
+        if (e.target.closest('.character')) {
+            return;
+        }
+        
+        // Prevenir propagación para no hacer pan del mapa
+        e.stopPropagation();
+        
+        // Obtener coordenadas según el tipo de evento
+        let clientX, clientY;
+        if (e.touches && e.touches.length > 0) {
+            // Event táctil
+            clientX = e.touches[0].clientX;
+            clientY = e.touches[0].clientY;
+        } else if (e.changedTouches && e.changedTouches.length > 0) {
+            // Event táctil final (touchend)
+            clientX = e.changedTouches[0].clientX;
+            clientY = e.changedTouches[0].clientY;
+        } else {
+            // Event de mouse
+            clientX = e.clientX;
+            clientY = e.clientY;
+        }
+        
+        const point = SVGUtils.getPointInSVG(clientX, clientY);
+        if (!point) return;
+        
+        // Establecer la ruta final
+        this.setRouteTarget(point);
+        
+        // Desactivar modo target
+        const button = document.getElementById('bObjetivo');
+        const mapContainer = document.getElementById('svg-container');
+        
+        button.style.backgroundColor = '';
+        button.style.color = '';
+        document.body.style.cursor = 'default';
+        
+        // Remover listeners
+        if (this.targetClickHandler) {
+            mapContainer.removeEventListener('click', this.targetClickHandler);
+            mapContainer.removeEventListener('touchend', this.targetClickHandler);
+            this.targetClickHandler = null;
+        }
+        
+        this.targetMode = false;
+    },
+
+    /**
+     * Establece el punto final de la ruta para los personajes
+     * @param {Object} targetPoint - Punto final {x, y}
+     */
+    setRouteTarget(targetPoint) {
+        if (!targetPoint) return;
+        
+        this.targetCharacters.forEach((charElement) => {
+            // Obtener la posición actual del personaje
+            const image = charElement.querySelector('image');
+            const currentX = parseFloat(image.getAttribute('data-x')) ||
+                            (parseFloat(image.getAttribute('x')) + parseFloat(image.getAttribute('width')) / 2);
+            const currentY = parseFloat(image.getAttribute('data-y')) ||
+                            (parseFloat(image.getAttribute('y')) + parseFloat(image.getAttribute('height')) / 2);
+            
+            // Crear una ruta directa al punto objetivo
+            const route = [
+                { x: currentX, y: currentY },
+                targetPoint
+            ];
+            
+            if (this.routePlanningMode) {
+                // En modo planificación, guardar como ruta planificada
+                this.plannedRoutes.set(charElement, route);
+                this.plannedStartPositions.set(charElement, { x: currentX, y: currentY });
+                this.characterRoutes.set(charElement, route);
+                this.setPlannedRoutePath(charElement, route);
+            } else {
+                // En modo normal, mover el personaje y guardar la ruta
+                this.characterRoutes.set(charElement, route);
+                this.moveCharacter(image, targetPoint.x, targetPoint.y);
+                
+                if (this.rastro) {
+                    this.setNormalRoutePath(charElement, route);
+                }
+                
+                // Store original position for undo
+                this.originalPositions.set(charElement, { x: currentX, y: currentY });
+                
+                // Si autoconfirm está desactivado, mostrar botones de confirmación
+                if (!this.autoConfirmMove) {
+                    const confirmationDiv = document.getElementById('moveConfirmation');
+                    const rect = charElement.getBoundingClientRect();
+                    confirmationDiv.style.display = 'block';
+                    confirmationDiv.style.left = `${rect.right - CONFIG.iconSize}px`;
+                    confirmationDiv.style.top = `${rect.top - CONFIG.iconSize}px`;
+                } else {
+                    // Si autoconfirm está activado, guardar el estado
+                    this.originalPositions.clear();
+                    if (SyncController.isOnline) {
+                        this.saveDraggedCharactersState();
+                    }
+                }
+            }
+            
+            // Actualizar la visualización de distancia
+            this.updateDistanceDisplay(charElement);
+        });
+        
+        // Actualizar el rango de simulación de ruta si estamos en modo planificación
+        if (this.routePlanningMode) {
+            this.refreshRouteSimulationRange();
+        }
+        
+        this.showTooltip('Ruta establecida', 1500);
+    },
+
+
     setCharacterSpeed(speed) {
         if (!this.activeCharacter) return;
 
@@ -1409,6 +1590,7 @@ const CharacterController = {
                     this.setPlannedRoutePath(charElement, this.characterRoutes.get(charElement));
                 }
 
+                //ruta planificada
                 if (this.routePlanningMode) {
                     this.selectedCharacters.forEach((char) => {
                         if (char !== charElement) {
@@ -1420,6 +1602,7 @@ const CharacterController = {
                         }
                     });
                 } else {
+                    //movimiento normal
                     this.moveCharacter(image(), newX, newY);
                     this.updateCross(cross(), newX, newY);
                     this.selectedCharacters.forEach((char) => {
