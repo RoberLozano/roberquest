@@ -396,7 +396,7 @@ class Animal extends Clase {
   setAll(o) {
     super.setAll(o);
     // this.mods = ;
-    console.log(o.mods);
+    // console.log(o.mods);
     //ÑAPA, Como son objetos anidados no hace bien el SetAll (imagino)
     //Sobreescribo, pero como va con id da igual
     for (let key in o.listaMods) {
@@ -605,7 +605,7 @@ class Animal extends Clase {
     // var av = string.match(/\s*(\+|-|x|\/)\s*(\d+)([ECPG])?\s*(.*)/i);
     // let av= string.match(/(\+|-) (\d+)/i);
     if (av) {
-      console.log(av);
+      // console.log(av);
       let atributoHabilidad = av[3];
       let op = av[1]; let ctd = av[2]; let magnitud = av[4];
       if (atributoHabilidad) {
@@ -616,8 +616,7 @@ class Animal extends Clase {
       // let op = av[1]; let ctd = av[2]; let magnitud = av[3];
 
       // console.log(av[1], av[2], av[3], av[4]);
-      console.log(`op ${op}, ctd ${ctd}, magnitud ${magnitud} ,
-      atributoHabilidad  ${atributoHabilidad}`);
+      // console.log(`op ${op}, ctd ${ctd}, magnitud ${magnitud} ,atributoHabilidad  ${atributoHabilidad}`);
       return new Mod(id, op, ctd, magnitud);
     }
 
@@ -693,7 +692,7 @@ class Animal extends Clase {
       id = m;
 
     if (!(this.listaMods[id])) {
-      console.log("no hay efecto con esa id");
+      // console.log("no hay efecto con esa id");
       return;
     }
 
@@ -701,9 +700,9 @@ class Animal extends Clase {
     var ae = efectos.split(',')
     ae.forEach(e => {
       var mod = this.buscarMod(e, id);
-      console.log(mod);
+      // console.log(mod);
       if (this.getHabilidad(mod.magnitud)) {
-        console.log('Lo reconoce como mod Habilidad');
+        // console.log('Lo reconoce como mod Habilidad');
         if (!(mod instanceof ModHab)) {
           mod = mod.toModHab('v');
         }
@@ -738,20 +737,20 @@ class Animal extends Clase {
   addModificadores(m) {
     //sobreescribe el mismo id
     this.listaMods[m.id] = m;
-    console.log(m);
+    // console.log(m);
     let efectos = m.efectos;
     var ae = efectos.split(',')
     ae.forEach(e => {
       var mod = this.buscarMod(e, m.id);
       //TODO:hacerlo con lo de Modificadores.buscarMod
       // var mod = m.buscarMod(e);
-      console.log(mod);
+      // console.log(mod);
       if (this.getHabilidad(mod.magnitud)) {
         console.log('Lo reconoce como mod Habilidad');
         if (!(mod instanceof ModHab)) {
           mod = mod.toModHab('v');
         }
-        console.log(mod);
+        // console.log(mod);
         this.habilidades[mod.magnitud].addMod(mod);
         return;
       }

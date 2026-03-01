@@ -4,9 +4,9 @@
  */
 const CharacterController = {
     // Character tracking
-    characters: new Map(),
+    characters: new Map(), // Map of DOM elements, keyed by normalized ID
     selectedCharacters: new Map(),
-    personajes: new Map(),
+    personajes: new Map(), // Map of character objects, keyed by character name
     characterRoutes: new Map(),
     plannedRoutes: new Map(),
     plannedStartPositions: new Map(),
@@ -26,6 +26,28 @@ const CharacterController = {
     targetMode: false,
     targetCharacters: [],
     targetClickHandler: null,
+
+    /**
+     * Normalize character name to ID (spaces to underscores)
+     * This is the SINGLE SOURCE OF TRUTH for name normalization
+     * @param {string} name - Character name
+     * @returns {string} - Normalized ID (spaces replaced with underscores)
+     */
+    normalizeId(name) {
+        if (!name || typeof name !== 'string') return '';
+        return name.trim().replace(/%20/g, '_').replace(/ /g, '_');
+    },
+
+    /**
+     * Get character element by normalized or full name
+     * @param {string} nameOrId - Character name or normalized ID
+     * @returns {Element|null} - The character DOM element
+     */
+    getCharacterElement(nameOrId) {
+        if (!nameOrId) return null;
+        const id = this.normalizeId(nameOrId);
+        return this.characters.get(id) || null;
+    },
 
     /**
      * Initialize the character controller
@@ -806,6 +828,10 @@ const CharacterController = {
      */
     getPersonajeFromElement(element) {
         if (!element) return null;
+        //TODO: return     perso 
+        
+        return this.personajes.get(element.nombre) || null;
+        // console.log("personaje+:"+n);
         return element.p || null;
     },
     
@@ -1239,47 +1265,44 @@ const CharacterController = {
      * @returns {SVGElement} - The created character element
      */
     addCharacterToMap(imageUrl, position) {
+        
         if (!svgElement) return;
-        // console.log('Adding character to map', { imageUrl, position });
+        
         // Create character group
         const charGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
         charGroup.setAttribute('class', 'character');
 
-        //from url to normal text
-         imageUrl = decodeURI(imageUrl);
-
+        // Decode URL
+        imageUrl = decodeURI(imageUrl);
 
         // Extract name from URL
         const fileName = typeof position === 'string' ?
             position.split('/').pop() :
             imageUrl.split('/').pop();
-        console.log('Extracted name', { fileName });
-        let nombre = fileName.substring(0, fileName.lastIndexOf('.')).replace(/%20/g, ' ');
-       
-        let baseName = fileName.substring(0, fileName.lastIndexOf('.'))
-            .replace(/%20/g, '_').replaceAll(' ', '_')
-            // .replace(/[^a-zA-Z0-9]/g, '_');
-        console.log(baseName);
+        
+        // Get display name with spaces
+        const nombre = fileName.substring(0, fileName.lastIndexOf('.')).replace(/%20/g, ' ');
+        
+        // Get normalized ID without spaces
+        let baseName = this.normalizeId(nombre);
 
-
+        // Handle duplicate names by appending number
         let number = 1;
-        while (this.characters.has(`${baseName}`)) {
-            // console.log('Name already exists, incrementing', { baseName, number });
+        let finalId = baseName;
+        while (this.characters.has(finalId)) {
             number++;
+            // Extract existing number if any and replace it
             const match = baseName.match(/\d+$/);
             if (match) {
-                number = parseInt(match[0], 10) + 1;
-                baseName = baseName.substring(0, baseName.length - match[0].length);
-                baseName += number;
-                // console.log('New name', { baseName, number });
+                finalId = baseName.substring(0, baseName.length - match[0].length) + number;
+            } else {
+                finalId = baseName + number;
             }
-            
         }
-        if(number>1) nombre= baseName.replaceAll('_',' ');
 
-
-        charGroup.id = baseName;
-        charGroup.nombre=nombre;
+        // Set unique ID (normalized) and human-readable name
+        charGroup.id = finalId;
+        charGroup.nombre = nombre;
 
         // Set default speed
         charGroup.setAttribute('data-speed', CONFIG.defaultSpeed);
@@ -1287,7 +1310,7 @@ const CharacterController = {
         // Create character image
         const image = document.createElementNS("http://www.w3.org/2000/svg", "image");
         image.setAttribute('href', imageUrl);
-        image.setAttribute('data-name', nombre);
+        image.setAttribute('data-name', nombre); // Store readable name in DOM
         image.setAttribute('width', CONFIG.iconSize / MapController.scale);
         image.setAttribute('height', CONFIG.iconSize / MapController.scale);
         image.setAttribute('preserveAspectRatio', 'xMidYMid meet');
@@ -1329,8 +1352,8 @@ const CharacterController = {
         this.setupContextMenu(charGroup);
         this.setupSelection(charGroup);
 
-        // Store character reference
-        this.characters.set(nombre, charGroup);
+        // Store character reference using normalized ID as key
+        this.characters.set(finalId, charGroup);
 
         if (SyncController.isOnline) {
             console.log('cargo desde crear personaje:' + nombre);
@@ -2267,7 +2290,13 @@ const CharacterUtils = {
      * @param {SVGImageElement|SVGElement} img - Character image or element
      * @param {number} angle - Rotation angle in degrees
      */
-    rotate(img, angle) {
+    /**
+     * Rotate a character image
+     * @param {SVGImageElement|SVGElement} img - Character image or group
+     * @param {number} angle - Rotation angle in degrees
+     * @param {boolean} skipSync - If true, won't save to Firebase (for synced updates)
+     */
+    rotate(img, angle, skipSync = false) {
         if (!img) return;
 
         // If passed the character group instead of the image
@@ -2279,8 +2308,6 @@ const CharacterUtils = {
         let p = img.parentElement;
         if (DOM.hasClass(p, 'portrait')) {
             // La imagen debe estar igual
-            console.log('Portrait');
-
         }
         else {
             img.style.transformBox = 'fill-box';
@@ -2296,27 +2323,23 @@ const CharacterUtils = {
             arrow.style.transformOrigin = 'center';
             arrow.setAttribute('data-rotation', angle);
             arrow.style.transform = `rotate(${angle}deg)`;
-            //se podría llamar a portada, pero acabaria ejecutando mas instrucciones
             CharacterUtils.portada(p);
-            // arrow.querySelectorAll('line').forEach(line => {
-            //     line.setAttribute('stroke', 'white 0');
-            // });
-            // //visible cross-arrow
-            // arrow.querySelector('.cross-arrow').style.display = 'block';
         }
 
-        if (SyncController.isOnline) {
+        // Only save to Firebase if this is a local user action, not a synced update
+        if (SyncController.isOnline && !skipSync) {
             SyncController.saveMapState(img.parentElement);
         }
     }
     ,
 
     /**
-     * Rotate a character image
-     * @param {SVGImageElement|SVGElement} img - Imagen o grupo del personaje
-     * @param {number} angle - Grados positivos o negativos a girar sobre el giro actual
+     * Rotate a character by a relative amount
+     * @param {SVGImageElement|SVGElement} img - Character image or group
+     * @param {number} angle - Degrees to rotate (positive or negative)
+     * @param {boolean} skipSync - If true, won't save to Firebase (for synced updates)
      */
-    rotateMore(img, angle) {
+    rotateMore(img, angle, skipSync = false) {
         if (!img) return;
         // If passed the character group instead of the image
         if (img.tagName === 'g') {
@@ -2324,7 +2347,7 @@ const CharacterUtils = {
             if (!img) return;
         }
         let grados = img.getAttribute('data-rotation') || 0;
-        this.rotate(img, grados + angle)
+        this.rotate(img, grados + angle, skipSync);
     },
     /**
      * Set the visibility of the cross and arrow for a character if portrait or not

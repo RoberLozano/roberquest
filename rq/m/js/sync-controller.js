@@ -80,25 +80,16 @@ const SyncController = {
         if (!this.database || !this.isOnline) return;
         
         try {
+
             // Reference to the map state in Firebase
             this.mapStateRef = this.database.ref('mapState/personajes');
-            this.mapDateRef=this.database.ref('mapState/fecha');
+            this.mapDateRef = this.database.ref('mapState/fecha');
             
-            // Listen for character updates
+            // Listen for character updates on map state
             this.mapStateRef.on('child_added', this.handleSyncCharacterAdded.bind(this));
             this.mapStateRef.on('child_changed', this.handleSyncCharacterChanged.bind(this));
             this.mapStateRef.on('child_removed', this.handleSyncCharacterRemoved.bind(this));
         
-            //si quiero que mire todos los personajes guardados
-            this.personajesRef = this.database.ref('personajes');
-            this.personajesRef.on('child_changed', this.handleSyncPersonajeChanged.bind(this));
-
-            //si quiero que mire solo los personajes de CharacterController.personajes
-            CharacterController.personajes.forEach((personaje) => {
-                this.personajesRef.child(personaje.nombre)
-                .on('value', this.handleSyncPersonajeChanged.bind(this));
-            });
-
             // Listen for date updates
             this.mapDateRef.on('value', this.handleSyncDateChanged.bind(this));
             
@@ -127,10 +118,15 @@ const SyncController = {
                 y: charData.y
             });
             
-            // Apply rotation if available
+            // Apply rotation if available (skipSync=true to prevent infinite loop)
             const img = charEl.querySelector('image');
-            if (img && charData.rotation) {
-                CharacterUtils.rotate(img, charData.rotation);
+            if (img && charData.rotation !== undefined) {
+                CharacterUtils.rotate(img, charData.rotation, true);
+            }
+            
+            // Load character data from personajes database if available
+            if (charData.id) {
+                this.loadCharacterData(charData.id);
             }
         } catch (e) {
             console.error('Error adding synced character:', e);
@@ -141,7 +137,7 @@ const SyncController = {
      * Handle character changed from sync
      * @param {Object} snapshot - Firebase snapshot
      */
-    handleSyncCharacterChanged(snapshot) {
+    handleSyncCharacterChanged(snapshot, character=false) {
         const charData = snapshot.val();
         if (!charData || !charData.id) return;
         
@@ -154,14 +150,14 @@ const SyncController = {
                 return;
             }
             
-            // Update position
+            // Update position (saveState=false to prevent resaving to Firebase)
             const img = charEl.querySelector('image');
             if (img) {
-                CharacterController.moveCharacter(img, charData.x, charData.y);
+                CharacterController.moveCharacter(img, charData.x, charData.y, false);
                 
-                // Update rotation if available
+                // Update rotation if available (skipSync=true to prevent infinite loop)
                 if (charData.rotation !== undefined) {
-                    CharacterUtils.rotate(img, charData.rotation);
+                    CharacterUtils.rotate(img, charData.rotation, true);
                 }
             }
         } catch (e) {
@@ -170,36 +166,49 @@ const SyncController = {
     },
 
     /**
-     * Handle character changed from sync (for personajes)
-     * @param {Object} snapshot - Firebase snapshot
-     */ 
-    handleSyncPersonajeChanged(snapshot) {      
+     * Load character data from Firebase by ID and assign to character object
+     * @param {string} charId - Character ID (normalized)
+     */
+    loadCharacterData(charId) {
+        if (!this.database || !charId) return;
+        
         try {
-            let personaje=null;
+            // Get the character element to get the display name
+            const charEl = CharacterController.characters.get(charId);
+            if (!charEl) return;
+            
+            const nombre = charEl.nombre || charEl.querySelector('image').getAttribute('data-name');
+            
+            // Access character data path - characters are stored by their display name
+            this.database.ref(`personajes/${nombre}`).on('value', (snapshot) => {
                 const data = snapshot.val();
-                if (data) {
-                    console.log("Personaje cargado:", data);
-                    // Convertir los datos a un objeto de personaje
+                if (!data) return;
+                
+                try {
+                    // Convert data to character object
+                    let personaje = null;
                     if (data.clase) {
                         personaje = Clase.convertir(data);
                     } else {
                         personaje = new Humanoide({});
                     }
+                    
                     personaje.setAll(data);
                     personaje.act();
-                    CharacterController.personajes.set(personaje.nombre, personaje);
                     
-                    // Asignar el personaje al elemento DOM para poder acceder a él desde el elemento
-                    const charElement = document.getElementById(personaje.nombre.replace(/ /g, '_'));
-                    if (charElement) {
-                        charElement.p = personaje;
-                    }
+                    // Store in CharacterController
+                    CharacterController.personajes.set(nombre, personaje);
                     
-                    console.log("Personaje actualizado en personajes", personaje);
+                    // Link to DOM element for easy access
+                    charEl.p = personaje;
+                    
+                    console.log(`Personaje '${nombre}' cargado desde Firebase`);
+                } catch (e) {
+                    console.error(`Error loading character data for ${nombre}:`, e);
                 }
-           
+            });
         } catch (e) {
-            console.error('Error updating synced character:', e);
+            console.error('Error in loadCharacterData:', e);
         }
     },
 
@@ -246,39 +255,16 @@ const SyncController = {
         }
     },
 
-
-/**
- * Carga una vez un personaje y lo guarda en @link{CharacterController.personajes}
- * 
- * @param {string} nombre 
- */
-    cargarPersonaje(nombre){
-        // Cargar personaje de forma asíncrona
-        let ruta = `personajes/${nombre}/`;
-        let personaje=null;
-        this.database.ref(ruta).once('value', (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-                console.log("Personaje cargado:", data);
-                // Convertir los datos a un objeto de personaje
-                if (data.clase) {
-                    personaje = Clase.convertir(data);
-                } else {
-                    personaje = new Humanoide({});
-                }
-                personaje.setAll(data);
-                personaje.act();
-                CharacterController.personajes.set(personaje.nombre, personaje);
-                
-                // Asignar el personaje al elemento DOM para poder acceder a él desde el elemento
-                const charElement = document.getElementById(personaje.nombre.replace(/ /g, '_'));
-                if (charElement) {
-                    charElement.p = personaje;
-                }
-                
-                console.log("Personaje guardado en personajes", personaje);
-            }
-        });
+    /**
+     * Load a single character and save to CharacterController.personajes
+     * This is called when a new character is added to map or for initial load
+     * @param {string} nombre - Character display name
+     */
+    cargarPersonaje(nombre) {
+        if (!this.database || !nombre) return;
+        
+        // Use the helper function instead
+        this.loadCharacterData(CharacterController.normalizeId(nombre));
     },
     
     /**
@@ -308,10 +294,15 @@ const SyncController = {
                         y: charData.y
                     });
                     
-                    // Apply rotation if available
+                    // Apply rotation if available (skipSync=true to prevent infinite loop)
                     const img = charEl.querySelector('image');
-                    if (img && charData.rotation) {
-                        CharacterUtils.rotate(img, charData.rotation);
+                    if (img && charData.rotation !== undefined) {
+                        CharacterUtils.rotate(img, charData.rotation, true);
+                    }
+                    
+                    // Load character data after adding to map
+                    if (charData.id) {
+                        this.loadCharacterData(charData.id);
                     }
                 });
             });

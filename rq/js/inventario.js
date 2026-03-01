@@ -604,7 +604,7 @@ class Arma extends Objeto {
   constructor(nombre, peso, longitud, valor, ...daños) {
     super(nombre, peso, valor);
     this.daños = daños;
-    this.longitud=longitud;
+    this.longitud=longitud||null;
     // console.log(this.daños);
     if (this.daños)
       this.index = 0

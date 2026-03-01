@@ -160,14 +160,14 @@ class Modificable extends Clase {
    */
   addModificadores(m) {
     //sobreescribe el mismo id
-    console.log(m);
+    // console.log(m);
     this.listaMods[m.id] = m;
     let efectos = m.efectos;
     var ae = efectos.split(',')
     ae.forEach(e => {
       if(!m.buscarMod) return;
       var mod = m.buscarMod(e, m.id);
-      console.log(mod);
+      // console.log(mod);
       if (!this.mods[mod.magnitud])
         this.mods[mod.magnitud] = {}
 
